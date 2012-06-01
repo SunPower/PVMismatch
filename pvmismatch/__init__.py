@@ -1,2 +1,2 @@
 #
-__all__ = ['pvconstants']
+__all__ = ['pvconstants', 'pvmodule']
