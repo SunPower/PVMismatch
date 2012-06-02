@@ -18,16 +18,27 @@ class PVmodule(object):
     PVmodule - A Class for PV modules
     """
 
-    def __init__(self, numberCells=_numberCells, pvconst=PVconstants()):
+    def __init__(self, numberCells=_numberCells, pvconst=PVconstants(), Ee=1):
         self.numberCells = numberCells
         if numberCells not in NUMBERCELLS:
             #todo raise an exception
             print "Invalid number of cells."
         self.pvconst = pvconst
+        self.Ee = Ee
 
-    def calcCell(self, Ee=1):
-        Vdiode = numpy.array(range(61), 'float') / 100
-        Igen = self.pvconst.Aph * self.pvconst.Isc0 * Ee
+    def calcVoc(self):
+        C = self.pvconst.Aph * self.pvconst.Isc0 * self.Ee
+        C += self.pvconst.Isat1 + self.pvconst.Isat2
+        VT = self.pvconst.k * self.pvconst.T / self.pvconst.q
+        delta = self.pvconst.Isat2 ** 2 + 4 * self.pvconst.Isat1 * C
+        self.Voc = VT * numpy.log(((-self.pvconst.Isat2 + numpy.sqrt(delta))
+                   / 2 / self.pvconst.Isat1) ** 2)
+
+    def calcCell(self):
+        self.calcVoc()
+        Voc100 = int(numpy.ceil(self.Voc * 100.) + 1.)
+        Vdiode = numpy.array(range(Voc100), 'float') / 100.
+        Igen = self.pvconst.Aph * self.pvconst.Isc0 * self.Ee
         Idiode1 = self.pvconst.Isat1 * (numpy.exp(self.pvconst.q * Vdiode
                   / self.pvconst.k / self.pvconst.T) - 1)
         Idiode2 = self.pvconst.Isat2 * (numpy.exp(self.pvconst.q * Vdiode
