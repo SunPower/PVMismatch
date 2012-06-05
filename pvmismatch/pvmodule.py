@@ -18,24 +18,30 @@ class PVmodule(object):
     PVmodule - A Class for PV modules
     """
 
-    def __init__(self, numberCells=_numberCells, pvconst=PVconstants(), Ee=1):
+    def __init__(self, pvconst=PVconstants(), numberCells=_numberCells, Ee=1):
+        self.pvconst = pvconst
         self.numberCells = numberCells
         if numberCells not in NUMBERCELLS:
             #todo raise an exception
             print "Invalid number of cells."
-        self.pvconst = pvconst
+        if numpy.isscalar(Ee):
+            Ee = numpy.ones(self.numberCells) * Ee
+        elif numpy.size(Ee) != self.numberCells:
+            #todo raise an exception
+            print "Invalid number of cells."
         self.Ee = Ee
+        self.Voc = self.calcVoc()
 
     def calcVoc(self):
         C = self.pvconst.Aph * self.pvconst.Isc0 * self.Ee
         C += self.pvconst.Isat1 + self.pvconst.Isat2
         VT = self.pvconst.k * self.pvconst.T / self.pvconst.q
         delta = self.pvconst.Isat2 ** 2 + 4 * self.pvconst.Isat1 * C
-        self.Voc = VT * numpy.log(((-self.pvconst.Isat2 + numpy.sqrt(delta))
+        Voc = VT * numpy.log(((-self.pvconst.Isat2 + numpy.sqrt(delta))
                    / 2 / self.pvconst.Isat1) ** 2)
+        return Voc
 
     def calcCell(self):
-        self.calcVoc()
         Voc100 = int(numpy.ceil(self.Voc * 100.) + 1.)
         Vdiode = numpy.array(range(Voc100), 'float') / 100.
         Igen = self.pvconst.Aph * self.pvconst.Isc0 * self.Ee
@@ -48,4 +54,8 @@ class PVmodule(object):
         self.Vcell = Vdiode - self.Icell * self.pvconst.Rs
 
     def plotCell(self):
-        pyplot.plot(self.Vcell, self.Icell)
+        pyplot.plot(self.Vcell, self.Icell
+
+    def calcMod(self):
+        for cell in self.numberCells:
+            
