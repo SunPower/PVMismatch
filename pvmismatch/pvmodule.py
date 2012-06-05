@@ -9,6 +9,7 @@ import numpy
 from pvconstants import PVconstants
 from matplotlib import pyplot
 
+RESOLUTION = 0.01
 NUMBERCELLS = [72, 96, 128]
 _numberCells = 96
 
@@ -19,20 +20,26 @@ class PVmodule(object):
     """
 
     def __init__(self, pvconst=PVconstants(), numberCells=_numberCells, Ee=1):
+        """
+        Constructor
+        """
         self.pvconst = pvconst
         self.numberCells = numberCells
         if numberCells not in NUMBERCELLS:
             #todo raise an exception
             print "Invalid number of cells."
         if numpy.isscalar(Ee):
-            Ee = numpy.ones(self.numberCells) * Ee
-        elif numpy.size(Ee) != self.numberCells:
+            Ee = numpy.ones((self.numberCells, 1)) * Ee
+        elif numpy.size(Ee, 0) != self.numberCells:
             #todo raise an exception
             print "Invalid number of cells."
         self.Ee = Ee
         self.Voc = self.calcVoc()
 
     def calcVoc(self):
+        """
+        Estimate open circuit voltage of cells
+        """
         C = self.pvconst.Aph * self.pvconst.Isc0 * self.Ee
         C += self.pvconst.Isat1 + self.pvconst.Isat2
         VT = self.pvconst.k * self.pvconst.T / self.pvconst.q
@@ -42,8 +49,11 @@ class PVmodule(object):
         return Voc
 
     def calcCell(self):
-        Voc100 = int(numpy.ceil(self.Voc * 100.) + 1.)
-        Vdiode = numpy.array(range(Voc100), 'float') / 100.
+        """
+        Calculate cell I-V curves
+        """
+        tmpRange = numpy.arange(0, 1, RESOLUTION)
+        Vdiode = Voc * tmpRange
         Igen = self.pvconst.Aph * self.pvconst.Isc0 * self.Ee
         Idiode1 = self.pvconst.Isat1 * (numpy.exp(self.pvconst.q * Vdiode
                   / self.pvconst.k / self.pvconst.T) - 1)
@@ -55,7 +65,3 @@ class PVmodule(object):
 
     def plotCell(self):
         pyplot.plot(self.Vcell, self.Icell
-
-    def calcMod(self):
-        for cell in self.numberCells:
-            
