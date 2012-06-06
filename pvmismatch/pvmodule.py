@@ -5,11 +5,13 @@ Created on Thu May 31 23:17:04 2012
 @author: mmikofski
 """
 
-import numpy
+import numpy as np
 from pvconstants import PVconstants
-from matplotlib import pyplot
+from matplotlib import pyplot as plt
 
-RESOLUTION = 0.01
+RESOLUTION = 0.001
+NPTS = (1 / RESOLUTION, 1)
+PTS = np.arange(0, 1, RESOLUTION).reshape(NPTS)
 NUMBERCELLS = [72, 96, 128]
 _numberCells = 96
 
@@ -28,9 +30,9 @@ class PVmodule(object):
         if numberCells not in NUMBERCELLS:
             #todo raise an exception
             print "Invalid number of cells."
-        if numpy.isscalar(Ee):
-            Ee = numpy.ones((self.numberCells, 1)) * Ee
-        elif numpy.size(Ee, 0) != self.numberCells:
+        if np.isscalar(Ee):
+            Ee = np.ones((1, self.numberCells)) * Ee
+        elif np.size(Ee, 1) != self.numberCells:
             #todo raise an exception
             print "Invalid number of cells."
         self.Ee = Ee
@@ -44,7 +46,7 @@ class PVmodule(object):
         C += self.pvconst.Isat1 + self.pvconst.Isat2
         VT = self.pvconst.k * self.pvconst.T / self.pvconst.q
         delta = self.pvconst.Isat2 ** 2 + 4 * self.pvconst.Isat1 * C
-        Voc = VT * numpy.log(((-self.pvconst.Isat2 + numpy.sqrt(delta))
+        Voc = VT * np.log(((-self.pvconst.Isat2 + np.sqrt(delta))
                    / 2 / self.pvconst.Isat1) ** 2)
         return Voc
 
@@ -52,16 +54,52 @@ class PVmodule(object):
         """
         Calculate cell I-V curves
         """
-        tmpRange = numpy.arange(0, 1, RESOLUTION)
-        Vdiode = Voc * tmpRange
+        Vdiode = self.Voc * PTS
         Igen = self.pvconst.Aph * self.pvconst.Isc0 * self.Ee
-        Idiode1 = self.pvconst.Isat1 * (numpy.exp(self.pvconst.q * Vdiode
+        Idiode1 = self.pvconst.Isat1 * (np.exp(self.pvconst.q * Vdiode
                   / self.pvconst.k / self.pvconst.T) - 1)
-        Idiode2 = self.pvconst.Isat2 * (numpy.exp(self.pvconst.q * Vdiode
+        Idiode2 = self.pvconst.Isat2 * (np.exp(self.pvconst.q * Vdiode
                   / 2 / self.pvconst.k / self.pvconst.T) - 1)
         Ishunt = Vdiode / self.pvconst.Rsh
         self.Icell = Igen - Idiode1 - Idiode2 - Ishunt
         self.Vcell = Vdiode - self.Icell * self.pvconst.Rs
+        self.Pcell = self.Icell * self.Vcell
 
     def plotCell(self):
-        pyplot.plot(self.Vcell, self.Icell
+        cellPlot = plt.figure()
+        plt.subplot(2, 1, 1)
+        plt.plot(self.Vcell, self.Icell)
+        plt.title('Cell I-V Characteristics')
+        plt.xlabel('Cell Voltage, V [V]')
+        plt.ylabel('Cell Current, I [A]')
+        plt.grid()
+        plt.subplot(2, 1, 2)
+        plt.plot(self.Vcell, self.Pcell)
+        plt.title('Cell P-V Characteristics')
+        plt.ylabel('Cell Power, P [W]')
+        plt.grid()
+        return cellPlot
+
+    def calcMod(self):
+        self.Imod = self.pvconst.Isc0 * PTS
+        self.Vmod = np.zeros(NPTS)
+        for cell in range(self.numberCells):
+            xp = np.flipud(self.Icell[:, cell])
+            fp = np.flipud(self.Vcell[:, cell])
+            self.Vmod += np.interp(self.Imod, xp, fp)
+        self.Pmod = self.Imod * self.Vmod
+
+    def plotMod(self):
+        modPlot = plt.figure()
+        plt.subplot(2, 1, 1)
+        plt.plot(self.Vmod, self.Imod)
+        plt.title('Module I-V Characteristics')
+        plt.xlabel('Module Voltage, V [V]')
+        plt.ylabel('Module Current, I [A]')
+        plt.grid()
+        plt.subplot(2, 1, 2)
+        plt.plot(self.Vmod, self.Pmod)
+        plt.title('Module P-V Characteristics')
+        plt.ylabel('Module Power, P [W]')
+        plt.grid()
+        return modPlot
