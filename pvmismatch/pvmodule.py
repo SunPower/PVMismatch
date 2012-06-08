@@ -41,6 +41,8 @@ class PVmodule(object):
     def calcVoc(self):
         """
         Estimate open circuit voltage of cells
+        
+        Returns Voc : numpy.ndarray of float, estimated open circuit voltage
         """
         C = self.pvconst.Aph * self.pvconst.Isc0 * self.Ee
         C += self.pvconst.Isat1 + self.pvconst.Isat2
