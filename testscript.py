@@ -10,6 +10,4 @@ from pvmismatch.pvmodule import PVmodule
 
 def test():
     pvmod = PVmodule()
-    pvmod.calcCell()
-    pvmod.calcMod()
     return pvmod

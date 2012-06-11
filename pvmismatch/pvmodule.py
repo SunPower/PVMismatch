@@ -9,16 +9,16 @@ import numpy as np
 from pvconstants import PVconstants
 from matplotlib import pyplot as plt
 
-RESOLUTION = 0.001
-NPTS = (1 / RESOLUTION, 1)
-PTS = np.arange(0, 1, RESOLUTION).reshape(NPTS)
-NUMBERCELLS = [72, 96, 128]
-_numberCells = 96
+NPTS = 1001  # numper of I-V points to calculate
+(PTS,) = np.linspace(0, 1, NPTS)
+PTS = PTS.reshape(NPTS, 1)
+NUMBERCELLS = [72, 96, 128]  # list of possible number of cells per module
+_numberCells = 96  # default number of cells
 
 
 class PVmodule(object):
     """
-    PVmodule - A Class for PV modules
+    PVmodule - A Class for PV modules.
     """
 
     def __init__(self, pvconst=PVconstants(), numberCells=_numberCells, Ee=1):
@@ -37,10 +37,12 @@ class PVmodule(object):
             print "Invalid number of cells."
         self.Ee = Ee
         self.Voc = self.calcVoc()
+        (self.Icell, self.Vcell, self.Pcell) = self.calcCell()
+        (self.Imod, self.Vmod, self.Pmod) = self.calcMod()
 
     def calcVoc(self):
         """
-        Estimate open circuit voltage of cells
+        Estimate open circuit voltage of cells.
         Returns Voc : numpy.ndarray of float, estimated open circuit voltage
         """
         C = self.pvconst.Aph * self.pvconst.Isc0 * self.Ee
@@ -53,7 +55,8 @@ class PVmodule(object):
 
     def calcCell(self):
         """
-        Calculate cell I-V curves
+        Calculate cell I-V curves.
+        Returns (Icell, Vcell, Pcell) : tuple of numpy.ndarray of float
         """
         Vdiode = self.Voc * PTS
         Igen = self.pvconst.Aph * self.pvconst.Isc0 * self.Ee
@@ -62,11 +65,30 @@ class PVmodule(object):
         Idiode2 = self.pvconst.Isat2 * (np.exp(self.pvconst.q * Vdiode
                   / 2 / self.pvconst.k / self.pvconst.T) - 1)
         Ishunt = Vdiode / self.pvconst.Rsh
-        self.Icell = Igen - Idiode1 - Idiode2 - Ishunt
-        self.Vcell = Vdiode - self.Icell * self.pvconst.Rs
-        self.Pcell = self.Icell * self.Vcell
+        Icell = Igen - Idiode1 - Idiode2 - Ishunt
+        Vcell = Vdiode - self.Icell * self.pvconst.Rs
+        Pcell = self.Icell * self.Vcell
+        return (Icell, Vcell, Pcell)
+
+    def calcMod(self):
+        """
+        Calculate module I-V curves.
+        Returns (Imod, Vmod, Pmod) : tuple of numpy.ndarray of float
+        """
+        Imod = self.pvconst.Isc0 * PTS
+        Vmod = np.zeros((NPTS, 1))
+        for cell in range(self.numberCells):
+            xp = np.flipud(self.Icell[:, cell])
+            fp = np.flipud(self.Vcell[:, cell])
+            Vmod += np.interp(Imod, xp, fp)
+        Pmod = Imod * Vmod
+        return (Imod, Vmod, Pmod)
 
     def plotCell(self):
+        """
+        Plot cell I-V curves.
+        Returns cellPlot : matplotlib.pyplot figure
+        """
         cellPlot = plt.figure()
         plt.subplot(2, 1, 1)
         plt.plot(self.Vcell, self.Icell)
@@ -81,16 +103,11 @@ class PVmodule(object):
         plt.grid()
         return cellPlot
 
-    def calcMod(self):
-        self.Imod = self.pvconst.Isc0 * PTS
-        self.Vmod = np.zeros(NPTS)
-        for cell in range(self.numberCells):
-            xp = np.flipud(self.Icell[:, cell])
-            fp = np.flipud(self.Vcell[:, cell])
-            self.Vmod += np.interp(self.Imod, xp, fp)
-        self.Pmod = self.Imod * self.Vmod
-
     def plotMod(self):
+        """
+        Plot module I-V curves.
+        Returns modPlot : matplotlib.pyplot figure
+        """
         modPlot = plt.figure()
         plt.subplot(2, 1, 1)
         plt.plot(self.Vmod, self.Imod)
