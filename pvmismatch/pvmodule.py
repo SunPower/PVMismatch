@@ -28,13 +28,13 @@ class PVmodule(object):
         self.pvconst = pvconst
         self.numberCells = numberCells
         if numberCells not in NUMBERCELLS:
-            #todo raise an exception
-            print "Invalid number of cells."
+            # TODO raise an exception
+            print "Invalid number of cells!"
         if np.isscalar(Ee):
             Ee = np.ones((1, self.numberCells)) * Ee
         elif np.size(Ee, 1) != self.numberCells:
-            #todo raise an exception
-            print "Invalid number of cells."
+            # TODO raise an exception
+            print "Invalid number of cells!"
         self.Ee = Ee
         self.Voc = self.calcVoc()
         (self.Icell, self.Vcell, self.Pcell) = self.calcCell()
