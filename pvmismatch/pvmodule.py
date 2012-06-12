@@ -10,8 +10,7 @@ from pvconstants import PVconstants
 from matplotlib import pyplot as plt
 
 NPTS = 1001  # numper of I-V points to calculate
-(PTS,) = np.linspace(0, 1, NPTS)
-PTS = PTS.reshape(NPTS, 1)
+PTS = np.linspace(0, 1, NPTS).reshape(NPTS, 1)  # pylint: disable=E1103
 NUMBERCELLS = [72, 96, 128]  # list of possible number of cells per module
 _numberCells = 96  # default number of cells
 
@@ -66,8 +65,8 @@ class PVmodule(object):
                   / 2 / self.pvconst.k / self.pvconst.T) - 1)
         Ishunt = Vdiode / self.pvconst.Rsh
         Icell = Igen - Idiode1 - Idiode2 - Ishunt
-        Vcell = Vdiode - self.Icell * self.pvconst.Rs
-        Pcell = self.Icell * self.Vcell
+        Vcell = Vdiode - Icell * self.pvconst.Rs
+        Pcell = Icell * Vcell
         return (Icell, Vcell, Pcell)
 
     def calcMod(self):
