@@ -18,24 +18,34 @@ _Vbypass = -0.5
 
 
 def extrap(x, xp, fp, left=True):
+    """
+    linear extrapolation
+    parameters
+    x : array_like
+    """
     import numpy as np
     try:
-        x = np.array(x, dtype=float)
-        xp = np.array(xp, dtype=float)
-        fp = np.array(fp, dtype=float)
+        x = np.array(x, dtype=float, ndmin=1)
+        xp = np.array(xp, dtype=float, ndmin=1)
+        fp = np.array(fp, dtype=float, ndmin=1)
     except ValueError as error:
-        print error
+        print "pvmismatch.pvconstants.extrap input parameters must be",
+        print "array_like!"
+        raise error
     if type(left) is not bool:
         # TODO raise exception
         print "left must be boolean!"
-    if left:
+        raise Exception
+    if left & (np.any(x < xp[0])):
         x = x[x < xp[0]]
         xp = xp[:2]
         fp = fp[:2]
-    else:
-        x = x[x > xp[0]]
+    elif (not left) & (np.any(x > xp[-1])):
+        x = x[x > xp[-1]]
         xp = xp[-2:]
         fp = fp[-2:]
+    else:
+        return None
     return fp[0] + (x - xp[0]) / (xp[1] - xp[0]) * (fp[1] - fp[0])
 
 
