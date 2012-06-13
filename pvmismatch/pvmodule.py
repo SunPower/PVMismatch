@@ -6,12 +6,13 @@ Created on Thu May 31 23:17:04 2012
 """
 
 import numpy as np
-from pvconstants import PVconstants, npinterpX
+from pvconstants import PVconstants, npinterpx
 from matplotlib import pyplot as plt
 
 NPTS = 1001  # numper of I-V points to calculate
 PTS = np.linspace(0, 1, NPTS).reshape(NPTS, 1)  # pylint: disable=E1103
 NUMBERCELLS = [72, 96, 128]  # list of possible number of cells per module
+SUBSTRCELLS = [[24, 24, 24], [24, 48, 24], [32, 64, 32]]
 _numberCells = 96  # default number of cells
 
 
@@ -29,6 +30,12 @@ class PVmodule(object):
         if numberCells not in NUMBERCELLS:
             # TODO create exception class
             print "Invalid number of cells!"
+            raise Exception
+        self.subStrCells = SUBSTRCELLS[NUMBERCELLS.index(self.numberCells)]
+        self.numSubStr = len(self.subStrCells)
+        if sum(self.subStrCells) != self.numberCells:
+            # TODO create exception class
+            print "Invalid cells per substring!"
             raise Exception
         if np.isscalar(Ee):
             Ee = np.ones((1, self.numberCells)) * Ee
@@ -67,7 +74,7 @@ class PVmodule(object):
                   / 2 / self.pvconst.k / self.pvconst.T) - 1)
         Ishunt = Vdiode / self.pvconst.Rsh
         fRBD = self.pvconst.aRBD
-        fRBD = fRBD * (1 - Vdiode / self.pvconst.VRBD) ^ (-self.pvconst.nRBD)
+        fRBD = fRBD * (1 - Vdiode / self.pvconst.VRBD) ** (-self.pvconst.nRBD)
         Icell = Igen - Idiode1 - Idiode2 - Ishunt * (1 + fRBD)
         Vcell = Vdiode - Icell * self.pvconst.Rs
         Pcell = Icell * Vcell
@@ -80,10 +87,17 @@ class PVmodule(object):
         """
         Imod = self.pvconst.Isc0 * PTS
         Vmod = np.zeros((NPTS, 1))
-        for cell in range(self.numberCells):
-            xp = np.flipud(self.Icell[:, cell])
-            fp = np.flipud(self.Vcell[:, cell])
-            Vmod += npinterpX(Imod, xp, fp)
+        Vsubstr = np.zeros((NPTS, 3))
+        start = np.cumsum(self.subStrCells) - self.subStrCells
+        stop = np.cumsum(self.subStrCells) - 1
+        for substr in range(self.numSubStr):
+            for cell in range(start[substr], stop[substr]):
+                xp = np.flipud(self.Icell[:, cell])
+                fp = np.flipud(self.Vcell[:, cell])
+                Vsubstr[:, [substr]] += npinterpx(Imod, xp, fp)
+        bypassed = Vsubstr < self.pvconst.Vbypass
+        Vsubstr[bypassed] = self.pvconst.Vbypass
+        Vmod = np.sum(Vsubstr, axis=0)
         Pmod = Imod * Vmod
         return (Imod, Vmod, Pmod)
 

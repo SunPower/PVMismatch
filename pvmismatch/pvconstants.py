@@ -20,16 +20,20 @@ _VRBD = -5.527260068445654  # [V] reverse breakdown voltage
 _nRBD = 3.284628553041425  # reverse breakdown exponent
 
 
-def npinterpX(x, xp, fp):
+def npinterpx(x, xp, fp):
     """np.interp function with linear extrapolation"""
     import numpy as np
     y = np.interp(x, xp, fp)
-    y = np.where(x < xp[0],
-                 fp[0] + (x - xp[0]) / (xp[1] - xp[0]) * (fp[1] - fp[0]),
-                 y)
-    y = np.where(x > xp[-1],
-                 fp[-1] + (x - xp[-1]) / (xp[-2] - xp[-1]) * (fp[-2] - fp[-1]),
-                 y)
+    # extrapolate left
+    left = x < xp[0]
+    xleft = x[left]
+    yleft = fp[0] + (xleft - xp[0]) / (xp[1] - xp[0]) * (fp[1] - fp[0])
+    y[left] = yleft
+    # extrapolate right
+    right = x > xp[-1]
+    xright = x[right]
+    yright = fp[-1] + (xright - xp[-1]) / (xp[-2] - xp[-1]) * (fp[-2] - fp[-1])
+    y[right] = yright
     return y
 
 
