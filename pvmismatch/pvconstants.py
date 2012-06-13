@@ -17,6 +17,28 @@ _T = 298.15
 _Vbypass = -0.5
 
 
+def extrap(x, xp, fp, left=True):
+    import numpy as np
+    try:
+        x = np.array(x, dtype=float)
+        xp = np.array(xp, dtype=float)
+        fp = np.array(fp, dtype=float)
+    except ValueError as error:
+        print error
+    if type(left) is not bool:
+        # TODO raise exception
+        print "left must be boolean!"
+    if left:
+        x = x[x < xp[0]]
+        xp = xp[:2]
+        fp = fp[:2]
+    else:
+        x = x[x > xp[0]]
+        xp = xp[-2:]
+        fp = fp[-2:]
+    return fp[0] + (x - xp[0]) / (xp[1] - xp[0]) * (fp[1] - fp[0])
+
+
 class PVconstants(object):
     """
     PVconstants - Class for PV constants
