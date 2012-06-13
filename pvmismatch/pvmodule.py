@@ -97,7 +97,7 @@ class PVmodule(object):
                 Vsubstr[:, [substr]] += npinterpx(Imod, xp, fp)
         bypassed = Vsubstr < self.pvconst.Vbypass
         Vsubstr[bypassed] = self.pvconst.Vbypass
-        Vmod = np.sum(Vsubstr, axis=0)
+        Vmod = np.sum(Vsubstr, 1).reshape(NPTS, 1)
         Pmod = Imod * Vmod
         return (Imod, Vmod, Pmod)
 
@@ -110,12 +110,12 @@ class PVmodule(object):
         plt.subplot(2, 1, 1)
         plt.plot(self.Vcell, self.Icell)
         plt.title('Cell I-V Characteristics')
-        plt.xlabel('Cell Voltage, V [V]')
         plt.ylabel('Cell Current, I [A]')
         plt.grid()
         plt.subplot(2, 1, 2)
         plt.plot(self.Vcell, self.Pcell)
         plt.title('Cell P-V Characteristics')
+        plt.xlabel('Cell Voltage, V [V]')
         plt.ylabel('Cell Power, P [W]')
         plt.grid()
         return cellPlot
@@ -129,12 +129,12 @@ class PVmodule(object):
         plt.subplot(2, 1, 1)
         plt.plot(self.Vmod, self.Imod)
         plt.title('Module I-V Characteristics')
-        plt.xlabel('Module Voltage, V [V]')
         plt.ylabel('Module Current, I [A]')
         plt.grid()
         plt.subplot(2, 1, 2)
         plt.plot(self.Vmod, self.Pmod)
         plt.title('Module P-V Characteristics')
+        plt.xlabel('Module Voltage, V [V]')
         plt.ylabel('Module Power, P [W]')
         plt.grid()
         return modPlot
