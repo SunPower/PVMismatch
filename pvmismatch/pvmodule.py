@@ -6,7 +6,7 @@ Created on Thu May 31 23:17:04 2012
 """
 
 import numpy as np
-from pvconstants import PVconstants
+from pvconstants import PVconstants, npinterpX
 from matplotlib import pyplot as plt
 
 NPTS = 1001  # numper of I-V points to calculate
@@ -27,13 +27,15 @@ class PVmodule(object):
         self.pvconst = pvconst
         self.numberCells = numberCells
         if numberCells not in NUMBERCELLS:
-            # TODO raise an exception
+            # TODO create exception class
             print "Invalid number of cells!"
+            raise Exception
         if np.isscalar(Ee):
             Ee = np.ones((1, self.numberCells)) * Ee
         elif np.size(Ee, 1) != self.numberCells:
-            # TODO raise an exception
+            # TODO create exception class
             print "Invalid number of cells!"
+            raise Exception
         self.Ee = Ee
         self.Voc = self.calcVoc()
         (self.Icell, self.Vcell, self.Pcell) = self.calcCell()
@@ -64,7 +66,9 @@ class PVmodule(object):
         Idiode2 = self.pvconst.Isat2 * (np.exp(self.pvconst.q * Vdiode
                   / 2 / self.pvconst.k / self.pvconst.T) - 1)
         Ishunt = Vdiode / self.pvconst.Rsh
-        Icell = Igen - Idiode1 - Idiode2 - Ishunt
+        fRBD = self.pvconst.aRBD
+        fRBD = fRBD * (1 - Vdiode / self.pvconst.VRBD) ^ (-self.pvconst.nRBD)
+        Icell = Igen - Idiode1 - Idiode2 - Ishunt * (1 + fRBD)
         Vcell = Vdiode - Icell * self.pvconst.Rs
         Pcell = Icell * Vcell
         return (Icell, Vcell, Pcell)
@@ -79,7 +83,7 @@ class PVmodule(object):
         for cell in range(self.numberCells):
             xp = np.flipud(self.Icell[:, cell])
             fp = np.flipud(self.Vcell[:, cell])
-            Vmod += np.interp(Imod, xp, fp)
+            Vmod += npinterpX(Imod, xp, fp)
         Pmod = Imod * Vmod
         return (Imod, Vmod, Pmod)
 
