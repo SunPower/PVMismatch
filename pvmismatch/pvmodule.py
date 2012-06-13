@@ -101,6 +101,24 @@ class PVmodule(object):
         Pmod = Imod * Vmod
         return (Imod, Vmod, Pmod)
 
+    def setSuns(self, Ee, cells=None):
+        if not cells:
+            if np.isscalar(Ee):
+                Ee = np.ones((1, self.numberCells)) * Ee
+            elif np.size(Ee, 1) != self.numberCells:
+                # TODO create exception class
+                print "Invalid number of cells!"
+                raise Exception
+            self.Ee
+        else:
+            if np.isscalar(Ee):
+                Ee = np.ones((1, self.numberCells)) * Ee
+            elif np.size(Ee, 1) != self.numberCells:
+                # TODO create exception class
+                print "Invalid number of cells!"
+                raise Exception
+            self.Ee
+
     def plotCell(self):
         """
         Plot cell I-V curves.
