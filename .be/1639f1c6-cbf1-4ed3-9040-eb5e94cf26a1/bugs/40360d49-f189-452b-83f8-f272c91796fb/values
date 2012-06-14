@@ -4,14 +4,14 @@ creator: Mark Mikofski <mark.mikofski@sunpowercorp.com>
 reporter: Mark Mikofski <mark.mikofski@sunpowercorp.com>
 
 
-severity: minor
+severity: critical
 
 
-status: closed
+status: open
 
 
-summary: add a set suns method to PVmodule
+summary: incorrect bypass diode function
 
 
-time: Mon, 11 Jun 2012 23:16:38 +0000
+time: Thu, 14 Jun 2012 07:16:50 +0000
 

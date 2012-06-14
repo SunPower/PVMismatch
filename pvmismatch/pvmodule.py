@@ -37,13 +37,28 @@ class PVmodule(object):
             # TODO create exception class
             print "Invalid cells per substring!"
             raise Exception
-        if np.isscalar(Ee):
-            Ee = np.ones((1, self.numberCells)) * Ee
-        elif np.size(Ee, 1) != self.numberCells:
-            # TODO create exception class
-            print "Invalid number of cells!"
-            raise Exception
-        self.Ee = Ee
+        self.setSuns(Ee)
+
+    def setSuns(self, Ee, cells=None):
+        if not cells:
+            if np.isscalar(Ee):
+                self.Ee = np.ones((1, self.numberCells)) * Ee
+            elif np.size(Ee) == self.numberCells:
+                self.Ee = np.reshape(Ee, (1, self.numberCells))
+            else:
+                # TODO create exception class
+                print "Input irradiance value (Ee) for each cell!"
+                raise Exception
+        else:
+            Nsuns = np.size(cells)
+            if np.isscalar(Ee):
+                self.Ee[0, cells] = np.ones((1, Nsuns)) * Ee
+            elif np.size(Ee) == Nsuns:
+                self.Ee[0, cells] = Ee
+            else:
+                # TODO create exception class
+                print "Invalid number of cells!"
+                raise Exception
         self.Voc = self.calcVoc()
         (self.Icell, self.Vcell, self.Pcell) = self.calcCell()
         (self.Imod, self.Vmod, self.Pmod) = self.calcMod()
@@ -100,24 +115,6 @@ class PVmodule(object):
         Vmod = np.sum(Vsubstr, 1).reshape(NPTS, 1)
         Pmod = Imod * Vmod
         return (Imod, Vmod, Pmod)
-
-    def setSuns(self, Ee, cells=None):
-        if not cells:
-            if np.isscalar(Ee):
-                Ee = np.ones((1, self.numberCells)) * Ee
-            elif np.size(Ee, 1) != self.numberCells:
-                # TODO create exception class
-                print "Invalid number of cells!"
-                raise Exception
-            self.Ee
-        else:
-            if np.isscalar(Ee):
-                Ee = np.ones((1, self.numberCells)) * Ee
-            elif np.size(Ee, 1) != self.numberCells:
-                # TODO create exception class
-                print "Invalid number of cells!"
-                raise Exception
-            self.Ee
 
     def plotCell(self):
         """
