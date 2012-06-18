@@ -1,3 +1,7 @@
 *.pyc
 .spyderproject
 .be/id-cache
+.project
+.pydevproject
+.settings/
+

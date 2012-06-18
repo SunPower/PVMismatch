@@ -7,7 +7,7 @@ reporter: Mark Mikofski <mark.mikofski@sunpowercorp.com>
 severity: critical
 
 
-status: open
+status: closed
 
 
 summary: incorrect bypass diode function

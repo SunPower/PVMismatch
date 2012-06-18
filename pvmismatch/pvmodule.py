@@ -40,7 +40,7 @@ class PVmodule(object):
         self.setSuns(Ee)
 
     def setSuns(self, Ee, cells=None):
-        if not cells:
+        if cells is None:
             if np.isscalar(Ee):
                 self.Ee = np.ones((1, self.numberCells)) * Ee
             elif np.size(Ee) == self.numberCells:
@@ -61,7 +61,7 @@ class PVmodule(object):
                 raise Exception
         self.Voc = self.calcVoc()
         (self.Icell, self.Vcell, self.Pcell) = self.calcCell()
-        (self.Imod, self.Vmod, self.Pmod) = self.calcMod()
+        (self.Imod, self.Vmod, self.Pmod, self.Vsubstr) = self.calcMod()
 
     def calcVoc(self):
         """
@@ -101,10 +101,9 @@ class PVmodule(object):
         Returns (Imod, Vmod, Pmod) : tuple of numpy.ndarray of float
         """
         Imod = self.pvconst.Isc0 * PTS
-        Vmod = np.zeros((NPTS, 1))
         Vsubstr = np.zeros((NPTS, 3))
         start = np.cumsum(self.subStrCells) - self.subStrCells
-        stop = np.cumsum(self.subStrCells) - 1
+        stop = np.cumsum(self.subStrCells)
         for substr in range(self.numSubStr):
             for cell in range(start[substr], stop[substr]):
                 xp = np.flipud(self.Icell[:, cell])
@@ -114,7 +113,7 @@ class PVmodule(object):
         Vsubstr[bypassed] = self.pvconst.Vbypass
         Vmod = np.sum(Vsubstr, 1).reshape(NPTS, 1)
         Pmod = Imod * Vmod
-        return (Imod, Vmod, Pmod)
+        return (Imod, Vmod, Pmod, Vsubstr)
 
     def plotCell(self):
         """
