@@ -52,7 +52,7 @@ class PVmodule(object):
         else:
             Nsuns = np.size(cells)
             if np.isscalar(Ee):
-                self.Ee[0, cells] = np.ones((1, Nsuns)) * Ee
+                self.Ee[0, cells] = np.ones(Nsuns) * Ee
             elif np.size(Ee) == Nsuns:
                 self.Ee[0, cells] = Ee
             else:
@@ -82,6 +82,9 @@ class PVmodule(object):
         Returns (Icell, Vcell, Pcell) : tuple of numpy.ndarray of float
         """
         Vdiode = self.Voc * PTS
+        VPTS = np.linspace(self.pvconst.VRBD, -1/NPTS, NPTS).reshape(NPTS, 1)  # pylint: disable=E1103
+        VPTS = VPTS.repeat(self.numberCells, axis=1)
+        Vdiode = np.concatenate((VPTS, Vdiode), axis=0)
         Igen = self.pvconst.Aph * self.pvconst.Isc0 * self.Ee
         Idiode1 = self.pvconst.Isat1 * (np.exp(self.pvconst.q * Vdiode
                   / self.pvconst.k / self.pvconst.T) - 1)
@@ -108,7 +111,9 @@ class PVmodule(object):
             for cell in range(start[substr], stop[substr]):
                 xp = np.flipud(self.Icell[:, cell])
                 fp = np.flipud(self.Vcell[:, cell])
-                Vsubstr[:, [substr]] += npinterpx(Imod, xp, fp)
+                fl = self.Voc[:, cell]
+                fr = self.pvconst.VRBD 
+                Vsubstr[:, [substr]] += np.interp(Imod, xp, fp, fl, fr)
         bypassed = Vsubstr < self.pvconst.Vbypass
         Vsubstr[bypassed] = self.pvconst.Vbypass
         Vmod = np.sum(Vsubstr, 1).reshape(NPTS, 1)
@@ -125,12 +130,16 @@ class PVmodule(object):
         plt.plot(self.Vcell, self.Icell)
         plt.title('Cell I-V Characteristics')
         plt.ylabel('Cell Current, I [A]')
+        plt.xlim(self.pvconst.VRBD, np.max(self.Voc))
+        plt.ylim(0, self.pvconst.Isc0+1)
         plt.grid()
         plt.subplot(2, 1, 2)
         plt.plot(self.Vcell, self.Pcell)
         plt.title('Cell P-V Characteristics')
         plt.xlabel('Cell Voltage, V [V]')
         plt.ylabel('Cell Power, P [W]')
+        plt.xlim(self.pvconst.VRBD, np.max(self.Voc))
+        plt.ylim(0, self.pvconst.Isc0+1)
         plt.grid()
         return cellPlot
 
@@ -144,6 +153,7 @@ class PVmodule(object):
         plt.plot(self.Vmod, self.Imod)
         plt.title('Module I-V Characteristics')
         plt.ylabel('Module Current, I [A]')
+        plt.ylim(ymax=self.pvconst.Isc0+1)
         plt.grid()
         plt.subplot(2, 1, 2)
         plt.plot(self.Vmod, self.Pmod)

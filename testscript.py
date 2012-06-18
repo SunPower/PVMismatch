@@ -10,7 +10,7 @@ from pvmismatch.pvmodule import PVmodule
 
 
 def test():
-    pvmod = PVmodule()
+    pvmod = PVmodule(numberCells=72)
     pvmod.setSuns(0.5, 0)
     return pvmod
 
