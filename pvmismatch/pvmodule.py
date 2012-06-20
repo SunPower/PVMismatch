@@ -111,9 +111,10 @@ class PVmodule(object):
             for cell in range(start[substr], stop[substr]):
                 xp = np.flipud(self.Icell[:, cell])
                 fp = np.flipud(self.Vcell[:, cell])
-                fl = self.Voc[:, cell]
-                fr = self.pvconst.VRBD 
-                Vsubstr[:, [substr]] += np.interp(Imod, xp, fp, fl, fr)
+                #fl = self.Voc[:, cell]
+                #fr = self.pvconst.VRBD
+                #Vsubstr[:, [substr]] += np.interp(Imod, xp, fp, fl, fr)
+                Vsubstr[:, [substr]] += npinterpx(Imod, xp, fp)
         bypassed = Vsubstr < self.pvconst.Vbypass
         Vsubstr[bypassed] = self.pvconst.Vbypass
         Vmod = np.sum(Vsubstr, 1).reshape(NPTS, 1)
@@ -126,20 +127,35 @@ class PVmodule(object):
         Returns cellPlot : matplotlib.pyplot figure
         """
         cellPlot = plt.figure()
-        plt.subplot(2, 1, 1)
+        plt.subplot(2, 2, 1)
         plt.plot(self.Vcell, self.Icell)
-        plt.title('Cell I-V Characteristics')
+        plt.title('Cell Reverse I-V Characteristics')
         plt.ylabel('Cell Current, I [A]')
-        plt.xlim(self.pvconst.VRBD, np.max(self.Voc))
+        plt.xlim(self.pvconst.VRBD-1, 0)
+        plt.ylim(0, self.pvconst.Isc0+10)
+        plt.grid()
+        plt.subplot(2, 2, 2)
+        plt.plot(self.Vcell, self.Icell)
+        plt.title('Cell Forward I-V Characteristics')
+        plt.ylabel('Cell Current, I [A]')
+        plt.xlim(0, np.max(self.Voc))
         plt.ylim(0, self.pvconst.Isc0+1)
         plt.grid()
-        plt.subplot(2, 1, 2)
+        plt.subplot(2, 2, 3)
         plt.plot(self.Vcell, self.Pcell)
-        plt.title('Cell P-V Characteristics')
+        plt.title('Cell Reverse P-V Characteristics')
         plt.xlabel('Cell Voltage, V [V]')
         plt.ylabel('Cell Power, P [W]')
-        plt.xlim(self.pvconst.VRBD, np.max(self.Voc))
-        plt.ylim(0, self.pvconst.Isc0+1)
+        plt.xlim(self.pvconst.VRBD-1, 0)
+        plt.ylim((self.pvconst.Isc0+10) * (self.pvconst.VRBD-1), -1)
+        plt.grid()
+        plt.subplot(2, 2, 4)
+        plt.plot(self.Vcell, self.Pcell)
+        plt.title('Cell Forward P-V Characteristics')
+        plt.xlabel('Cell Voltage, V [V]')
+        plt.ylabel('Cell Power, P [W]')
+        plt.xlim(0, np.max(self.Voc))
+        plt.ylim(0, (self.pvconst.Isc0+1) * np.max(self.Voc))
         plt.grid()
         return cellPlot
 
