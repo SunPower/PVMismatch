@@ -6,13 +6,16 @@ Created on Thu Jun 07 09:44:08 2012
 )
 """
 
-from pvmismatch.pvmodule import PVmodule
+#from pvmismatch.pvmodule import PVmodule
+from pvmismatch.pvstring import PVstring
 
 
 def test():
-    pvmod = PVmodule(numberCells=72)
-    pvmod.setSuns(0.5, 0)
-    return pvmod
+    pvstr = PVstring()
+    return pvstr
+    #pvmod = PVmodule(numberCells=72)
+    #pvmod.setSuns(0.5, 0)
+    #return pvmod
 
 
 if __name__ == "__main__":

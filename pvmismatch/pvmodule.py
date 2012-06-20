@@ -28,15 +28,11 @@ class PVmodule(object):
         self.pvconst = pvconst
         self.numberCells = numberCells
         if numberCells not in NUMBERCELLS:
-            # TODO create exception class
-            print "Invalid number of cells!"
-            raise Exception
+            raise Exception("Invalid number of cells!")
         self.subStrCells = SUBSTRCELLS[NUMBERCELLS.index(self.numberCells)]
         self.numSubStr = len(self.subStrCells)
         if sum(self.subStrCells) != self.numberCells:
-            # TODO create exception class
-            print "Invalid cells per substring!"
-            raise Exception
+            raise Exception("Invalid cells per substring!")
         self.setSuns(Ee)
 
     def setSuns(self, Ee, cells=None):
@@ -46,9 +42,7 @@ class PVmodule(object):
             elif np.size(Ee) == self.numberCells:
                 self.Ee = np.reshape(Ee, (1, self.numberCells))
             else:
-                # TODO create exception class
-                print "Input irradiance value (Ee) for each cell!"
-                raise Exception
+                raise Exception("Input irradiance value (Ee) for each cell!")
         else:
             Nsuns = np.size(cells)
             if np.isscalar(Ee):
@@ -56,9 +50,7 @@ class PVmodule(object):
             elif np.size(Ee) == Nsuns:
                 self.Ee[0, cells] = Ee
             else:
-                # TODO create exception class
-                print "Invalid number of cells!"
-                raise Exception
+                raise Exception("Input irradiance value (Ee) for each cell!")
         self.Voc = self.calcVoc()
         (self.Icell, self.Vcell, self.Pcell) = self.calcCell()
         (self.Imod, self.Vmod, self.Pmod, self.Vsubstr) = self.calcMod()
@@ -111,9 +103,6 @@ class PVmodule(object):
             for cell in range(start[substr], stop[substr]):
                 xp = np.flipud(self.Icell[:, cell])
                 fp = np.flipud(self.Vcell[:, cell])
-                #fl = self.Voc[:, cell]
-                #fr = self.pvconst.VRBD
-                #Vsubstr[:, [substr]] += np.interp(Imod, xp, fp, fl, fr)
                 Vsubstr[:, [substr]] += npinterpx(Imod, xp, fp)
         bypassed = Vsubstr < self.pvconst.Vbypass
         Vsubstr[bypassed] = self.pvconst.Vbypass
