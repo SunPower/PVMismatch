@@ -58,10 +58,10 @@ class PVstring(object):
         """
         strPlot = plt.figure()
         plt.subplot(2, 1, 1)
-        plt.plot(self.Vmod, self.Imod)
+        plt.plot(self.Vstring, self.Istring)
         plt.title('String I-V Characteristics')
         plt.ylabel('String Current, I [A]')
-        plt.ylim(ymax=self.pvconst.Isc0+1)
+        plt.ylim(ymax=self.pvconst.Isc0 + 1)
         plt.grid()
         plt.subplot(2, 1, 2)
         plt.plot(self.Vstring, self.Pstring)
