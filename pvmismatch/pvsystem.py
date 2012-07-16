@@ -1,36 +1,37 @@
 # -*- coding: utf-8 -*-
 """
-Created on Mon Jun 11 14:07:12 2012
+Created on Jul 16, 2012
 
 @author: mmikofski
 """
 
 import numpy as np
 from pvconstants import PVconstants, npinterpx
-from pvmodule import PVmodule, PTS, NPTS
+from pvmodule import PTS, NPTS
+from pvstring import PVstring
 from matplotlib import pyplot as plt
 
-_numberMods = 10  # default number of modules
+_numberStrs = 10  # default number of strings
 
 
-class PVstring(object):
+class PVsystem(object):
     """
-    PVstring - A class for PV strings.
+    PVsystem - A class for PV systems.
     """
 
-    def __init__(self, pvconst=PVconstants(), numberMods=_numberMods,
-                 pvmods=None):
+    def __init__(self, pvconst=PVconstants(), numberStrs=_numberStrs,
+                 pvstrs=None):
         """
         Constructor
         """
         self.pvconst = pvconst
-        self.numberMods = numberMods
-        if pvmods is None:
-            self.pvmods = [PVmodule(pvconst=self.pvconst)] * self.numberMods
-        elif (type(pvmods) is list) & (len(pvmods) == self.numberMods):
-            self.pvmods = pvmods
+        self.numberStrs = numberStrs
+        if pvstrs is None:
+            self.pvstrs = [PVstring(pvconst=self.pvconst)] * self.numberStrs
+        elif (type(pvstrs) is list) & (len(pvstrs) == self.numberStrs):
+            self.pvstrs = pvstrs
         else:
-            raise Exception("Invalid modules list!")
+            raise Exception("Invalid strings list!")
         (self.Istring, self.Vstring, self.Pstring) = self.calcString()
 
     def calcString(self):
@@ -40,9 +41,9 @@ class PVstring(object):
         """
         Istring = self.pvconst.Isc0 * PTS
         Vstring = np.zeros((NPTS, 1))
-        for mod in range(self.numberMods):
-            xp = self.pvmods[mod].Imod.reshape(NPTS)
-            fp = self.pvmods[mod].Vmod.reshape(NPTS)
+        for mod in range(self.numberStrs):
+            xp = self.pvstrs[mod].Imod.reshape(NPTS)
+            fp = self.pvstrs[mod].Vmod.reshape(NPTS)
             Vstring += npinterpx(Istring, xp, fp)
         Pstring = Istring * Vstring
         return (Istring, Vstring, Pstring)

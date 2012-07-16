@@ -74,7 +74,7 @@ class PVmodule(object):
         Returns (Icell, Vcell, Pcell) : tuple of numpy.ndarray of float
         """
         Vdiode = self.Voc * PTS
-        VPTS = np.linspace(self.pvconst.VRBD, -1/NPTS, NPTS).reshape(NPTS, 1)  # pylint: disable=E1103
+        VPTS = np.linspace(self.pvconst.VRBD, -1 / NPTS, NPTS).reshape(NPTS, 1)  # pylint: disable=E1103
         VPTS = VPTS.repeat(self.numberCells, axis=1)
         Vdiode = np.concatenate((VPTS, Vdiode), axis=0)
         Igen = self.pvconst.Aph * self.pvconst.Isc0 * self.Ee
@@ -120,23 +120,23 @@ class PVmodule(object):
         plt.plot(self.Vcell, self.Icell)
         plt.title('Cell Reverse I-V Characteristics')
         plt.ylabel('Cell Current, I [A]')
-        plt.xlim(self.pvconst.VRBD-1, 0)
-        plt.ylim(0, self.pvconst.Isc0+10)
+        plt.xlim(self.pvconst.VRBD - 1, 0)
+        plt.ylim(0, self.pvconst.Isc0 + 10)
         plt.grid()
         plt.subplot(2, 2, 2)
         plt.plot(self.Vcell, self.Icell)
         plt.title('Cell Forward I-V Characteristics')
         plt.ylabel('Cell Current, I [A]')
         plt.xlim(0, np.max(self.Voc))
-        plt.ylim(0, self.pvconst.Isc0+1)
+        plt.ylim(0, self.pvconst.Isc0 + 1)
         plt.grid()
         plt.subplot(2, 2, 3)
         plt.plot(self.Vcell, self.Pcell)
         plt.title('Cell Reverse P-V Characteristics')
         plt.xlabel('Cell Voltage, V [V]')
         plt.ylabel('Cell Power, P [W]')
-        plt.xlim(self.pvconst.VRBD-1, 0)
-        plt.ylim((self.pvconst.Isc0+10) * (self.pvconst.VRBD-1), -1)
+        plt.xlim(self.pvconst.VRBD - 1, 0)
+        plt.ylim((self.pvconst.Isc0 + 10) * (self.pvconst.VRBD - 1), -1)
         plt.grid()
         plt.subplot(2, 2, 4)
         plt.plot(self.Vcell, self.Pcell)
@@ -144,7 +144,7 @@ class PVmodule(object):
         plt.xlabel('Cell Voltage, V [V]')
         plt.ylabel('Cell Power, P [W]')
         plt.xlim(0, np.max(self.Voc))
-        plt.ylim(0, (self.pvconst.Isc0+1) * np.max(self.Voc))
+        plt.ylim(0, (self.pvconst.Isc0 + 1) * np.max(self.Voc))
         plt.grid()
         return cellPlot
 
@@ -158,7 +158,7 @@ class PVmodule(object):
         plt.plot(self.Vmod, self.Imod)
         plt.title('Module I-V Characteristics')
         plt.ylabel('Module Current, I [A]')
-        plt.ylim(ymax=self.pvconst.Isc0+1)
+        plt.ylim(ymax=self.pvconst.Isc0 + 1)
         plt.grid()
         plt.subplot(2, 1, 2)
         plt.plot(self.Vmod, self.Pmod)
