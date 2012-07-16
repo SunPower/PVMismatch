@@ -23,11 +23,13 @@ class PVstring(object):
         """
         Constructor
         """
+        # TODO: use pvmods to determine numberMods OR input arg
+        # pylint: disable=W0511
         self.pvconst = pvconst
         self.numberMods = numberMods
         if pvmods is None:
             self.pvmods = [PVmodule(pvconst=self.pvconst)] * self.numberMods
-        elif (type(pvmods) is list) & (len(pvmods) == self.numberMods):
+        elif (type(pvmods) is list) and (len(pvmods) == self.numberMods):
             self.pvmods = pvmods
         else:
             raise Exception("Invalid modules list!")

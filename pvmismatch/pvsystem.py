@@ -28,42 +28,47 @@ class PVsystem(object):
         self.numberStrs = numberStrs
         if pvstrs is None:
             self.pvstrs = [PVstring(pvconst=self.pvconst)] * self.numberStrs
-        elif (type(pvstrs) is list) & (len(pvstrs) == self.numberStrs):
+        elif ((type(pvstrs) is list) and
+              all([type(pvstr) is PVstring for pvstr in pvstrs])):
+            self.numberStrs = len(pvstrs)
             self.pvstrs = pvstrs
         else:
             raise Exception("Invalid strings list!")
-        (self.Istring, self.Vstring, self.Pstring) = self.calcString()
+        (self.Isys, self.Vsys, self.Psys) = self.calcSystem()
 
-    def calcString(self):
+    def calcSystem(self):
         """
-        Calculate string I-V curves.
-        Returns (Istring, Vstring, Pstring) : tuple of numpy.ndarray of float
+        Calculate system I-V curves.
+        Returns (Isys, Vsys, Psys) : tuple of numpy.ndarray of float
         """
-        Istring = self.pvconst.Isc0 * PTS
-        Vstring = np.zeros((NPTS, 1))
-        for mod in range(self.numberStrs):
-            xp = self.pvstrs[mod].Imod.reshape(NPTS)
-            fp = self.pvstrs[mod].Vmod.reshape(NPTS)
-            Vstring += npinterpx(Istring, xp, fp)
-        Pstring = Istring * Vstring
-        return (Istring, Vstring, Pstring)
+        Isys = np.zeros((NPTS, 1))
+        Vstring = np.array([pvstr.Vstring for pvstr in self.pvstrs]
+                           ).reshape(NPTS, self.numberStrs
+                                     )  # pylint: disable=E1103
+        Vsys = np.max(Vstring, 1) * PTS
+        for pvstr in range(self.numberStrs):
+            fp = self.pvstrs[pvstr].Vstring.reshape(NPTS)
+            xp = self.pvstrs[pvstr].Istring.reshape(NPTS)
+            Isys += npinterpx(Vsys[pvstr].reshape(NPTS), xp, fp)
+        Psys = Isys * Vsys
+        return (Isys, Vsys, Psys)
 
-    def plotStr(self):
+    def plotSys(self):
         """
-        Plot string I-V curves.
-        Returns strPlot : matplotlib.pyplot figure
+        Plot system I-V curves.
+        Returns sysPlot : matplotlib.pyplot figure
         """
-        strPlot = plt.figure()
+        sysPlot = plt.figure()
         plt.subplot(2, 1, 1)
-        plt.plot(self.Vstring, self.Istring)
-        plt.title('String I-V Characteristics')
-        plt.ylabel('String Current, I [A]')
+        plt.plot(self.Vsys, self.Isys)
+        plt.title('System I-V Characteristics')
+        plt.ylabel('System Current, I [A]')
         plt.ylim(ymax=self.pvconst.Isc0 + 1)
         plt.grid()
         plt.subplot(2, 1, 2)
-        plt.plot(self.Vstring, self.Pstring)
-        plt.title('String P-V Characteristics')
-        plt.xlabel('String Voltage, V [V]')
-        plt.ylabel('String Power, P [W]')
+        plt.plot(self.Vsys, self.Psys)
+        plt.title('System P-V Characteristics')
+        plt.xlabel('System Voltage, V [V]')
+        plt.ylabel('System Power, P [W]')
         plt.grid()
-        return strPlot
+        return sysPlot

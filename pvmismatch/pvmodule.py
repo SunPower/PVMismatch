@@ -74,7 +74,8 @@ class PVmodule(object):
         Returns (Icell, Vcell, Pcell) : tuple of numpy.ndarray of float
         """
         Vdiode = self.Voc * PTS
-        VPTS = np.linspace(self.pvconst.VRBD, -1 / NPTS, NPTS).reshape(NPTS, 1)  # pylint: disable=E1103
+        VPTS = np.linspace(  # pylint: disable=E1103
+                           self.pvconst.VRBD, -1 / NPTS, NPTS).reshape(NPTS, 1)
         VPTS = VPTS.repeat(self.numberCells, axis=1)
         Vdiode = np.concatenate((VPTS, Vdiode), axis=0)
         Igen = self.pvconst.Aph * self.pvconst.Isc0 * self.Ee
