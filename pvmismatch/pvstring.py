@@ -30,7 +30,8 @@ class PVstring(object):
         if pvmods is None:
             self.pvmods = []  # empty list
             for pvmod in range(self.numberMods):
-                self.pvmods.append(PVmodule(pvconst=self.pvconst))
+                self.pvmods[pvmod:] = [PVmodule(pvconst=self.pvconst)]
+                # this is one cool way to append without list.append
         elif (type(pvmods) is list) & (len(pvmods) == self.numberMods):
             self.pvmods = pvmods
         else:
