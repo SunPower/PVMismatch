@@ -29,11 +29,10 @@ class PVstring(object):
         self.pvconst = pvconst
         self.numberMods = numberMods
         if pvmods is None:
-            self.pvmods = [PVmodule(pvconst=self.pvconst)] * self.numberMods
-            self.pvmods[1:] = [copy.copy(pvmod) for pvmod in self.pvmods[1:]]
-            # NOTE: Do not use `itertools.repeat(e, n)` or `[e]  * n` because
-            #       the copies all point to the same object. Use shallow copy
-            #       to create new objects.
+            self.pvmods = [PVmodule(pvconst=self.pvconst)
+                           for pvmod in range(self.numberMods)]
+            # Don't use `itertools.repeat(e, n)` or `[e]  * n` because copies
+            # all point to the same object.
         elif (type(pvmods) is list) and (len(pvmods) == self.numberMods):
             self.pvmods = pvmods
         else:

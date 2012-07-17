@@ -12,6 +12,7 @@ from pvmismatch.pvsystem import PVsystem
 import os
 import random
 import shutil
+import numpy as np
 
 
 def testPV():
@@ -31,8 +32,10 @@ if __name__ == "__main__":
     os.mkdir(testPVdir)
     print "Creating PVsystem"
     pvsys = testPV()
+    Pmp0 = np.max(pvsys.Psys)
+    print "max power is {0}[W]".format(Pmp0)
     (cell, mod, string) = (0, 0, 0)
-    for testNum in range(5):
+    for testNum in range(10):
         # cell test
         print "Plot IV curve for cells in",
         print "module #{0}, string #{1}".format(mod + 1, string + 1)
@@ -71,8 +74,11 @@ if __name__ == "__main__":
         pvsys.pvstrs[string].pvmods[mod].setSuns(suns, cell)
         print
         print "... update calculations ..."
-        print
         (pvsys.Isys, pvsys.Vsys, pvsys.Psys) = pvsys.calcSystem()
+        # max power
+        Pmp = np.max(pvsys.Psys)
+        print "{0}% max power degradation".format(Pmp / Pmp0)
+        print
 
     print "Test complete."
     os.startfile(figname)

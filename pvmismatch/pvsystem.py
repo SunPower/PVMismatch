@@ -28,11 +28,10 @@ class PVsystem(object):
         self.pvconst = pvconst
         self.numberStrs = numberStrs
         if pvstrs is None:
-            self.pvstrs = [PVstring(pvconst=self.pvconst)] * self.numberStrs
-            self.pvstrs[1:] = [copy.copy(pvstr) for pvstr in self.pvstrs[1:]]
-            # NOTE: Do not use `itertools.repeat(e, n)` or `[e]  * n` because
-            #       the copies all point to the same object. Use shallow copy
-            #       to create new objects.
+            self.pvstrs = [PVstring(pvconst=self.pvconst)
+                           for pvstr in range(self.numberStrs)]
+            # Don't use `itertools.repeat(e, n)` or `[e]  * n` because copies
+            # all point to the same object.
         elif ((type(pvstrs) is list) and
               all([type(pvstr) is PVstring for pvstr in pvstrs])):
             self.numberStrs = len(pvstrs)
