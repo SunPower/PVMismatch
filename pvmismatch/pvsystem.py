@@ -10,6 +10,7 @@ from pvconstants import PVconstants, npinterpx
 from pvmodule import PTS, NPTS
 from pvstring import PVstring
 from matplotlib import pyplot as plt
+import copy
 
 _numberStrs = 10  # default number of strings
 
@@ -28,6 +29,10 @@ class PVsystem(object):
         self.numberStrs = numberStrs
         if pvstrs is None:
             self.pvstrs = [PVstring(pvconst=self.pvconst)] * self.numberStrs
+            self.pvstrs[1:] = [copy.copy(pvstr) for pvstr in self.pvstrs[1:]]
+            # NOTE: Do not use `itertools.repeat(e, n)` or `[e]  * n` because
+            #       the copies all point to the same object. Use shallow copy
+            #       to create new objects.
         elif ((type(pvstrs) is list) and
               all([type(pvstr) is PVstring for pvstr in pvstrs])):
             self.numberStrs = len(pvstrs)
