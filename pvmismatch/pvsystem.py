@@ -42,14 +42,12 @@ class PVsystem(object):
         Returns (Isys, Vsys, Psys) : tuple of numpy.ndarray of float
         """
         Isys = np.zeros((NPTS, 1))
-        Vstring = np.array([pvstr.Vstring for pvstr in self.pvstrs]
-                           ).reshape(NPTS, self.numberStrs
-                                     )  # pylint: disable=E1103
-        Vsys = np.max(Vstring, 1) * PTS
+        Vstring = np.array([pvstr.Vstring for pvstr in self.pvstrs])
+        Vsys = np.max(Vstring) * PTS
         for pvstr in range(self.numberStrs):
-            fp = self.pvstrs[pvstr].Vstring.reshape(NPTS)
-            xp = self.pvstrs[pvstr].Istring.reshape(NPTS)
-            Isys += npinterpx(Vsys[pvstr].reshape(NPTS), xp, fp)
+            xp = np.flipud(self.pvstrs[pvstr].Vstring.reshape(NPTS))
+            fp = np.flipud(self.pvstrs[pvstr].Istring.reshape(NPTS))
+            Isys += npinterpx(Vsys, xp, fp)
         Psys = Isys * Vsys
         return (Isys, Vsys, Psys)
 
@@ -63,7 +61,6 @@ class PVsystem(object):
         plt.plot(self.Vsys, self.Isys)
         plt.title('System I-V Characteristics')
         plt.ylabel('System Current, I [A]')
-        plt.ylim(ymax=self.pvconst.Isc0 + 1)
         plt.grid()
         plt.subplot(2, 1, 2)
         plt.plot(self.Vsys, self.Psys)

@@ -14,10 +14,11 @@ from pvmismatch.pvsystem import PVsystem
 def test():
     pvsys = PVsystem()
     return pvsys
-    #pvmod = PVmodule(numberCells=72)
-    #pvmod.setSuns(0.5, 0)
-    #return pvmod
 
 
 if __name__ == "__main__":
-    test()
+    pvsys = test()
+    pvsys.plotSys().show()
+    pvsys.pvstrs[0].pvmods[0].setSuns(0.5, 0)
+    pvsys.plotSys().show()
+    pass
