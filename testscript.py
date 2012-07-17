@@ -73,6 +73,6 @@ if __name__ == "__main__":
         print "... update calculations ..."
         print
         (pvsys.Isys, pvsys.Vsys, pvsys.Psys) = pvsys.calcSystem()
-    
+
     print "Test complete."
     os.startfile(figname)
