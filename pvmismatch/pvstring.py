@@ -42,9 +42,9 @@ class PVstring(object):
         """
         Istring = self.pvconst.Isc0 * PTS
         Vstring = np.zeros((NPTS, 1))
-        for mod in range(self.numberMods):
-            xp = self.pvmods[mod].Imod.reshape(NPTS)
-            fp = self.pvmods[mod].Vmod.reshape(NPTS)
+        for mod in self.pvmods:
+            xp = mod.Imod.reshape(NPTS)
+            fp = mod.Vmod.reshape(NPTS)
             Vstring += npinterpx(Istring, xp, fp)
         Pstring = Istring * Vstring
         return (Istring, Vstring, Pstring)

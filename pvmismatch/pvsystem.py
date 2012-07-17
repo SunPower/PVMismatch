@@ -44,9 +44,10 @@ class PVsystem(object):
         Isys = np.zeros((NPTS, 1))
         Vstring = np.array([pvstr.Vstring for pvstr in self.pvstrs])
         Vsys = np.max(Vstring) * PTS
-        for pvstr in range(self.numberStrs):
-            xp = np.flipud(self.pvstrs[pvstr].Vstring.reshape(NPTS))
-            fp = np.flipud(self.pvstrs[pvstr].Istring.reshape(NPTS))
+        for pvstr in self.pvstrs:
+            (pvstr.Istring, pvstr.Vstring, pvstr.Pstring) = pvstr.calcString()
+            xp = np.flipud(pvstr.Vstring.reshape(NPTS))
+            fp = np.flipud(pvstr.Istring.reshape(NPTS))
             Isys += npinterpx(Vsys, xp, fp)
         Psys = Isys * Vsys
         return (Isys, Vsys, Psys)
