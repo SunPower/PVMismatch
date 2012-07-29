@@ -5,4 +5,4 @@ Created on Wed May 30 11:53:52 2012
 @author: mmikofski
 """
 
-__all__ = ['pvconstants', 'pvmodule', 'pvstring', 'pvsystem']
+__all__ = ['pvconstants_tk', 'pvmodule_tk', 'pvstring_tk', 'pvsystem_tk']
