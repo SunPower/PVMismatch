@@ -9,7 +9,6 @@ import numpy as np
 from pvconstants import PVconstants, npinterpx
 from pvmodule import PVmodule, PTS, NPTS
 from matplotlib import pyplot as plt
-import copy
 
 _numberMods = 10  # default number of modules
 

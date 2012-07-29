@@ -10,7 +10,6 @@ from pvconstants import PVconstants, npinterpx
 from pvmodule import PTS, NPTS
 from pvstring import PVstring
 from matplotlib import pyplot as plt
-import copy
 
 _numberStrs = 10  # default number of strings
 
