@@ -25,7 +25,8 @@ class PVapplicaton(Frame):
         Constructor
         """
         Frame.__init__(self, master)
-        self.pack()
+        self.pack(expand=True)  # if user resizes, expand Frame
+        self.pack(fill='both')
 
         self['bg'] = 'black'  # set black background
         self['padx'] = '15'  # pad sides with 15 points
