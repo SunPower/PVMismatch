@@ -21,6 +21,8 @@ class PVstring_tk(Frame):
         Frame.__init__(self, top)
         self.pack(expand=True)  # if user resizes, expand Frame
         self.pack(fill='both')
+        self.focus_set()  # get the focus
+        self.grab_set()  # make this window modal
 
         self['bg'] = 'black'  # set black background
         self['padx'] = '15'  # pad sides with 15 points
