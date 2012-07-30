@@ -13,9 +13,9 @@ class PVmodule_tk(Frame):
     classdocs
     """
 
-    def __init__(self, master):
+    def __init__(self, master=None):
         """
         Constructor
         """
-        Frame.__init__(self, master=None)
+        Frame.__init__(self, master)
         

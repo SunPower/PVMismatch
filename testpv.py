@@ -83,4 +83,4 @@ if __name__ == "__main__":
 
     print "Test complete."
     if sys.platform is 'win32':
-        os.startfile(figname)  # pylint: disable=E1101 #@UndefinedVariable
+        os.startfile(figname)  # @UndefinedVariable # pylint: disable=E1101
