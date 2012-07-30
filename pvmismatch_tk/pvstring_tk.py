@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 """
-Created on Jul 28, 2012
+Created on Jul 30, 2012
 
-@author: marko
+@author: mmikofski
 """
 
 from Tkinter import Frame, Label, Button
 
 
-class PVsystem_tk(Frame):
+class PVstring_tk(Frame):
     """
     classdocs
     """
@@ -25,7 +25,7 @@ class PVsystem_tk(Frame):
         self['bg'] = 'black'  # set black background
         self['padx'] = '15'  # pad sides with 15 points
         self['pady'] = '5'  # pad top/bottom 5 points
-        self.master.title('PVsystem')  # set title bar
+        self.master.title('PVstring')  # set title bar
         self.SPlogoLabel = Label(self, image=self.pvapp.SPlogo,
                                  cnf={'borderwidth': '0'})
         self.SPlogoLabel.pack({'side': 'top'})
