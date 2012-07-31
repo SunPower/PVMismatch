@@ -34,12 +34,12 @@ class PVapplicaton(Frame):
         Constructor
         """
         Frame.__init__(self, master)
-        self._name = 'pvapplication'  # set name of frame widget
+        self._name = 'pvApplication'  # set name of frame widget
         master.resizable(True, False)  # only resize width
         master.minsize(562, 1)
         master.title(PVAPP_TXT)  # set title bar of master (a.k.a. root)
         # set black background, pad sides with 15 points, top/bottom 5 points
-        self.config(bg='black', padx='5', pady='5')
+        self.config(bg='black', padx=5, pady=5)
         # fill=BOTH fills in padding with background color
         # w/o fill=BOTH padding is default color
         # side=TOP is the default
@@ -53,7 +53,7 @@ class PVapplicaton(Frame):
         # anchor=W aligns photoimage on left side, NW is no different
         # padding is ignored by images, use borderwidth
         self.SPlogoLabel = Label(self, name='spLogoLabel', image=self.SPlogo,
-                                 borderwidth='5', anchor=W, bg='black')
+                                 borderwidth=5, bg='black', anchor=W)
         # fill=BOTH expands the photoimage to fill parent frame
         # w/o fill=BOTH photoimage is centered in frame even with anchor=W
         self.SPlogoLabel.pack(fill=BOTH)
@@ -65,81 +65,88 @@ class PVapplicaton(Frame):
         #   show on black background
         # default aspect is 150%, about as wide as high, or set width>0
         self.introMsg = Message(self, name='introMsg', text=introtext,
-                                anchor=W, bg='black', fg='white', width='2000')
+                                width=2000, bg='black', fg='white', anchor=W)
         # fill=BOTH expands the message to fill parent frame
         # w/o fill=BOTH message is centered in frame even with anchor=W
         self.introMsg.pack(fill=BOTH)
 
         # PVsystem frame
-        pvsysframe = self.PVsystemFrame = Frame(master, name='pvsysframe')
+        pvSysFrame = self.PVsystemFrame = Frame(master, name='pvSysFrame')
         # fill=BOTH keeps widgets in frame on left when window is resized
-        pvsysframe.pack(fill=BOTH)
+        pvSysFrame.pack(fill=BOTH)
         # number of strings integer variable
         numStr = self.numberStrings = IntVar(self)
         numStr.set(10)  # default
-        # number of strings scale (slider)
-        scaleCnf = {'name': 'pvsystemscale', 'from_': 1, 'to': MAX_STRINGS,
-                    'orient': HORIZONTAL, 'variable': numStr,
-                    'label': 'Number of Strings', 'length': 500}
-        self.PVsystemScale = Scale(pvsysframe, cnf=scaleCnf)
-        self.PVsystemScale.pack(side=LEFT, fill=BOTH, expand=True)
+        # number of strings label
+        labelCnf = {'name': 'numStrLabel', 'text': 'Number of Strings'}
+        self.numberStringsLabel = Label(pvSysFrame, cnf=labelCnf)
+        self.numberStringsLabel.pack(side=LEFT)
+        # number of strings spinbox
+        spinboxCnf = {'name': 'numStrSpinbox', 'from_': 1, 'to': MAX_STRINGS,
+                      'textvariable': numStr, 'width': 5}
+        self.numberStringsSpinbox = Spinbox(pvSysFrame, cnf=spinboxCnf)
+        self.numberStringsSpinbox.pack(side=LEFT)
         # PVsystem button
-        self.PVsystemButton = Button(pvsysframe, text=PVSYSTEM_TEXT, height=2)
+        self.PVsystemButton = Button(pvSysFrame, name='pvsysButton',
+                                     text=PVSYSTEM_TEXT)
         self.PVsystemButton.pack(side=LEFT)
         self.PVsystemButton['command'] = self.startPVsystem_tk
 
         self.separatorLine()  # separator
 
         # PVstring frame
-        pvstrframe = self.PVstringFrame = Frame(master, name='pvstrframe')
-        pvstrframe.pack(fill=BOTH)
+        pvStrFrame = self.PVstringFrame = Frame(master, name='pvStrFrame')
+        pvStrFrame.pack(fill=BOTH)
         # number of modules integer variable
         numMod = self.numberModules = IntVar(self)
         numMod.set(10)  # default
-        # number of strings scale (slider)
-        scaleCnf = {'from_': 1, 'to': MAX_MODULES, 'orient': HORIZONTAL,
-                     'variable': numMod, 'label': 'Number of Modules',
-                     'length': '100'}
-        self.PVstringScale = Scale(pvstrframe, cnf=scaleCnf)
-        self.PVstringScale.pack(side=LEFT)
+        # number of modules label
+        labelCnf = {'name': 'numModLabel', 'text': 'Number of Modules'}
+        self.numberModulesLabel = Label(pvStrFrame, cnf=labelCnf)
+        self.numberModulesLabel.pack(side=LEFT)
+        # number of modules spinbox
+        spinboxCnf = {'name': 'numModSpinbox', 'from_': 1, 'to': MAX_MODULES,
+                      'textvariable': numMod, 'width': 5}
+        self.numberModulesSpinbox = Spinbox(pvStrFrame, cnf=spinboxCnf)
+        self.numberModulesSpinbox.pack(side=LEFT)
         # module ID # integer variable
         modID = self.moduleID = IntVar(self)
         modID.set(1)
         # module ID # label
-        self.modIDLabel = Label(pvstrframe, text='Module ID #')
+        self.modIDLabel = Label(pvStrFrame, text='Module ID #')
         self.modIDLabel.pack(side=LEFT)
         # module ID # spinbox
-        spinboxCnf = {'from_': 1, 'to': 10,
-                      'textvariable': str(modID)}
-        self.modIDspinbox = Spinbox(pvstrframe, cnf=spinboxCnf)
+        spinboxCnf = {'from_': 1, 'to': numMod.get(),
+                      'textvariable': modID, 'width': 5}
+        self.modIDspinbox = Spinbox(pvStrFrame, cnf=spinboxCnf)
         self.modIDspinbox.pack(side=LEFT)
         # PVmodule button
-        self.PVstringButton = Button(pvstrframe, cnf={'text': PVSTRING_TEXT})
+        self.PVstringButton = Button(pvStrFrame, cnf={'text': PVSTRING_TEXT})
         self.PVstringButton.pack(side=LEFT)
         self.PVstringButton['command'] = self.startPVstring_tk
 
         self.separatorLine()  # separator
 
         ## PVmodule frame
-        pvmodframe = self.PVmoduleFrame = Frame(master)
-        pvmodframe.pack(fill=BOTH)
+        pvModFrame = self.PVmoduleFrame = Frame(master)
+        pvModFrame.pack(fill=BOTH)
         # number of cells integer variable
         numCells = self.numberCells = IntVar(self)  # bind numberCells
         numCells.set(MOD_SIZES[0])  # default value
         # number of cells option menu
-        self.numberCellsOption = OptionMenu(pvmodframe, numCells, *MOD_SIZES)
+        self.numberCellsOption = OptionMenu(pvModFrame, numCells, *MOD_SIZES)
         self.numberCellsOption.pack(side=LEFT)
         # cell ID # label
-        self.cellIDlabel = Label(pvmodframe, text='Cell ID #')
+        self.cellIDlabel = Label(pvModFrame, text='Cell ID #')
         self.cellIDlabel.pack(side=LEFT)
         # cell ID # spinbox
         cellID = self.cellID = StringVar(self)  # bind moduleID
         self.cellID.set(1)
         spinboxCnf = {'from_': 1, 'to': 72,
-                      'textvariable': str(cellID)}
-        self.cellIDspinbox = Spinbox(pvmodframe, cnf=spinboxCnf)
+                      'textvariable': cellID, 'width': 5}
+        self.cellIDspinbox = Spinbox(pvModFrame, cnf=spinboxCnf)
         self.cellIDspinbox.pack(side=LEFT)
-        self.PVmoduleButton = Button(pvmodframe,
+        self.PVmoduleButton = Button(pvModFrame,
                                      cnf={'text': PVMODULE_TEXT})
         self.PVmoduleButton.pack(side=LEFT)
         self.PVmoduleButton['command'] = self.startPVmodule_tk
@@ -191,4 +198,4 @@ class PVapplicaton(Frame):
 
     def separatorLine(self):
         # master is known in constructor, but not here!
-        Frame(self.master, height='2', bg='white').pack(fill=BOTH)
+        Frame(self.master, height=2, bg='white').pack(fill=BOTH)
