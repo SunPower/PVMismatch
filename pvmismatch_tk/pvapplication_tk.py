@@ -6,7 +6,7 @@ Created on Jul 29, 2012
 """
 from PIL import Image, ImageTk
 from Tkinter import Entry, StringVar, Frame, Label, Scale, Button, Toplevel, \
-    IntVar, OptionMenu, Message, HORIZONTAL, Spinbox
+    IntVar, OptionMenu, Message, Spinbox, HORIZONTAL, LEFT
 from pvmodule_tk import PVmodule_tk
 from pvstring_tk import PVstring_tk
 from pvsystem_tk import PVsystem_tk
@@ -35,7 +35,7 @@ class PVapplicaton(Frame):
         master = self.master  # create a shortcut to the top level
         master.title(PVAPP_TXT)  # set title bar
         # if user resizes, expand frame and fill both sides
-        self.pack({'expand': True, 'fill': 'both'})
+        self.pack(side='top', expand=True, fill='both')
 
         # SP logo
         self.config(bg='black', padx='15', pady='5')
@@ -45,7 +45,7 @@ class PVapplicaton(Frame):
         self.SPlogo_png = Image.open(SPLOGO)  # create image object
         # convert image to tk-compatible format
         self.SPlogo = ImageTk.PhotoImage(self.SPlogo_png)
-        Label(self, image=self.SPlogo, borderwidth='0').pack(side='left')
+        Label(self, image=self.SPlogo, borderwidth='0').pack(side=LEFT)
         # Intro text
         introtext = 'PVmismatch calculates I-V and P-V curves as well as the'
         introtext += '  max power point (MPP) for any sized system.'
@@ -63,10 +63,10 @@ class PVapplicaton(Frame):
         scaleCnf = {'from_': 1, 'to': MAX_STRINGS, 'orient': HORIZONTAL,
                      'variable': numStr, 'label': 'Number of Strings',
                      'length': '100'}
-        self.PVsystemScale = Scale(pvsysframe, cnf=scaleCnf).pack(side='left')
+        self.PVsystemScale = Scale(pvsysframe, cnf=scaleCnf).pack(side=LEFT)
         # PVsystem button
         self.PVsystemButton = Button(pvsysframe, cnf={'text': PVSYSTEM_TEXT})
-        self.PVsystemButton.pack(side='left')
+        self.PVsystemButton.pack(side=LEFT)
         self.PVsystemButton['command'] = self.startPVsystem_tk
 
         # separator
@@ -81,47 +81,69 @@ class PVapplicaton(Frame):
         scaleCnf = {'from_': 1, 'to': MAX_MODULES, 'orient': HORIZONTAL,
                      'variable': numMod, 'label': 'Number of Modules',
                      'length': '20'}
-        self.PVstringScale = Scale(pvstrframe, cnf=scaleCnf).pack(side='left')
+        self.PVstringScale = Scale(pvstrframe, cnf=scaleCnf).pack(side=LEFT)
         # module ID # integer variable
         modID = self.moduleID = IntVar(self)
         modID.set(1)
         # module ID # spinbox
-        spinboxCnf = {'from_': 1, 'to': numStr, 'variable': modID,
-                      'label': 'Module ID #'}
+        Label(pvstrframe,text='Module ID #').pack(side=LEFT)
+        spinboxCnf = {'from_': 1, 'to': 10,
+                      'textvariable': str(modID)}
         self.PVstringSpinBox = Spinbox(pvstrframe, cnf=spinboxCnf)
-        self.PVstringSpinBox.pack(side='left')
+        self.PVstringSpinBox.pack(side=LEFT)
         # PVmodule button
         self.PVstringButton = Button(pvstrframe, cnf={'text': PVSTRING_TEXT})
-        self.PVstringButton.pack(side=top')
+        self.PVstringButton.pack(side=LEFT)
         self.PVstringButton['command'] = self.startPVstring_tk
 
         # separator
         Frame(master, cnf={'height': '2', 'bg': 'white'}).pack(fill='both')
 
         ## PVmodule
-        self.PVmoduleFrame = Frame(master).pack(fill='both')
+        pvmodframe = self.PVmoduleFrame = Frame(master).pack(fill='both')
         self.numberCells = IntVar(self)  # bind numberCells
         self.numberCells.set(MODULE_SIZES[0])  # default value
-        self.numberCellsOption = OptionMenu(self.PVmoduleFrame, self.numberCells,
+        self.numberCellsOption = OptionMenu(pvmodframe, self.numberCells,
                                             *MODULE_SIZES)
-        self.numberCellsOption.pack({'side': 'left'})
-        self.moduleIDlabel = Label(self.PVmoduleFrame,
+        self.numberCellsOption.pack({'side': LEFT})
+        self.moduleIDlabel = Label(pvmodframe,
                                    cnf={'text': 'Module ID'})
-        self.moduleIDlabel.pack(side='left')
+        self.moduleIDlabel.pack(side=LEFT)
         self.moduleID = StringVar(self)  # bind moduleID
         self.moduleID.set(1)
-        self.moduleIDentry = Entry(self.PVmoduleFrame,
+        self.moduleIDentry = Entry(pvmodframe,
                                    textvariable=self.moduleID)
         self.moduleIDentry.insert(0, '1')
-        self.moduleIDentry.pack(side='left')
-        self.PVmoduleButton = Button(self.PVmoduleFrame,
+        self.moduleIDentry.pack(side=LEFT)
+        self.PVmoduleButton = Button(pvmodframe,
                                      cnf={'text': PVMODULE_TEXT})
-        self.PVmoduleButton.pack({'side': 'left'})
+        self.PVmoduleButton.pack({'side': LEFT})
         self.PVmoduleButton['command'] = self.startPVmodule_tk
         Frame(self, cnf={'height': '2', 'bg': 'white'}).pack({'fill': 'both'})
 
-        self.QUIT = Button(self, cnf={'text': 'Quit', 'command': self.quit})
-        self.QUIT.pack({'side': 'top', 'fill': 'both'})
+        # separator
+        Frame(master, cnf={'height': '2', 'bg': 'white'}).pack(fill='both')
+
+        # toolbar
+        toolbar = self.toolbarframe = Frame(master).pack(fill='both')
+        self.RESET = Button(toolbar, cnf={'text': 'Reset',
+                                          'command': self.reset})
+        self.RESET.pack({'side': 'left', 'fill': 'both'})
+        self.LOAD = Button(toolbar, cnf={'text': 'Load', 'command': self.load})
+        self.LOAD.pack({'side': 'left', 'fill': 'both'})
+        self.SAVE = Button(toolbar, cnf={'text': 'Save', 'command': self.save})
+        self.SAVE.pack({'side': 'left', 'fill': 'both'})
+        self.QUIT = Button(toolbar, cnf={'text': 'Quit', 'command': self.quit})
+        self.QUIT.pack({'side': 'left', 'fill': 'both'})
+
+    def reset(self):
+        print 'reset'
+
+    def load(self):
+        print 'load *.pv file'
+
+    def save(self):
+        print 'save *.pv file'
 
     def startPVmodule_tk(self):
         top = Toplevel()
