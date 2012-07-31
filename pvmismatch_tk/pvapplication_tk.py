@@ -5,16 +5,18 @@ Created on Jul 29, 2012
 @author: marko
 """
 from PIL import Image, ImageTk
-from Tkinter import Frame, Label, Scale, Button, Toplevel, IntVar, OptionMenu
-from Tkinter import Entry, StringVar
+from Tkinter import Entry, StringVar, Frame, Label, Scale, Button, Toplevel, \
+    IntVar, OptionMenu, Message, HORIZONTAL, Spinbox
 from pvmodule_tk import PVmodule_tk
 from pvstring_tk import PVstring_tk
 from pvsystem_tk import PVsystem_tk
 import os
 MODULE_SIZES = [72, 96, 128]
-
+MAX_STRINGS = 100
+MAX_MODULES = 20
 
 SPLOGO = os.path.join('res', 'logo_bg.png')
+PVAPP_TXT = 'PVmismatch'
 PVMODULE_TEXT = 'PVmodule'
 PVSTRING_TEXT = 'PVstring'
 PVSYSTEM_TEXT = 'PVsystem'
@@ -30,40 +32,74 @@ class PVapplicaton(Frame):
         Constructor
         """
         Frame.__init__(self, master)
-        self.pack(expand=True)  # if user resizes, expand Frame
-        self.pack(fill='both')  # if user resizes, fill both sides
+        master = self.master  # create a shortcut to the top level
+        master.title(PVAPP_TXT)  # set title bar
+        # if user resizes, expand frame and fill both sides
+        self.pack({'expand': True, 'fill': 'both'})
 
         # SP logo
-        self['bg'] = 'black'  # set black background
-        self['padx'] = '15'  # pad sides with 15 points
-        self['pady'] = '5'  # pad top/bottom 5 points
-        self.master.title('PVmismatch')  # set title bar
-        self.image = Image.open(SPLOGO)  # create image object
+        self.config(bg='black', padx='15', pady='5')
+#        self['bg'] = 'black'  # set black background
+#        self['padx'] = '15'  # pad sides with 15 points
+#        self['pady'] = '5'  # pad top/bottom 5 points
+        self.SPlogo_png = Image.open(SPLOGO)  # create image object
         # convert image to tk-compatible format
-        self.SPlogo = ImageTk.PhotoImage(self.image)
-        self.SPlogoLabel = Label(self, image=self.SPlogo,
-                                 cnf={'borderwidth': '0'})
-        self.SPlogoLabel.pack()  # side='top' is default
+        self.SPlogo = ImageTk.PhotoImage(self.SPlogo_png)
+        Label(self, image=self.SPlogo, borderwidth='0').pack(side='left')
+        # Intro text
+        introtext = 'PVmismatch calculates I-V and P-V curves as well as the'
+        introtext += '  max power point (MPP) for any sized system.'
+        Message(self, text=introtext, bg='black').pack(fill='both')
+
         # separator
-        Frame(self, cnf={'height': '2', 'bg': 'white'}).pack(fill='both')
+        Frame(master, cnf={'height': '2', 'bg': 'white'}).pack(fill='both')
 
         # PVsystem Frame
-        self.PVsystemFrame = Frame(self).pack(fill='both')
-        self.PVsystemScale = Scale(self.PVsystemFrame)
-        self.PVsystemScale.pack(side='left')
-        self.PVsystemButton = Button(self.PVsystemFrame, cnf={'text': PVSYSTEM_TEXT})
-        self.PVsystemButton.pack({'side': 'left'})
+        pvsysframe = self.PVsystemFrame = Frame(master).pack(fill='both')
+        # number of strings integer variable
+        numStr = self.numberStrings = IntVar(self)
+        numStr.set(10)  # default
+        # number of strings scale (slider)
+        scaleCnf = {'from_': 1, 'to': MAX_STRINGS, 'orient': HORIZONTAL,
+                     'variable': numStr, 'label': 'Number of Strings',
+                     'length': '100'}
+        self.PVsystemScale = Scale(pvsysframe, cnf=scaleCnf).pack(side='left')
+        # PVsystem button
+        self.PVsystemButton = Button(pvsysframe, cnf={'text': PVSYSTEM_TEXT})
+        self.PVsystemButton.pack(side='left')
         self.PVsystemButton['command'] = self.startPVsystem_tk
-        Frame(self, cnf={'height': '2', 'bg': 'white'}).pack(fill='both')
 
-        # PVstring
-        self.PVstringFrame = Frame(self).pack()
-        self.PVstringButton = Button(self.PVstringFrame, cnf={'text': PVSTRING_TEXT})
-        self.PVstringButton.pack({'side': 'top', 'fill': 'both'})
+        # separator
+        Frame(master, cnf={'height': '2', 'bg': 'white'}).pack(fill='both')
+
+        # PVstring Frame
+        pvstrframe = self.PVstringFrame = Frame(master).pack(fill='both')
+        # number of modules integer variable
+        numMod = self.numberModules = IntVar(self)
+        numMod.set(10)  # default
+        # number of strings scale (slider)
+        scaleCnf = {'from_': 1, 'to': MAX_MODULES, 'orient': HORIZONTAL,
+                     'variable': numMod, 'label': 'Number of Modules',
+                     'length': '20'}
+        self.PVstringScale = Scale(pvstrframe, cnf=scaleCnf).pack(side='left')
+        # module ID # integer variable
+        modID = self.moduleID = IntVar(self)
+        modID.set(1)
+        # module ID # spinbox
+        spinboxCnf = {'from_': 1, 'to': numStr, 'variable': modID,
+                      'label': 'Module ID #'}
+        self.PVstringSpinBox = Spinbox(pvstrframe, cnf=spinboxCnf)
+        self.PVstringSpinBox.pack(side='left')
+        # PVmodule button
+        self.PVstringButton = Button(pvstrframe, cnf={'text': PVSTRING_TEXT})
+        self.PVstringButton.pack(side=top')
         self.PVstringButton['command'] = self.startPVstring_tk
 
+        # separator
+        Frame(master, cnf={'height': '2', 'bg': 'white'}).pack(fill='both')
+
         ## PVmodule
-        self.PVmoduleFrame = Frame(self).pack(fill='both')
+        self.PVmoduleFrame = Frame(master).pack(fill='both')
         self.numberCells = IntVar(self)  # bind numberCells
         self.numberCells.set(MODULE_SIZES[0])  # default value
         self.numberCellsOption = OptionMenu(self.PVmoduleFrame, self.numberCells,
