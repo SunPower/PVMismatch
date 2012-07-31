@@ -6,15 +6,15 @@ Created on Jul 29, 2012
 """
 from PIL import Image, ImageTk
 from Tkinter import StringVar, Frame, Label, Scale, Button, Toplevel, IntVar, \
-    OptionMenu, Message, Spinbox, HORIZONTAL, LEFT, TOP, BOTH, W
+    OptionMenu, Message, Spinbox, HORIZONTAL, LEFT, BOTH, W
 from pvmodule_tk import PVmodule_tk
 from pvstring_tk import PVstring_tk
 from pvsystem_tk import PVsystem_tk
 import os
+
 MOD_SIZES = [72, 96, 128]
 MAX_STRINGS = 100
 MAX_MODULES = 20
-
 SPLOGO = os.path.join('res', 'logo_bg.png')
 PVAPP_TXT = 'PVmismatch'
 PVMODULE_TEXT = 'PVmodule'
@@ -32,33 +32,43 @@ class PVapplicaton(Frame):
         Constructor
         """
         Frame.__init__(self, master, name='pvapp')
-        master.resizable(False, False)
-        master.title(PVAPP_TXT)  # set title bar of root (a.k.a. master)
+        master.resizable(True, False)  # only resize width
+        master.title(PVAPP_TXT)  # set title bar of master (a.k.a. root)
         # set black background, pad sides with 15 points, top/bottom 5 points
-        self.config(bg='black', padx='15', pady='5')
-        # if user resizes, expand frame and fill both sides
-        self.pack(side=TOP, expand=True, fill=BOTH)
+        self.config(bg='black', padx='5', pady='5')
+        # fill=BOTH fills in padding with background color
+        # w/o fill=BOTH padding is default color
+        # side=TOP is the default
+        self.pack(fill=BOTH)
 
         # SP logo
         self.SPlogo_png = Image.open(SPLOGO)  # create image object
         # convert image to tk-compatible format (.gif, .pgm, or .ppm)
         self.SPlogo = ImageTk.PhotoImage(self.SPlogo_png)
-        self.SPlogoLabel = Label(self, image=self.SPlogo, borderwidth='0',
-                               anchor=W, name='spLogoLabel', bg='black')
-        self.SPlogoLabel.pack(side=TOP, expand=True, fill=BOTH)
+        # bg='black' fills extra space with black
+        # anchor=W aligns photoimage on left side, NW is no different
+        # padding is ignored by images, use borderwidth
+        self.SPlogoLabel = Label(self, name='spLogoLabel', image=self.SPlogo,
+                                 borderwidth='5', anchor=W, bg='black')
+        # fill=BOTH expands the photoimage to fill parent frame
+        # w/o fill=BOTH photoimage is centered in frame even with anchor=W
+        self.SPlogoLabel.pack(fill=BOTH)
         # Intro text
         introtext = 'PVmismatch calculates I-V and P-V curves as well as the'
         introtext += '  max power point (MPP) for any sized system.'
-        self.introMsg = Message(self, text=introtext, bg='black', fg='white',
-                                anchor=W, name='introMsg', width='800')
-        self.introMsg.pack(side=TOP, expand=True, fill=BOTH)
-
-        # separator
-        self.separatorLine()
+        # anchor=W aligns message on left side, NW is no different
+        # fg='white' sets text color to white, default is black, so it doesn't
+        #   show on black background
+        # default aspect is 150%, about as wide as high, or set width>0
+        self.introMsg = Message(self, name='introMsg', text=introtext,
+                                anchor=W, bg='black', fg='white', width='2000')
+        # fill=BOTH expands the message to fill parent frame
+        # w/o fill=BOTH message is centered in frame even with anchor=W
+        self.introMsg.pack(fill=BOTH)
 
         # PVsystem frame
-        pvsysframe = self.PVsystemFrame = Frame(master)
-        pvsysframe.pack(side=TOP, fill=BOTH)
+        pvsysframe = self.PVsystemFrame = Frame(master, name='')
+        pvsysframe.pack(fill=BOTH)
         # number of strings integer variable
         numStr = self.numberStrings = IntVar(self)
         numStr.set(10)  # default
@@ -73,12 +83,11 @@ class PVapplicaton(Frame):
         self.PVsystemButton.pack(side=LEFT)
         self.PVsystemButton['command'] = self.startPVsystem_tk
 
-        # separator
-        self.separatorLine()
+        self.separatorLine()  # separator
 
         # PVstring frame
         pvstrframe = self.PVstringFrame = Frame(master)
-        pvstrframe.pack(side=TOP, fill=BOTH)
+        pvstrframe.pack(fill=BOTH)
         # number of modules integer variable
         numMod = self.numberModules = IntVar(self)
         numMod.set(10)  # default
@@ -104,12 +113,11 @@ class PVapplicaton(Frame):
         self.PVstringButton.pack(side=LEFT)
         self.PVstringButton['command'] = self.startPVstring_tk
 
-        # separator
-        self.separatorLine()
+        self.separatorLine()  # separator
 
         ## PVmodule frame
         pvmodframe = self.PVmoduleFrame = Frame(master)
-        pvmodframe.pack(side=TOP, fill=BOTH)
+        pvmodframe.pack(fill=BOTH)
         # number of cells integer variable
         numCells = self.numberCells = IntVar(self)  # bind numberCells
         numCells.set(MOD_SIZES[0])  # default value
@@ -131,12 +139,11 @@ class PVapplicaton(Frame):
         self.PVmoduleButton.pack(side=LEFT)
         self.PVmoduleButton['command'] = self.startPVmodule_tk
 
-        # separator
-        self.separatorLine()
+        self.separatorLine()  # separator
 
         # toolbar
         toolbar = self.toolbarframe = Frame(master)
-        toolbar.pack(side=TOP, fill=BOTH)
+        toolbar.pack(fill=BOTH)
         self.RESET = Button(toolbar, cnf={'text': 'Reset',
                                           'command': self.reset})
         self.RESET.pack({'side': 'left', 'fill': BOTH})
@@ -178,5 +185,5 @@ class PVapplicaton(Frame):
         top.destroy()
 
     def separatorLine(self):
-        sepCnf = {'height': '2', 'bg': 'white'}
-        Frame(self.master, cnf=sepCnf).pack(side=TOP, fill=BOTH)
+        # master is known in constructor, but not here!
+        Frame(self.master, height='2', bg='white').pack(fill=BOTH)
