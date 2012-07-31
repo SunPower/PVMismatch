@@ -15,6 +15,8 @@ import os
 MOD_SIZES = [72, 96, 128]
 MAX_STRINGS = 100
 MAX_MODULES = 20
+PVSYSTEMSCALE = 500
+PVSTRINGSCALE = 500
 SPLOGO = os.path.join('res', 'logo_bg.png')
 PVAPP_TXT = 'PVmismatch'
 PVMODULE_TEXT = 'PVmodule'
@@ -31,8 +33,10 @@ class PVapplicaton(Frame):
         """
         Constructor
         """
-        Frame.__init__(self, master, name='pvapp')
+        Frame.__init__(self, master)
+        self._name = 'pvapplication'  # set name of frame widget
         master.resizable(True, False)  # only resize width
+        master.minsize(562, 1)
         master.title(PVAPP_TXT)  # set title bar of master (a.k.a. root)
         # set black background, pad sides with 15 points, top/bottom 5 points
         self.config(bg='black', padx='5', pady='5')
@@ -67,26 +71,27 @@ class PVapplicaton(Frame):
         self.introMsg.pack(fill=BOTH)
 
         # PVsystem frame
-        pvsysframe = self.PVsystemFrame = Frame(master, name='')
+        pvsysframe = self.PVsystemFrame = Frame(master, name='pvsysframe')
+        # fill=BOTH keeps widgets in frame on left when window is resized
         pvsysframe.pack(fill=BOTH)
         # number of strings integer variable
         numStr = self.numberStrings = IntVar(self)
         numStr.set(10)  # default
         # number of strings scale (slider)
-        scaleCnf = {'from_': 1, 'to': MAX_STRINGS, 'orient': HORIZONTAL,
-                     'variable': numStr, 'label': 'Number of Strings',
-                     'length': '500'}
+        scaleCnf = {'name': 'pvsystemscale', 'from_': 1, 'to': MAX_STRINGS,
+                    'orient': HORIZONTAL, 'variable': numStr,
+                    'label': 'Number of Strings', 'length': 500}
         self.PVsystemScale = Scale(pvsysframe, cnf=scaleCnf)
-        self.PVsystemScale.pack(side=LEFT)
+        self.PVsystemScale.pack(side=LEFT, fill=BOTH, expand=True)
         # PVsystem button
-        self.PVsystemButton = Button(pvsysframe, cnf={'text': PVSYSTEM_TEXT})
+        self.PVsystemButton = Button(pvsysframe, text=PVSYSTEM_TEXT, height=2)
         self.PVsystemButton.pack(side=LEFT)
         self.PVsystemButton['command'] = self.startPVsystem_tk
 
         self.separatorLine()  # separator
 
         # PVstring frame
-        pvstrframe = self.PVstringFrame = Frame(master)
+        pvstrframe = self.PVstringFrame = Frame(master, name='pvstrframe')
         pvstrframe.pack(fill=BOTH)
         # number of modules integer variable
         numMod = self.numberModules = IntVar(self)
