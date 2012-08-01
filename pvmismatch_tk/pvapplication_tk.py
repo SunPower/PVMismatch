@@ -203,6 +203,8 @@ class PVapplicaton(Frame):
 #        focusout, forced).
 #    %W  The name of the spinbox widget.
 
+# TODO Fix these functions so that delete and overwrite work
+
     def validateNumberModules(self, action, index, value_if_allowed,
                               prior_value, text, validation_type,
                               trigger_type, widget_name):
@@ -215,8 +217,7 @@ class PVapplicaton(Frame):
                 modID = int(value_if_allowed)
             except ValueError:
                 return False
-            return modID <= self.numberModules.get()
-#            return modID <= int(self.numberModulesSpinbox.get())
+            return modID > 0 and modID <= self.numberModules.get()
         else:
             return False
 
