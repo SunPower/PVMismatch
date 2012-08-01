@@ -128,11 +128,9 @@ class PVapplicaton(Frame):
                 '%d', '%i', '%P', '%s', '%S', '%v', '%V', '%W')
         invcmd = (self.register(self.invalidNumberModules),
                 '%d', '%i', '%P', '%s', '%S', '%v', '%V', '%W')
-        spinboxCnf = {'from_': 1, 'to': numMod.get(),
-                      'textvariable': modID, 'width': 5,
-                      'validate': 'all',
-                      'validatecommand': vcmd,
-                      'invalidcommand': invcmd}
+        spinboxCnf = {'name': 'modIDspinbox', 'from_': 1, 'to': numMod.get(),
+                      'textvariable': modID, 'width': 5, 'validate': 'all',
+                      'validatecommand': vcmd, 'invalidcommand': invcmd}
         self.modIDspinbox = Spinbox(pvStrFrame, cnf=spinboxCnf)
         self.modIDspinbox.pack(side=LEFT)
         # PVmodule button
@@ -214,10 +212,11 @@ class PVapplicaton(Frame):
         print("d={}, i={}, P={}, s={}, S={}, v={}, V={}, W={}".format(*subst))
         if text in '0123456789':
             try:
-                int(value_if_allowed)
-                return True
+                modID = int(value_if_allowed)
             except ValueError:
                 return False
+            return modID <= self.numberModules.get()
+#            return modID <= int(self.numberModulesSpinbox.get())
         else:
             return False
 
