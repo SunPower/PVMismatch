@@ -24,8 +24,8 @@ PVSTRING_TEXT = 'PVstring'
 PVSYSTEM_TEXT = 'PVsystem'
 
 
-def spacer(root, setWidth, setSide):
-    Frame(root, width=setWidth).pack(side=setSide)
+def spacer(root, width, side):
+    Frame(root, width=width).pack(side=side)
 
 
 class PVapplicaton(Frame):
@@ -40,7 +40,7 @@ class PVapplicaton(Frame):
         Frame.__init__(self, master)
         self._name = 'pvApplication'  # set name of frame widget
         master.resizable(False, False)  # not resizable in x or y
-#        master.minsize(562, 1)  # don't set minsize
+        # don't set master.minsize
         master.title(PVAPP_TXT)  # set title bar of master (a.k.a. root)
         # set black background, pad sides with 15 points, top/bottom 5 points
         self.config(bg='black', padx=5, pady=5)
@@ -123,11 +123,16 @@ class PVapplicaton(Frame):
         self.modIDLabel = Label(pvStrFrame, text='Module ID #')
         self.modIDLabel.pack(side=LEFT)
         # module ID # spinbox
+        # must register vcmd and invcmd as Tcl functions
+        vcmd = (self.register(self.validateNumberModules),
+                '%d', '%i', '%P', '%s', '%S', '%v', '%V', '%W')
+        invcmd = (self.register(self.invalidNumberModules),
+                '%d', '%i', '%P', '%s', '%S', '%v', '%V', '%W')
         spinboxCnf = {'from_': 1, 'to': numMod.get(),
                       'textvariable': modID, 'width': 5,
                       'validate': 'all',
-                      'vcmd': self.validateNumberModules,
-                      'invcmd': self.invalidNumberModules}
+                      'validatecommand': vcmd,
+                      'invalidcommand': invcmd}
         self.modIDspinbox = Spinbox(pvStrFrame, cnf=spinboxCnf)
         self.modIDspinbox.pack(side=LEFT)
         # PVmodule button
@@ -185,32 +190,45 @@ class PVapplicaton(Frame):
     def updateNumberModules(self):
         self.modIDspinbox.config(to=self.numberModules.get(), validate='all')
 
-    def validateNumberModules(self):
-        try:
-            modID = self.moduleID.get()
-            numMod = self.numberModules.get()
-        except ValueError:
-            return False
-        print numMod, modID
-        isModIDint = type(modID) is int
-        isNumModint = type(numMod) is int
-        if not(isModIDint and isNumModint):
-            return False
-        else:
-            return modID <= numMod
+#    Validation substitutions
+#    %d  Type of action: 1 for insert, 0 for delete, or -1 for focus, forced or
+#        textvariable validation.
+#    %i  Index of char string to be inserted/deleted, if any, otherwise -1.
+#    %P  The value of the spinbox should edition occur. If you are configuring
+#        the spinbox widget to have a new textvariable, this will be the value
+#        of that textvariable.
+#    %s  The current value of spinbox before edition.
+#    %S  The text string being inserted/deleted, if any. Otherwise it is an
+#        empty string.
+#    %v  The type of validation currently set.
+#    %V  The type of validation that triggered the callback (key, focusin,
+#        focusout, forced).
+#    %W  The name of the spinbox widget.
 
-    def invalidNumberModules(self):
+    def validateNumberModules(self, action, index, value_if_allowed,
+                              prior_value, text, validation_type,
+                              trigger_type, widget_name):
+        subst = (action, index, value_if_allowed, prior_value, text,
+                 validation_type, trigger_type, widget_name)
+        print "OnValidate:",
+        print("d={}, i={}, P={}, s={}, S={}, v={}, V={}, W={}".format(*subst))
+        if text in '0123456789':
+            try:
+                int(value_if_allowed)
+                return True
+            except ValueError:
+                return False
+        else:
+            return False
+
+    def invalidNumberModules(self, action, index, value_if_allowed,
+                             prior_value, text, validation_type,
+                             trigger_type, widget_name):
+        subst = (action, index, value_if_allowed, prior_value, text,
+                 validation_type, trigger_type, widget_name)
+        print "OnInvalid: ",
+        print("d={}, i={}, P={}, s={}, S={}, v={}, V={}, W={}".format(*subst))
         self.bell()
-        try:
-            self.moduleID.get()
-            self.numberModules.get()
-        except ValueError:
-            self.moduleID.set(MAX_MODULES)
-            self.numberModules.set(MAX_MODULES)
-        print self.moduleID.get(), self.numberModules.get()
-        self.moduleID.set(self.numberModules.get())
-        print self.modIDspinbox['validate']
-        self.modIDspinbox['validate'] = 'all'
 
     def startPVmodule_tk(self):
         top = Toplevel()
