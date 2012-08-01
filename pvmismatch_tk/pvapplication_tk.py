@@ -24,6 +24,10 @@ PVSTRING_TEXT = 'PVstring'
 PVSYSTEM_TEXT = 'PVsystem'
 
 
+def spacer(root, setWidth, setSide):
+    Frame(root, width=setWidth).pack(side=setSide)
+
+
 class PVapplicaton(Frame):
     """
     classdocs
@@ -82,6 +86,7 @@ class PVapplicaton(Frame):
         labelCnf = {'name': 'numStrLabel', 'text': 'Number of Strings'}
         self.numberStringsLabel = Label(pvSysFrame, cnf=labelCnf)
         self.numberStringsLabel.pack(side=LEFT)
+        spacer(pvSysFrame, 6, LEFT)
         # number of strings spinbox
         # use textVar to set number of strings from LOAD, RESET or default
         spinboxCnf = {'name': 'numStrSpinbox', 'from_': 1, 'to': MAX_STRINGS,
@@ -91,7 +96,7 @@ class PVapplicaton(Frame):
         # PVsystem button
         self.PVsystemButton = Button(pvSysFrame, name='pvsysButton',
                                      text=PVSYSTEM_TEXT)
-        self.PVsystemButton.pack(side=LEFT)
+        self.PVsystemButton.pack(side=RIGHT)
         self.PVsystemButton['command'] = self.startPVsystem_tk
         self.separatorLine()  # separator
 
@@ -127,13 +132,18 @@ class PVapplicaton(Frame):
         self.modIDspinbox.pack(side=LEFT)
         # PVmodule button
         self.PVstringButton = Button(pvStrFrame, cnf={'text': PVSTRING_TEXT})
-        self.PVstringButton.pack(side=LEFT)
+        self.PVstringButton.pack(side=RIGHT)
         self.PVstringButton['command'] = self.startPVstring_tk
         self.separatorLine()  # separator
 
         ## PVmodule frame
         pvModFrame = self.PVmoduleFrame = Frame(master)
         pvModFrame.pack(fill=BOTH)
+        # number of cells label
+        labelCnf = {'name': 'numCellsLabel', 'text': 'Number of Cells'}
+        self.numberCellsLabel = Label(pvModFrame, cnf=labelCnf)
+        self.numberCellsLabel.pack(side=LEFT)
+        spacer(pvModFrame, 6, LEFT)
         # number of cells integer variable
         numCells = self.numberCells = IntVar(self)  # bind numberCells
         numCells.set(MOD_SIZES[0])  # default value
@@ -155,7 +165,7 @@ class PVapplicaton(Frame):
         self.cellIDspinbox.pack(side=LEFT)
         self.PVmoduleButton = Button(pvModFrame,
                                      cnf={'text': PVMODULE_TEXT})
-        self.PVmoduleButton.pack(side=LEFT)
+        self.PVmoduleButton.pack(side=RIGHT)
         self.PVmoduleButton['command'] = self.startPVmodule_tk
         self.separatorLine()  # separator
 
