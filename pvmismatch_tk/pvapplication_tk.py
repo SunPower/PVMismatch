@@ -171,7 +171,7 @@ class PVapplicaton(Frame):
         self.QUIT.pack({'side': 'left', 'fill': BOTH})
 
     def updateNumberModules(self):
-        self.modIDspinbox.config(to=self.numberModules.get())
+        self.modIDspinbox.config(to=self.numberModules.get(), validate='all')
 
     def validateNumberModules(self):
         try:
