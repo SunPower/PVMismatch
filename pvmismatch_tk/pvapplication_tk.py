@@ -106,7 +106,8 @@ class PVapplicaton(Frame):
         self.numberModulesLabel.pack(side=LEFT)
         # number of modules spinbox
         spinboxCnf = {'name': 'numModSpinbox', 'from_': 1, 'to': MAX_MODULES,
-                      'textvariable': numMod, 'width': 5}
+                      'textvariable': numMod, 'width': 5,
+                      'command': self.updateNumberModules}
         self.numberModulesSpinbox = Spinbox(pvStrFrame, cnf=spinboxCnf)
         self.numberModulesSpinbox.pack(side=LEFT)
         # module ID # integer variable
@@ -117,7 +118,10 @@ class PVapplicaton(Frame):
         self.modIDLabel.pack(side=LEFT)
         # module ID # spinbox
         spinboxCnf = {'from_': 1, 'to': numMod.get(),
-                      'textvariable': modID, 'width': 5}
+                      'textvariable': modID, 'width': 5,
+                      'validate': 'all',
+                      'vcmd': self.validateNumberModules,
+                      'invcmd': self.invalidNumberModules}
         self.modIDspinbox = Spinbox(pvStrFrame, cnf=spinboxCnf)
         self.modIDspinbox.pack(side=LEFT)
         # PVmodule button
@@ -166,14 +170,35 @@ class PVapplicaton(Frame):
         self.QUIT = Button(toolbar, cnf={'text': 'Quit', 'command': self.quit})
         self.QUIT.pack({'side': 'left', 'fill': BOTH})
 
-    def reset(self):
-        print 'reset'
+    def updateNumberModules(self):
+        self.modIDspinbox.config(to=self.numberModules.get())
 
-    def load(self):
-        print 'load *.pv file'
+    def validateNumberModules(self):
+        try:
+            modID = self.moduleID.get()
+            numMod = self.numberModules.get()
+        except ValueError:
+            return False
+        print numMod, modID
+        isModIDint = type(modID) is int
+        isNumModint = type(numMod) is int
+        if not(isModIDint and isNumModint):
+            return False
+        else:
+            return modID <= numMod
 
-    def save(self):
-        print 'save *.pv file'
+    def invalidNumberModules(self):
+        self.bell()
+        try:
+            self.moduleID.get()
+            self.numberModules.get()
+        except ValueError:
+            self.moduleID.set(MAX_MODULES)
+            self.numberModules.set(MAX_MODULES)
+        print self.moduleID.get(), self.numberModules.get()
+        self.moduleID.set(self.numberModules.get())
+        print self.modIDspinbox['validate']
+        self.modIDspinbox['validate'] = 'all'
 
     def startPVmodule_tk(self):
         top = Toplevel()
@@ -195,6 +220,15 @@ class PVapplicaton(Frame):
         app.mainloop()
         # please destroy me or I'll continue to run in background
         top.destroy()
+
+    def reset(self):
+        print 'reset'
+
+    def load(self):
+        print 'load *.pv file'
+
+    def save(self):
+        print 'save *.pv file'
 
     def separatorLine(self):
         # master is known in constructor, but not here!
