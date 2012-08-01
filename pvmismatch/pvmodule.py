@@ -6,11 +6,14 @@ Created on Thu May 31 23:17:04 2012
 """
 
 import numpy as np
-from pvconstants import PVconstants, npinterpx
+from pvmismatch.pvconstants import PVconstants, npinterpx
 from matplotlib import pyplot as plt
 
-NPTS = 1001  # numper of I-V points to calculate
-PTS = np.linspace(0, 1, NPTS).reshape(NPTS, 1)  # pylint: disable=E1103
+NPTS = 1001  # number of I-V points to calculate
+# http://www.logilab.org/card/pylintfeatures#typecheck-checker
+# pylint: disable = E1103
+PTS = np.linspace(0, 1, NPTS).reshape(NPTS, 1)
+# pylint: enable = E1103
 NUMBERCELLS = [72, 96, 128]  # list of possible number of cells per module
 SUBSTRCELLS = [[24, 24, 24], [24, 48, 24], [32, 64, 32]]
 _numberCells = 96  # default number of cells
@@ -36,6 +39,8 @@ class PVmodule(object):
         self.setSuns(Ee)
 
     def setSuns(self, Ee, cells=None):
+        # http://www.logilab.org/card/pylintfeatures#classes-checker
+        # pylint: disable = W0201
         if cells is None:
             if np.isscalar(Ee):
                 self.Ee = np.ones((1, self.numberCells)) * Ee
@@ -54,6 +59,7 @@ class PVmodule(object):
         self.Voc = self.calcVoc()
         (self.Icell, self.Vcell, self.Pcell) = self.calcCell()
         (self.Imod, self.Vmod, self.Pmod, self.Vsubstr) = self.calcMod()
+        # pylint: enable = W0201
 
     def calcVoc(self):
         """
@@ -74,8 +80,10 @@ class PVmodule(object):
         Returns (Icell, Vcell, Pcell) : tuple of numpy.ndarray of float
         """
         Vdiode = self.Voc * PTS
-        VPTS = np.linspace(  # pylint: disable=E1103
-                           self.pvconst.VRBD, -1 / NPTS, NPTS).reshape(NPTS, 1)
+        # http://www.logilab.org/card/pylintfeatures#typecheck-checker
+        # pylint: disable = E1103
+        VPTS = np.linspace(self.pvconst.VRBD, -1 / NPTS, NPTS).reshape(NPTS, 1)
+        # pylint: enable = E1103
         VPTS = VPTS.repeat(self.numberCells, axis=1)
         Vdiode = np.concatenate((VPTS, Vdiode), axis=0)
         Igen = self.pvconst.Aph * self.pvconst.Isc0 * self.Ee

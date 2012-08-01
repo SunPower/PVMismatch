@@ -6,8 +6,8 @@ Created on Mon Jun 11 14:07:12 2012
 """
 
 import numpy as np
-from pvconstants import PVconstants, npinterpx
-from pvmodule import PVmodule, PTS, NPTS
+from pvmismatch.pvconstants import PVconstants, npinterpx
+from pvmismatch.pvmodule import PVmodule, PTS, NPTS
 from matplotlib import pyplot as plt
 
 _numberMods = 10  # default number of modules
@@ -24,12 +24,17 @@ class PVstring(object):
         Constructor
         """
         # TODO: use pvmods to determine numberMods OR input arg
-        # pylint: disable=W0511
+        # http://www.logilab.org/card/pylintfeatures#miscellaneous-checker
+        # pylint: disable = W0511
         self.pvconst = pvconst
         self.numberMods = numberMods
         if pvmods is None:
             self.pvmods = [PVmodule(pvconst=self.pvconst)
                            for pvmod in range(self.numberMods)]
+        elif ((type(pvmods) is list) and
+              all([(type(pvmod) is PVmodule) for pvmod in pvmods])):
+            self.numberMods = len(pvmods)
+            self.pvmods = pvmods
             # Don't use `itertools.repeat(e, n)` or `[e]  * n` because copies
             # all point to the same object.
         elif (type(pvmods) is list) and (len(pvmods) == self.numberMods):

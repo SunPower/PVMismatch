@@ -6,9 +6,9 @@ Created on Jul 16, 2012
 """
 
 import numpy as np
-from pvconstants import PVconstants, npinterpx
-from pvmodule import PTS, NPTS
-from pvstring import PVstring
+from pvmismatch.pvconstants import PVconstants, npinterpx
+from pvmismatch.pvmodule import PTS, NPTS
+from pvmismatch.pvstring import PVstring
 from matplotlib import pyplot as plt
 
 _numberStrs = 10  # default number of strings
@@ -32,7 +32,7 @@ class PVsystem(object):
             # Don't use `itertools.repeat(e, n)` or `[e]  * n` because copies
             # all point to the same object.
         elif ((type(pvstrs) is list) and
-              all([type(pvstr) is PVstring for pvstr in pvstrs])):
+              all([(type(pvstr) is PVstring) for pvstr in pvstrs])):
             self.numberStrs = len(pvstrs)
             self.pvstrs = pvstrs
         else:

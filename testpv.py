@@ -83,4 +83,7 @@ if __name__ == "__main__":
 
     print "Test complete."
     if sys.platform is 'win32':
-        os.startfile(figname)  # @UndefinedVariable # pylint: disable=E1101
+        # http://www.logilab.org/card/pylintfeatures#typecheck-checker
+        # pylint: disable = E1101
+        os.startfile(figname)  # @UndefinedVariable
+        # pylint: enable = E1101

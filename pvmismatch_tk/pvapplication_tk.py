@@ -5,11 +5,11 @@ Created on Jul 29, 2012
 @author: marko
 """
 from PIL import Image, ImageTk
-from Tkinter import StringVar, Frame, Label, Scale, Button, Toplevel, IntVar, \
-    OptionMenu, Message, Spinbox, HORIZONTAL, LEFT, BOTH, W
-from pvmodule_tk import PVmodule_tk
-from pvstring_tk import PVstring_tk
-from pvsystem_tk import PVsystem_tk
+from Tkinter import StringVar, Frame, Label, Button, Toplevel, IntVar, \
+    OptionMenu, Message, Spinbox, RIGHT, LEFT, BOTH, W
+from pvmismatch_tk.pvmodule_tk import PVmodule_tk
+from pvmismatch_tk.pvstring_tk import PVstring_tk
+from pvmismatch_tk.pvsystem_tk import PVsystem_tk
 import os
 
 MOD_SIZES = [72, 96, 128]
@@ -35,8 +35,8 @@ class PVapplicaton(Frame):
         """
         Frame.__init__(self, master)
         self._name = 'pvApplication'  # set name of frame widget
-        master.resizable(True, False)  # only resize width
-        master.minsize(562, 1)
+        master.resizable(False, False)  # not resizable in x or y
+#        master.minsize(562, 1)  # don't set minsize
         master.title(PVAPP_TXT)  # set title bar of master (a.k.a. root)
         # set black background, pad sides with 15 points, top/bottom 5 points
         self.config(bg='black', padx=5, pady=5)
@@ -65,10 +65,11 @@ class PVapplicaton(Frame):
         #   show on black background
         # default aspect is 150%, about as wide as high, or set width>0
         self.introMsg = Message(self, name='introMsg', text=introtext,
-                                width=2000, bg='black', fg='white', anchor=W)
+                                width=285, bg='black', fg='white', anchor=W)
         # fill=BOTH expands the message to fill parent frame
         # w/o fill=BOTH message is centered in frame even with anchor=W
         self.introMsg.pack(fill=BOTH)
+        self.separatorLine()  # separator
 
         # PVsystem frame
         pvSysFrame = self.PVsystemFrame = Frame(master, name='pvSysFrame')
@@ -82,6 +83,7 @@ class PVapplicaton(Frame):
         self.numberStringsLabel = Label(pvSysFrame, cnf=labelCnf)
         self.numberStringsLabel.pack(side=LEFT)
         # number of strings spinbox
+        # use textVar to set number of strings from LOAD, RESET or default
         spinboxCnf = {'name': 'numStrSpinbox', 'from_': 1, 'to': MAX_STRINGS,
                       'textvariable': numStr, 'width': 5}
         self.numberStringsSpinbox = Spinbox(pvSysFrame, cnf=spinboxCnf)
@@ -91,7 +93,6 @@ class PVapplicaton(Frame):
                                      text=PVSYSTEM_TEXT)
         self.PVsystemButton.pack(side=LEFT)
         self.PVsystemButton['command'] = self.startPVsystem_tk
-
         self.separatorLine()  # separator
 
         # PVstring frame
@@ -128,7 +129,6 @@ class PVapplicaton(Frame):
         self.PVstringButton = Button(pvStrFrame, cnf={'text': PVSTRING_TEXT})
         self.PVstringButton.pack(side=LEFT)
         self.PVstringButton['command'] = self.startPVstring_tk
-
         self.separatorLine()  # separator
 
         ## PVmodule frame
@@ -138,7 +138,10 @@ class PVapplicaton(Frame):
         numCells = self.numberCells = IntVar(self)  # bind numberCells
         numCells.set(MOD_SIZES[0])  # default value
         # number of cells option menu
+        # http://www.logilab.org/card/pylintfeatures#basic-checker
+        # pylint: disable = W0142
         self.numberCellsOption = OptionMenu(pvModFrame, numCells, *MOD_SIZES)
+        # pylint: enable = W0142
         self.numberCellsOption.pack(side=LEFT)
         # cell ID # label
         self.cellIDlabel = Label(pvModFrame, text='Cell ID #')
@@ -154,21 +157,20 @@ class PVapplicaton(Frame):
                                      cnf={'text': PVMODULE_TEXT})
         self.PVmoduleButton.pack(side=LEFT)
         self.PVmoduleButton['command'] = self.startPVmodule_tk
-
         self.separatorLine()  # separator
 
         # toolbar
         toolbar = self.toolbarframe = Frame(master)
         toolbar.pack(fill=BOTH)
-        self.RESET = Button(toolbar, cnf={'text': 'Reset',
-                                          'command': self.reset})
-        self.RESET.pack({'side': 'left', 'fill': BOTH})
-        self.LOAD = Button(toolbar, cnf={'text': 'Load', 'command': self.load})
-        self.LOAD.pack({'side': 'left', 'fill': BOTH})
-        self.SAVE = Button(toolbar, cnf={'text': 'Save', 'command': self.save})
-        self.SAVE.pack({'side': 'left', 'fill': BOTH})
         self.QUIT = Button(toolbar, cnf={'text': 'Quit', 'command': self.quit})
-        self.QUIT.pack({'side': 'left', 'fill': BOTH})
+        self.QUIT.pack(side=RIGHT)
+        self.SAVE = Button(toolbar, cnf={'text': 'Save', 'command': self.save})
+        self.SAVE.pack(side=RIGHT)
+        self.LOAD = Button(toolbar, cnf={'text': 'Load', 'command': self.load})
+        self.LOAD.pack(side=RIGHT)
+        self.RESET = Button(toolbar, text='Reset')
+        self.RESET['command'] = self.reset
+        self.RESET.pack(side=RIGHT)
 
     def updateNumberModules(self):
         self.modIDspinbox.config(to=self.numberModules.get(), validate='all')
