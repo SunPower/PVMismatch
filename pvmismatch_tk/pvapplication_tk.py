@@ -12,6 +12,7 @@ from pvmismatch_tk.pvstring_tk import PVstring_tk
 from pvmismatch_tk.pvsystem_tk import PVsystem_tk
 import os
 
+INTEGERS = '0123456789'
 MOD_SIZES = [72, 96, 128]
 MAX_STRINGS = 100
 MAX_MODULES = 20
@@ -49,6 +50,19 @@ class PVapplicaton(Frame):
         # side=TOP is the default
         self.pack(fill=BOTH)
 
+        # number of strings integer variable
+        numStr = self.numberStrings = IntVar(self)
+        numStr.set(10)  # default
+        # number of modules integer variable
+        numMod = self.numberModules = IntVar(self)
+        numMod.set(10)  # default
+        # module ID # integer variable
+        modID = self.moduleID = IntVar(self)
+        modID.set(1)
+        # number of cells integer variable
+        numCells = self.numberCells = IntVar(self)  # bind numberCells
+        numCells.set(MOD_SIZES[0])  # default value
+
         # SP logo
         self.SPlogo_png = Image.open(SPLOGO)  # create image object
         # convert image to tk-compatible format (.gif, .pgm, or .ppm)
@@ -79,9 +93,6 @@ class PVapplicaton(Frame):
         pvSysFrame = self.PVsystemFrame = Frame(master, name='pvSysFrame')
         # fill=BOTH keeps widgets in frame on left when window is resized
         pvSysFrame.pack(fill=BOTH)
-        # number of strings integer variable
-        numStr = self.numberStrings = IntVar(self)
-        numStr.set(10)  # default
         # number of strings label
         labelCnf = {'name': 'numStrLabel', 'text': 'Number of Strings'}
         self.numberStringsLabel = Label(pvSysFrame, cnf=labelCnf)
@@ -95,38 +106,39 @@ class PVapplicaton(Frame):
         self.numberStringsSpinbox.pack(side=LEFT)
         # PVsystem button
         self.PVsystemButton = Button(pvSysFrame, name='pvsysButton',
-                                     text=PVSYSTEM_TEXT)
+                                     text=PVSYSTEM_TEXT,
+                                     command=self.startPVsystem_tk)
         self.PVsystemButton.pack(side=RIGHT)
-        self.PVsystemButton['command'] = self.startPVsystem_tk
         self.separatorLine()  # separator
 
         # PVstring frame
         pvStrFrame = self.PVstringFrame = Frame(master, name='pvStrFrame')
         pvStrFrame.pack(fill=BOTH)
-        # number of modules integer variable
-        numMod = self.numberModules = IntVar(self)
-        numMod.set(10)  # default
         # number of modules label
         labelCnf = {'name': 'numModLabel', 'text': 'Number of Modules'}
         self.numberModulesLabel = Label(pvStrFrame, cnf=labelCnf)
         self.numberModulesLabel.pack(side=LEFT)
         # number of modules spinbox
+        # must register vcmd and invcmd as Tcl functions
+        cmd = (self.register(self.updateNumberModules), '%W', '%s', '%d')
+        vcmd = (self.register(self.validateNumberModules),
+                '%d', '%i', '%P', '%s', '%S', '%v', '%V', '%W')
+        invcmd = (self.register(self.invalidNumberModules),
+                '%d', '%i', '%P', '%s', '%S', '%v', '%V', '%W')
         spinboxCnf = {'name': 'numModSpinbox', 'from_': 1, 'to': MAX_MODULES,
                       'textvariable': numMod, 'width': 5,
-                      'command': self.updateNumberModules}
+                      'command': cmd, 'validate': 'all',
+                      'validatecommand': vcmd, 'invalidcommand': invcmd}
         self.numberModulesSpinbox = Spinbox(pvStrFrame, cnf=spinboxCnf)
         self.numberModulesSpinbox.pack(side=LEFT)
-        # module ID # integer variable
-        modID = self.moduleID = IntVar(self)
-        modID.set(1)
         # module ID # label
         self.modIDLabel = Label(pvStrFrame, text='Module ID #')
         self.modIDLabel.pack(side=LEFT)
         # module ID # spinbox
         # must register vcmd and invcmd as Tcl functions
-        vcmd = (self.register(self.validateNumberModules),
+        vcmd = (self.register(self.validateModuleID),
                 '%d', '%i', '%P', '%s', '%S', '%v', '%V', '%W')
-        invcmd = (self.register(self.invalidNumberModules),
+        invcmd = (self.register(self.invalidModuleID),
                 '%d', '%i', '%P', '%s', '%S', '%v', '%V', '%W')
         spinboxCnf = {'name': 'modIDspinbox', 'from_': 1, 'to': numMod.get(),
                       'textvariable': modID, 'width': 5, 'validate': 'all',
@@ -147,9 +159,6 @@ class PVapplicaton(Frame):
         self.numberCellsLabel = Label(pvModFrame, cnf=labelCnf)
         self.numberCellsLabel.pack(side=LEFT)
         spacer(pvModFrame, 6, LEFT)
-        # number of cells integer variable
-        numCells = self.numberCells = IntVar(self)  # bind numberCells
-        numCells.set(MOD_SIZES[0])  # default value
         # number of cells option menu
         # http://www.logilab.org/card/pylintfeatures#basic-checker
         # pylint: disable = W0142
@@ -184,9 +193,18 @@ class PVapplicaton(Frame):
         self.RESET = Button(toolbar, text='Reset')
         self.RESET['command'] = self.reset
         self.RESET.pack(side=RIGHT)
+        self.MESSAGE = Message(toolbar, text='ready')
+        self.MESSAGE.pack(side=LEFT)
 
-    def updateNumberModules(self):
-        self.modIDspinbox.config(to=self.numberModules.get(), validate='all')
+    def updateNumberModules(self, *args):
+        (widget_name, current_value, button_direction) = args
+        args = (button_direction, current_value, widget_name)
+        print "OnInvokeSpinbox: d={}, s={}, W={}".format(*args)
+        self.modIDspinbox.config(to=current_value)
+#        if self.moduleID.get() > self.numberModules.get():
+#            self.moduleID.set(self.numberModules.get())
+#        self.numberModulesSpinbox['validate'] = 'all'
+#        self.modIDspinbox['validate'] = 'all'
 
 #    Validation substitutions
 #    %d  Type of action: 1 for insert, 0 for delete, or -1 for focus, forced or
@@ -212,16 +230,35 @@ class PVapplicaton(Frame):
                  validation_type, trigger_type, widget_name)
         print "OnValidate:",
         print("d={}, i={}, P={}, s={}, S={}, v={}, V={}, W={}".format(*subst))
-        if text in '0123456789':
+        if text in INTEGERS:
+            try:
+                modNum = int(value_if_allowed)
+            except ValueError:
+                return False
+            return self.moduleID.get() < modNum <= MAX_MODULES
+        else:
+            return False
+
+    def invalidNumberModules(self, *args):
+        self.invalidModuleID(*args)
+
+    def validateModuleID(self, action, index, value_if_allowed,
+                              prior_value, text, validation_type,
+                              trigger_type, widget_name):
+        subst = (action, index, value_if_allowed, prior_value, text,
+                 validation_type, trigger_type, widget_name)
+        print "OnValidate:",
+        print("d={}, i={}, P={}, s={}, S={}, v={}, V={}, W={}".format(*subst))
+        if text in INTEGERS:
             try:
                 modID = int(value_if_allowed)
             except ValueError:
                 return False
-            return modID > 0 and modID <= self.numberModules.get()
+            return 0 < modID <= self.numberModules.get()
         else:
             return False
 
-    def invalidNumberModules(self, action, index, value_if_allowed,
+    def invalidModuleID(self, action, index, value_if_allowed,
                              prior_value, text, validation_type,
                              trigger_type, widget_name):
         subst = (action, index, value_if_allowed, prior_value, text,
