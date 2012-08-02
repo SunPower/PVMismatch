@@ -23,6 +23,7 @@ PVAPP_TXT = 'PVmismatch'
 PVMODULE_TEXT = 'PVmodule'
 PVSTRING_TEXT = 'PVstring'
 PVSYSTEM_TEXT = 'PVsystem'
+READY_MSG = 'Ready'
 
 
 def spacer(root, width, side):
@@ -196,7 +197,7 @@ class PVapplicaton(Frame):
         self.separatorLine()  # separator
 
         # toolbar
-        toolbar = self.toolbarframe = Frame(master)
+        toolbar = self.toolbarframe = Frame(master, name= 'toolbar')
         toolbar.pack(fill=BOTH)
         self.QUIT = Button(toolbar, cnf={'text': 'Quit', 'command': self.quit})
         self.QUIT.pack(side=RIGHT)
@@ -207,7 +208,7 @@ class PVapplicaton(Frame):
         self.RESET = Button(toolbar, text='Reset')
         self.RESET['command'] = self.reset
         self.RESET.pack(side=RIGHT)
-        self.MESSAGE = Message(toolbar, text='ready')
+        self.MESSAGE = Message(toolbar, text=READY_MSG, width=150)
         self.MESSAGE.pack(side=LEFT)
 
 #    Validation substitutions
@@ -310,7 +311,7 @@ class PVapplicaton(Frame):
         self.numberCells.set(MOD_SIZES[0])  # default value
         # cell ID # spinbox
         self.cellID.set(1)
-        self.MESSAGE.config(fg='black', text='Ready')
+        self.MESSAGE.config(fg='black', text=READY_MSG, width=150)
         print 'reset'
 
     def load(self):
