@@ -128,7 +128,7 @@ class PVapplicaton(Frame):
         invcmd = (self.register(self.invalidNumberModules),
                 '%d', '%i', '%P', '%s', '%S', '%v', '%V', '%W')
         spinboxCnf = {'name': 'numModSpinbox', 'from_': 1, 'to': MAX_MODULES,
-                      'textvariable': numMod, 'width': 5, 'validate': 'all',
+                      'textvariable': numMod, 'width': 5, 'validate': 'focusout',
                       'validatecommand': vcmd, 'invalidcommand': invcmd}
         self.numberModulesSpinbox = Spinbox(pvStrFrame, cnf=spinboxCnf)
         self.numberModulesSpinbox.pack(side=LEFT)
@@ -142,7 +142,7 @@ class PVapplicaton(Frame):
         invcmd = (self.register(self.invalidModuleID),
                 '%d', '%i', '%P', '%s', '%S', '%v', '%V', '%W')
         spinboxCnf = {'name': 'modIDspinbox', 'from_': 1, 'to': numMod.get(),
-                      'textvariable': modID, 'width': 5, 'validate': 'all',
+                      'textvariable': modID, 'width': 5, 'validate': 'focusout',
                       'validatecommand': vcmd, 'invalidcommand': invcmd}
         self.modIDspinbox = Spinbox(pvStrFrame, cnf=spinboxCnf)
         self.modIDspinbox.pack(side=LEFT)
