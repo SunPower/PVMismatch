@@ -62,6 +62,9 @@ class PVapplicaton(Frame):
         # number of cells integer variable
         numCells = self.numberCells = IntVar(self)  # bind numberCells
         numCells.set(MOD_SIZES[0])  # default value
+        # cell ID # spinbox
+        cellID = self.cellID = IntVar(self)  # bind moduleID
+        self.cellID.set(1)
 
         # SP logo
         self.SPlogo_png = Image.open(SPLOGO)  # create image object
@@ -166,9 +169,6 @@ class PVapplicaton(Frame):
         # cell ID # label
         self.cellIDlabel = Label(pvModFrame, text='Cell ID #')
         self.cellIDlabel.pack(side=LEFT)
-        # cell ID # spinbox
-        cellID = self.cellID = StringVar(self)  # bind moduleID
-        self.cellID.set(1)
         spinboxCnf = {'from_': 1, 'to': 72,
                       'textvariable': cellID, 'width': 5}
         self.cellIDspinbox = Spinbox(pvModFrame, cnf=spinboxCnf)
