@@ -227,8 +227,16 @@ class PVapplicaton(Frame):
         else:
             return False
 
-    def invalidNumberModules(self, *args):
-        self.invalidModuleID(*args)
+    def invalidNumberModules(self, action, index, value_if_allowed,
+                             prior_value, text, validation_type,
+                             trigger_type, widget_name):
+        subst = (action, index, value_if_allowed, prior_value, text,
+                 validation_type, trigger_type, widget_name)
+        print "OnInvalid: ",
+        print("d={}, i={}, P={}, s={}, S={}, v={}, V={}, W={}".format(*subst))
+        #w = self.nametowidget(W)
+        self.MESSAGE.config(fg='red', text='Invalid number of modules!')
+        self.bell()
 
     def validateModuleID(self, action, index, value_if_allowed,
                               prior_value, text, validation_type,
@@ -253,6 +261,7 @@ class PVapplicaton(Frame):
                  validation_type, trigger_type, widget_name)
         print "OnInvalid: ",
         print("d={}, i={}, P={}, s={}, S={}, v={}, V={}, W={}".format(*subst))
+        self.MESSAGE.config(fg='red', text='Invalid module ID number!')
         self.bell()
 
     def startPVmodule_tk(self):
