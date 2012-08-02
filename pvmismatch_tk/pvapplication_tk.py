@@ -197,7 +197,7 @@ class PVapplicaton(Frame):
         self.separatorLine()  # separator
 
         # toolbar
-        toolbar = self.toolbarframe = Frame(master, name= 'toolbar')
+        toolbar = self.toolbarframe = Frame(master, name='toolbar')
         toolbar.pack(fill=BOTH)
         self.QUIT = Button(toolbar, cnf={'text': 'Quit', 'command': self.quit})
         self.QUIT.pack(side=RIGHT)
@@ -226,7 +226,7 @@ class PVapplicaton(Frame):
 #        focusout, forced).
 #    %W  The name of the spinbox widget.
 
-# TODO Fix these functions so that delete and overwrite work
+# TODO: Fix these functions so that delete and overwrite work
 
     def validateWidget(self, *args):
         # W = Tkinter.W = 'w' is already used, so use W_ instead
