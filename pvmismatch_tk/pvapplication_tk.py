@@ -194,16 +194,6 @@ class PVapplicaton(Frame):
         self.MESSAGE = Message(toolbar, text='ready')
         self.MESSAGE.pack(side=LEFT)
 
-    def updateNumberModules(self, *args):
-        (widget_name, current_value, button_direction) = args
-        args = (button_direction, current_value, widget_name)
-        print "OnInvokeSpinbox: d={}, s={}, W={}".format(*args)
-        self.modIDspinbox.config(to=current_value)
-#        if self.moduleID.get() > self.numberModules.get():
-#            self.moduleID.set(self.numberModules.get())
-#        self.numberModulesSpinbox['validate'] = 'all'
-#        self.modIDspinbox['validate'] = 'all'
-
 #    Validation substitutions
 #    %d  Type of action: 1 for insert, 0 for delete, or -1 for focus, forced or
 #        textvariable validation.
