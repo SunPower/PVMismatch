@@ -11,9 +11,7 @@ from matplotlib import pyplot as plt
 
 NPTS = 1001  # number of I-V points to calculate
 # http://www.logilab.org/card/pylintfeatures#typecheck-checker
-# pylint: disable = E1103
-PTS = np.linspace(0, 1, NPTS).reshape(NPTS, 1)
-# pylint: enable = E1103
+PTS = np.linspace(0, 1, NPTS).reshape(NPTS, 1)  # IGNORE:E1103
 NUMBERCELLS = [72, 96, 128]  # list of possible number of cells per module
 SUBSTRCELLS = [[24, 24, 24], [24, 48, 24], [32, 64, 32]]
 _numberCells = 96  # default number of cells

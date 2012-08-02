@@ -5,8 +5,8 @@ Created on Jul 29, 2012
 @author: marko
 """
 from PIL import Image, ImageTk
-from Tkinter import StringVar, Frame, Label, Button, Toplevel, IntVar, \
-    OptionMenu, Message, Spinbox, RIGHT, LEFT, BOTH, W
+from Tkinter import Frame, Label, Button, Toplevel, IntVar, OptionMenu, \
+    Message, Spinbox, RIGHT, LEFT, BOTH, W
 from pvmismatch_tk.pvmodule_tk import PVmodule_tk
 from pvmismatch_tk.pvstring_tk import PVstring_tk
 from pvmismatch_tk.pvsystem_tk import PVsystem_tk

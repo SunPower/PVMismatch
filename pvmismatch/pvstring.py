@@ -23,9 +23,6 @@ class PVstring(object):
         """
         Constructor
         """
-        # TODO: use pvmods to determine numberMods OR input arg
-        # http://www.logilab.org/card/pylintfeatures#miscellaneous-checker
-        # pylint: disable = W0511
         self.pvconst = pvconst
         self.numberMods = numberMods
         if pvmods is None:
