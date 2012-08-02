@@ -223,7 +223,7 @@ class PVapplicaton(Frame):
                 modNum = int(value_if_allowed)
             except ValueError:
                 return False
-            return self.moduleID.get() < modNum <= MAX_MODULES
+            return 0 < modNum <= MAX_MODULES
         else:
             return False
 
