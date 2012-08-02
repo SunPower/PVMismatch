@@ -120,14 +120,12 @@ class PVapplicaton(Frame):
         self.numberModulesLabel.pack(side=LEFT)
         # number of modules spinbox
         # must register vcmd and invcmd as Tcl functions
-        cmd = (self.register(self.updateNumberModules), '%W', '%s', '%d')
         vcmd = (self.register(self.validateNumberModules),
                 '%d', '%i', '%P', '%s', '%S', '%v', '%V', '%W')
         invcmd = (self.register(self.invalidNumberModules),
                 '%d', '%i', '%P', '%s', '%S', '%v', '%V', '%W')
         spinboxCnf = {'name': 'numModSpinbox', 'from_': 1, 'to': MAX_MODULES,
-                      'textvariable': numMod, 'width': 5,
-                      'command': cmd, 'validate': 'all',
+                      'textvariable': numMod, 'width': 5, 'validate': 'all',
                       'validatecommand': vcmd, 'invalidcommand': invcmd}
         self.numberModulesSpinbox = Spinbox(pvStrFrame, cnf=spinboxCnf)
         self.numberModulesSpinbox.pack(side=LEFT)
