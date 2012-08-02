@@ -183,8 +183,10 @@ class PVapplicaton(Frame):
         self.cellIDlabel.pack(side=LEFT)
         spacer(pvModFrame, 16, LEFT)
         # cell ID spinbox
-        spinboxCnf = {'from_': 1, 'to': 72,
-                      'textvariable': cellID, 'width': 5}
+        maxModSize = max(MOD_SIZES)
+        spinboxCnf = {'name': 'cellIDspinbox', 'from_': 1, 'to': maxModSize,
+                      'textvariable': cellID, 'width': 5, 'validate': 'all',
+                      'validatecommand': vcmd, 'invalidcommand': invcmd}
         self.cellIDspinbox = Spinbox(pvModFrame, cnf=spinboxCnf)
         self.cellIDspinbox.pack(side=LEFT)
         self.PVmoduleButton = Button(pvModFrame,
@@ -238,6 +240,8 @@ class PVapplicaton(Frame):
             maxVal = MAX_MODULES
         elif W_ == ".pvStrFrame.modIDspinbox":
             maxVal = MAX_MODULES
+        elif W_ == ".pvModFrame.cellIDspinbox":
+            maxVal = max(MOD_SIZES)
         else:
             pass
         w = self.nametowidget(W_)
@@ -263,6 +267,8 @@ class PVapplicaton(Frame):
             errText = 'Invalid number of modules!'
         elif W_ == ".pvStrFrame.modIDspinbox":
             errText = 'Invalid module ID number!'
+        elif W_ == ".pvModFrame.cellIDspinbox":
+            errText = 'Invalid cell ID number!'
         else:
             pass
         w = self.nametowidget(W_)
