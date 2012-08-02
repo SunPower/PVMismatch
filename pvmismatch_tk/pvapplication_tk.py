@@ -53,6 +53,9 @@ class PVapplicaton(Frame):
         # number of strings integer variable
         numStr = self.numberStrings = IntVar(self)
         numStr.set(10)  # default
+        # number of strings integer variable
+        strID = self.stringID = IntVar(self)
+        strID.set(1)  # default
         # number of modules integer variable
         numMod = self.numberModules = IntVar(self)
         numMod.set(10)  # default
@@ -65,6 +68,12 @@ class PVapplicaton(Frame):
         # cell ID # spinbox
         cellID = self.cellID = IntVar(self)  # bind moduleID
         self.cellID.set(1)
+
+        # must register vcmd and invcmd as Tcl functions
+        vcmd = (self.register(self.validateWidget),
+                '%d', '%i', '%P', '%s', '%S', '%v', '%V', '%W')
+        invcmd = (self.register(self.invalidWidget),
+                '%d', '%i', '%P', '%s', '%S', '%v', '%V', '%W')
 
         # SP logo
         self.SPlogo_png = Image.open(SPLOGO)  # create image object
@@ -79,14 +88,14 @@ class PVapplicaton(Frame):
         # w/o fill=BOTH photoimage is centered in frame even with anchor=W
         self.SPlogoLabel.pack(fill=BOTH)
         # Intro text
-        introtext = 'PVmismatch calculates I-V and P-V curves as well as the'
-        introtext += '  max power point (MPP) for any sized system.'
+        introText = 'PVmismatch calculates I-V and P-V curves as well as the'
+        introText += '  max power point (MPP) for any sized system.'
         # anchor=W aligns message on left side, NW is no different
         # fg='white' sets text color to white, default is black, so it doesn't
         #   show on black background
         # default aspect is 150%, about as wide as high, or set width>0
-        self.introMsg = Message(self, name='introMsg', text=introtext,
-                                width=285, bg='black', fg='white', anchor=W)
+        self.introMsg = Message(self, name='introMsg', text=introText,
+                                width=300, bg='black', fg='white', anchor=W)
         # fill=BOTH expands the message to fill parent frame
         # w/o fill=BOTH message is centered in frame even with anchor=W
         self.introMsg.pack(fill=BOTH)
@@ -104,9 +113,21 @@ class PVapplicaton(Frame):
         # number of strings spinbox
         # use textVar to set number of strings from LOAD, RESET or default
         spinboxCnf = {'name': 'numStrSpinbox', 'from_': 1, 'to': MAX_STRINGS,
-                      'textvariable': numStr, 'width': 5}
+                      'textvariable': numStr, 'width': 5, 'validate': 'all',
+                      'validatecommand': vcmd, 'invalidcommand': invcmd}
         self.numberStringsSpinbox = Spinbox(pvSysFrame, cnf=spinboxCnf)
         self.numberStringsSpinbox.pack(side=LEFT)
+        # string ID label
+        labelCnf = {'name': 'strIDlabel', 'text': 'String ID #'}
+        self.strIDlabel = Label(pvSysFrame, cnf=labelCnf)
+        self.strIDlabel.pack(side=LEFT)
+        spacer(pvSysFrame, 6, LEFT)
+        # string ID # spinbox
+        spinboxCnf = {'name': 'strIDspinbox', 'from_': 1, 'to': MAX_STRINGS,
+                      'textvariable': strID, 'width': 5, 'validate': 'all',
+                      'validatecommand': vcmd, 'invalidcommand': invcmd}
+        self.strIDspinbox = Spinbox(pvSysFrame, cnf=spinboxCnf)
+        self.strIDspinbox.pack(side=LEFT)
         # PVsystem button
         self.PVsystemButton = Button(pvSysFrame, name='pvsysButton',
                                      text=PVSYSTEM_TEXT,
@@ -122,25 +143,16 @@ class PVapplicaton(Frame):
         self.numberModulesLabel = Label(pvStrFrame, cnf=labelCnf)
         self.numberModulesLabel.pack(side=LEFT)
         # number of modules spinbox
-        # must register vcmd and invcmd as Tcl functions
-        vcmd = (self.register(self.validateNumberModules),
-                '%d', '%i', '%P', '%s', '%S', '%v', '%V', '%W')
-        invcmd = (self.register(self.invalidNumberModules),
-                '%d', '%i', '%P', '%s', '%S', '%v', '%V', '%W')
         spinboxCnf = {'name': 'numModSpinbox', 'from_': 1, 'to': MAX_MODULES,
                       'textvariable': numMod, 'width': 5, 'validate': 'all',
                       'validatecommand': vcmd, 'invalidcommand': invcmd}
         self.numberModulesSpinbox = Spinbox(pvStrFrame, cnf=spinboxCnf)
         self.numberModulesSpinbox.pack(side=LEFT)
         # module ID # label
-        self.modIDLabel = Label(pvStrFrame, text='Module ID #')
-        self.modIDLabel.pack(side=LEFT)
+        labelCnf = {'name': 'modIDlabel', 'text': 'Module ID #'}
+        self.modIDlabel = Label(pvStrFrame, cnf=labelCnf)
+        self.modIDlabel.pack(side=LEFT)
         # module ID # spinbox
-        # must register vcmd and invcmd as Tcl functions
-        vcmd = (self.register(self.validateModuleID),
-                '%d', '%i', '%P', '%s', '%S', '%v', '%V', '%W')
-        invcmd = (self.register(self.invalidModuleID),
-                '%d', '%i', '%P', '%s', '%S', '%v', '%V', '%W')
         spinboxCnf = {'name': 'modIDspinbox', 'from_': 1, 'to': MAX_MODULES,
                       'textvariable': modID, 'width': 5, 'validate': 'all',
                       'validatecommand': vcmd, 'invalidcommand': invcmd}
@@ -153,7 +165,7 @@ class PVapplicaton(Frame):
         self.separatorLine()  # separator
 
         ## PVmodule frame
-        pvModFrame = self.PVmoduleFrame = Frame(master)
+        pvModFrame = self.PVmoduleFrame = Frame(master, name='pvModFrame')
         pvModFrame.pack(fill=BOTH)
         # number of cells label
         labelCnf = {'name': 'numCellsLabel', 'text': 'Number of Cells'}
@@ -169,6 +181,8 @@ class PVapplicaton(Frame):
         # cell ID # label
         self.cellIDlabel = Label(pvModFrame, text='Cell ID #')
         self.cellIDlabel.pack(side=LEFT)
+        spacer(pvModFrame, 16, LEFT)
+        # cell ID spinbox
         spinboxCnf = {'from_': 1, 'to': 72,
                       'textvariable': cellID, 'width': 5}
         self.cellIDspinbox = Spinbox(pvModFrame, cnf=spinboxCnf)
@@ -210,6 +224,51 @@ class PVapplicaton(Frame):
 #    %W  The name of the spinbox widget.
 
 # TODO Fix these functions so that delete and overwrite work
+
+    def validateWidget(self, *args):
+        # W = Tkinter.W = 'w' is already used, so use W_ instead
+        (d, i, P, s, S, v, V, W_) = args  # @UnusedVariable # IGNORE:W0612
+        print "OnValidate:",
+        print("d={}, i={}, P={}, s={}, S={}, v={}, V={}, W={}".format(*args))
+        if W_ == ".pvSysFrame.numStrSpinbox":
+            maxVal = MAX_STRINGS
+        elif W_ == ".pvSysFrame.strIDspinbox":
+            maxVal = MAX_STRINGS
+        elif W_ == ".pvStrFrame.numModSpinbox":
+            maxVal = MAX_MODULES
+        elif W_ == ".pvStrFrame.modIDspinbox":
+            maxVal = MAX_MODULES
+        else:
+            pass
+        w = self.nametowidget(W_)
+        w.config(validate=v)
+        if S in INTEGERS:
+            try:
+                intVar = int(P)
+            except ValueError:
+                return False
+            return 0 < intVar <= maxVal
+        else:
+            return False
+
+    def invalidWidget(self, *args):
+        (d, i, P, s, S, v, V, W_) = args  # @UnusedVariable # IGNORE:W0612
+        print "OnInvalid: ",
+        print("d={}, i={}, P={}, s={}, S={}, v={}, V={}, W={}".format(*args))
+        if W_ == ".pvSysFrame.numStrSpinbox":
+            errText = 'Invalid number of strings!'
+        elif W_ == ".pvSysFrame.strIDspinbox":
+            errText = 'Invalid string ID number!'
+        elif W_ == ".pvStrFrame.numModSpinbox":
+            errText = 'Invalid number of modules!'
+        elif W_ == ".pvStrFrame.modIDspinbox":
+            errText = 'Invalid module ID number!'
+        else:
+            pass
+        w = self.nametowidget(W_)
+        w.config(validate=v)
+        self.MESSAGE.config(fg='red', text=errText, aspect=1000)
+        self.bell()
 
     def validateNumberModules(self, action, index, value_if_allowed,
                               prior_value, text, validation_type,
