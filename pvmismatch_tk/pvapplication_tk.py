@@ -10,6 +10,8 @@ from Tkinter import Frame, Label, Button, Toplevel, IntVar, OptionMenu, \
 from pvmismatch_tk.pvmodule_tk import PVmodule_tk
 from pvmismatch_tk.pvstring_tk import PVstring_tk
 from pvmismatch_tk.pvsystem_tk import PVsystem_tk
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2TkAgg
+from pvmismatch.pvsystem import PVsystem
 import os
 
 INTEGERS = '0123456789'
@@ -40,16 +42,9 @@ class PVapplicaton(Frame):
         Constructor
         """
         Frame.__init__(self, master)
-        self._name = 'pvApplication'  # set name of frame widget
         master.resizable(False, False)  # not resizable in x or y
         # don't set master.minsize
         master.title(PVAPP_TXT)  # set title bar of master (a.k.a. root)
-        # set black background, pad sides with 15 points, top/bottom 5 points
-        self.config(bg='black', padx=5, pady=5)
-        # fill=BOTH fills in padding with background color
-        # w/o fill=BOTH padding is default color
-        # side=TOP is the default
-        self.pack(fill=BOTH)
 
         # number of strings integer variable
         numStr = self.numberStrings = IntVar(self)
@@ -70,6 +65,9 @@ class PVapplicaton(Frame):
         cellID = self.cellID = IntVar(self)  # bind moduleID
         self.cellID.set(1)
 
+        # PVsystem
+        pvSys = PVsystem()
+
         # must register vcmd and invcmd as Tcl functions
         vcmd = (self.register(self.validateWidget),
                 '%d', '%i', '%P', '%s', '%S', '%v', '%V', '%W')
@@ -77,6 +75,13 @@ class PVapplicaton(Frame):
                 '%d', '%i', '%P', '%s', '%S', '%v', '%V', '%W')
 
         # SP logo
+        self._name = 'pvApplication'  # set name of frame widget
+        # set black background, pad sides with 15 points, top/bottom 5 points
+        self.config(bg='black', padx=5, pady=5)
+        # fill=BOTH fills in padding with background color
+        # w/o fill=BOTH padding is default color
+        # side=TOP is the default
+        self.pack(fill=BOTH)
         self.SPlogo_png = Image.open(SPLOGO)  # create image object
         # convert image to tk-compatible format (.gif, .pgm, or .ppm)
         self.SPlogo = ImageTk.PhotoImage(self.SPlogo_png)
@@ -103,9 +108,24 @@ class PVapplicaton(Frame):
         self.separatorLine()  # separator
 
         # PVsystem frame
-        pvSysFrame = self.PVsystemFrame = Frame(master, name='pvSysFrame')
+        pvSysFrame = self.pvSysFrame = Frame(master, name='pvSysFrame')
         # fill=BOTH keeps widgets in frame on left when window is resized
         pvSysFrame.pack(fill=BOTH)
+
+        # PVsystem data frame
+        pvSysDataFrame = self.pvSysDataFrame = Frame(pvSysFrame,
+                                                     name='pvSysDataFrame')
+        pvSysDataFrame.pack(side=LEFT)
+
+        # PVsystem matplotlib figure canvas
+        pvSysPlot = pvSys.plotSys()
+        self.pvSysFigCanvas = FigureCanvasTkAgg(pvSysPlot, master=pvSysFrame,
+                                                resize_callback=None)
+        pvSysFigCanvas = self.pvSysFigCanvas
+        pvSysFigCanvas.show()
+        print pvSysFigCanvas._tkcanvas is pvSysFigCanvas.get_tk_widget()
+        pvSysFigCanvas.get_tk_widget().pack(side=RIGHT)
+
         # number of strings label
         labelCnf = {'name': 'numStrLabel', 'text': 'Number of Strings'}
         self.numberStringsLabel = Label(pvSysFrame, cnf=labelCnf)
@@ -130,14 +150,14 @@ class PVapplicaton(Frame):
         self.strIDspinbox = Spinbox(pvSysFrame, cnf=spinboxCnf)
         self.strIDspinbox.pack(side=LEFT)
         # PVsystem button
-        self.PVsystemButton = Button(pvSysFrame, name='pvsysButton',
+        self.pvSysButton = Button(pvSysFrame, name='pvsysButton',
                                      text=PVSYSTEM_TEXT,
                                      command=self.startPVsystem_tk)
-        self.PVsystemButton.pack(side=RIGHT)
+        self.pvSysButton.pack(side=RIGHT)
         self.separatorLine()  # separator
 
         # PVstring frame
-        pvStrFrame = self.PVstringFrame = Frame(master, name='pvStrFrame')
+        pvStrFrame = self.pvStrFrame = Frame(master, name='pvStrFrame')
         pvStrFrame.pack(fill=BOTH)
         # number of modules label
         labelCnf = {'name': 'numModLabel', 'text': 'Number of Modules'}
@@ -160,13 +180,13 @@ class PVapplicaton(Frame):
         self.modIDspinbox = Spinbox(pvStrFrame, cnf=spinboxCnf)
         self.modIDspinbox.pack(side=LEFT)
         # PVmodule button
-        self.PVstringButton = Button(pvStrFrame, cnf={'text': PVSTRING_TEXT})
-        self.PVstringButton.pack(side=RIGHT)
-        self.PVstringButton['command'] = self.startPVstring_tk
+        self.pvStrButton = Button(pvStrFrame, cnf={'text': PVSTRING_TEXT})
+        self.pvStrButton.pack(side=RIGHT)
+        self.pvStrButton['command'] = self.startPVstring_tk
         self.separatorLine()  # separator
 
         ## PVmodule frame
-        pvModFrame = self.PVmoduleFrame = Frame(master, name='pvModFrame')
+        pvModFrame = self.pvModFrame = Frame(master, name='pvModFrame')
         pvModFrame.pack(fill=BOTH)
         # number of cells label
         labelCnf = {'name': 'numCellsLabel', 'text': 'Number of Cells'}
@@ -190,10 +210,10 @@ class PVapplicaton(Frame):
                       'validatecommand': vcmd, 'invalidcommand': invcmd}
         self.cellIDspinbox = Spinbox(pvModFrame, cnf=spinboxCnf)
         self.cellIDspinbox.pack(side=LEFT)
-        self.PVmoduleButton = Button(pvModFrame,
+        self.pvModButton = Button(pvModFrame,
                                      cnf={'text': PVMODULE_TEXT})
-        self.PVmoduleButton.pack(side=RIGHT)
-        self.PVmoduleButton['command'] = self.startPVmodule_tk
+        self.pvModButton.pack(side=RIGHT)
+        self.pvModButton['command'] = self.startPVmodule_tk
         self.separatorLine()  # separator
 
         # toolbar

@@ -4,6 +4,8 @@ Created on Wed May 30 11:53:52 2012
 
 @author: mmikofski
 """
+import numpy as np
+import scipy.constants
 
 # defaults
 _Rs = 0.004267236774264931  # [ohm] series resistance
@@ -21,7 +23,6 @@ _nRBD = 3.284628553041425  # reverse breakdown exponent
 
 def npinterpx(x, xp, fp):
     """np.interp function with linear extrapolation"""
-    import numpy as np
     y = np.interp(x, xp, fp)
     # extrapolate left
     left = x < xp[0]
@@ -54,5 +55,5 @@ class PVconstants(object):
         self.aRBD = aRBD
         self.VRBD = VRBD
         self.nRBD = nRBD
-        self.k = 1.380658E-23
-        self.q = 1.602176487E-19
+        self.k = scipy.constants.k
+        self.q = scipy.constants.e
