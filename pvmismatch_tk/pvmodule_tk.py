@@ -41,3 +41,44 @@ class PVmodule_tk(Frame):
 
         self.QUIT = Button(self, cnf={'text': 'Quit', 'command': self.quit})
         self.QUIT.pack({'side': 'top', 'fill': 'both'})
+
+#        # cell ID # spinbox
+#        cellID = self.cellID = IntVar(self)  # bind moduleID
+#        cellID.set(1)
+
+#        # cell ID # label
+#        self.cellIDlabel = Label(pvModFrame, text='Cell ID #')
+#        self.cellIDlabel.pack(side=LEFT)
+#        spacer(pvModFrame, 16, LEFT)
+#        # cell ID spinbox
+#        maxModSize = max(MOD_SIZES)
+#        spinboxCnf = {'name': 'cellIDspinbox', 'from_': 1, 'to': maxModSize,
+#                      'textvariable': cellID, 'width': 5, 'validate': 'all',
+#                      'validatecommand': vcmd, 'invalidcommand': invcmd}
+#        self.cellIDspinbox = Spinbox(pvModFrame, cnf=spinboxCnf)
+#        self.cellIDspinbox.pack(side=LEFT)
+#        self.pvModButton = Button(pvModFrame,
+#                                     cnf={'text': PVMODULE_TEXT})
+#        self.pvModButton.pack(side=RIGHT)
+#        self.pvModButton['command'] = self.startPVmodule_tk
+#        self.separatorLine()  # separator
+
+#        # module ID # label
+#        labelCnf = {'name': 'modIDlabel', 'text': 'Module ID #'}
+#        self.modIDlabel = Label(pvStrFrame, cnf=labelCnf)
+#        self.modIDlabel.pack(side=LEFT)
+#        # module ID # spinbox
+#        spinboxCnf = {'name': 'modIDspinbox', 'from_': 1, 'to': MAX_MODULES,
+#                      'textvariable': modID, 'width': 5, 'validate': 'all',
+#                      'validatecommand': vcmd, 'invalidcommand': invcmd}
+#        self.modIDspinbox = Spinbox(pvStrFrame, cnf=spinboxCnf)
+#        self.modIDspinbox.pack(side=LEFT)
+#        # PVmodule button
+#        self.pvStrButton = Button(pvStrFrame, cnf={'text': PVSTRING_TEXT})
+#        self.pvStrButton.pack(side=RIGHT)
+#        self.pvStrButton['command'] = self.startPVstring_tk
+#        self.separatorLine()  # separator
+#
+#        ## PVmodule frame
+#        pvModFrame = self.pvModFrame = Frame(master, name='pvModFrame')
+#        pvModFrame.pack(fill=BOTH)

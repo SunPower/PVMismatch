@@ -9,5 +9,4 @@ from Tkinter import Tk
 root = Tk()
 app = PVapplicaton(root)
 app.mainloop()
-# please destroy me or I'll continue to run in background
-root.detroy()
+# matplotlib must implements destroy

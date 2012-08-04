@@ -33,3 +33,29 @@ class PVstring_tk(Frame):
         self.SPlogoLabel.pack({'side': 'top'})
         self.QUIT = Button(self, cnf={'text': 'Quit', 'command': self.quit})
         self.QUIT.pack({'side': 'top', 'fill': 'both'})
+
+#        # module ID # integer variable
+#        modID = self.moduleID = IntVar(self)
+#        modID.set(1)
+
+#        # string ID label
+#        labelCnf = {'name': 'strIDlabel', 'text': 'String ID #'}
+#        self.strIDlabel = Label(pvSysFrame, cnf=labelCnf)
+#        self.strIDlabel.pack(side=LEFT)
+#        spacer(pvSysFrame, 6, LEFT)
+#        # string ID # spinbox
+#        spinboxCnf = {'name': 'strIDspinbox', 'from_': 1, 'to': MAX_STRINGS,
+#                      'textvariable': strID, 'width': 5, 'validate': 'all',
+#                      'validatecommand': vcmd, 'invalidcommand': invcmd}
+#        self.strIDspinbox = Spinbox(pvSysFrame, cnf=spinboxCnf)
+#        self.strIDspinbox.pack(side=LEFT)
+#        # PVsystem button
+#        self.pvSysButton = Button(pvSysFrame, name='pvsysButton',
+#                                     text=PVSYSTEM_TEXT,
+#                                     command=self.startPVsystem_tk)
+#        self.pvSysButton.pack(side=RIGHT)
+#        self.separatorLine()  # separator
+
+#        # PVstring frame
+#        pvStrFrame = self.pvStrFrame = Frame(master, name='pvStrFrame')
+#        pvStrFrame.pack(fill=BOTH)
