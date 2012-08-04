@@ -29,8 +29,8 @@ PVSYSTEM_TEXT = 'PVsystem'
 READY_MSG = 'Ready'
 
 
-def spacer(root, width, side):
-    Frame(root, width=width).pack(side=side)
+#def spacer(root, width, side):
+#    Frame(root, width=width).pack(side=side)
 
 
 class PVapplicaton(Frame):
@@ -67,7 +67,7 @@ class PVapplicaton(Frame):
         cellID.set(1)
 
         # PVsystem
-        pvSys = PVsystem()
+        pvSys = self.pvSys = PVsystem()
 
         # must register vcmd and invcmd as Tcl functions
         vcmd = (self.register(self.validateWidget),
@@ -102,11 +102,10 @@ class PVapplicaton(Frame):
         #   show on black background
         # default aspect is 150%, about as wide as high, or set width>0
         self.introMsg = Message(self, name='introMsg', text=introText,
-                                width=300, bg='black', fg='white', anchor=W)
+                                width=1000, bg='black', fg='white', anchor=W)
         # fill=BOTH expands the message to fill parent frame
         # w/o fill=BOTH message is centered in frame even with anchor=W
         self.introMsg.pack(fill=BOTH)
-        self.separatorLine()  # separator
 
         # PVsystem frame
         pvSysFrame = self.pvSysFrame = Frame(master, name='pvSysFrame')
@@ -114,24 +113,28 @@ class PVapplicaton(Frame):
         pvSysFrame.pack(fill=BOTH)
 
         # PVsystem matplotlib figure canvas
-        pvSysPlot = pvSys.plotSys()
-        self.pvSysFigCanvas = FigureCanvasTkAgg(pvSysPlot, master=pvSysFrame,
+        self.pvSysPlotFrame = Frame(pvSysFrame, name='pvSysPlotFrame')
+        pvSysPlotFrame = self.pvSysPlotFrame
+        pvSysPlotFrame.pack(side=RIGHT)
+        pvSysPlot = self.pvSysPlot = pvSys.plotSys()
+        self.pvSysFigCanvas = FigureCanvasTkAgg(pvSysPlot,
+                                                master=pvSysPlotFrame,
                                                 resize_callback=None)
         pvSysFigCanvas = self.pvSysFigCanvas
         pvSysFigCanvas._tkcanvas._name = 'pvSysFigCanvas'
         pvSysFigCanvas.show()
         # NB: FigureCanvasTkAgg._tkcanvas is FigureCanvasTkAgg.get_tk_widget()
-        pvSysFigCanvas.get_tk_widget().pack(side=RIGHT, fill=BOTH, expand=True)
-#        pvSysToolbar = NavigationToolbar2TkAgg(pvSysFigCanvas, pvSysFrame)
-#        pvSysToolbar.update()
-#        pvSysToolbar.pack(side='bottom', fill=BOTH, expand=True)
+        pvSysFigCanvas.get_tk_widget().pack(fill=BOTH)
+        pvSysToolbar = NavigationToolbar2TkAgg(pvSysFigCanvas, pvSysPlotFrame)
+        pvSysToolbar.update()
+        pvSysToolbar.pack(fill=BOTH)
 
         # PVsystem data frame
         pvSysDataFrame = self.pvSysDataFrame = Frame(pvSysFrame,
                                                      name='pvSysDataFrame')
         pvSysDataFrame.pack(side=LEFT)
         Label(pvSysDataFrame, text='PVsystem').grid(row=0, columnspan=3,
-                                                    sticky='nw')
+                                                    sticky=W)
 
         # number of strings label
         labelCnf = {'name': 'numStrLabel', 'text': 'Number of Strings'}
@@ -347,9 +350,9 @@ class PVapplicaton(Frame):
     def save(self):
         print 'save *.pv file'
 
-    def separatorLine(self):
-        # master is known in constructor, but not here!
-        Frame(self.master, height=2, bg='white').pack(fill=BOTH)
+#    def separatorLine(self):
+#        # master is known in constructor, but not here!
+#        Frame(self.master, height=2, bg='white').pack(fill=BOTH)
 
     def _quit(self):
         # this is necessary on Windows to prevent
