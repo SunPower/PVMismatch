@@ -10,7 +10,8 @@ from Tkinter import Frame, Label, Button, Toplevel, IntVar, OptionMenu, \
 from pvmismatch_tk.pvmodule_tk import PVmodule_tk
 from pvmismatch_tk.pvstring_tk import PVstring_tk
 from pvmismatch_tk.pvsystem_tk import PVsystem_tk
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2TkAgg
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, \
+    NavigationToolbar2TkAgg
 from pvmismatch.pvsystem import PVsystem
 import os
 
@@ -63,7 +64,7 @@ class PVapplicaton(Frame):
         numCells.set(MOD_SIZES[0])  # default value
         # cell ID # spinbox
         cellID = self.cellID = IntVar(self)  # bind moduleID
-        self.cellID.set(1)
+        cellID.set(1)
 
         # PVsystem
         pvSys = PVsystem()
@@ -112,121 +113,127 @@ class PVapplicaton(Frame):
         # fill=BOTH keeps widgets in frame on left when window is resized
         pvSysFrame.pack(fill=BOTH)
 
-        # PVsystem data frame
-        pvSysDataFrame = self.pvSysDataFrame = Frame(pvSysFrame,
-                                                     name='pvSysDataFrame')
-        pvSysDataFrame.pack(side=LEFT)
-
         # PVsystem matplotlib figure canvas
         pvSysPlot = pvSys.plotSys()
         self.pvSysFigCanvas = FigureCanvasTkAgg(pvSysPlot, master=pvSysFrame,
                                                 resize_callback=None)
         pvSysFigCanvas = self.pvSysFigCanvas
+        pvSysFigCanvas._tkcanvas._name = 'pvSysFigCanvas'
         pvSysFigCanvas.show()
-        print pvSysFigCanvas._tkcanvas is pvSysFigCanvas.get_tk_widget()
-        pvSysFigCanvas.get_tk_widget().pack(side=RIGHT)
+        # NB: FigureCanvasTkAgg._tkcanvas is FigureCanvasTkAgg.get_tk_widget()
+        pvSysFigCanvas.get_tk_widget().pack(side=RIGHT, fill=BOTH, expand=True)
+#        pvSysToolbar = NavigationToolbar2TkAgg(pvSysFigCanvas, pvSysFrame)
+#        pvSysToolbar.update()
+#        pvSysToolbar.pack(side='bottom', fill=BOTH, expand=True)
+
+        # PVsystem data frame
+        pvSysDataFrame = self.pvSysDataFrame = Frame(pvSysFrame,
+                                                     name='pvSysDataFrame')
+        pvSysDataFrame.pack(side=LEFT)
+        Label(pvSysDataFrame, text='PVsystem').grid(row=0, columnspan=3,
+                                                    sticky='nw')
 
         # number of strings label
         labelCnf = {'name': 'numStrLabel', 'text': 'Number of Strings'}
-        self.numberStringsLabel = Label(pvSysFrame, cnf=labelCnf)
-        self.numberStringsLabel.pack(side=LEFT)
-        spacer(pvSysFrame, 6, LEFT)
+        self.numStrLabel = Label(pvSysDataFrame, cnf=labelCnf)
+        self.numStrLabel.grid(row=1, columnspan=2, sticky=W)
         # number of strings spinbox
         # use textVar to set number of strings from LOAD, RESET or default
         spinboxCnf = {'name': 'numStrSpinbox', 'from_': 1, 'to': MAX_STRINGS,
                       'textvariable': numStr, 'width': 5, 'validate': 'all',
                       'validatecommand': vcmd, 'invalidcommand': invcmd}
-        self.numberStringsSpinbox = Spinbox(pvSysFrame, cnf=spinboxCnf)
-        self.numberStringsSpinbox.pack(side=LEFT)
-        # string ID label
-        labelCnf = {'name': 'strIDlabel', 'text': 'String ID #'}
-        self.strIDlabel = Label(pvSysFrame, cnf=labelCnf)
-        self.strIDlabel.pack(side=LEFT)
-        spacer(pvSysFrame, 6, LEFT)
-        # string ID # spinbox
-        spinboxCnf = {'name': 'strIDspinbox', 'from_': 1, 'to': MAX_STRINGS,
-                      'textvariable': strID, 'width': 5, 'validate': 'all',
-                      'validatecommand': vcmd, 'invalidcommand': invcmd}
-        self.strIDspinbox = Spinbox(pvSysFrame, cnf=spinboxCnf)
-        self.strIDspinbox.pack(side=LEFT)
-        # PVsystem button
-        self.pvSysButton = Button(pvSysFrame, name='pvsysButton',
-                                     text=PVSYSTEM_TEXT,
-                                     command=self.startPVsystem_tk)
-        self.pvSysButton.pack(side=RIGHT)
-        self.separatorLine()  # separator
+        self.numStrSpinbox = Spinbox(pvSysDataFrame, cnf=spinboxCnf)
+        self.numStrSpinbox.grid(row=1, column=2)
+#        # string ID label
+#        labelCnf = {'name': 'strIDlabel', 'text': 'String ID #'}
+#        self.strIDlabel = Label(pvSysFrame, cnf=labelCnf)
+#        self.strIDlabel.pack(side=LEFT)
+#        spacer(pvSysFrame, 6, LEFT)
+#        # string ID # spinbox
+#        spinboxCnf = {'name': 'strIDspinbox', 'from_': 1, 'to': MAX_STRINGS,
+#                      'textvariable': strID, 'width': 5, 'validate': 'all',
+#                      'validatecommand': vcmd, 'invalidcommand': invcmd}
+#        self.strIDspinbox = Spinbox(pvSysFrame, cnf=spinboxCnf)
+#        self.strIDspinbox.pack(side=LEFT)
+#        # PVsystem button
+#        self.pvSysButton = Button(pvSysFrame, name='pvsysButton',
+#                                     text=PVSYSTEM_TEXT,
+#                                     command=self.startPVsystem_tk)
+#        self.pvSysButton.pack(side=RIGHT)
+#        self.separatorLine()  # separator
 
-        # PVstring frame
-        pvStrFrame = self.pvStrFrame = Frame(master, name='pvStrFrame')
-        pvStrFrame.pack(fill=BOTH)
+#        # PVstring frame
+#        pvStrFrame = self.pvStrFrame = Frame(master, name='pvStrFrame')
+#        pvStrFrame.pack(fill=BOTH)
+
         # number of modules label
         labelCnf = {'name': 'numModLabel', 'text': 'Number of Modules'}
-        self.numberModulesLabel = Label(pvStrFrame, cnf=labelCnf)
-        self.numberModulesLabel.pack(side=LEFT)
+        self.numModLabel = Label(pvSysDataFrame, cnf=labelCnf)
+        self.numModLabel.grid(row=2, columnspan=2, sticky=W)
         # number of modules spinbox
         spinboxCnf = {'name': 'numModSpinbox', 'from_': 1, 'to': MAX_MODULES,
                       'textvariable': numMod, 'width': 5, 'validate': 'all',
                       'validatecommand': vcmd, 'invalidcommand': invcmd}
-        self.numberModulesSpinbox = Spinbox(pvStrFrame, cnf=spinboxCnf)
-        self.numberModulesSpinbox.pack(side=LEFT)
-        # module ID # label
-        labelCnf = {'name': 'modIDlabel', 'text': 'Module ID #'}
-        self.modIDlabel = Label(pvStrFrame, cnf=labelCnf)
-        self.modIDlabel.pack(side=LEFT)
-        # module ID # spinbox
-        spinboxCnf = {'name': 'modIDspinbox', 'from_': 1, 'to': MAX_MODULES,
-                      'textvariable': modID, 'width': 5, 'validate': 'all',
-                      'validatecommand': vcmd, 'invalidcommand': invcmd}
-        self.modIDspinbox = Spinbox(pvStrFrame, cnf=spinboxCnf)
-        self.modIDspinbox.pack(side=LEFT)
-        # PVmodule button
-        self.pvStrButton = Button(pvStrFrame, cnf={'text': PVSTRING_TEXT})
-        self.pvStrButton.pack(side=RIGHT)
-        self.pvStrButton['command'] = self.startPVstring_tk
-        self.separatorLine()  # separator
+        self.numModSpinbox = Spinbox(pvSysDataFrame, cnf=spinboxCnf)
+        self.numModSpinbox.grid(row=2, column=2)
+#        # module ID # label
+#        labelCnf = {'name': 'modIDlabel', 'text': 'Module ID #'}
+#        self.modIDlabel = Label(pvStrFrame, cnf=labelCnf)
+#        self.modIDlabel.pack(side=LEFT)
+#        # module ID # spinbox
+#        spinboxCnf = {'name': 'modIDspinbox', 'from_': 1, 'to': MAX_MODULES,
+#                      'textvariable': modID, 'width': 5, 'validate': 'all',
+#                      'validatecommand': vcmd, 'invalidcommand': invcmd}
+#        self.modIDspinbox = Spinbox(pvStrFrame, cnf=spinboxCnf)
+#        self.modIDspinbox.pack(side=LEFT)
+#        # PVmodule button
+#        self.pvStrButton = Button(pvStrFrame, cnf={'text': PVSTRING_TEXT})
+#        self.pvStrButton.pack(side=RIGHT)
+#        self.pvStrButton['command'] = self.startPVstring_tk
+#        self.separatorLine()  # separator
+#
+#        ## PVmodule frame
+#        pvModFrame = self.pvModFrame = Frame(master, name='pvModFrame')
+#        pvModFrame.pack(fill=BOTH)
 
-        ## PVmodule frame
-        pvModFrame = self.pvModFrame = Frame(master, name='pvModFrame')
-        pvModFrame.pack(fill=BOTH)
         # number of cells label
-        labelCnf = {'name': 'numCellsLabel', 'text': 'Number of Cells'}
-        self.numberCellsLabel = Label(pvModFrame, cnf=labelCnf)
-        self.numberCellsLabel.pack(side=LEFT)
-        spacer(pvModFrame, 6, LEFT)
+        labelCnf = {'name': 'numCellLabel', 'text': 'Number of Cells'}
+        self.numCellLabel = Label(pvSysDataFrame, cnf=labelCnf)
+        self.numCellLabel.grid(row=3, columnspan=2, sticky=W)
         # number of cells option menu
         # http://www.logilab.org/card/pylintfeatures#basic-checker
         # pylint: disable = W0142
-        self.numberCellsOption = OptionMenu(pvModFrame, numCells, *MOD_SIZES)
+        self.numCellOption = OptionMenu(pvSysDataFrame, numCells, *MOD_SIZES)
         # pylint: enable = W0142
-        self.numberCellsOption.pack(side=LEFT)
-        # cell ID # label
-        self.cellIDlabel = Label(pvModFrame, text='Cell ID #')
-        self.cellIDlabel.pack(side=LEFT)
-        spacer(pvModFrame, 16, LEFT)
-        # cell ID spinbox
-        maxModSize = max(MOD_SIZES)
-        spinboxCnf = {'name': 'cellIDspinbox', 'from_': 1, 'to': maxModSize,
-                      'textvariable': cellID, 'width': 5, 'validate': 'all',
-                      'validatecommand': vcmd, 'invalidcommand': invcmd}
-        self.cellIDspinbox = Spinbox(pvModFrame, cnf=spinboxCnf)
-        self.cellIDspinbox.pack(side=LEFT)
-        self.pvModButton = Button(pvModFrame,
-                                     cnf={'text': PVMODULE_TEXT})
-        self.pvModButton.pack(side=RIGHT)
-        self.pvModButton['command'] = self.startPVmodule_tk
-        self.separatorLine()  # separator
+        self.numCellOption._name = 'numCellOption'
+        self.numCellOption.grid(row=3, column=2)
+#        # cell ID # label
+#        self.cellIDlabel = Label(pvModFrame, text='Cell ID #')
+#        self.cellIDlabel.pack(side=LEFT)
+#        spacer(pvModFrame, 16, LEFT)
+#        # cell ID spinbox
+#        maxModSize = max(MOD_SIZES)
+#        spinboxCnf = {'name': 'cellIDspinbox', 'from_': 1, 'to': maxModSize,
+#                      'textvariable': cellID, 'width': 5, 'validate': 'all',
+#                      'validatecommand': vcmd, 'invalidcommand': invcmd}
+#        self.cellIDspinbox = Spinbox(pvModFrame, cnf=spinboxCnf)
+#        self.cellIDspinbox.pack(side=LEFT)
+#        self.pvModButton = Button(pvModFrame,
+#                                     cnf={'text': PVMODULE_TEXT})
+#        self.pvModButton.pack(side=RIGHT)
+#        self.pvModButton['command'] = self.startPVmodule_tk
+#        self.separatorLine()  # separator
 
         # toolbar
         toolbar = self.toolbarframe = Frame(master, name='toolbar')
         toolbar.pack(fill=BOTH)
-        self.QUIT = Button(toolbar, cnf={'text': 'Quit', 'command': self.quit})
+        self.QUIT = Button(toolbar, text='Quit', command=self._quit)
         self.QUIT.pack(side=RIGHT)
-        self.SAVE = Button(toolbar, cnf={'text': 'Save', 'command': self.save})
+        self.SAVE = Button(toolbar, text='Save', command=self.save)
         self.SAVE.pack(side=RIGHT)
-        self.LOAD = Button(toolbar, cnf={'text': 'Load', 'command': self.load})
+        self.LOAD = Button(toolbar, text='Load', command=self.load)
         self.LOAD.pack(side=RIGHT)
-        self.RESET = Button(toolbar, text='Reset')
-        self.RESET['command'] = self.reset
+        self.RESET = Button(toolbar, text='Reset', command=self.reset)
         self.RESET.pack(side=RIGHT)
         self.MESSAGE = Message(toolbar, text=READY_MSG, width=150)
         self.MESSAGE.pack(side=LEFT)
@@ -253,16 +260,16 @@ class PVapplicaton(Frame):
         (d, i, P, s, S, v, V, W_) = args  # @UnusedVariable # IGNORE:W0612
         print "OnValidate:",
         print("d={}, i={}, P={}, s={}, S={}, v={}, V={}, W={}".format(*args))
-        if W_ == ".pvSysFrame.numStrSpinbox":
+        if W_ == ".pvSysFrame.pvSysDataFrame.numStrSpinbox":
             maxVal = MAX_STRINGS
-        elif W_ == ".pvSysFrame.strIDspinbox":
-            maxVal = MAX_STRINGS
-        elif W_ == ".pvStrFrame.numModSpinbox":
+#        elif W_ == ".pvSysDataFrame.strIDspinbox":
+#            maxVal = MAX_STRINGS
+        elif W_ == ".pvSysFrame.pvSysDataFrame.numModSpinbox":
             maxVal = MAX_MODULES
-        elif W_ == ".pvStrFrame.modIDspinbox":
-            maxVal = MAX_MODULES
-        elif W_ == ".pvModFrame.cellIDspinbox":
-            maxVal = max(MOD_SIZES)
+#        elif W_ == ".pvSysDataFrame.modIDspinbox":
+#            maxVal = MAX_MODULES
+#        elif W_ == ".pvSysDataFrame.cellIDspinbox":
+#            maxVal = max(MOD_SIZES)
         else:
             pass
         w = self.nametowidget(W_)
@@ -280,16 +287,16 @@ class PVapplicaton(Frame):
         (d, i, P, s, S, v, V, W_) = args  # @UnusedVariable # IGNORE:W0612
         print "OnInvalid: ",
         print("d={}, i={}, P={}, s={}, S={}, v={}, V={}, W={}".format(*args))
-        if W_ == ".pvSysFrame.numStrSpinbox":
+        if W_ == ".pvSysFrame.pvSysDataFrame.numStrSpinbox":
             errText = 'Invalid number of strings!'
-        elif W_ == ".pvSysFrame.strIDspinbox":
-            errText = 'Invalid string ID number!'
-        elif W_ == ".pvStrFrame.numModSpinbox":
+#        elif W_ == ".pvSysDataFrame.strIDspinbox":
+#            errText = 'Invalid string ID number!'
+        elif W_ == ".pvSysFrame.pvSysDataFrame.numModSpinbox":
             errText = 'Invalid number of modules!'
-        elif W_ == ".pvStrFrame.modIDspinbox":
-            errText = 'Invalid module ID number!'
-        elif W_ == ".pvModFrame.cellIDspinbox":
-            errText = 'Invalid cell ID number!'
+#        elif W_ == ".pvSysDataFrame.modIDspinbox":
+#            errText = 'Invalid module ID number!'
+#        elif W_ == ".pvSysDataFrame.cellIDspinbox":
+#            errText = 'Invalid cell ID number!'
         else:
             pass
         w = self.nametowidget(W_)
@@ -343,3 +350,9 @@ class PVapplicaton(Frame):
     def separatorLine(self):
         # master is known in constructor, but not here!
         Frame(self.master, height=2, bg='white').pack(fill=BOTH)
+
+    def _quit(self):
+        # this is necessary on Windows to prevent
+        # Fatal Python Error: PyEval_RestoreThread: NULL tstate
+        self.master.quit()  # stops mainloop
+        self.master.destroy()
