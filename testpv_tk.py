@@ -1,3 +1,4 @@
+#! /usr/bin/env python
 # -*- coding: utf-8 -*-
 """
 Created on Jul 29, 2012
@@ -6,7 +7,9 @@ Created on Jul 29, 2012
 """
 from pvmismatch_tk.pvapplication_tk import PVapplicaton
 from Tkinter import Tk
-root = Tk()
-app = PVapplicaton(root)
-app.mainloop()
-# matplotlib must implements destroy
+
+if __name__ == "__main__":
+    root = Tk()
+    app = PVapplicaton(root)
+    app.mainloop()
+    # matplotlib must implement destroy in mainloop

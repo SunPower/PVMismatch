@@ -42,7 +42,6 @@ class PVapplicaton(Frame):
         """
         Frame.__init__(self, master)
         master.resizable(False, False)  # not resizable in x or y
-        # don't set master.minsize
         master.title(PVAPP_TXT)  # set title bar of master (a.k.a. root)
 
         # number of strings integer variable
@@ -122,7 +121,7 @@ class PVapplicaton(Frame):
                                                 master=pvSysPlotFrame,
                                                 resize_callback=None)
         pvSysFigCanvas = self.pvSysFigCanvas
-        pvSysFigCanvas._tkcanvas._name = 'pvSysFigCanvas'
+        pvSysFigCanvas.get_tk_widget()._name = 'pvSysFigCanvas'
         pvSysFigCanvas.show()
         # NB: FigureCanvasTkAgg._tkcanvas is FigureCanvasTkAgg.get_tk_widget()
         pvSysFigCanvas.get_tk_widget().pack(fill=BOTH)
@@ -168,8 +167,8 @@ class PVapplicaton(Frame):
         # http://www.logilab.org/card/pylintfeatures#basic-checker
         # pylint: disable = W0142
         self.numCellOption = OptionMenu(pvSysDataFrame, numCells, *MOD_SIZES)
-        self.numCellOption._name = 'numCellOption'
         # pylint: enable = W0142
+        self.numCellOption._name = 'numCellOption'
         self.numCellOption.grid(row=3, column=2)
 
         # slider to explore IV curves
@@ -301,12 +300,8 @@ class PVapplicaton(Frame):
         self.stringID.set(1)  # default
         # number of modules integer variable
         self.numberModules.set(10)  # default
-#        # module ID # integer variable
-#        self.moduleID.set(1)
         # number of cells integer variable
-        self.numberCells.set(MOD_SIZES[0])  # default value
-#        # cell ID # integer variable
-#        self.cellID.set(1)
+        self.numberCells.set(MOD_SIZES[1])  # default value is 96
         self.MESSAGE.config(fg='black', text=READY_MSG, width=150)
         print 'reset'
 
