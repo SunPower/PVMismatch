@@ -43,6 +43,7 @@ class PVapplicaton(Frame):
         Frame.__init__(self, master)
         master.resizable(False, False)  # not resizable in x or y
         master.title(PVAPP_TXT)  # set title bar of master (a.k.a. root)
+        master.protocol("WM_DELETE_WINDOW", self._quit)
 
         # number of strings integer variable
         numStr = self.numberStrings = IntVar(self)
