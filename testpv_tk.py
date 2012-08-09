@@ -22,18 +22,25 @@ if __name__ == "__main__":
     argvs = sys.argv[1:]  # will be empty if only sys.argv[0]
     if argvs:
         argv1 = sys.argv[1]
-        # test if input is 'WxH' or 'WxH+/-X+/-Y'
+        # test if input is 'home','reset','WxH+/-X+/-Y' or 'WxH'
         if nargv == 2: # and type(argv1) is str:
-            dims = re.findall('\d+x\d+[+-]\d+[+-]\d+', argv1)
-            if not dims:
-                dims = re.findall('\d+x\d+', argv1)
+            # try any custom geometry e.g. ('home', 'reset')
             if argv1 == 'home':
-                dims = ['837x655']
+                dims = '835x655'  # custom setting for my home laptop
             elif argv1 in ["", 'reset']:
-                dims = [""]
-            elif not dims or len(dims) > 1 or len(dims[0]) != len(argv1):
-                showHelpError(argvs)
-            dims = dims[0]
+                dims = ""  # reset the geometry
+            else:
+                # try regular expressions for 'WxH+/-X+/-Y' or 'WxH'
+                dims = re.findall('\d+x\d+[+-]\d+[+-]\d+', argv1)
+                # dims will be empty if nothing found
+                if not dims:
+                    dims = re.findall('\d+x\d+', argv1)
+                # still nothing, or too much, or extra crap
+                if not dims or len(dims) > 1 or len(dims[0]) != len(argv1):
+                    showHelpError(argvs)
+                # found it, get string from list, should be only one
+                else:
+                    dims = dims[0]
         # test if input is (W, H)
         elif nargv in [3, 5]:
             try:
@@ -48,7 +55,8 @@ if __name__ == "__main__":
             showHelpError(argvs)
     else:
         dims = None
-    print "dimensions: {}".format(dims)
+    dim_reset_or_dims = lambda dims: (not dims)*'reset' + dims
+    print "dimensions: {}".format(dim_reset_or_dims(dims))
     root = Tk()
     app = PVapplicaton(root)
     root.geometry(dims)
