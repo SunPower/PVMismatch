@@ -29,6 +29,8 @@ if __name__ == "__main__":
                 dims = re.findall('\d+x\d+', argv1)
             if argv1 == 'home':
                 dims = ['837x655']
+            elif argv1 in ["", 'reset']:
+                dims = [""]
             elif not dims or len(dims) > 1 or len(dims[0]) != len(argv1):
                 showHelpError(argvs)
             dims = dims[0]
