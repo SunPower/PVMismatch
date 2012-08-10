@@ -10,11 +10,12 @@ from Tkinter import Tk
 import sys
 import re
 
-def showHelpError(argvs):
+
+def showHelpError(argvs_):
     help(Tk.geometry)
     errMsg = 'Invalid geometry format.\n'
-    errMsg = errMsg+'"{}"\n'.format(argvs)
-    errMsg = errMsg+'is not valid. See "wm_geometry help" above.'
+    errMsg = errMsg + '"{}"\n'.format(argvs_)
+    errMsg = errMsg + 'is not valid. See "wm_geometry help" above.'
     raise Exception(errMsg)
 
 if __name__ == "__main__":
@@ -23,7 +24,7 @@ if __name__ == "__main__":
     if argvs:
         argv1 = sys.argv[1]
         # test if input is 'home','reset','WxH+/-X+/-Y' or 'WxH'
-        if nargv == 2: # and type(argv1) is str:
+        if nargv == 2:  # and type(argv1) is str:
             # try any custom geometry e.g. ('home', 'reset')
             if argv1 == 'home':
                 dims = '835x655'  # custom setting for my home laptop
@@ -55,7 +56,7 @@ if __name__ == "__main__":
             showHelpError(argvs)
     else:
         dims = None
-    dim_reset_or_dims = lambda dims: (not dims)*'reset' + dims
+    dim_reset_or_dims = lambda dims: (not dims) * 'reset' + dims
     print "dimensions: {}".format(dim_reset_or_dims(dims))
     root = Tk()
     app = PVapplicaton(root)

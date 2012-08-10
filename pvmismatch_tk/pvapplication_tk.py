@@ -57,15 +57,33 @@ class PVapplicaton(Frame):
         # number of strings integer variable
         strID = self.stringID = IntVar(self)
         strID.set(1)  # default
-        # text representation of Vsys
-        txtVsys = self.txtVsys = StringVar(self)
-        txtVsys.set(0)  # default
-        # text representation of Vsys
+        # text representation of Isys
         txtIsys = self.txtIsys = StringVar(self)
         txtIsys.set(0)  # default
         # text representation of Vsys
+        txtVsys = self.txtVsys = StringVar(self)
+        txtVsys.set(0)  # default
+        # text representation of Psys
         txtPsys = self.txtPsys = StringVar(self)
         txtPsys.set(0)  # default
+        # text representation of Imp
+        txtImp = self.txtImp = StringVar(self)
+        txtImp.set(0)  # default
+        # text representation of Vmp
+        txtVmp = self.txtVmp = StringVar(self)
+        txtVmp.set(0)  # default
+        # text representation of Vmp
+        txtPmp = self.txtPmp = StringVar(self)
+        txtPmp.set(0)  # default
+        # text representation of Isc
+        txtIsc = self.txtIsc = StringVar(self)
+        txtIsc.set(0)  # default
+        # text representation of Voc
+        txtVoc = self.txtVoc = StringVar(self)
+        txtVoc.set(0)  # default
+        # text representation of FF
+        txtFF = self.txtFF = StringVar(self)
+        txtFF.set(0)  # default
 
         # PVsystem
         pvSys = self.pvSys = PVsystem()
@@ -122,7 +140,7 @@ class PVapplicaton(Frame):
                                                 master=pvSysPlotFrame,
                                                 resize_callback=None)
         pvSysFigCanvas = self.pvSysFigCanvas
-        pvSysFigCanvas.get_tk_widget()._name = 'pvSysFigCanvas'
+        pvSysFigCanvas.get_tk_widget()._name = 'pvSysFigCanvas'  # IGNORE:W0212
         pvSysFigCanvas.show()
         # NB: FigureCanvasTkAgg._tkcanvas is FigureCanvasTkAgg.get_tk_widget()
         pvSysFigCanvas.get_tk_widget().pack(fill=BOTH)
@@ -169,7 +187,7 @@ class PVapplicaton(Frame):
         # pylint: disable = W0142
         self.numCellOption = OptionMenu(pvSysDataFrame, numCells, *MOD_SIZES)
         # pylint: enable = W0142
-        self.numCellOption._name = 'numCellOption'
+        self.numCellOption._name = 'numCellOption'  # IGNORE:W0212
         self.numCellOption.grid(row=3, column=2)
 
         # slider to explore IV curves
@@ -178,21 +196,46 @@ class PVapplicaton(Frame):
                                 label='I-V Curve', command=self.getIV,
                                 from_=0, to=(NPTS - 1))
         self.pvSysScale.grid(row=4, columnspan=3, sticky=(E + W))
-        # Vsys
-        Label(pvSysDataFrame, text='Vsys [V]').grid(row=5)
-        self.pvVsys = Entry(pvSysDataFrame, textvariable=txtVsys,
-                            width=7)
-        self.pvVsys.grid(row=6)
         # Isys
-        Label(pvSysDataFrame, text='Isys [A]').grid(row=5, column=1)
+        Label(pvSysDataFrame, text='Isys [A]').grid(row=5)
         self.pvIsys = Entry(pvSysDataFrame, textvariable=txtIsys,
                             width=7)
         self.pvIsys.grid(row=6, column=1)
+        # Vsys
+        Label(pvSysDataFrame, text='Vsys [V]').grid(row=5, column=1)
+        self.pvVsys = Entry(pvSysDataFrame, textvariable=txtVsys,
+                            width=7)
+        self.pvVsys.grid(row=6)
         # Psys
         Label(pvSysDataFrame, text='Psys [kW]').grid(row=5, column=2)
         self.pvPsys = Entry(pvSysDataFrame, textvariable=txtPsys,
                             width=7)
         self.pvPsys.grid(row=6, column=2)
+
+        Label(pvSysDataFrame, text='Imp').grid(row=7)
+        Label(pvSysDataFrame, text='Vmp').grid(row=7, column=1)
+        Label(pvSysDataFrame, text='Pmp').grid(row=7, column=2)
+        self.pvImp = Entry(pvSysDataFrame, textvariable=txtImp,
+                            width=7)
+        self.pvImp.grid(row=8)
+        self.pvVmp = Entry(pvSysDataFrame, textvariable=txtVmp,
+                            width=7)
+        self.pvVmp.grid(row=8, column=1)
+        self.pvPmp = Entry(pvSysDataFrame, textvariable=txtPmp,
+                            width=7)
+        self.pvPmp.grid(row=8, column=2)
+        Label(pvSysDataFrame, text='Isc').grid(row=9)
+        Label(pvSysDataFrame, text='Voc').grid(row=9, column=1)
+        Label(pvSysDataFrame, text='FF').grid(row=9, column=2)
+        self.pvIsc = Entry(pvSysDataFrame, textvariable=txtIsc,
+                            width=7)
+        self.pvIsc.grid(row=10)
+        self.pvVoc = Entry(pvSysDataFrame, textvariable=txtVoc,
+                            width=7)
+        self.pvVoc.grid(row=10, column=1)
+        self.pvFF = Entry(pvSysDataFrame, textvariable=txtFF,
+                            width=7)
+        self.pvFF.grid(row=10, column=2)
 
         # toolbar
         toolbar = self.toolbarframe = Frame(master, name='toolbar')
