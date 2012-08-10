@@ -55,6 +55,30 @@ class PVsystem(object):
         Psys = Isys * Vsys
         return (Isys, Vsys, Psys)
 
+    def calcMPP_IscVocFF(self):
+        Pmp = np.max(self.Psys)
+        # np.interp only likes 1-D data & xp must be increasing
+        # Psys is *not* monotonically increasing but its derivative *is*
+        dP = np.diff(self.Psys, axis=0)  # (1000, 1)
+        dV = np.diff(self.Vsys, axis=0)  # (1000, 1)
+        Pv = dP / dV  # (1000, 1) decreasing
+        # reshape(scalar) converts 2-D array to 1-D array (vector)
+        Pv = np.flipud(Pv.reshape(NPTS - 1))  # (1000,) increasing
+        Vhalf = (self.Vsys[1:] + self.Vsys[:-1]) / 2  # (1000, 1) increasing
+        Vhalf = np.flipud(Vhalf.reshape(NPTS - 1))  # (1000,)
+        Vmp = np.interp(0., Pv, Vhalf)  # estimate Vmp
+        Imp = Pmp / Vmp  # calculate Imp
+        xp = np.flipud(self.Isys.reshape(NPTS))  # must be increasing
+        fp = np.flipud(self.Vsys.reshape(NPTS))  # keep data correspondence
+        Voc = np.interp(0., xp, fp)  # calucalte Voc
+        xp = self.Vsys.reshape(NPTS)
+        fp = self.Isys.reshape(NPTS)
+        ImpCheck = np.interp(Vmp, xp, fp)  # check Imp
+        print " Imp Error = {:10.4g}%".format((Imp - ImpCheck) / Imp * 100)
+        Isc = np.interp(0, xp, fp)
+        FF = Pmp / Isc / Voc
+        return (Imp, Vmp, Pmp, Isc, Voc, FF)
+
     def plotSys(self):
         """
         Plot system I-V curves.

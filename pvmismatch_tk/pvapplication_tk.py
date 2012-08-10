@@ -59,34 +59,32 @@ class PVapplicaton(Frame):
         strID.set(1)  # default
         # text representation of Isys
         txtIsys = self.txtIsys = StringVar(self)
-        txtIsys.set(0)  # default
         # text representation of Vsys
         txtVsys = self.txtVsys = StringVar(self)
-        txtVsys.set(0)  # default
         # text representation of Psys
         txtPsys = self.txtPsys = StringVar(self)
-        txtPsys.set(0)  # default
         # text representation of Imp
         txtImp = self.txtImp = StringVar(self)
-        txtImp.set(0)  # default
         # text representation of Vmp
         txtVmp = self.txtVmp = StringVar(self)
-        txtVmp.set(0)  # default
         # text representation of Vmp
         txtPmp = self.txtPmp = StringVar(self)
-        txtPmp.set(0)  # default
         # text representation of Isc
         txtIsc = self.txtIsc = StringVar(self)
-        txtIsc.set(0)  # default
         # text representation of Voc
         txtVoc = self.txtVoc = StringVar(self)
-        txtVoc.set(0)  # default
         # text representation of FF
         txtFF = self.txtFF = StringVar(self)
-        txtFF.set(0)  # default
 
         # PVsystem
         pvSys = self.pvSys = PVsystem()
+        (Imp, Vmp, Pmp, Isc, Voc, FF) = pvSys.calcMPP_IscVocFF()
+        txtImp.set("{:7.3f}".format(Imp))  # default
+        txtVmp.set("{:7.3f}".format(Vmp))  # default
+        txtPmp.set("{:7.3f}".format(Pmp / 1000))  # default
+        txtIsc.set("{:7.3f}".format(Isc))  # default
+        txtVoc.set("{:7.3f}".format(Voc))  # default
+        txtFF.set("{:7.3f}".format(FF * 100))  # default
 
         # must register vcmd and invcmd as Tcl functions
         vcmd = (self.register(self.validateWidget),
@@ -200,41 +198,43 @@ class PVapplicaton(Frame):
         Label(pvSysDataFrame, text='Isys [A]').grid(row=5)
         self.pvIsys = Entry(pvSysDataFrame, textvariable=txtIsys,
                             width=7)
-        self.pvIsys.grid(row=6, column=1)
+        self.pvIsys.grid(row=6)
         # Vsys
         Label(pvSysDataFrame, text='Vsys [V]').grid(row=5, column=1)
         self.pvVsys = Entry(pvSysDataFrame, textvariable=txtVsys,
                             width=7)
-        self.pvVsys.grid(row=6)
+        self.pvVsys.grid(row=6, column=1)
         # Psys
         Label(pvSysDataFrame, text='Psys [kW]').grid(row=5, column=2)
         self.pvPsys = Entry(pvSysDataFrame, textvariable=txtPsys,
                             width=7)
         self.pvPsys.grid(row=6, column=2)
 
-        Label(pvSysDataFrame, text='Imp').grid(row=7)
-        Label(pvSysDataFrame, text='Vmp').grid(row=7, column=1)
-        Label(pvSysDataFrame, text='Pmp').grid(row=7, column=2)
+        # Imp, Vmp & Pmp
+        Label(pvSysDataFrame, text='Imp [A]').grid(row=7)
+        Label(pvSysDataFrame, text='Vmp [V]').grid(row=7, column=1)
+        Label(pvSysDataFrame, text='Pmp [kW]').grid(row=7, column=2)
         self.pvImp = Entry(pvSysDataFrame, textvariable=txtImp,
-                            width=7)
+                            width=7, state='readonly')
         self.pvImp.grid(row=8)
         self.pvVmp = Entry(pvSysDataFrame, textvariable=txtVmp,
-                            width=7)
+                            width=7, state='readonly')
         self.pvVmp.grid(row=8, column=1)
         self.pvPmp = Entry(pvSysDataFrame, textvariable=txtPmp,
-                            width=7)
+                            width=7, state='readonly')
         self.pvPmp.grid(row=8, column=2)
-        Label(pvSysDataFrame, text='Isc').grid(row=9)
-        Label(pvSysDataFrame, text='Voc').grid(row=9, column=1)
-        Label(pvSysDataFrame, text='FF').grid(row=9, column=2)
+        # Isc, Voc & FF
+        Label(pvSysDataFrame, text='Isc [A]').grid(row=9)
+        Label(pvSysDataFrame, text='Voc [V]').grid(row=9, column=1)
+        Label(pvSysDataFrame, text='FF [%]').grid(row=9, column=2)
         self.pvIsc = Entry(pvSysDataFrame, textvariable=txtIsc,
-                            width=7)
+                            width=7, state='readonly')
         self.pvIsc.grid(row=10)
         self.pvVoc = Entry(pvSysDataFrame, textvariable=txtVoc,
-                            width=7)
+                            width=7, state='readonly')
         self.pvVoc.grid(row=10, column=1)
         self.pvFF = Entry(pvSysDataFrame, textvariable=txtFF,
-                            width=7)
+                            width=7, state='readonly')
         self.pvFF.grid(row=10, column=2)
 
         # toolbar

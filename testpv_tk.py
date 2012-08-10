@@ -49,15 +49,16 @@ if __name__ == "__main__":
             except ValueError:
                 showHelpError(argvs)
             if nargv == 3:
-                dims = "{}x{}".format(*argvs)
+                dims = "{}x{}".format(*argvs)  # IGNORE:W0142
             if nargv == 5:
-                dims = "{}x{}{:+d}{:+d}".format(*argvs)
+                dims = "{}x{}{:+d}{:+d}".format(*argvs)  # IGNORE:W0142
         else:
             showHelpError(argvs)
     else:
         dims = None
-    dim_reset_or_dims = lambda dims: (not dims) * 'reset' + dims
-    print "dimensions: {}".format(dim_reset_or_dims(dims))
+    if dims:
+        dim_reset_or_dims = lambda dims: (not dims) * 'reset' + dims
+        print "dimensions: {}".format(dim_reset_or_dims(dims))
     root = Tk()
     app = PVapplicaton(root)
     root.geometry(dims)
