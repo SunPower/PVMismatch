@@ -67,6 +67,7 @@ class PVapplicaton(Frame):
 
         # PVsystem
         pvSys = self.pvSys = PVsystem()
+        # TODO: run in asynchronous thread, add progress meter
         (Imp, Vmp, Pmp, Isc, Voc, FF, eff) = pvSys.calcMPP_IscVocFFeff()
         txtImp.set("{:7.3f}".format(Imp))  # [A]
         txtVmp.set("{:7.3f}".format(Vmp))  # [V]
@@ -90,17 +91,15 @@ class PVapplicaton(Frame):
         # w/o fill=BOTH padding is default color
         # side=TOP is the default
         self.pack(fill=BOTH)
-        self.SPlogo_png = Image.open(SPLOGO)  # create image object
         # convert image to tk-compatible format (.gif, .pgm, or .ppm)
-        self.SPlogo = ImageTk.PhotoImage(self.SPlogo_png)
+        self.SPlogo = ImageTk.PhotoImage(Image.open(SPLOGO))
         # bg='black' fills extra space with black
         # anchor=W aligns photoimage on left side, NW is no different
         # padding is ignored by images, use borderwidth
-        self.SPlogoLabel = Label(self, name='spLogoLabel', image=self.SPlogo,
-                                 borderwidth=5, bg='black', anchor=W)
+        Label(self, image=self.SPlogo, borderwidth=5, bg='black',
+              anchor=W).pack(fill=BOTH)
         # fill=BOTH expands the photoimage to fill parent frame
         # w/o fill=BOTH photoimage is centered in frame even with anchor=W
-        self.SPlogoLabel.pack(fill=BOTH)
         # Intro text
         introText = 'PVmismatch calculates I-V and P-V curves as well as the'
         introText += ' max power point (MPP) for any sized system.\nSet the'
@@ -110,11 +109,10 @@ class PVapplicaton(Frame):
         # fg='white' sets text color to white, default is black, so it doesn't
         #   show on black background
         # default aspect is 150%, about as wide as high, or set width>0
-        self.introMsg = Message(self, name='introMsg', text=introText,
-                                width=750, bg='black', fg='white', anchor=W)
+        Message(self, text=introText, width=750, bg='black', fg='white',
+                anchor=W).pack(fill=BOTH)
         # fill=BOTH expands the message to fill parent frame
         # w/o fill=BOTH message is centered in frame even with anchor=W
-        self.introMsg.pack(fill=BOTH)
 
         # PVsystem frame
         pvSysFrame = self.pvSysFrame = Frame(master, name='pvSysFrame')
