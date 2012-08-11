@@ -7,14 +7,12 @@ Created on Jul 29, 2012
 from PIL import Image, ImageTk
 from Tkinter import Frame, Label, Button, Toplevel, OptionMenu, Scale, Entry, \
     Message, Spinbox, IntVar, StringVar, RIGHT, LEFT, BOTH, E, W, HORIZONTAL
-from pvmismatch_tk.pvmodule_tk import PVmodule_tk
-from pvmismatch_tk.pvstring_tk import PVstring_tk
-from pvmismatch_tk.pvsystem_tk import PVsystem_tk
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, \
     NavigationToolbar2TkAgg
-from pvmismatch.pvsystem import PVsystem
-from pvmismatch.pvmodule import PTS, NPTS
 from numpy import interp, squeeze
+from pvmismatch.pvmodule import PTS, NPTS
+from pvmismatch.pvsystem import PVsystem
+from pvmismatch_tk.pvstring_tk import PVstring_tk
 import os
 import tkFont
 
@@ -22,13 +20,8 @@ INTEGERS = '0123456789'
 MOD_SIZES = [72, 96, 128]
 MAX_STRINGS = 100
 MAX_MODULES = 20
-PVSYSTEMSCALE = 500
-PVSTRINGSCALE = 500
 SPLOGO = os.path.join('res', 'logo_bg.png')
 PVAPP_TXT = 'PVmismatch'
-PVMODULE_TEXT = 'PVmodule'
-PVSTRING_TEXT = 'PVstring'
-PVSYSTEM_TEXT = 'PVsystem'
 READY_MSG = 'Ready'
 
 
@@ -234,13 +227,19 @@ class PVapplicaton(Frame):
         self.pvEff.grid(row=12, column=2)
 
         # number of modules label
-        Label(pvSysDataFrame, text='Suns',
+        Label(pvSysDataFrame, text='Irradiance [suns]',
               font=CAPTION_FONT).grid(row=13, columnspan=2, sticky=W)
         # number of modules spinbox
         spinboxCnf = {'name': 'sunSpinbox', 'from_': 0.2, 'to': 10,
                        'increment': 0.1, 'width': 5}
         self.sunSpinbox = Spinbox(pvSysDataFrame, cnf=spinboxCnf)
         self.sunSpinbox.grid(row=13, column=2)
+
+        # PVstring button
+        buttonCnf = {'name': 'pvStrButton', 'text': 'PVstring',
+                     'command': self.startPVstring_tk}
+        pvStrButton = self.pvStrButton = Button(pvSysDataFrame, buttonCnf)
+        pvStrButton.grid(row=14, columnspan=3, sticky=(E + W))
 
         # toolbar
         toolbar = self.toolbarframe = Frame(master, name='toolbar')
@@ -321,23 +320,9 @@ class PVapplicaton(Frame):
         self.txtIsys.set("{:7.3f}".format(Isys))
         self.txtPsys.set("{:7.3f}".format(Psys))
 
-    def startPVmodule_tk(self):
-        top = Toplevel()
-        app = PVmodule_tk(self, top)
-        app.mainloop()
-        # please destroy me or I'll continue to run in background
-        top.destroy()
-
     def startPVstring_tk(self):
         top = Toplevel()
         app = PVstring_tk(self, top)
-        app.mainloop()
-        # please destroy me or I'll continue to run in background
-        top.destroy()
-
-    def startPVsystem_tk(self):
-        top = Toplevel()
-        app = PVsystem_tk(self, top)
         app.mainloop()
         # please destroy me or I'll continue to run in background
         top.destroy()

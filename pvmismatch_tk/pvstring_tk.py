@@ -5,7 +5,8 @@ Created on Jul 30, 2012
 @author: mmikofski
 """
 
-from Tkinter import Frame, Label, Button, IntVar
+from Tkinter import Frame, Label, Button, IntVar, Toplevel
+from pvmismatch_tk.pvmodule_tk import PVmodule_tk
 
 
 class PVstring_tk(Frame):
@@ -38,6 +39,14 @@ class PVstring_tk(Frame):
         self.QUIT = Button(self, cnf={'text': 'Quit', 'command': self.quit})
         self.QUIT.pack({'side': 'top', 'fill': 'both'})
 
+    def startPVmodule_tk(self):
+        top = Toplevel()
+        app = PVmodule_tk(self, top)
+        app.mainloop()
+        # please destroy me or I'll continue to run in background
+        top.destroy()
+
+    
 #        # module ID # integer variable
 #        modID = self.moduleID = IntVar(self)
 #        modID.set(1)
