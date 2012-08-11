@@ -48,25 +48,21 @@ class PVapplicaton(Frame):
         CAPTION_FONT = tkFont.nametofont('TkCaptionFont')
 
         # number of strings integer variable
-        numStr = self.numberStrings = IntVar(self)
-        numStr.set(10)  # default
+        numStrs = self.numStrs = IntVar(self, 10, 'numStrs')
         # number of modules integer variable
-        numMod = self.numberModules = IntVar(self)
-        numMod.set(10)  # default
+        numMods = self.numMods = IntVar(self, 10, 'numMods')
         # number of cells integer variable
-        numCells = self.numberCells = IntVar(self)  # bind numberCells
-        numCells.set(MOD_SIZES[1])  # default value
+        numCells = self.numCells = IntVar(self, MOD_SIZES[1], 'numCells')
         # number of strings integer variable
-        strID = self.stringID = IntVar(self)
-        strID.set(1)  # default
+        strID = self.stringID = IntVar(self, 1, 'strID')
         # text representation of Isys
-        txtIsys = self.txtIsys = StringVar(self)
+        txtIsys = self.txtIsys = StringVar(self, name='txtIsys')
         # text representation of Vsys
-        txtVsys = self.txtVsys = StringVar(self)
+        txtVsys = self.txtVsys = StringVar(self, name='txtVsys')
         # text representation of Psys
-        txtPsys = self.txtPsys = StringVar(self)
+        txtPsys = self.txtPsys = StringVar(self, name='txtPsys')
         # text representation of Imp
-        txtImp = self.txtImp = StringVar(self)
+        txtImp = self.txtImp = StringVar(self, name='txtImp')
         # text representation of Vmp
         txtVmp = self.txtVmp = StringVar(self)
         # text representation of Vmp
@@ -166,7 +162,7 @@ class PVapplicaton(Frame):
         # number of strings spinbox
         # use textVar to set number of strings from LOAD, RESET or default
         spinboxCnf = {'name': 'numStrSpinbox', 'from_': 1, 'to': MAX_STRINGS,
-                      'textvariable': numStr, 'width': 5, 'validate': 'all',
+                      'textvariable': numStrs, 'width': 5, 'validate': 'all',
                       'validatecommand': vcmd, 'invalidcommand': invcmd}
         self.numStrSpinbox = Spinbox(pvSysDataFrame, cnf=spinboxCnf)
         self.numStrSpinbox.grid(row=1, column=2)
@@ -177,7 +173,7 @@ class PVapplicaton(Frame):
         self.numModLabel.grid(row=2, columnspan=2, sticky=W)
         # number of modules spinbox
         spinboxCnf = {'name': 'numModSpinbox', 'from_': 1, 'to': MAX_MODULES,
-                      'textvariable': numMod, 'width': 5, 'validate': 'all',
+                      'textvariable': numMods, 'width': 5, 'validate': 'all',
                       'validatecommand': vcmd, 'invalidcommand': invcmd}
         self.numModSpinbox = Spinbox(pvSysDataFrame, cnf=spinboxCnf)
         self.numModSpinbox.grid(row=2, column=2)
@@ -362,13 +358,13 @@ class PVapplicaton(Frame):
 
     def reset(self):
         # number of strings integer variable
-        self.numberStrings.set(10)  # default
+        self.numStrs.set(10)  # default
         # number of strings integer variable
         self.stringID.set(1)  # default
         # number of modules integer variable
-        self.numberModules.set(10)  # default
+        self.numMods.set(10)  # default
         # number of cells integer variable
-        self.numberCells.set(MOD_SIZES[1])  # default value is 96
+        self.numCells.set(MOD_SIZES[1])  # default value is 96
         self.MESSAGE.config(fg='black', text=READY_MSG, width=150)
         print 'reset'
 
