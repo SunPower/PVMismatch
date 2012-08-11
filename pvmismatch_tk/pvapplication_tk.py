@@ -145,9 +145,8 @@ class PVapplicaton(Frame):
                                                      sticky=W)
 
         # number of strings label
-        labelCnf = {'name': 'numStrLabel', 'text': 'Number of Strings'}
-        self.numStrLabel = Label(pvSysDataFrame, cnf=labelCnf)
-        self.numStrLabel.grid(row=1, columnspan=2, sticky=W)
+        Label(pvSysDataFrame,
+              text='Number of Strings').grid(row=1, columnspan=2, sticky=W)
         # number of strings spinbox
         # use textVar to set number of strings from LOAD, RESET or default
         spinboxCnf = {'name': 'numStrSpinbox', 'from_': 1, 'to': MAX_STRINGS,
@@ -157,9 +156,8 @@ class PVapplicaton(Frame):
         self.numStrSpinbox.grid(row=1, column=2)
 
         # number of modules label
-        labelCnf = {'name': 'numModLabel', 'text': 'Number of Modules'}
-        self.numModLabel = Label(pvSysDataFrame, cnf=labelCnf)
-        self.numModLabel.grid(row=2, columnspan=2, sticky=W)
+        Label(pvSysDataFrame,
+              text='Number of Modules').grid(row=2, columnspan=2, sticky=W)
         # number of modules spinbox
         spinboxCnf = {'name': 'numModSpinbox', 'from_': 1, 'to': MAX_MODULES,
                       'textvariable': numMods, 'width': 5, 'validate': 'all',
@@ -168,9 +166,8 @@ class PVapplicaton(Frame):
         self.numModSpinbox.grid(row=2, column=2)
 
         # number of cells label
-        labelCnf = {'name': 'numCellLabel', 'text': 'Number of Cells'}
-        self.numCellLabel = Label(pvSysDataFrame, cnf=labelCnf)
-        self.numCellLabel.grid(row=3, columnspan=2, sticky=W)
+        Label(pvSysDataFrame,
+              text='Number of Cells').grid(row=3, columnspan=2, sticky=W)
         # number of cells option menu
         # http://www.logilab.org/card/pylintfeatures#basic-checker
         # pylint: disable = W0142
