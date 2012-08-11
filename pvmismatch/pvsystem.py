@@ -55,7 +55,7 @@ class PVsystem(object):
         Psys = Isys * Vsys
         return (Isys, Vsys, Psys)
 
-    def calcMPP_IscVocFF(self):
+    def calcMPP_IscVocFFeff(self):
         Pmp = np.max(self.Psys)
         # np.interp only likes 1-D data & xp must be increasing
         # Psys is *not* monotonically increasing but its derivative *is*
@@ -77,7 +77,14 @@ class PVsystem(object):
         print " Imp Error = {:10.4g}%".format((Imp - ImpCheck) / Imp * 100)
         Isc = np.interp(0, xp, fp)
         FF = Pmp / Isc / Voc
-        return (Imp, Vmp, Pmp, Isc, Voc, FF)
+        totalSuns = 0
+        for pvstr in self.pvstrs:
+            for pvmod in pvstr.pvmods:
+                totalSuns += np.sum(pvmod.Ee)
+        # convert cellArea from cm^2 to m^2
+        Psun = self.pvconst.E0 * totalSuns * self.pvconst.cellArea / 100 / 100
+        eff = Pmp / Psun
+        return (Imp, Vmp, Pmp, Isc, Voc, FF, eff)
 
     def plotSys(self):
         """

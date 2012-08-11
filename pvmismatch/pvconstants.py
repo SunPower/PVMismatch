@@ -19,6 +19,7 @@ _Vbypass = -0.5
 _aRBD = 1.036748445065697E-4  # reverse breakdown coefficient
 _VRBD = -5.527260068445654  # [V] reverse breakdown voltage
 _nRBD = 3.284628553041425  # reverse breakdown exponent
+_cellArea = 153.33  # [cm^2] cell area
 
 
 def npinterpx(x, xp, fp):
@@ -42,7 +43,7 @@ class PVconstants(object):
     PVconstants - Class for PV constants
     """
     def __init__(self, Rs=_Rs, Rsh=_Rsh, Isat1=_Isat1, Isat2=_Isat2, Aph=_Aph,
-                 Isc0=_Isc0, T=_T, Vbypass=_Vbypass,
+                 Isc0=_Isc0, T=_T, cellArea=_cellArea, Vbypass=_Vbypass,
                  aRBD=_aRBD, VRBD=_VRBD, nRBD=_nRBD):
         self.Rs = Rs
         self.Rsh = Rsh
@@ -51,9 +52,11 @@ class PVconstants(object):
         self.Aph = Aph
         self.Isc0 = Isc0
         self.T = T
+        self.cellArea = cellArea
         self.Vbypass = Vbypass
         self.aRBD = aRBD
         self.VRBD = VRBD
         self.nRBD = nRBD
         self.k = scipy.constants.k
         self.q = scipy.constants.e
+        self.E0 = 1000  # [W/m^2] insolation of 1 sun

@@ -77,16 +77,19 @@ class PVapplicaton(Frame):
         txtVoc = self.txtVoc = StringVar(self)
         # text representation of FF
         txtFF = self.txtFF = StringVar(self)
+        # text representation of efficiency
+        txtEff = self.txteff = StringVar(self)
 
         # PVsystem
         pvSys = self.pvSys = PVsystem()
-        (Imp, Vmp, Pmp, Isc, Voc, FF) = pvSys.calcMPP_IscVocFF()
-        txtImp.set("{:7.3f}".format(Imp))  # default
-        txtVmp.set("{:7.3f}".format(Vmp))  # default
-        txtPmp.set("{:7.3f}".format(Pmp / 1000))  # default
-        txtIsc.set("{:7.3f}".format(Isc))  # default
-        txtVoc.set("{:7.3f}".format(Voc))  # default
-        txtFF.set("{:7.3f}".format(FF * 100))  # default
+        (Imp, Vmp, Pmp, Isc, Voc, FF, eff) = pvSys.calcMPP_IscVocFFeff()
+        txtImp.set("{:7.3f}".format(Imp))  # [A]
+        txtVmp.set("{:7.3f}".format(Vmp))  # [V]
+        txtPmp.set("{:7.3f}".format(Pmp / 1000))  # [kW] convert
+        txtIsc.set("{:7.3f}".format(Isc))  # [A]
+        txtVoc.set("{:7.3f}".format(Voc))  # [V]
+        txtFF.set("{:7.3f}".format(FF * 100))  # [%] convert
+        txtEff.set("{:7.3f}".format(eff * 100))  # [%] convert
 
         # must register vcmd and invcmd as Tcl functions
         vcmd = (self.register(self.validateWidget),
@@ -243,15 +246,19 @@ class PVapplicaton(Frame):
         self.pvFF = Entry(pvSysDataFrame, textvariable=txtFF,
                             width=7, state='readonly')
         self.pvFF.grid(row=11, column=2)
+        Label(pvSysDataFrame, text='Efficiency [%]').grid(row=12, columnspan=2)
+        self.pvEff = Entry(pvSysDataFrame, textvariable=txtEff,
+                            width=7, state='readonly')
+        self.pvEff.grid(row=12, column=2)
 
         # number of modules label
         Label(pvSysDataFrame, text='Suns',
-              font=CAPTION_FONT).grid(row=12, columnspan=2, sticky=W)
+              font=CAPTION_FONT).grid(row=13, columnspan=2, sticky=W)
         # number of modules spinbox
         spinboxCnf = {'name': 'sunSpinbox', 'from_': 0.2, 'to': 10,
                        'increment': 0.1, 'width': 5}
         self.sunSpinbox = Spinbox(pvSysDataFrame, cnf=spinboxCnf)
-        self.sunSpinbox.grid(row=12, column=2)
+        self.sunSpinbox.grid(row=13, column=2)
 
         # toolbar
         toolbar = self.toolbarframe = Frame(master, name='toolbar')
