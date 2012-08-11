@@ -5,7 +5,7 @@ Created on Jul 30, 2012
 @author: mmikofski
 """
 
-from Tkinter import Frame, Label, Button
+from Tkinter import Frame, Label, Button, IntVar
 
 
 class PVstring_tk(Frame):
@@ -23,6 +23,10 @@ class PVstring_tk(Frame):
         self.pack(fill='both')
         self.focus_set()  # get the focus
         self.grab_set()  # make this window modal
+        # number of strings integer variable
+        strID = self.strID = IntVar(self, 1, 'strID')
+        # number of strings integer variable
+        self.strID.set(1)  # default
 
         self['bg'] = 'black'  # set black background
         self['padx'] = '15'  # pad sides with 15 points

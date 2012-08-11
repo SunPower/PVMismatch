@@ -44,8 +44,8 @@ class PVapplicaton(Frame):
         Frame.__init__(self, master)
         master.resizable(False, False)  # not resizable in x or y
         master.title(PVAPP_TXT)  # set title bar of master (a.k.a. root)
-        master.protocol("WM_DELETE_WINDOW", self._quit)
-        CAPTION_FONT = tkFont.nametofont('TkCaptionFont')
+        master.protocol("WM_DELETE_WINDOW", self._quit)  # close window to quit
+        CAPTION_FONT = tkFont.nametofont('TkCaptionFont')  # font for titles
 
         # number of strings integer variable
         numStrs = self.numStrs = IntVar(self, 10, 'numStrs')
@@ -53,39 +53,28 @@ class PVapplicaton(Frame):
         numMods = self.numMods = IntVar(self, 10, 'numMods')
         # number of cells integer variable
         numCells = self.numCells = IntVar(self, MOD_SIZES[1], 'numCells')
-        # number of strings integer variable
-        strID = self.stringID = IntVar(self, 1, 'strID')
-        # text representation of Isys
+        # text representations of I-V Characteristics
         txtIsys = self.txtIsys = StringVar(self, name='txtIsys')
-        # text representation of Vsys
         txtVsys = self.txtVsys = StringVar(self, name='txtVsys')
-        # text representation of Psys
         txtPsys = self.txtPsys = StringVar(self, name='txtPsys')
-        # text representation of Imp
         txtImp = self.txtImp = StringVar(self, name='txtImp')
-        # text representation of Vmp
-        txtVmp = self.txtVmp = StringVar(self)
-        # text representation of Vmp
-        txtPmp = self.txtPmp = StringVar(self)
-        # text representation of Isc
-        txtIsc = self.txtIsc = StringVar(self)
-        # text representation of Voc
-        txtVoc = self.txtVoc = StringVar(self)
-        # text representation of FF
-        txtFF = self.txtFF = StringVar(self)
-        # text representation of efficiency
-        txtEff = self.txteff = StringVar(self)
+        txtVmp = self.txtVmp = StringVar(self, name='txtVmp')
+        txtPmp = self.txtPmp = StringVar(self, name='txtPmp')
+        txtIsc = self.txtIsc = StringVar(self, name='txtIsc')
+        txtVoc = self.txtVoc = StringVar(self, name='txtVoc')
+        txtFF = self.txtFF = StringVar(self, name='txtFF')
+        txtEff = self.txteff = StringVar(self, name='txtEff')
 
         # PVsystem
         pvSys = self.pvSys = PVsystem()
         (Imp, Vmp, Pmp, Isc, Voc, FF, eff) = pvSys.calcMPP_IscVocFFeff()
         txtImp.set("{:7.3f}".format(Imp))  # [A]
         txtVmp.set("{:7.3f}".format(Vmp))  # [V]
-        txtPmp.set("{:7.3f}".format(Pmp / 1000))  # [kW] convert
+        txtPmp.set("{:7.3f}".format(Pmp / 1000))  # [kW] convert to kW
         txtIsc.set("{:7.3f}".format(Isc))  # [A]
         txtVoc.set("{:7.3f}".format(Voc))  # [V]
-        txtFF.set("{:7.3f}".format(FF * 100))  # [%] convert
-        txtEff.set("{:7.3f}".format(eff * 100))  # [%] convert
+        txtFF.set("{:7.3f}".format(FF * 100))  # [%] convert to %
+        txtEff.set("{:7.3f}".format(eff * 100))  # [%] convert to %
 
         # must register vcmd and invcmd as Tcl functions
         vcmd = (self.register(self.validateWidget),
@@ -114,13 +103,15 @@ class PVapplicaton(Frame):
         self.SPlogoLabel.pack(fill=BOTH)
         # Intro text
         introText = 'PVmismatch calculates I-V and P-V curves as well as the'
-        introText += '  max power point (MPP) for any sized system.'
+        introText += ' max power point (MPP) for any sized system.\nSet the'
+        introText += ' number of strings in the system, the number of modules'
+        introText += ' per string and the number cells per module.'
         # anchor=W aligns message on left side, NW is no different
         # fg='white' sets text color to white, default is black, so it doesn't
         #   show on black background
         # default aspect is 150%, about as wide as high, or set width>0
         self.introMsg = Message(self, name='introMsg', text=introText,
-                                width=1000, bg='black', fg='white', anchor=W)
+                                width=750, bg='black', fg='white', anchor=W)
         # fill=BOTH expands the message to fill parent frame
         # w/o fill=BOTH message is centered in frame even with anchor=W
         self.introMsg.pack(fill=BOTH)
@@ -359,8 +350,6 @@ class PVapplicaton(Frame):
     def reset(self):
         # number of strings integer variable
         self.numStrs.set(10)  # default
-        # number of strings integer variable
-        self.stringID.set(1)  # default
         # number of modules integer variable
         self.numMods.set(10)  # default
         # number of cells integer variable
