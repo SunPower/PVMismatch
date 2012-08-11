@@ -16,6 +16,7 @@ from pvmismatch.pvsystem import PVsystem
 from pvmismatch.pvmodule import PTS, NPTS
 from numpy import interp, squeeze
 import os
+import tkFont
 
 INTEGERS = '0123456789'
 MOD_SIZES = [72, 96, 128]
@@ -44,6 +45,7 @@ class PVapplicaton(Frame):
         master.resizable(False, False)  # not resizable in x or y
         master.title(PVAPP_TXT)  # set title bar of master (a.k.a. root)
         master.protocol("WM_DELETE_WINDOW", self._quit)
+        CAPTION_FONT = tkFont.nametofont('TkCaptionFont')
 
         # number of strings integer variable
         numStr = self.numberStrings = IntVar(self)
@@ -150,8 +152,9 @@ class PVapplicaton(Frame):
         pvSysDataFrame = self.pvSysDataFrame = Frame(pvSysFrame,
                                                      name='pvSysDataFrame')
         pvSysDataFrame.pack(side=LEFT)
-        Label(pvSysDataFrame, text='PVsystem').grid(row=0, columnspan=3,
-                                                    sticky=W)
+        Label(pvSysDataFrame,
+              text='PVsystem', font=CAPTION_FONT).grid(row=0, columnspan=3,
+                                                     sticky=W)
 
         # number of strings label
         labelCnf = {'name': 'numStrLabel', 'text': 'Number of Strings'}
@@ -191,7 +194,8 @@ class PVapplicaton(Frame):
         # slider to explore IV curves
 #        _getIV = self.register(self.getIV)
         self.pvSysScale = Scale(pvSysDataFrame, orient=HORIZONTAL,
-                                label='I-V Curve', command=self.getIV,
+                                label='I-V Curve', font=CAPTION_FONT,
+                                command=self.getIV, showvalue=False,
                                 from_=0, to=(NPTS - 1))
         self.pvSysScale.grid(row=4, columnspan=3, sticky=(E + W))
         # Isys
@@ -211,31 +215,43 @@ class PVapplicaton(Frame):
         self.pvPsys.grid(row=6, column=2)
 
         # Imp, Vmp & Pmp
-        Label(pvSysDataFrame, text='Imp [A]').grid(row=7)
-        Label(pvSysDataFrame, text='Vmp [V]').grid(row=7, column=1)
-        Label(pvSysDataFrame, text='Pmp [kW]').grid(row=7, column=2)
+        Label(pvSysDataFrame,
+              text='I-V Characteristics',
+              font=CAPTION_FONT).grid(row=7, columnspan=3, sticky=W)
+        Label(pvSysDataFrame, text='Imp [A]').grid(row=8)
+        Label(pvSysDataFrame, text='Vmp [V]').grid(row=8, column=1)
+        Label(pvSysDataFrame, text='Pmp [kW]').grid(row=8, column=2)
         self.pvImp = Entry(pvSysDataFrame, textvariable=txtImp,
                             width=7, state='readonly')
-        self.pvImp.grid(row=8)
+        self.pvImp.grid(row=9)
         self.pvVmp = Entry(pvSysDataFrame, textvariable=txtVmp,
                             width=7, state='readonly')
-        self.pvVmp.grid(row=8, column=1)
+        self.pvVmp.grid(row=9, column=1)
         self.pvPmp = Entry(pvSysDataFrame, textvariable=txtPmp,
                             width=7, state='readonly')
-        self.pvPmp.grid(row=8, column=2)
+        self.pvPmp.grid(row=9, column=2)
         # Isc, Voc & FF
-        Label(pvSysDataFrame, text='Isc [A]').grid(row=9)
-        Label(pvSysDataFrame, text='Voc [V]').grid(row=9, column=1)
-        Label(pvSysDataFrame, text='FF [%]').grid(row=9, column=2)
+        Label(pvSysDataFrame, text='Isc [A]').grid(row=10)
+        Label(pvSysDataFrame, text='Voc [V]').grid(row=10, column=1)
+        Label(pvSysDataFrame, text='FF [%]').grid(row=10, column=2)
         self.pvIsc = Entry(pvSysDataFrame, textvariable=txtIsc,
                             width=7, state='readonly')
-        self.pvIsc.grid(row=10)
+        self.pvIsc.grid(row=11)
         self.pvVoc = Entry(pvSysDataFrame, textvariable=txtVoc,
                             width=7, state='readonly')
-        self.pvVoc.grid(row=10, column=1)
+        self.pvVoc.grid(row=11, column=1)
         self.pvFF = Entry(pvSysDataFrame, textvariable=txtFF,
                             width=7, state='readonly')
-        self.pvFF.grid(row=10, column=2)
+        self.pvFF.grid(row=11, column=2)
+
+        # number of modules label
+        Label(pvSysDataFrame, text='Suns',
+              font=CAPTION_FONT).grid(row=12, columnspan=2, sticky=W)
+        # number of modules spinbox
+        spinboxCnf = {'name': 'sunSpinbox', 'from_': 0.2, 'to': 10,
+                       'increment': 0.1, 'width': 5}
+        self.sunSpinbox = Spinbox(pvSysDataFrame, cnf=spinboxCnf)
+        self.sunSpinbox.grid(row=12, column=2)
 
         # toolbar
         toolbar = self.toolbarframe = Frame(master, name='toolbar')
