@@ -133,113 +133,122 @@ class PVapplicaton(Frame):
         pvSysDataFrame = self.pvSysDataFrame = Frame(pvSysFrame,
                                                      name='pvSysDataFrame')
         pvSysDataFrame.pack(side=LEFT)
+        _row = 0
         Label(pvSysDataFrame,
-              text='PVsystem', font=CAPTION_FONT).grid(row=0, columnspan=3,
+              text='PVsystem', font=CAPTION_FONT).grid(row=_row, columnspan=3,
                                                      sticky=W)
 
         # number of strings label
+        _row += 1  # row 1
         Label(pvSysDataFrame,
-              text='Number of Strings').grid(row=1, columnspan=2, sticky=W)
+              text='Number of Strings').grid(row=_row, columnspan=2, sticky=W)
         # number of strings spinbox
         # use textVar to set number of strings from LOAD, RESET or default
         spinboxCnf = {'name': 'numStrSpinbox', 'from_': 1, 'to': MAX_STRINGS,
                       'textvariable': numStrs, 'width': 5, 'validate': 'all',
                       'validatecommand': vcmd, 'invalidcommand': invcmd}
         self.numStrSpinbox = Spinbox(pvSysDataFrame, cnf=spinboxCnf)
-        self.numStrSpinbox.grid(row=1, column=2)
+        self.numStrSpinbox.grid(row=_row, column=2)
 
         # number of modules label
+        _row += 1  # row 2
         Label(pvSysDataFrame,
-              text='Number of Modules').grid(row=2, columnspan=2, sticky=W)
+              text='Number of Modules').grid(row=_row, columnspan=2, sticky=W)
         # number of modules spinbox
         spinboxCnf = {'name': 'numModSpinbox', 'from_': 1, 'to': MAX_MODULES,
                       'textvariable': numMods, 'width': 5, 'validate': 'all',
                       'validatecommand': vcmd, 'invalidcommand': invcmd}
         self.numModSpinbox = Spinbox(pvSysDataFrame, cnf=spinboxCnf)
-        self.numModSpinbox.grid(row=2, column=2)
+        self.numModSpinbox.grid(row=_row, column=2)
 
         # number of cells label
+        _row += 1  # row 3
         Label(pvSysDataFrame,
-              text='Number of Cells').grid(row=3, columnspan=2, sticky=W)
+              text='Number of Cells').grid(row=_row, columnspan=2, sticky=W)
         # number of cells option menu
         # http://www.logilab.org/card/pylintfeatures#basic-checker
         # pylint: disable = W0142
         self.numCellOption = OptionMenu(pvSysDataFrame, numCells, *MOD_SIZES)
         # pylint: enable = W0142
         self.numCellOption._name = 'numCellOption'  # IGNORE:W0212
-        self.numCellOption.grid(row=3, column=2)
+        self.numCellOption.grid(row=_row, column=2)
 
         # slider to explore IV curves
+        _row += 1  # row 4, 5 & 6
 #        _getIV = self.register(self.getIV)
         self.pvSysScale = Scale(pvSysDataFrame, orient=HORIZONTAL,
                                 label='I-V Curve', font=CAPTION_FONT,
                                 command=self.getIV, showvalue=False,
                                 from_=0, to=(NPTS - 1))
-        self.pvSysScale.grid(row=4, columnspan=3, sticky=(E + W))
+        self.pvSysScale.grid(row=_row, columnspan=3, sticky=(E + W))
         # Isys
-        Label(pvSysDataFrame, text='Isys [A]').grid(row=5)
+        Label(pvSysDataFrame, text='Isys [A]').grid(row=(_row + 1))
         self.pvIsys = Entry(pvSysDataFrame, textvariable=txtIsys,
                             width=7)
-        self.pvIsys.grid(row=6)
+        self.pvIsys.grid(row=(_row + 2))
         # Vsys
-        Label(pvSysDataFrame, text='Vsys [V]').grid(row=5, column=1)
+        Label(pvSysDataFrame, text='Vsys [V]').grid(row=(_row + 1), column=1)
         self.pvVsys = Entry(pvSysDataFrame, textvariable=txtVsys,
                             width=7)
-        self.pvVsys.grid(row=6, column=1)
+        self.pvVsys.grid(row=(_row + 2), column=1)
         # Psys
-        Label(pvSysDataFrame, text='Psys [kW]').grid(row=5, column=2)
+        Label(pvSysDataFrame, text='Psys [kW]').grid(row=(_row + 1), column=2)
         self.pvPsys = Entry(pvSysDataFrame, textvariable=txtPsys,
                             width=7)
-        self.pvPsys.grid(row=6, column=2)
+        self.pvPsys.grid(row=(_row + 2), column=2)
 
         # Imp, Vmp & Pmp
+        _row += 3  # row 7, 8, 9, 10, 11 & 12
         Label(pvSysDataFrame,
               text='I-V Characteristics',
-              font=CAPTION_FONT).grid(row=7, columnspan=3, sticky=W)
-        Label(pvSysDataFrame, text='Imp [A]').grid(row=8)
-        Label(pvSysDataFrame, text='Vmp [V]').grid(row=8, column=1)
-        Label(pvSysDataFrame, text='Pmp [kW]').grid(row=8, column=2)
+              font=CAPTION_FONT).grid(row=_row, columnspan=3, sticky=W)
+        Label(pvSysDataFrame, text='Imp [A]').grid(row=(_row + 1))
+        Label(pvSysDataFrame, text='Vmp [V]').grid(row=(_row + 1), column=1)
+        Label(pvSysDataFrame, text='Pmp [kW]').grid(row=(_row + 1), column=2)
         self.pvImp = Entry(pvSysDataFrame, textvariable=txtImp,
                             width=7, state='readonly')
-        self.pvImp.grid(row=9)
+        self.pvImp.grid(row=(_row + 2))
         self.pvVmp = Entry(pvSysDataFrame, textvariable=txtVmp,
                             width=7, state='readonly')
-        self.pvVmp.grid(row=9, column=1)
+        self.pvVmp.grid(row=(_row + 2), column=1)
         self.pvPmp = Entry(pvSysDataFrame, textvariable=txtPmp,
                             width=7, state='readonly')
-        self.pvPmp.grid(row=9, column=2)
+        self.pvPmp.grid(row=(_row + 2), column=2)
         # Isc, Voc & FF
-        Label(pvSysDataFrame, text='Isc [A]').grid(row=10)
-        Label(pvSysDataFrame, text='Voc [V]').grid(row=10, column=1)
-        Label(pvSysDataFrame, text='FF [%]').grid(row=10, column=2)
+        Label(pvSysDataFrame, text='Isc [A]').grid(row=(_row + 3))
+        Label(pvSysDataFrame, text='Voc [V]').grid(row=(_row + 3), column=1)
+        Label(pvSysDataFrame, text='FF [%]').grid(row=(_row + 3), column=2)
         self.pvIsc = Entry(pvSysDataFrame, textvariable=txtIsc,
                             width=7, state='readonly')
-        self.pvIsc.grid(row=11)
+        self.pvIsc.grid(row=(_row + 4))
         self.pvVoc = Entry(pvSysDataFrame, textvariable=txtVoc,
                             width=7, state='readonly')
-        self.pvVoc.grid(row=11, column=1)
+        self.pvVoc.grid(row=(_row + 4), column=1)
         self.pvFF = Entry(pvSysDataFrame, textvariable=txtFF,
                             width=7, state='readonly')
-        self.pvFF.grid(row=11, column=2)
-        Label(pvSysDataFrame, text='Efficiency [%]').grid(row=12, columnspan=2)
+        self.pvFF.grid(row=(_row + 4), column=2)
+        Label(pvSysDataFrame, text='Efficiency [%]').grid(row=(_row + 5),
+                                                          columnspan=2)
         self.pvEff = Entry(pvSysDataFrame, textvariable=txtEff,
                             width=7, state='readonly')
-        self.pvEff.grid(row=12, column=2)
+        self.pvEff.grid(row=(_row + 5), column=2)
 
         # number of modules label
+        _row += 6  # row 13
         Label(pvSysDataFrame, text='Irradiance [suns]',
-              font=CAPTION_FONT).grid(row=13, columnspan=2, sticky=W)
+              font=CAPTION_FONT).grid(row=_row, columnspan=2, sticky=W)
         # number of modules spinbox
         spinboxCnf = {'name': 'sunSpinbox', 'from_': 0.2, 'to': 10,
                        'increment': 0.1, 'width': 5}
         self.sunSpinbox = Spinbox(pvSysDataFrame, cnf=spinboxCnf)
-        self.sunSpinbox.grid(row=13, column=2)
+        self.sunSpinbox.grid(row=_row, column=2)
 
         # PVstring button
+        _row += 1  # row 14
         buttonCnf = {'name': 'pvStrButton', 'text': 'PVstring',
                      'command': self.startPVstring_tk}
         pvStrButton = self.pvStrButton = Button(pvSysDataFrame, buttonCnf)
-        pvStrButton.grid(row=14, columnspan=3, sticky=(E + W))
+        pvStrButton.grid(row=_row, columnspan=3, sticky=(E + W))
 
         # toolbar
         toolbar = self.toolbarframe = Frame(master, name='toolbar')
