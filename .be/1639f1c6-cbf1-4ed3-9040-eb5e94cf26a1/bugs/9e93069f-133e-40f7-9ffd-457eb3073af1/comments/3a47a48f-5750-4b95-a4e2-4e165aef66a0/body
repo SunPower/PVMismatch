@@ -1,0 +1,11 @@
+* Currently setting temperature only changes thermal voltage, which has an
+  insignificant effect on IV characteristics. Temperature dependence of the IV
+  curve is due to temp dependence of Isat1, Isat2, Rs and Rsh, which each have
+  characteristic temperature dependence, e.g. Isat = f(T^3), Rs = f(T)
+  and Rsh = f(exp(-T)).
+* Also user can only set one temperature, instead of temp of each cell or
+  or module.
+* Expected outcome is that user set cell temperature correctly affects
+  IV curve, according to expected temperature coefficients
+
+
