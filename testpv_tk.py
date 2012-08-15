@@ -56,7 +56,7 @@ if __name__ == "__main__":
             showHelpError(argvs)
     else:
         dims = None
-    if dims:
+    if dims is not None:
         dim_reset_or_dims = lambda dims: (not dims) * 'reset' + dims
         print "dimensions: {}".format(dim_reset_or_dims(dims))
     root = Tk()
