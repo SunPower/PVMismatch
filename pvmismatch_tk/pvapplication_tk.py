@@ -344,18 +344,34 @@ class PVapplicaton(Frame):
         top.destroy()
 
     def startAdvCnf_tk(self):
+        """
+            open advnaced config window
+        """
+
+#        def _quit(root):
+#            root.quit()
+#            root.destroy()
+#
+#        def _okay(root):
+#            _quit(root)
+
         top = Toplevel()
+        top.resizable(False, False)  # not resizable in x or y
+        top.title(PVAPP_TXT)  # set title bar of master (a.k.a. root)
+        top.protocol("WM_DELETE_WINDOW", top.quit)  # close window to quit
         CAPTION_FONT = tkFont.nametofont('TkCaptionFont')  # font for titles
         _row = 0
+        top.focus_set()  # get the focus
+        top.grab_set()  # make this window modal
         Label(top,
               text='Advanced Configuration',
               font=CAPTION_FONT).grid(row=_row, columnspan=3, sticky=W)
         # Rs, Rsh, Isat1, Isat2
         _row += 1  # row 2, 3, 4, 5
         Label(top, text='Rs [Ohms]').grid(row=_row)
-        Label(top, text='Rsh [Ohms]').grid(row=(_row + 1), column=1)
-        Label(top, text='Isat1 [A]').grid(row=(_row + 2), column=2)
-        Label(top, text='Isat2 [A]').grid(row=(_row + 3), column=2)
+        Label(top, text='Rsh [Ohms]').grid(row=(_row + 1))
+        Label(top, text='Isat1 [A]').grid(row=(_row + 2))
+        Label(top, text='Isat2 [A]').grid(row=(_row + 3))
         Rs = Entry(top, text=1)
         Rs.grid(row=_row, column=1)
         Rsh = Entry(top, text=1)
@@ -364,6 +380,10 @@ class PVapplicaton(Frame):
         Isat1.grid(row=(_row + 2), column=1)
         Isat2 = Entry(top, text=1)
         Isat2.grid(row=(_row + 3), column=1)
+        _row += 4
+        Button(top, text='OK', command=top.quit).grid(row=_row)
+        Button(top, text='Cancel', command=top.quit).grid(row=_row,
+                                                               column=1)
         top.mainloop()
         # please destroy me or I'll continue to run in background
         top.destroy()
