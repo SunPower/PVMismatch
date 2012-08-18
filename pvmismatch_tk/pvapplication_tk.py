@@ -5,13 +5,15 @@ Created on Jul 29, 2012
 @author: marko
 """
 from PIL import Image, ImageTk
+from Tkconstants import RIGHT, LEFT, BOTH, E, W, HORIZONTAL
 from Tkinter import Frame, Label, Button, Toplevel, OptionMenu, Scale, Entry, \
-    Message, Spinbox, IntVar, StringVar, RIGHT, LEFT, BOTH, E, W, HORIZONTAL
+    Message, Spinbox, IntVar, StringVar
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, \
     NavigationToolbar2TkAgg
 from numpy import interp, squeeze
 from pvmismatch.pvmodule import PTS, NPTS
 from pvmismatch.pvsystem import PVsystem
+from pvmismatch_tk.advCnf_tk import AdvCnf_tk
 from pvmismatch_tk.pvstring_tk import PVstring_tk
 import os
 import tkFont
@@ -348,43 +350,9 @@ class PVapplicaton(Frame):
             open advnaced config window
         """
 
-#        def _quit(root):
-#            root.quit()
-#            root.destroy()
-#
-#        def _okay(root):
-#            _quit(root)
-
         top = Toplevel()
-        top.resizable(False, False)  # not resizable in x or y
-        top.title(PVAPP_TXT)  # set title bar of master (a.k.a. root)
-        top.protocol("WM_DELETE_WINDOW", top.quit)  # close window to quit
-        CAPTION_FONT = tkFont.nametofont('TkCaptionFont')  # font for titles
-        _row = 0
-        top.focus_set()  # get the focus
-        top.grab_set()  # make this window modal
-        Label(top,
-              text='Advanced Configuration',
-              font=CAPTION_FONT).grid(row=_row, columnspan=3, sticky=W)
-        # Rs, Rsh, Isat1, Isat2
-        _row += 1  # row 2, 3, 4, 5
-        Label(top, text='Rs [Ohms]').grid(row=_row)
-        Label(top, text='Rsh [Ohms]').grid(row=(_row + 1))
-        Label(top, text='Isat1 [A]').grid(row=(_row + 2))
-        Label(top, text='Isat2 [A]').grid(row=(_row + 3))
-        Rs = Entry(top, text=1)
-        Rs.grid(row=_row, column=1)
-        Rsh = Entry(top, text=1)
-        Rsh.grid(row=(_row + 1), column=1)
-        Isat1 = Entry(top, text=1)
-        Isat1.grid(row=(_row + 2), column=1)
-        Isat2 = Entry(top, text=1)
-        Isat2.grid(row=(_row + 3), column=1)
-        _row += 4
-        Button(top, text='OK', command=top.quit).grid(row=_row)
-        Button(top, text='Cancel', command=top.quit).grid(row=_row,
-                                                               column=1)
-        top.mainloop()
+        app = AdvCnf_tk(self, top)
+        app.mainloop()
         # please destroy me or I'll continue to run in background
         top.destroy()
 
