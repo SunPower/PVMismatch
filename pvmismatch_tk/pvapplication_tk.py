@@ -173,6 +173,13 @@ class PVapplicaton(Frame):
         self.numCellOption._name = 'numCellOption'  # IGNORE:W0212
         self.numCellOption.grid(row=_row, column=2)
 
+        # Advanced Configuration button
+        _row += 1  # row 14
+        buttonCnf = {'name': 'advCnfButton', 'text': 'Advanced Configuration',
+                     'command': self.startAdvCnf_tk}
+        pvStrButton = self.pvStrButton = Button(pvSysDataFrame, buttonCnf)
+        pvStrButton.grid(row=_row, columnspan=3, sticky=(E + W))
+
         # slider to explore IV curves
         _row += 1  # row 4, 5 & 6
 #        _getIV = self.register(self.getIV)
@@ -333,6 +340,31 @@ class PVapplicaton(Frame):
         top = Toplevel()
         app = PVstring_tk(self, top)
         app.mainloop()
+        # please destroy me or I'll continue to run in background
+        top.destroy()
+
+    def startAdvCnf_tk(self):
+        top = Toplevel()
+        CAPTION_FONT = tkFont.nametofont('TkCaptionFont')  # font for titles
+        _row = 0
+        Label(top,
+              text='Advanced Configuration',
+              font=CAPTION_FONT).grid(row=_row, columnspan=3, sticky=W)
+        # Rs, Rsh, Isat1, Isat2
+        _row += 1  # row 2, 3, 4, 5
+        Label(top, text='Rs [Ohms]').grid(row=_row)
+        Label(top, text='Rsh [Ohms]').grid(row=(_row + 1), column=1)
+        Label(top, text='Isat1 [A]').grid(row=(_row + 2), column=2)
+        Label(top, text='Isat2 [A]').grid(row=(_row + 3), column=2)
+        Rs = Entry(top, text=1)
+        Rs.grid(row=_row, column=1)
+        Rsh = Entry(top, text=1)
+        Rsh.grid(row=(_row + 1), column=1)
+        Isat1 = Entry(top, text=1)
+        Isat1.grid(row=(_row + 2), column=1)
+        Isat2 = Entry(top, text=1)
+        Isat2.grid(row=(_row + 3), column=1)
+        top.mainloop()
         # please destroy me or I'll continue to run in background
         top.destroy()
 
