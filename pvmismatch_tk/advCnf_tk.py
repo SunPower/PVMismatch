@@ -7,7 +7,6 @@ Created on Aug 18, 2012
 
 from Tkconstants import W, E
 from Tkinter import Frame, Label, Button, IntVar, Entry
-#from pvmismatch_tk.pvapplication_tk import PVAPP_TXT
 import tkFont
 
 PVAPP_TXT = 'PVmismatch'

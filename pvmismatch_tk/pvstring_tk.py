@@ -6,6 +6,7 @@ Created on Jul 30, 2012
 """
 
 from Tkinter import Frame, Label, Button, IntVar, Toplevel
+import tkFont
 from pvmismatch_tk.pvmodule_tk import PVmodule_tk
 
 
@@ -24,6 +25,10 @@ class PVstring_tk(Frame):
         self.pack(fill='both')
         self.focus_set()  # get the focus
         self.grab_set()  # make this window modal
+        top.resizable(False, False)  # not resizable in x or y
+        top.title('PVstring')  # set title bar
+        top.protocol("WM_DELETE_WINDOW", self.quit)  # close window to quit
+        CAPTION_FONT = tkFont.nametofont('TkCaptionFont')  # font for titles
         # number of strings integer variable
         strID = self.strID = IntVar(self, 1, 'strID')
         # number of strings integer variable
@@ -32,7 +37,6 @@ class PVstring_tk(Frame):
         self['bg'] = 'black'  # set black background
         self['padx'] = '15'  # pad sides with 15 points
         self['pady'] = '5'  # pad top/bottom 5 points
-        self.master.title('PVstring')  # set title bar
         self.SPlogoLabel = Label(self, image=self.pvapp.SPlogo,
                                  cnf={'borderwidth': '0'})
         self.SPlogoLabel.pack({'side': 'top'})
