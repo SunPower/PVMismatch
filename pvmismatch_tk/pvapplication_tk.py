@@ -55,7 +55,7 @@ class PVapplicaton(Frame):
         txtIsc = self.txtIsc = StringVar(self, name='txtIsc')
         txtVoc = self.txtVoc = StringVar(self, name='txtVoc')
         txtFF = self.txtFF = StringVar(self, name='txtFF')
-        txtEff = self.txteff = StringVar(self, name='txtEff')
+        txtEff = self.txtEff = StringVar(self, name='txtEff')
 
         # PVsystem
         pvSys = self.pvSys = PVsystem()

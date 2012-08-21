@@ -133,11 +133,16 @@ class AdvCnf_tk(Frame):
                               Vbypass, aRBD, VRBD, nRBD)
         # update PVsystem in PVapplication_tk
         self.pvapp.pvSys = PVsystem(pvconst)
-        # close any unused figures so pylab can clean them up!
-        # then make a new figure
-        #close(self.pvapp.pvSysPlot)
-        #self.pvapp.pvSysFigCanvas.figure = self.pvapp.pvSysPlot
         # reuse sysPlot figure and update pvSysFigCanvas
         self.pvapp.pvSysPlot = self.pvapp.pvSys.plotSys(self.pvapp.pvSysPlot)
         self.pvapp.pvSysFigCanvas.show()
+        (Imp, Vmp, Pmp, Isc, Voc, FF,
+         eff) = self.pvapp.pvSys.calcMPP_IscVocFFeff()
+        self.pvapp.txtImp.set("{:7.3f}".format(Imp))  # [A]
+        self.pvapp.txtVmp.set("{:7.3f}".format(Vmp))  # [V]
+        self.pvapp.txtPmp.set("{:7.3f}".format(Pmp / 1000))  # [kW]
+        self.pvapp.txtIsc.set("{:7.3f}".format(Isc))  # [A]
+        self.pvapp.txtVoc.set("{:7.3f}".format(Voc))  # [V]
+        self.pvapp.txtFF.set("{:7.3f}".format(FF * 100))  # [%]
+        self.pvapp.txtEff.set("{:7.3f}".format(eff * 100))  # [%]
         self.quit()

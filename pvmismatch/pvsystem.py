@@ -9,7 +9,6 @@ from matplotlib import pyplot as plt
 from pvmismatch.pvconstants import PVconstants, npinterpx
 from pvmismatch.pvmodule import PTS, NPTS
 from pvmismatch.pvstring import PVstring
-import matplotlib.figure
 import numpy as np
 
 _numberStrs = 10  # default number of strings
@@ -97,11 +96,16 @@ class PVsystem(object):
         # or make the specified sysPlot current and clear it
         if not sysPlot:
             sysPlot = plt.figure()
-        elif type(sysPlot) is matplotlib.figure.Figure:
-            plt.figure(sysPlot.number)
-            sysPlot.clear()
+        elif type(sysPlot) in [int, str]:
+            sysPlot = plt.figure(sysPlot)
         else:
-            raise Exception('%s is not a figure.' % sysPlot)
+            try:
+                sysPlot = plt.figure(sysPlot.number)
+            except TypeError as e:
+                print '%s is not a figure.' % sysPlot
+                print 'Sorry, "plotSys" takes a "int", "str" or "Figure".'
+                raise e
+        sysPlot.clear()
         plt.subplot(2, 1, 1)
         plt.plot(self.Vsys, self.Isys)
         plt.title('System I-V Characteristics')
