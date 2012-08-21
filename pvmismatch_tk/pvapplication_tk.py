@@ -355,6 +355,9 @@ class PVapplicaton(Frame):
         app.mainloop()
         # please destroy me or I'll continue to run in background
         top.destroy()
+        # TODO: update main page
+        # TODO: each section of widgets needs to be in its own function, so
+        #       that it can be easily updated!
 
     def reset(self):
         # number of strings integer variable
