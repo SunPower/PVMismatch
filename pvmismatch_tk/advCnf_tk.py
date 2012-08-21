@@ -114,6 +114,7 @@ class AdvCnf_tk(Frame):
                command=self.quit).grid(row=_row, column=1, sticky=(E + W))
 
     def okay(self):
+        # get the new values
         Rs = self.Rs.get()
         Rsh = self.Rsh.get()
         Isat1 = self.Isat1.get()
@@ -126,7 +127,13 @@ class AdvCnf_tk(Frame):
         aRBD = self.aRBD.get()
         VRBD = self.VRBD.get()
         nRBD = self.nRBD.get()
+        # update PVconstants
         pvconst = PVconstants(Rs, Rsh, Isat1, Isat2, Aph, Isc0, T, cellArea,
                               Vbypass, aRBD, VRBD, nRBD)
-        self.pvapp = PVsystem(pvconst)
+        # update PVsystem in PVapplication_tk
+        self.pvapp.pvSys = PVsystem(pvconst)
+        # update sysPlot and pvSysFigCanvas
+        self.pvapp.pvSysPlot = self.pvapp.pvSys.plotSys()
+        self.pvapp.pvSysFigCanvas.figure = self.pvapp.pvSysPlot
+        self.pvapp.pvSysFigCanvas.show()
         self.quit()
