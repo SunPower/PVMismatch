@@ -5,7 +5,8 @@ Created on Jul 29, 2012
 @author: marko
 """
 
-from Tkinter import Frame, Label, Button, OptionMenu, IntVar, Menu, Entry
+from Tkinter import Frame, Label, Button, OptionMenu, IntVar
+#from Tkinter import Menu, Entry
 MODULE_SIZES = [72, 96, 128]
 
 
@@ -35,8 +36,10 @@ class PVmodule_tk(Frame):
 
         self.numberCells = IntVar(self)  # bind numberCells
         self.numberCells.set(MODULE_SIZES[0])  # default value
+        # pylint: disable = W0142
         self.numberCellsOption = OptionMenu(self, self.numberCells,
                                             *MODULE_SIZES)
+        # pylint: enable = W0142
         self.numberCellsOption.pack({'side': 'top', 'fill': 'both'})
 
         self.QUIT = Button(self, cnf={'text': 'Quit', 'command': self.quit})

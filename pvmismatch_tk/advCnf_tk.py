@@ -7,6 +7,7 @@ Created on Aug 18, 2012
 
 from Tkconstants import W, E, RIGHT
 from Tkinter import Frame, Label, Button, DoubleVar, Entry
+#from matplotlib.pyplot import close
 from pvmismatch.pvconstants import PVconstants
 from pvmismatch.pvsystem import PVsystem
 import tkFont
@@ -132,8 +133,11 @@ class AdvCnf_tk(Frame):
                               Vbypass, aRBD, VRBD, nRBD)
         # update PVsystem in PVapplication_tk
         self.pvapp.pvSys = PVsystem(pvconst)
-        # update sysPlot and pvSysFigCanvas
-        self.pvapp.pvSysPlot = self.pvapp.pvSys.plotSys()
-        self.pvapp.pvSysFigCanvas.figure = self.pvapp.pvSysPlot
+        # close any unused figures so pylab can clean them up!
+        # then make a new figure
+        #close(self.pvapp.pvSysPlot)
+        #self.pvapp.pvSysFigCanvas.figure = self.pvapp.pvSysPlot
+        # reuse sysPlot figure and update pvSysFigCanvas
+        self.pvapp.pvSysPlot = self.pvapp.pvSys.plotSys(self.pvapp.pvSysPlot)
         self.pvapp.pvSysFigCanvas.show()
         self.quit()

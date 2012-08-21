@@ -5,8 +5,9 @@ Created on Jul 30, 2012
 @author: mmikofski
 """
 
-from Tkinter import Frame, Label, Button, IntVar, Toplevel
-import tkFont
+from Tkinter import Frame, Label, Button, Toplevel
+#from Tkinter import IntVar
+#import tkFont
 from pvmismatch_tk.pvmodule_tk import PVmodule_tk
 
 
@@ -28,11 +29,11 @@ class PVstring_tk(Frame):
         top.resizable(False, False)  # not resizable in x or y
         top.title('PVstring')  # set title bar
         top.protocol("WM_DELETE_WINDOW", self.quit)  # close window to quit
-        CAPTION_FONT = tkFont.nametofont('TkCaptionFont')  # font for titles
+#        CAPTION_FONT = tkFont.nametofont('TkCaptionFont')  # font for titles
         # number of strings integer variable
-        strID = self.strID = IntVar(self, 1, 'strID')
+#        strID = self.strID = IntVar(self, 1, 'strID')
         # number of strings integer variable
-        self.strID.set(1)  # default
+#        self.strID.set(1)  # default
 
         self['bg'] = 'black'  # set black background
         self['padx'] = '15'  # pad sides with 15 points
@@ -50,7 +51,7 @@ class PVstring_tk(Frame):
         # please destroy me or I'll continue to run in background
         top.destroy()
 
-    
+
 #        # module ID # integer variable
 #        modID = self.moduleID = IntVar(self)
 #        modID.set(1)

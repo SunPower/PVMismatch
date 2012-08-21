@@ -5,11 +5,12 @@ Created on Jul 16, 2012
 @author: mmikofski
 """
 
-import numpy as np
+from matplotlib import pyplot as plt
 from pvmismatch.pvconstants import PVconstants, npinterpx
 from pvmismatch.pvmodule import PTS, NPTS
 from pvmismatch.pvstring import PVstring
-from matplotlib import pyplot as plt
+import matplotlib.figure
+import numpy as np
 
 _numberStrs = 10  # default number of strings
 
@@ -86,12 +87,21 @@ class PVsystem(object):
         eff = Pmp / Psun
         return (Imp, Vmp, Pmp, Isc, Voc, FF, eff)
 
-    def plotSys(self):
+    def plotSys(self, sysPlot=None):
         """
         Plot system I-V curves.
-        Returns sysPlot : matplotlib.pyplot figure
+        Arguments sysPlot : matplotlib.figure.Figure
+        Returns sysPlot : matplotlib.figure.Figure
         """
-        sysPlot = plt.figure()
+        # create new figure if sysPlot is None
+        # or make the specified sysPlot current and clear it
+        if not sysPlot:
+            sysPlot = plt.figure()
+        elif type(sysPlot) is matplotlib.figure.Figure:
+            plt.figure(sysPlot.number)
+            sysPlot.clear()
+        else:
+            raise Exception('%s is not a figure.' % sysPlot)
         plt.subplot(2, 1, 1)
         plt.plot(self.Vsys, self.Isys)
         plt.title('System I-V Characteristics')
