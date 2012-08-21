@@ -7,7 +7,7 @@ Created on Jul 29, 2012
 from PIL import Image, ImageTk
 from Tkconstants import RIGHT, LEFT, BOTH, E, W, HORIZONTAL
 from Tkinter import Frame, Label, Button, Toplevel, OptionMenu, Scale, Entry, \
-    Message, Spinbox, IntVar, StringVar
+    Message, Spinbox, IntVar, StringVar, DoubleVar
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, \
     NavigationToolbar2TkAgg
 from numpy import interp, squeeze
@@ -42,16 +42,13 @@ class PVapplicaton(Frame):
         master.protocol("WM_DELETE_WINDOW", self._quit)  # close window to quit
         CAPTION_FONT = tkFont.nametofont('TkCaptionFont')  # font for titles
 
-        # number of strings integer variable
+        # variables
         numStrs = self.numStrs = IntVar(self, 10, 'numStrs')
-        # number of modules integer variable
         numMods = self.numMods = IntVar(self, 10, 'numMods')
-        # number of cells integer variable
         numCells = self.numCells = IntVar(self, MOD_SIZES[1], 'numCells')
-        # text representations of I-V Characteristics
-        txtIsys = self.txtIsys = StringVar(self, name='txtIsys')
-        txtVsys = self.txtVsys = StringVar(self, name='txtVsys')
-        txtPsys = self.txtPsys = StringVar(self, name='txtPsys')
+        txtIsys = self.txtIsys = DoubleVar(self, name='txtIsys')
+        txtVsys = self.txtVsys = DoubleVar(self, name='txtVsys')
+        txtPsys = self.txtPsys = DoubleVar(self, name='txtPsys')
         txtImp = self.txtImp = StringVar(self, name='txtImp')
         txtVmp = self.txtVmp = StringVar(self, name='txtVmp')
         txtPmp = self.txtPmp = StringVar(self, name='txtPmp')

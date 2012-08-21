@@ -6,7 +6,7 @@ Created on Aug 18, 2012
 """
 
 from Tkconstants import W, E, RIGHT
-from Tkinter import Frame, Label, Button, IntVar, Entry
+from Tkinter import Frame, Label, Button, DoubleVar, Entry
 from pvmismatch.pvconstants import PVconstants
 from pvmismatch.pvsystem import PVsystem
 import tkFont
@@ -34,30 +34,30 @@ class AdvCnf_tk(Frame):
         CAPTION_FONT = tkFont.nametofont('TkCaptionFont')  # font for titles
 
         # variables
-        Rs = self.Rs = IntVar(self, name='Rs')
-        Rsh = self.Rsh = IntVar(self, name='Rsh')
-        Isat1 = self.Isat1 = IntVar(self, name='Isat1')
-        Isat2 = self.Isat2 = IntVar(self, name='Isat2')
-        self.Rs.set("{:10.4e}".format(pvapp.pvSys.pvconst.Rs))
-        self.Rsh.set("{:10.4f}".format(pvapp.pvSys.pvconst.Rsh))
-        self.Isat1.set("{:10.4e}".format(pvapp.pvSys.pvconst.Isat1))
-        self.Isat2.set("{:10.4e}".format(pvapp.pvSys.pvconst.Isat2))
-        Aph = self.Aph = IntVar(self, name='Aph')
-        Isc0 = self.Isc0 = IntVar(self, name='Isc0')
-        T = self.T = IntVar(self, name='T')
-        Vbypass = self.Vbypass = IntVar(self, name='Vbypasss')
-        self.Aph.set("{:10.4e}".format(pvapp.pvSys.pvconst.Aph))
-        self.Isc0.set("{:10.4f}".format(pvapp.pvSys.pvconst.Isc0))
-        self.T.set("{:10.4f}".format(pvapp.pvSys.pvconst.T))
-        self.Vbypass.set("{:10.4f}".format(pvapp.pvSys.pvconst.Vbypass))
-        aRBD = self.aRBD = IntVar(self, name='aRBD')
-        VRBD = self.VRBD = IntVar(self, name='VRBD')
-        nRBD = self.nRBD = IntVar(self, name='nRBD')
-        cellArea = self.cellArea = IntVar(self, name='cellArea')
-        self.aRBD.set("{:10.4e}".format(pvapp.pvSys.pvconst.aRBD))
-        self.VRBD.set("{:10.4f}".format(pvapp.pvSys.pvconst.VRBD))
-        self.nRBD.set("{:10.4f}".format(pvapp.pvSys.pvconst.nRBD))
-        self.cellArea.set("{:10.4f}".format(pvapp.pvSys.pvconst.cellArea))
+        Rs = self.Rs = DoubleVar(self, name='Rs')
+        Rsh = self.Rsh = DoubleVar(self, name='Rsh')
+        Isat1 = self.Isat1 = DoubleVar(self, name='Isat1')
+        Isat2 = self.Isat2 = DoubleVar(self, name='Isat2')
+        Rs.set("{:10.4e}".format(pvapp.pvSys.pvconst.Rs))
+        Rsh.set("{:10.4f}".format(pvapp.pvSys.pvconst.Rsh))
+        Isat1.set("{:10.4e}".format(pvapp.pvSys.pvconst.Isat1))
+        Isat2.set("{:10.4e}".format(pvapp.pvSys.pvconst.Isat2))
+        Aph = self.Aph = DoubleVar(self, name='Aph')
+        Isc0 = self.Isc0 = DoubleVar(self, name='Isc0')
+        T = self.T = DoubleVar(self, name='T')
+        Vbypass = self.Vbypass = DoubleVar(self, name='Vbypasss')
+        Aph.set("{:10.4e}".format(pvapp.pvSys.pvconst.Aph))
+        Isc0.set("{:10.4f}".format(pvapp.pvSys.pvconst.Isc0))
+        T.set("{:10.4f}".format(pvapp.pvSys.pvconst.T))
+        Vbypass.set("{:10.4f}".format(pvapp.pvSys.pvconst.Vbypass))
+        aRBD = self.aRBD = DoubleVar(self, name='aRBD')
+        VRBD = self.VRBD = DoubleVar(self, name='VRBD')
+        nRBD = self.nRBD = DoubleVar(self, name='nRBD')
+        cellArea = self.cellArea = DoubleVar(self, name='cellArea')
+        aRBD.set("{:10.4e}".format(pvapp.pvSys.pvconst.aRBD))
+        VRBD.set("{:10.4f}".format(pvapp.pvSys.pvconst.VRBD))
+        nRBD.set("{:10.4f}".format(pvapp.pvSys.pvconst.nRBD))
+        cellArea.set("{:10.4f}".format(pvapp.pvSys.pvconst.cellArea))
 
         # layout
         _row = 0
@@ -114,19 +114,18 @@ class AdvCnf_tk(Frame):
                command=self.quit).grid(row=_row, column=1, sticky=(E + W))
 
     def okay(self):
-        # TODO: doesn't work!!!
-        Rs = float(self.Rs.get())
-        Rsh = float(self.Rsh.get())
-        Isat1 = float(self.Isat1.get())
-        Isat2 = float(self.Isat2.get())
-        Aph = float(self.Aph.get())
-        Isc0 = float(self.Isc0.get())
-        T = float(self.T.get())
-        cellArea = float(self.cellArea.get())
-        Vbypass = float(self.Vbypass.get())
-        aRBD = float(self.aRBD.get())
-        VRBD = float(self.VRBD.get())
-        nRBD = float(self.nRBD.get())
+        Rs = self.Rs.get()
+        Rsh = self.Rsh.get()
+        Isat1 = self.Isat1.get()
+        Isat2 = self.Isat2.get()
+        Aph = self.Aph.get()
+        Isc0 = self.Isc0.get()
+        T = self.T.get()
+        cellArea = self.cellArea.get()
+        Vbypass = self.Vbypass.get()
+        aRBD = self.aRBD.get()
+        VRBD = self.VRBD.get()
+        nRBD = self.nRBD.get()
         pvconst = PVconstants(Rs, Rsh, Isat1, Isat2, Aph, Isc0, T, cellArea,
                               Vbypass, aRBD, VRBD, nRBD)
         self.pvapp = PVsystem(pvconst)
