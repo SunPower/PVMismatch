@@ -5,7 +5,7 @@ Created on Aug 18, 2012
 @author: mmikofski
 """
 
-from Tkconstants import W, E
+from Tkconstants import W, E, RIGHT
 from Tkinter import Frame, Label, Button, IntVar, Entry
 import pvmismatch.pvconstants as pvconst
 import tkFont
@@ -69,13 +69,13 @@ class AdvCnf_tk(Frame):
         Label(self, text='Rsh [Ohms]').grid(row=(_row + 1), sticky=W)
         Label(self, text='Isat1 [A]').grid(row=(_row + 2), sticky=W)
         Label(self, text='Isat2 [A]').grid(row=(_row + 3), sticky=W)
-        RsEntry = Entry(self, textvariable=Rs, width=15)
+        RsEntry = Entry(self, textvariable=Rs, width=15, justify=RIGHT)
         RsEntry.grid(row=_row, column=1)
-        RshEntry = Entry(self, textvariable=Rsh, width=15)
+        RshEntry = Entry(self, textvariable=Rsh, width=15, justify=RIGHT)
         RshEntry.grid(row=(_row + 1), column=1)
-        Isat1Entry = Entry(self, textvariable=Isat1, width=15)
+        Isat1Entry = Entry(self, textvariable=Isat1, width=15, justify=RIGHT)
         Isat1Entry.grid(row=(_row + 2), column=1)
-        Isat2Entry = Entry(self, textvariable=Isat2, width=15)
+        Isat2Entry = Entry(self, textvariable=Isat2, width=15, justify=RIGHT)
         Isat2Entry.grid(row=(_row + 3), column=1)
         _row += 4  # row 2, 3, 4, 5
         # Aph, Isc0, T, Vbypasss
@@ -83,13 +83,13 @@ class AdvCnf_tk(Frame):
         Label(self, text='Isc0 [A]').grid(row=(_row + 1), sticky=W)
         Label(self, text='T [K]').grid(row=(_row + 2), sticky=W)
         Label(self, text='Vbypass [V]').grid(row=(_row + 3), sticky=W)
-        RsEntry = Entry(self, textvariable=Aph, width=15)
+        RsEntry = Entry(self, textvariable=Aph, width=15, justify=RIGHT)
         RsEntry.grid(row=_row, column=1)
-        RshEntry = Entry(self, textvariable=Isc0, width=15)
+        RshEntry = Entry(self, textvariable=Isc0, width=15, justify=RIGHT)
         RshEntry.grid(row=(_row + 1), column=1)
-        Isat1Entry = Entry(self, textvariable=T, width=15)
+        Isat1Entry = Entry(self, textvariable=T, width=15, justify=RIGHT)
         Isat1Entry.grid(row=(_row + 2), column=1)
-        Isat2Entry = Entry(self, textvariable=Vbypass, width=15)
+        Isat2Entry = Entry(self, textvariable=Vbypass, width=15, justify=RIGHT)
         Isat2Entry.grid(row=(_row + 3), column=1)
         _row += 4
         # aRBD, VRBD, nRBD, cellArea
@@ -97,13 +97,14 @@ class AdvCnf_tk(Frame):
         Label(self, text='VRBD [V]').grid(row=(_row + 1), sticky=W)
         Label(self, text='nRBD').grid(row=(_row + 2), sticky=W)
         Label(self, text='cell area [cm^2]').grid(row=(_row + 3), sticky=W)
-        RsEntry = Entry(self, textvariable=aRBD, width=15)
+        RsEntry = Entry(self, textvariable=aRBD, width=15, justify=RIGHT)
         RsEntry.grid(row=_row, column=1)
-        RshEntry = Entry(self, textvariable=VRBD, width=15)
+        RshEntry = Entry(self, textvariable=VRBD, width=15, justify=RIGHT)
         RshEntry.grid(row=(_row + 1), column=1)
-        Isat1Entry = Entry(self, textvariable=nRBD, width=15)
+        Isat1Entry = Entry(self, textvariable=nRBD, width=15, justify=RIGHT)
         Isat1Entry.grid(row=(_row + 2), column=1)
-        Isat2Entry = Entry(self, textvariable=cellArea, width=15)
+        Isat2Entry = Entry(self,
+                           textvariable=cellArea, width=15, justify=RIGHT)
         Isat2Entry.grid(row=(_row + 3), column=1)
         _row += 4
         Button(self, text='OK',
