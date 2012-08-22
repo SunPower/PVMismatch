@@ -5,10 +5,11 @@ Created on Mon Jun 11 14:07:12 2012
 @author: mmikofski
 """
 
-import numpy as np
+from copy import deepcopy
+from matplotlib import pyplot as plt
 from pvmismatch.pvconstants import PVconstants, npinterpx
 from pvmismatch.pvmodule import PVmodule, PTS, NPTS
-from matplotlib import pyplot as plt
+import numpy as np
 
 _numberMods = 10  # default number of modules
 
@@ -26,8 +27,9 @@ class PVstring(object):
         self.pvconst = pvconst
         self.numberMods = numberMods
         if pvmods is None:
-            self.pvmods = [PVmodule(pvconst=self.pvconst)
-                           for pvmod in range(self.numberMods)]
+            # use deep copy instead of making each object in a for-loop
+            self.pvmods = [PVmodule(pvconst=self.pvconst)] * self.numberMods
+            self.pvmods[1:] = [deepcopy(pvmod) for pvmod in self.pvmods[1:]]
         elif ((type(pvmods) is list) and
               all([(type(pvmod) is PVmodule) for pvmod in pvmods])):
             self.numberMods = len(pvmods)
@@ -45,12 +47,13 @@ class PVstring(object):
         Calculate string I-V curves.
         Returns (Istring, Vstring, Pstring) : tuple of numpy.ndarray of float
         """
+        # scale with max irradiance, so that Ee > 1 is not a problem
         maxEe = np.max([np.max(pvmod.Ee) for pvmod in self.pvmods])
         Istring = np.max(maxEe) * self.pvconst.Isc0 * PTS
         Vstring = np.zeros((NPTS, 1))
         for mod in self.pvmods:
-            xp = mod.Imod.reshape(NPTS)
-            fp = mod.Vmod.reshape(NPTS)
+            xp = mod.Imod.squeeze()  # IGNORE:E1103
+            fp = mod.Vmod.squeeze()  # IGNORE:E1103
             Vstring += npinterpx(Istring, xp, fp)
         Pstring = Istring * Vstring
         return (Istring, Vstring, Pstring)

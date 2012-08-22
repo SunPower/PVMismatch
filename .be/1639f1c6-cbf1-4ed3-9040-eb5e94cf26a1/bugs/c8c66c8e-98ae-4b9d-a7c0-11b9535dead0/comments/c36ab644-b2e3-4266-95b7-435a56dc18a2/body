@@ -1,0 +1,2 @@
+**current:** increasing irradiance causes fill factor to tank!
+**expected:** increasing irradiance should actually improve performance slightlyIsat should be a function of irradiance, just like it should be a function of temperature. Rsh is probably also a function. But what are the functions???

@@ -21,7 +21,7 @@ from tkFont import nametofont
 import os
 
 INTEGERS = '0123456789'
-FLOATS = '.' + INTEGERS 
+FLOATS = '.' + INTEGERS
 MOD_SIZES = [72, 96, 128]
 MAX_STRINGS = 100
 MAX_MODULES = 20

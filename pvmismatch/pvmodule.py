@@ -114,7 +114,7 @@ class PVmodule(object):
         Calculate module I-V curves.
         Returns (Imod, Vmod, Pmod) : tuple of numpy.ndarray of float
         """
-        # scale with irradiance, so that Ee != 1 is not a problem
+        # scale with max irradiance, so that Ee > 1 is not a problem
         Imod = np.max(self.Ee) * self.pvconst.Isc0 * PTS
         Vsubstr = np.zeros((NPTS, 3))
         start = np.cumsum(self.subStrCells) - self.subStrCells

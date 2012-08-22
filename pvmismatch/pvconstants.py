@@ -14,8 +14,8 @@ _Isat1 = 2.286188161253440E-11  # [A] diode one saturation current
 _Isat2 = 1.117455042372326E-6  # [A] diode two saturation current
 _Aph = 1.000426348582935  # photovoltaic current coefficient
 _Isc0 = 6  # [A] reference short circuit current
-_T = 298.15
-_Vbypass = -0.5
+_T = 298.15  # [K] cell temperature
+_Vbypass = -0.5  # [V] trigger voltage of bypass diode
 _aRBD = 1.036748445065697E-4  # reverse breakdown coefficient
 _VRBD = -5.527260068445654  # [V] reverse breakdown voltage
 _nRBD = 3.284628553041425  # reverse breakdown exponent
@@ -45,18 +45,18 @@ class PVconstants(object):
     def __init__(self, Rs=_Rs, Rsh=_Rsh, Isat1=_Isat1, Isat2=_Isat2, Aph=_Aph,
                  Isc0=_Isc0, T=_T, cellArea=_cellArea, Vbypass=_Vbypass,
                  aRBD=_aRBD, VRBD=_VRBD, nRBD=_nRBD):
-        self.Rs = Rs
-        self.Rsh = Rsh
-        self.Isat1 = Isat1
-        self.Isat2 = Isat2
-        self.Aph = Aph
-        self.Isc0 = Isc0
-        self.T = T
-        self.cellArea = cellArea
-        self.Vbypass = Vbypass
-        self.aRBD = aRBD
-        self.VRBD = VRBD
-        self.nRBD = nRBD
-        self.k = scipy.constants.k
-        self.q = scipy.constants.e
-        self.E0 = 1000  # [W/m^2] insolation of 1 sun
+        self.Rs = Rs  # [ohm] series resistance
+        self.Rsh = Rsh  # [ohm] shunt resistance
+        self.Isat1 = Isat1  # [A] diode one saturation current
+        self.Isat2 = Isat2  # [A] diode two saturation current
+        self.Aph = Aph  # photovoltaic current coefficient
+        self.Isc0 = Isc0  # [A] reference short circuit current
+        self.T = T  # [K] cell temperature
+        self.cellArea = cellArea  # [cm^2] cell area
+        self.Vbypass = Vbypass  # [V] trigger voltage of bypass diode
+        self.aRBD = aRBD  # reverse breakdown coefficient
+        self.VRBD = VRBD  # [V] reverse breakdown voltage
+        self.nRBD = nRBD  # reverse breakdown exponent
+        self.k = scipy.constants.k  # [kJ/mole/K] Boltzmann constant
+        self.q = scipy.constants.e  # [Coloumbs] elementary charge
+        self.E0 = 1000  # [W/m^2] irradiance of 1 sun
