@@ -8,15 +8,17 @@ from PIL import Image, ImageTk
 from Tkconstants import RIGHT, LEFT, BOTH, E, W, HORIZONTAL
 from Tkinter import Frame, Label, Button, Toplevel, OptionMenu, Scale, Entry, \
     Message, Spinbox, IntVar, StringVar, DoubleVar
+from copy import deepcopy
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, \
     NavigationToolbar2TkAgg
 from numpy import interp, squeeze
-from pvmismatch.pvmodule import PTS, NPTS
+from pvmismatch.pvmodule import PTS, NPTS, PVmodule
+from pvmismatch.pvstring import PVstring
 from pvmismatch.pvsystem import PVsystem
 from pvmismatch_tk.advCnf_tk import AdvCnf_tk
 from pvmismatch_tk.pvstring_tk import PVstring_tk
+from tkFont import nametofont
 import os
-import tkFont
 
 INTEGERS = '0123456789'
 MOD_SIZES = [72, 96, 128]
@@ -40,7 +42,7 @@ class PVapplicaton(Frame):
         master.resizable(False, False)  # not resizable in x or y
         master.title(PVAPP_TXT)  # set title bar of master (a.k.a. root)
         master.protocol("WM_DELETE_WINDOW", self._quit)  # close window to quit
-        CAPTION_FONT = tkFont.nametofont('TkCaptionFont')  # font for titles
+        CAPTION_FONT = nametofont('TkCaptionFont')  # font for titles
 
         # variables
         numStrs = self.numStrs = IntVar(self, 10, 'numStrs')
@@ -56,10 +58,24 @@ class PVapplicaton(Frame):
         txtVoc = self.txtVoc = StringVar(self, name='txtVoc')
         txtFF = self.txtFF = StringVar(self, name='txtFF')
         txtEff = self.txtEff = StringVar(self, name='txtEff')
+        sysEe = self.sysEe = DoubleVar(self, 1, name='sysEe')
 
         # PVsystem
-        pvSys = self.pvSys = PVsystem()
-        # TODO: run in asynchronous thread, add progress meter
+        self.pvMods = [PVmodule(numberCells=numCells.get(),
+                                Ee=sysEe.get())] * numMods.get()
+        self.pvMods[1:] = [deepcopy(pvmod) for pvmod in self.pvMods[1:]]
+        self.pvStrs = [PVstring(pvmods=self.pvMods)] * numStrs.get()
+        self.pvStrs[1:] = [deepcopy(pvstr) for pvstr in self.pvStrs[1:]]
+
+#        pvMods = self.pvMods = PVmodule(numberCells=numCells.get(),
+#                                        Ee=sysEe.get())
+#        pvMods = self.pvMods = [PVmodule(numberCells=numCells.get(),
+#                                         Ee=sysEe.get())
+#                                for pvmod in range(numCells.get())]
+#        pvStrs = self.pvStrs = PVstring()
+
+        pvSys = self.pvSys = PVsystem(pvstrs=self.pvStrs)
+        # TODO: run in asynchronous thread, add progress meter in PVsystem!
         (Imp, Vmp, Pmp, Isc, Voc, FF, eff) = pvSys.calcMPP_IscVocFFeff()
         txtImp.set("{:7.3f}".format(Imp))  # [A]
         txtVmp.set("{:7.3f}".format(Vmp))  # [V]
@@ -137,11 +153,10 @@ class PVapplicaton(Frame):
               text='PVsystem', font=CAPTION_FONT).grid(row=_row, columnspan=3,
                                                      sticky=W)
 
-        # number of strings label
+        # number of strings
         _row += 1  # row 1
         Label(pvSysDataFrame,
               text='Number of Strings').grid(row=_row, columnspan=2, sticky=W)
-        # number of strings spinbox
         # use textVar to set number of strings from LOAD, RESET or default
         spinboxCnf = {'name': 'numStrSpinbox', 'from_': 1, 'to': MAX_STRINGS,
                       'textvariable': numStrs, 'width': 5, 'validate': 'all',
@@ -149,7 +164,7 @@ class PVapplicaton(Frame):
         self.numStrSpinbox = Spinbox(pvSysDataFrame, cnf=spinboxCnf)
         self.numStrSpinbox.grid(row=_row, column=2)
 
-        # number of modules label
+        # number of modules
         _row += 1  # row 2
         Label(pvSysDataFrame,
               text='Number of Modules').grid(row=_row, columnspan=2, sticky=W)
@@ -160,11 +175,10 @@ class PVapplicaton(Frame):
         self.numModSpinbox = Spinbox(pvSysDataFrame, cnf=spinboxCnf)
         self.numModSpinbox.grid(row=_row, column=2)
 
-        # number of cells label
+        # number of cells
         _row += 1  # row 3
         Label(pvSysDataFrame,
               text='Number of Cells').grid(row=_row, columnspan=2, sticky=W)
-        # number of cells option menu
         # http://www.logilab.org/card/pylintfeatures#basic-checker
         # pylint: disable = W0142
         self.numCellOption = OptionMenu(pvSysDataFrame, numCells, *MOD_SIZES)
@@ -239,13 +253,15 @@ class PVapplicaton(Frame):
                             width=7, state='readonly')
         self.pvEff.grid(row=(_row + 5), column=2)
 
-        # number of modules label
+        # set suns
         _row += 6  # row 13
         Label(pvSysDataFrame, text='Irradiance [suns]',
               font=CAPTION_FONT).grid(row=_row, columnspan=2, sticky=W)
         # number of modules spinbox
         spinboxCnf = {'name': 'sunSpinbox', 'from_': 0.2, 'to': 10,
-                       'increment': 0.1, 'width': 5}
+                      'increment': 0.1, 'width': 5, 'command': self.setSuns,
+                      'textvariable': sysEe, 'validate': 'all',
+                      'validatecommand': vcmd, 'invalidcommand': invcmd}
         self.sunSpinbox = Spinbox(pvSysDataFrame, cnf=spinboxCnf)
         self.sunSpinbox.grid(row=_row, column=2)
 
@@ -296,6 +312,8 @@ class PVapplicaton(Frame):
             maxVal = MAX_STRINGS
         elif W_ == ".pvSysFrame.pvSysDataFrame.numModSpinbox":
             maxVal = MAX_MODULES
+        elif W_ == ".pvSysFrame.pvSysDataFrame.sunSpinbox":
+            maxVal = 10
         else:
             pass
         w = self.nametowidget(W_)
@@ -316,6 +334,8 @@ class PVapplicaton(Frame):
         if W_ == ".pvSysFrame.pvSysDataFrame.numStrSpinbox":
             errText = 'Invalid number of strings!'
         elif W_ == ".pvSysFrame.pvSysDataFrame.numModSpinbox":
+            errText = 'Invalid number of modules!'
+        elif W_ == ".pvSysFrame.pvSysDataFrame.sunSpinbox":
             errText = 'Invalid number of modules!'
         else:
             pass
@@ -352,9 +372,28 @@ class PVapplicaton(Frame):
         app.mainloop()
         # please destroy me or I'll continue to run in background
         top.destroy()
-        # TODO: update main page
-        # TODO: each section of widgets needs to be in its own function, so
-        #       that it can be easily updated!
+
+    def setSuns(self):
+        sysEe = self.sysEe.get()
+        for pvstr in self.pvSys.pvstrs:
+            for pvmod in pvstr.pvmods:
+                pvmod.setSuns(sysEe)
+        (Isys, Vsys, Psys) = self.pvSys.calcSystem()
+        self.pvSys.Isys, self.pvSys.Vsys, self.pvSys.Psys = Isys, Vsys, Psys
+        self.updateIVstats()
+
+    def updateIVstats(self):
+        # reuse sysPlot figure and update pvSysFigCanvas
+        self.pvSysPlot = self.pvSys.plotSys(self.pvSysPlot)
+        self.pvSysFigCanvas.show()
+        (Imp, Vmp, Pmp, Isc, Voc, FF, eff) = self.pvSys.calcMPP_IscVocFFeff()
+        self.txtImp.set("{:7.3f}".format(Imp))  # [A]
+        self.txtVmp.set("{:7.3f}".format(Vmp))  # [V]
+        self.txtPmp.set("{:7.3f}".format(Pmp / 1000))  # [kW]
+        self.txtIsc.set("{:7.3f}".format(Isc))  # [A]
+        self.txtVoc.set("{:7.3f}".format(Voc))  # [V]
+        self.txtFF.set("{:7.3f}".format(FF * 100))  # [%]
+        self.txtEff.set("{:7.3f}".format(eff * 100))  # [%]
 
     def reset(self):
         # number of strings integer variable
