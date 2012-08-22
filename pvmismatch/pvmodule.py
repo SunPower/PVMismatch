@@ -34,11 +34,24 @@ class PVmodule(object):
         self.numSubStr = len(self.subStrCells)
         if sum(self.subStrCells) != self.numberCells:
             raise Exception("Invalid cells per substring!")
+        self.Ee = Ee
+        # initialize members so PyLint doesn't get upset
+        self.Voc = self.Vcell = self.Vmod = self.Vsubstr = 0
+        self.Icell = self.Imod = 0
+        self.Pcell = self.Pmod = 0
         self.setSuns(Ee)
 
     def setSuns(self, Ee, cells=None):
-        # http://www.logilab.org/card/pylintfeatures#classes-checker
-        # pylint: disable = W0201
+        """
+        Set the irradiance in suns, Ee, on the solar cells in the module.
+        Recalculates cell current (Icell [A]), voltage (Vcell [V]) and power
+        (Pcell [W]) as well as module current (Imod [A]), voltage (Vmod [V])
+        and power (Pmod [W]).
+        Arguments
+            Ee : <float> or <np.array of floats> Effective Irradiance
+        Optional
+            cells : <np.array of int> Cells to change
+        """
         if cells is None:
             if np.isscalar(Ee):
                 self.Ee = np.ones((1, self.numberCells)) * Ee
@@ -57,7 +70,6 @@ class PVmodule(object):
         self.Voc = self.calcVoc()
         (self.Icell, self.Vcell, self.Pcell) = self.calcCell()
         (self.Imod, self.Vmod, self.Pmod, self.Vsubstr) = self.calcMod()
-        # pylint: enable = W0201
 
     def calcVoc(self):
         """
@@ -102,7 +114,8 @@ class PVmodule(object):
         Calculate module I-V curves.
         Returns (Imod, Vmod, Pmod) : tuple of numpy.ndarray of float
         """
-        Imod = self.pvconst.Isc0 * PTS
+        # scale with irradiance, so that Ee != 1 is not a problem
+        Imod = self.Ee * self.pvconst.Isc0 * PTS
         Vsubstr = np.zeros((NPTS, 3))
         start = np.cumsum(self.subStrCells) - self.subStrCells
         stop = np.cumsum(self.subStrCells)

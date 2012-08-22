@@ -1,0 +1,17 @@
+creator: Mark Mikofski <mark.mikofski@sunpowercorp.com>
+
+
+reporter: Mark Mikofski <mark.mikofski@sunpowercorp.com>
+
+
+severity: critical
+
+
+status: open
+
+
+summary: range of Imod & Istring not big enough for Ee > 1 sun
+
+
+time: Wed, 22 Aug 2012 18:21:47 +0000
+
