@@ -45,7 +45,8 @@ class PVstring(object):
         Calculate string I-V curves.
         Returns (Istring, Vstring, Pstring) : tuple of numpy.ndarray of float
         """
-        Istring = self.pvconst.Isc0 * PTS
+        maxEe = np.max([np.max(pvmod.Ee) for pvmod in self.pvmods])
+        Istring = np.max(maxEe) * self.pvconst.Isc0 * PTS
         Vstring = np.zeros((NPTS, 1))
         for mod in self.pvmods:
             xp = mod.Imod.reshape(NPTS)

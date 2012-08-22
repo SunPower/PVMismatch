@@ -115,7 +115,7 @@ class PVmodule(object):
         Returns (Imod, Vmod, Pmod) : tuple of numpy.ndarray of float
         """
         # scale with irradiance, so that Ee != 1 is not a problem
-        Imod = self.Ee * self.pvconst.Isc0 * PTS
+        Imod = np.max(self.Ee) * self.pvconst.Isc0 * PTS
         Vsubstr = np.zeros((NPTS, 3))
         start = np.cumsum(self.subStrCells) - self.subStrCells
         stop = np.cumsum(self.subStrCells)

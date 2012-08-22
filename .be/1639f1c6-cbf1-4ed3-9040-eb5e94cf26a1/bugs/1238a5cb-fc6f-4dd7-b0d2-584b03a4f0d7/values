@@ -7,7 +7,7 @@ reporter: Mark Mikofski <mark.mikofski@sunpowercorp.com>
 severity: critical
 
 
-status: open
+status: closed
 
 
 summary: range of Imod & Istring not big enough for Ee > 1 sun
