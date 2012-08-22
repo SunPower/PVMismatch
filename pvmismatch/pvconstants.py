@@ -23,43 +23,18 @@ _cellArea = 153.33  # [cm^2] cell area
 
 
 def npinterpx(x, xp, fp):
-    """np.interp function with cubic extrapolation"""
+    """np.interp function with linear extrapolation"""
     y = np.interp(x, xp, fp)
-    if len(xp) >= 50:
-        # extrapolate left
-        left = x < xp[0]
-        if any(left):
-            xleft1 = x[left]
-            xleft = np.ones(len(xleft1))
-            Aleft = np.ones(5)
-            Aleft1 = xp[:5]
-            Bleft = fp[:5]
-            for dummy in range(3):
-                Aleft = Aleft * Aleft1
-                Aleft = np.vstack([Aleft, np.ones(5)])
-                xleft = xleft * xleft1
-                xleft = np.vstack([xleft, np.ones(len(xleft1))])
-            Pleft = np.linalg.lstsq(Aleft.T, Bleft.T)
-            y[left] = np.dot(Pleft[0], xleft)
-#   yleft = fp[0] + (xleft - xp[0]) / (xp[1] - xp[0]) * (fp[1] - fp[0])
-#   y[left] = yleft
-        # extrapolate right
-        right = x > xp[-1]
-        if any(right):
-            xright1 = x[right]
-            xright = np.ones(len(xright1))
-            Aright = np.ones(5)
-            Aright1 = xp[-5:]
-            Bright = fp[-5:]
-            for dummy in range(3):
-                Aright = Aright * Aright1
-                Aright = np.vstack([Aright, np.ones(5)])
-                xright = xright * xright1
-                xright = np.vstack([xright, np.ones(len(xright1))])
-            Pright = np.linalg.lstsq(Aright.T, Bright.T)
-            y[right] = np.dot(Pright[0], xright)
-#   yright = fp[-1] + (xright - xp[-1]) / (xp[-2] - xp[-1]) * (fp[-2] - fp[-1])
-#   y[right] = yright
+    # extrapolate left
+    left = x < xp[0]
+    xleft = x[left]
+    yleft = fp[0] + (xleft - xp[0]) / (xp[1] - xp[0]) * (fp[1] - fp[0])
+    y[left] = yleft
+    # extrapolate right
+    right = x > xp[-1]
+    xright = x[right]
+    yright = fp[-1] + (xright - xp[-1]) / (xp[-2] - xp[-1]) * (fp[-2] - fp[-1])
+    y[right] = yright
     return y
 
 
