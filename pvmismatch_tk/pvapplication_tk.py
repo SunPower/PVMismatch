@@ -21,9 +21,11 @@ from tkFont import nametofont
 import os
 
 INTEGERS = '0123456789'
+FLOATS = '.' + INTEGERS 
 MOD_SIZES = [72, 96, 128]
 MAX_STRINGS = 100
 MAX_MODULES = 20
+MAX_SUNS = 10
 SPLOGO = os.path.join('res', 'logo_bg.png')
 PVAPP_TXT = 'PVmismatch'
 READY_MSG = 'Ready'
@@ -310,17 +312,23 @@ class PVapplicaton(Frame):
         print("d={}, i={}, P={}, s={}, S={}, v={}, V={}, W={}".format(*args))
         if W_ == ".pvSysFrame.pvSysDataFrame.numStrSpinbox":
             maxVal = MAX_STRINGS
+            valType = INTEGERS
+            valTest = lambda val: int(val)  # IGNORE:W0108
         elif W_ == ".pvSysFrame.pvSysDataFrame.numModSpinbox":
             maxVal = MAX_MODULES
+            valType = INTEGERS
+            valTest = lambda val: int(val)  # IGNORE:W0108
         elif W_ == ".pvSysFrame.pvSysDataFrame.sunSpinbox":
-            maxVal = 10
+            maxVal = MAX_SUNS
+            valType = FLOATS
+            valTest = lambda val: float(val)  # IGNORE:W0108
         else:
-            pass
+            return False
         w = self.nametowidget(W_)
         w.config(validate=v)
-        if S in INTEGERS:
+        if S in valType:
             try:
-                intVar = int(P)
+                intVar = valTest(P)
             except ValueError:
                 return False
             return 0 < intVar <= maxVal
@@ -336,9 +344,9 @@ class PVapplicaton(Frame):
         elif W_ == ".pvSysFrame.pvSysDataFrame.numModSpinbox":
             errText = 'Invalid number of modules!'
         elif W_ == ".pvSysFrame.pvSysDataFrame.sunSpinbox":
-            errText = 'Invalid number of modules!'
+            errText = 'Invalid irradiance!'
         else:
-            pass
+            errText = 'Unknown widget!'
         w = self.nametowidget(W_)
         w.config(validate=v)
         self.MESSAGE.config(fg='red', text=errText, width=150)
