@@ -5,6 +5,7 @@ Created on Jul 16, 2012
 @author: mmikofski
 """
 
+from copy import deepcopy
 from matplotlib import pyplot as plt
 from pvmismatch.pvconstants import PVconstants, npinterpx
 from pvmismatch.pvmodule import PTS, NPTS
@@ -27,10 +28,9 @@ class PVsystem(object):
         self.pvconst = pvconst
         self.numberStrs = numberStrs
         if pvstrs is None:
-            self.pvstrs = [PVstring(pvconst=self.pvconst)
-                           for pvstr in range(self.numberStrs)]
-            # Don't use `itertools.repeat(e, n)` or `[e]  * n` because copies
-            # all point to the same object.
+            # use deep copy instead of making each object in a for-loop
+            self.pvstrs = [PVstring(pvconst=self.pvconst)] * self.numberStrs
+            self.pvstrs[1:] = [deepcopy(pvstr) for pvstr in self.pvstrs[1:]]
         elif ((type(pvstrs) is list) and
               all([(type(pvstr) is PVstring) for pvstr in pvstrs])):
             self.numberStrs = len(pvstrs)
@@ -49,8 +49,8 @@ class PVsystem(object):
         Vsys = np.max(Vstring) * PTS
         for pvstr in self.pvstrs:
             (pvstr.Istring, pvstr.Vstring, pvstr.Pstring) = pvstr.calcString()
-            xp = np.flipud(pvstr.Vstring.reshape(NPTS))
-            fp = np.flipud(pvstr.Istring.reshape(NPTS))
+            xp = np.flipud(pvstr.Vstring.squeeze())
+            fp = np.flipud(pvstr.Istring.squeeze())
             Isys += npinterpx(Vsys, xp, fp)
         Psys = Isys * Vsys
         return (Isys, Vsys, Psys)

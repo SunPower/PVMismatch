@@ -97,10 +97,10 @@ class PVmodule(object):
         VPTS = VPTS.repeat(self.numberCells, axis=1)
         Vdiode = np.concatenate((VPTS, Vdiode), axis=0)
         Igen = self.pvconst.Aph * self.pvconst.Isc0 * self.Ee
-        Idiode1 = self.pvconst.Isat1 * (np.exp(self.pvconst.q * Vdiode
-                  / self.pvconst.k / self.pvconst.T) - 1)
-        Idiode2 = self.pvconst.Isat2 * (np.exp(self.pvconst.q * Vdiode
-                  / 2 / self.pvconst.k / self.pvconst.T) - 1)
+        Idiode1 = (self.pvconst.Isat1 * (np.exp(self.pvconst.q * Vdiode
+                   / self.pvconst.k / self.pvconst.T) - 1))
+        Idiode2 = (self.pvconst.Isat2 * (np.exp(self.pvconst.q * Vdiode
+                   / 2 / self.pvconst.k / self.pvconst.T) - 1))
         Ishunt = Vdiode / self.pvconst.Rsh
         fRBD = self.pvconst.aRBD
         fRBD = fRBD * (1 - Vdiode / self.pvconst.VRBD) ** (-self.pvconst.nRBD)

@@ -34,8 +34,6 @@ class PVstring(object):
               all([(type(pvmod) is PVmodule) for pvmod in pvmods])):
             self.numberMods = len(pvmods)
             self.pvmods = pvmods
-            # Don't use `itertools.repeat(e, n)` or `[e]  * n` because copies
-            # all point to the same object.
         elif (type(pvmods) is list) and (len(pvmods) == self.numberMods):
             self.pvmods = pvmods
         else:
