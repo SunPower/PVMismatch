@@ -372,7 +372,7 @@ class PVapplicaton(Frame):
 
     def startAdvCnf_tk(self):
         """
-            open advnaced config window
+        open advnaced config window
         """
 
         top = Toplevel()
