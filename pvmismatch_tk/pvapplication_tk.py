@@ -154,7 +154,8 @@ class PVapplicaton(Frame):
         # use textVar to set number of strings from LOAD, RESET or default
         spinboxCnf = {'name': 'numStrSpinbox', 'from_': 1, 'to': MAX_STRINGS,
                       'textvariable': numStrs, 'width': 5, 'validate': 'all',
-                      'validatecommand': vcmd, 'invalidcommand': invcmd}
+                      'validatecommand': vcmd, 'invalidcommand': invcmd,
+                      'command': self.updatePVsys}
         self.numStrSpinbox = Spinbox(pvSysDataFrame, cnf=spinboxCnf)
         self.numStrSpinbox.grid(row=_row, column=2)
 
@@ -165,7 +166,8 @@ class PVapplicaton(Frame):
         # number of modules spinbox
         spinboxCnf = {'name': 'numModSpinbox', 'from_': 1, 'to': MAX_MODULES,
                       'textvariable': numMods, 'width': 5, 'validate': 'all',
-                      'validatecommand': vcmd, 'invalidcommand': invcmd}
+                      'validatecommand': vcmd, 'invalidcommand': invcmd,
+                      'command': self.updatePVsys}
         self.numModSpinbox = Spinbox(pvSysDataFrame, cnf=spinboxCnf)
         self.numModSpinbox.grid(row=_row, column=2)
 
@@ -175,7 +177,8 @@ class PVapplicaton(Frame):
               text='Number of Cells').grid(row=_row, columnspan=2, sticky=W)
         # http://www.logilab.org/card/pylintfeatures#basic-checker
         # pylint: disable = W0142
-        self.numCellOption = OptionMenu(pvSysDataFrame, numCells, *MOD_SIZES)
+        self.numCellOption = OptionMenu(pvSysDataFrame, numCells, *MOD_SIZES,
+                                        command=self.updatePVsys)
         # pylint: enable = W0142
         self.numCellOption._name = 'numCellOption'  # IGNORE:W0212
         self.numCellOption.grid(row=_row, column=2)
@@ -253,9 +256,9 @@ class PVapplicaton(Frame):
               font=CAPTION_FONT).grid(row=_row, columnspan=2, sticky=W)
         # number of modules spinbox
         spinboxCnf = {'name': 'sunSpinbox', 'from_': 0.2, 'to': 10,
-                      'increment': 0.1, 'width': 5, 'command': self.setSuns,
-                      'textvariable': sysEe, 'validate': 'all',
-                      'validatecommand': vcmd, 'invalidcommand': invcmd}
+                      'increment': 0.1, 'textvariable': sysEe, 'width': 5,
+                      'validate': 'all', 'validatecommand': vcmd,
+                      'invalidcommand': invcmd, 'command': self.updatePVsys}
         self.sunSpinbox = Spinbox(pvSysDataFrame, cnf=spinboxCnf)
         self.sunSpinbox.grid(row=_row, column=2)
 
@@ -373,14 +376,58 @@ class PVapplicaton(Frame):
         # please destroy me or I'll continue to run in background
         top.destroy()
 
-    def setSuns(self):
+    def updatePVsys(self, *args, **kwargs):
+        print args
+        print kwargs
+        numStrs = self.numStrs.get()
+        numMods = self.numMods.get()
+        numCells = self.numCells.get()
         sysEe = self.sysEe.get()
-        for pvstr in self.pvSys.pvstrs:
-            for pvmod in pvstr.pvmods:
-                pvmod.setSuns(sysEe)
+        pvconst = self.pvSys.pvconst
+        self.pvMods = [PVmodule(pvconst, numCells, sysEe)] * numMods
+        self.pvMods[1:] = [deepcopy(pvmod) for pvmod in self.pvMods[1:]]
+        self.pvStrs = [PVstring(pvconst, numMods, self.pvMods)] * numStrs
+        self.pvStrs[1:] = [deepcopy(pvstr) for pvstr in self.pvStrs[1:]]
+        self.pvSys = PVsystem(pvconst, numStrs, self.pvStrs)
         (Isys, Vsys, Psys) = self.pvSys.calcSystem()
         self.pvSys.Isys, self.pvSys.Vsys, self.pvSys.Psys = Isys, Vsys, Psys
         self.updateIVstats()
+
+#    def setNumStrs(self):
+#        numStrs = self.numStrs.get()
+#        for pvstr in self.pvSys.pvstrs:
+#            for pvmod in pvstr.pvmods:
+#                pvmod.setSuns(sysEe)
+#        (Isys, Vsys, Psys) = self.pvSys.calcSystem()
+#        self.pvSys.Isys, self.pvSys.Vsys, self.pvSys.Psys = Isys, Vsys, Psys
+#        self.updateIVstats()
+#
+#    def setNumMods(self):
+#        numMods = self.numMods.get()
+#        for pvstr in self.pvSys.pvstrs:
+#            for pvmod in pvstr.pvmods:
+#                pvmod.setSuns(sysEe)
+#        (Isys, Vsys, Psys) = self.pvSys.calcSystem()
+#        self.pvSys.Isys, self.pvSys.Vsys, self.pvSys.Psys = Isys, Vsys, Psys
+#        self.updateIVstats()
+#
+#    def setNumCells(self):
+#        numCells = self.numCells.get()
+#        for pvstr in self.pvSys.pvstrs:
+#            for pvmod in pvstr.pvmods:
+#                pvmod.setSuns(sysEe)
+#        (Isys, Vsys, Psys) = self.pvSys.calcSystem()
+#        self.pvSys.Isys, self.pvSys.Vsys, self.pvSys.Psys = Isys, Vsys, Psys
+#        self.updateIVstats()
+#
+#    def setSuns(self):
+#        sysEe = self.sysEe.get()
+#        for pvstr in self.pvSys.pvstrs:
+#            for pvmod in pvstr.pvmods:
+#                pvmod.setSuns(sysEe)
+#        (Isys, Vsys, Psys) = self.pvSys.calcSystem()
+#        self.pvSys.Isys, self.pvSys.Vsys, self.pvSys.Psys = Isys, Vsys, Psys
+#        self.updateIVstats()
 
     def updateIVstats(self):
         # reuse sysPlot figure and update pvSysFigCanvas
