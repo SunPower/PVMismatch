@@ -105,14 +105,24 @@ class PVsystem(object):
                 print '%s is not a figure.' % sysPlot
                 print 'Sorry, "plotSys" takes a "int", "str" or "Figure".'
                 raise e
+        (Imp, Vmp, Pmp, Isc, Voc,
+         dummy, dummy) = self.calcMPP_IscVocFFeff()
         sysPlot.clear()
         plt.subplot(2, 1, 1)
         plt.plot(self.Vsys, self.Isys)
+        plt.xlim(0, Voc * 1.1)
+        plt.ylim(0, Isc * 1.1)
+        plt.axvline(Vmp, color='r', linestyle=':')
+        plt.axhline(Imp, color='r', linestyle=':')
         plt.title('System I-V Characteristics')
         plt.ylabel('System Current, I [A]')
         plt.grid()
         plt.subplot(2, 1, 2)
         plt.plot(self.Vsys, self.Psys)
+        plt.xlim(0, Voc * 1.1)
+        plt.ylim(0, Pmp * 1.1)
+        plt.axvline(Vmp, color='r', linestyle=':')
+        plt.axhline(Pmp, color='r', linestyle=':')
         plt.title('System P-V Characteristics')
         plt.xlabel('System Voltage, V [V]')
         plt.ylabel('System Power, P [W]')
