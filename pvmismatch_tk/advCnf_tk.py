@@ -132,5 +132,6 @@ class AdvCnf_tk(Frame):
                               Vbypass, aRBD, VRBD, nRBD)
         # update PVsystem in PVapplication_tk
         self.pvapp.pvSys = PVsystem(pvconst)
+        self.pvapp.setSuns()
         self.pvapp.updateIVstats()
         self.quit()

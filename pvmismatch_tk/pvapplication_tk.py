@@ -68,14 +68,6 @@ class PVapplicaton(Frame):
         self.pvMods[1:] = [deepcopy(pvmod) for pvmod in self.pvMods[1:]]
         self.pvStrs = [PVstring(pvmods=self.pvMods)] * numStrs.get()
         self.pvStrs[1:] = [deepcopy(pvstr) for pvstr in self.pvStrs[1:]]
-
-#        pvMods = self.pvMods = PVmodule(numberCells=numCells.get(),
-#                                        Ee=sysEe.get())
-#        pvMods = self.pvMods = [PVmodule(numberCells=numCells.get(),
-#                                         Ee=sysEe.get())
-#                                for pvmod in range(numCells.get())]
-#        pvStrs = self.pvStrs = PVstring()
-
         pvSys = self.pvSys = PVsystem(pvstrs=self.pvStrs)
         # TODO: run in asynchronous thread, add progress meter in PVsystem!
         (Imp, Vmp, Pmp, Isc, Voc, FF, eff) = pvSys.calcMPP_IscVocFFeff()

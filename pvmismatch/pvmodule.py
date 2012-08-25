@@ -92,7 +92,8 @@ class PVmodule(object):
         Vdiode = self.Voc * PTS
         # http://www.logilab.org/card/pylintfeatures#typecheck-checker
         # pylint: disable = E1103
-        VPTS = np.linspace(self.pvconst.VRBD, -1 / NPTS, NPTS).reshape(NPTS, 1)
+        VPTS = np.linspace(self.pvconst.VRBD,
+                           -1 / float(NPTS), NPTS).reshape(NPTS, 1)
         # pylint: enable = E1103
         VPTS = VPTS.repeat(self.numberCells, axis=1)
         Vdiode = np.concatenate((VPTS, Vdiode), axis=0)
@@ -116,7 +117,12 @@ class PVmodule(object):
         """
         # scale with max irradiance, so that Ee > 1 is not a problem
         Imod = np.max(self.Ee) * self.pvconst.Isc0 * PTS
-        Vsubstr = np.zeros((NPTS, 3))
+        # pylint: disable = E1103
+        Ineg = np.linspace(-np.max(Imod),
+                           -1 / float(NPTS), NPTS).reshape(NPTS, 1)
+        # pylint: enable = E1103
+        Imod = np.concatenate((Ineg, Imod), axis=0)
+        Vsubstr = np.zeros((2 * NPTS, 3))
         start = np.cumsum(self.subStrCells) - self.subStrCells
         stop = np.cumsum(self.subStrCells)
         for substr in range(self.numSubStr):
@@ -126,7 +132,7 @@ class PVmodule(object):
                 Vsubstr[:, [substr]] += npinterpx(Imod, xp, fp)
         bypassed = Vsubstr < self.pvconst.Vbypass
         Vsubstr[bypassed] = self.pvconst.Vbypass
-        Vmod = np.sum(Vsubstr, 1).reshape(NPTS, 1)
+        Vmod = np.sum(Vsubstr, 1).reshape(2 * NPTS, 1)
         Pmod = Imod * Vmod
         return (Imod, Vmod, Pmod, Vsubstr)
 
