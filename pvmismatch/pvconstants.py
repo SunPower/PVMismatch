@@ -60,3 +60,14 @@ class PVconstants(object):
         self.k = scipy.constants.k  # [kJ/mole/K] Boltzmann constant
         self.q = scipy.constants.e  # [Coloumbs] elementary charge
         self.E0 = 1000  # [W/m^2] irradiance of 1 sun
+
+    def update(self, *args, **kwargs):
+        kw = ['Rs', 'Rsh', 'Isat1', 'Isat2', 'Aph', 'Isc0', 'T', 'cellArea',
+              'Vbypass', 'aRBD', 'VRBD', 'nRBD']
+        key = 0
+        for val in args:
+            self.__setattr__(kw[key], val)
+            key += 1
+        for key in kwargs:
+            if key in kw:
+                self.__setattr__(key, kwargs[key])

@@ -7,8 +7,6 @@ Created on Aug 18, 2012
 
 from Tkconstants import W, E, RIGHT
 from Tkinter import Frame, Label, Button, DoubleVar, Entry
-from pvmismatch.pvconstants import PVconstants
-from pvmismatch.pvsystem import PVsystem
 import tkFont
 
 PVAPP_TXT = 'PVmismatch'
@@ -128,10 +126,9 @@ class AdvCnf_tk(Frame):
         VRBD = self.VRBD.get()
         nRBD = self.nRBD.get()
         # update PVconstants
-        pvconst = PVconstants(Rs, Rsh, Isat1, Isat2, Aph, Isc0, T, cellArea,
-                              Vbypass, aRBD, VRBD, nRBD)
-        # update PVsystem in PVapplication_tk
-        self.pvapp.pvSys = PVsystem(pvconst)
+        self.pvapp.pvSys.pvconst.update(Rs, Rsh, Isat1, Isat2, Aph, Isc0, T,
+                                        cellArea, Vbypass, aRBD, VRBD, nRBD)
+        # update PVapplication_tk
         self.pvapp.updatePVsys()
         self.pvapp.updateIVstats()
         self.quit()
