@@ -48,11 +48,6 @@ class PVapplicaton(Frame):
         CAPTION_FONT = nametofont('TkCaptionFont')  # font for titles
 
         # PVsystem
-#        self.pvMods = [PVmodule(numberCells=numCells.get(),
-#                                Ee=sysEe.get())] * numMods.get()
-#        self.pvMods[1:] = [deepcopy(pvmod) for pvmod in self.pvMods[1:]]
-#        self.pvStrs = [PVstring(pvmods=self.pvMods)] * numStrs.get()
-#        self.pvStrs[1:] = [deepcopy(pvstr) for pvstr in self.pvStrs[1:]]
         pvSys = self.pvSys = PVsystem()
         # TODO: run in asynchronous thread, add progress meter in PVsystem!
 
@@ -385,11 +380,12 @@ class PVapplicaton(Frame):
         numCells = self.numCells.get()
         sysEe = self.sysEe.get()
         pvconst = self.pvSys.pvconst
-        self.pvMods = [PVmodule(pvconst, numCells, sysEe)] * numMods
-        self.pvMods[1:] = [deepcopy(pvmod) for pvmod in self.pvMods[1:]]
-        self.pvStrs = [PVstring(pvconst, numMods, self.pvMods)] * numStrs
-        self.pvStrs[1:] = [deepcopy(pvstr) for pvstr in self.pvStrs[1:]]
-        self.pvSys = PVsystem(pvconst, numStrs, self.pvStrs)
+#        self.pvMods = [PVmodule(pvconst, numCells, sysEe)] * numMods
+#        self.pvMods[1:] = [deepcopy(pvmod) for pvmod in self.pvMods[1:]]
+#        self.pvStrs = [PVstring(pvconst, numMods, self.pvMods)] * numStrs
+#        self.pvStrs[1:] = [deepcopy(pvstr) for pvstr in self.pvStrs[1:]]
+        self.pvSys = PVsystem(pvconst, numStrs, numberMods=numMods,
+                              numberCells=numCells, Ee=sysEe)
         (Isys, Vsys, Psys) = self.pvSys.calcSystem()
         self.pvSys.Isys, self.pvSys.Vsys, self.pvSys.Psys = Isys, Vsys, Psys
         self.updateIVstats()

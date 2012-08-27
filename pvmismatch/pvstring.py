@@ -35,8 +35,9 @@ class PVstring(object):
               all([(type(pvmod) is PVmodule) for pvmod in pvmods])):
             self.numberMods = len(pvmods)
             self.pvmods = pvmods
-            pvmodsNumCells = [pvmod.numberCells for pvmod in pvmods]
-            if all(pvmodsNumCells == pvmods[0].numberCells):
+            pvmodsNumCells = [pvmod.numberCells == pvmods[0].numberCells
+                              for pvmod in pvmods]
+            if all(pvmodsNumCells):
                 self.numberCells = pvmods[0].numberCells
             else:
                 errString = 'All modules must have the same number of cells.'

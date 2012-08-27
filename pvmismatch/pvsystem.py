@@ -42,15 +42,17 @@ class PVsystem(object):
             self.numberStrs = len(pvstrs)
             self.pvstrs = pvstrs
             # Make sure that all modules have the same number of cells.
-            pvstrsNumCells = [pvstr.numberCells for pvstr in pvstrs]
-            if all(pvstrsNumCells == pvstrs[0].numberCells):
+            pvstrsNumCells = [pvstr.numberCells == pvstrs[0].numberCells
+                              for pvstr in pvstrs]
+            if all(pvstrsNumCells):
                 self.numberCells = pvstrs[0].numberCells
             else:
                 errString = 'All modules must have the same number of cells.'
                 raise Exception(errString)
             # Make sure that all strings have the same number of modules.
-            pvstrsNumMods = [pvstr.numberMods for pvstr in pvstrs]
-            if all(pvstrsNumMods == pvstrs[0].numberMods):
+            pvstrsNumMods = [pvstr.numberMods == pvstrs[0].numberMods
+                             for pvstr in pvstrs]
+            if all(pvstrsNumMods):
                 self.numberMods = pvstrs[0].numberMods
             else:
                 errString = 'All strings must have the same number of modules.'
