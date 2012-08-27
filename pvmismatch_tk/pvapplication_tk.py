@@ -47,6 +47,15 @@ class PVapplicaton(Frame):
         master.protocol("WM_DELETE_WINDOW", self._quit)  # close window to quit
         CAPTION_FONT = nametofont('TkCaptionFont')  # font for titles
 
+        # PVsystem
+#        self.pvMods = [PVmodule(numberCells=numCells.get(),
+#                                Ee=sysEe.get())] * numMods.get()
+#        self.pvMods[1:] = [deepcopy(pvmod) for pvmod in self.pvMods[1:]]
+#        self.pvStrs = [PVstring(pvmods=self.pvMods)] * numStrs.get()
+#        self.pvStrs[1:] = [deepcopy(pvstr) for pvstr in self.pvStrs[1:]]
+        pvSys = self.pvSys = PVsystem()
+        # TODO: run in asynchronous thread, add progress meter in PVsystem!
+
         # variables
         numStrs = self.numStrs = IntVar(self, NUMBERSTRS, 'numStrs')
         numMods = self.numMods = IntVar(self, NUMBERMODS, 'numMods')
@@ -62,15 +71,6 @@ class PVapplicaton(Frame):
         txtFF = self.txtFF = StringVar(self, name='txtFF')
         txtEff = self.txtEff = StringVar(self, name='txtEff')
         sysEe = self.sysEe = DoubleVar(self, 1, name='sysEe')
-
-        # PVsystem
-        self.pvMods = [PVmodule(numberCells=numCells.get(),
-                                Ee=sysEe.get())] * numMods.get()
-        self.pvMods[1:] = [deepcopy(pvmod) for pvmod in self.pvMods[1:]]
-        self.pvStrs = [PVstring(pvmods=self.pvMods)] * numStrs.get()
-        self.pvStrs[1:] = [deepcopy(pvstr) for pvstr in self.pvStrs[1:]]
-        pvSys = self.pvSys = PVsystem(pvstrs=self.pvStrs)
-        # TODO: run in asynchronous thread, add progress meter in PVsystem!
         (Imp, Vmp, Pmp, Isc, Voc, FF, eff) = pvSys.calcMPP_IscVocFFeff()
         txtImp.set("{:7.3f}".format(Imp))  # [A]
         txtVmp.set("{:7.3f}".format(Vmp))  # [V]

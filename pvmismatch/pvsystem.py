@@ -9,7 +9,6 @@ from copy import deepcopy
 from matplotlib import pyplot as plt
 from pvmismatch.pvconstants import PVconstants, npinterpx, NPTS, PTS, \
     NUMBERCELLS, NUMBERMODS, NUMBERSTRS
-from pvmismatch.pvmodule import PVmodule
 from pvmismatch.pvstring import PVstring
 import numpy as np
 
@@ -20,23 +19,45 @@ class PVsystem(object):
     """
 
     def __init__(self, pvconst=PVconstants(), numberStrs=NUMBERSTRS,
-                 pvstrs=None, numberMods=None, pvmods=None,
-                 numberCells=None, Ee=1):
+                 pvstrs=None, numberMods=NUMBERMODS, pvmods=None,
+                 numberCells=NUMBERCELLS, Ee=1):
         """
         Constructor
         """
         self.pvconst = pvconst
         self.numberStrs = numberStrs
+        self.numberMods = numberMods
+        self.numberCells = numberCells
         if pvstrs is None:
-            # use deep copy instead of making each object in a for-loop
-            self.pvstrs = [PVstring(pvconst=self.pvconst)] * self.numberStrs
+            if pvmods is None:
+                # use deep copy instead of making each object in a for-loop
+                pvstrs = PVstring(self.pvconst, self.numberMods,
+                                  numberCells=self.numberCells, Ee=Ee)
+            else:
+                pvstrs = PVstring(self.pvconst, pvmods=pvmods)
+            self.pvstrs = [pvstrs] * self.numberStrs
             self.pvstrs[1:] = [deepcopy(pvstr) for pvstr in self.pvstrs[1:]]
         elif ((type(pvstrs) is list) and
               all([(type(pvstr) is PVstring) for pvstr in pvstrs])):
             self.numberStrs = len(pvstrs)
             self.pvstrs = pvstrs
+            # Make sure that all modules have the same number of cells.
+            pvstrsNumCells = [pvstr.numberCells for pvstr in pvstrs]
+            if all(pvstrsNumCells == pvstrs[0].numberCells):
+                self.numberCells = pvstrs[0].numberCells
+            else:
+                errString = 'All modules must have the same number of cells.'
+                raise Exception(errString)
+            # Make sure that all strings have the same number of modules.
+            pvstrsNumMods = [pvstr.numberMods for pvstr in pvstrs]
+            if all(pvstrsNumMods == pvstrs[0].numberMods):
+                self.numberMods = pvstrs[0].numberMods
+            else:
+                errString = 'All strings must have the same number of modules.'
+                raise Exception(errString)
         else:
             raise Exception("Invalid strings list!")
+        self.pvmods = [pvstr.pvmods for pvstr in self.pvstrs]
         (self.Isys, self.Vsys, self.Psys) = self.calcSystem()
 
     def calcSystem(self):
