@@ -21,7 +21,8 @@ class PVsystem(object):
     """
 
     def __init__(self, pvconst=PVconstants(), numberStrs=_numberStrs,
-                 pvstrs=None):
+                 pvstrs=None, numberMods=None, pvmods=None,
+                 numberCells=None, Ee=1):
         """
         Constructor
         """

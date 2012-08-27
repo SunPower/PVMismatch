@@ -42,11 +42,11 @@ class AdvCnf_tk(Frame):
         Isat2.set("{:10.4e}".format(pvapp.pvSys.pvconst.Isat2))
         Aph = self.Aph = DoubleVar(self, name='Aph')
         Isc0 = self.Isc0 = DoubleVar(self, name='Isc0')
-        T = self.T = DoubleVar(self, name='T')
+        Tcell = self.Tcell = DoubleVar(self, name='Tcell')
         Vbypass = self.Vbypass = DoubleVar(self, name='Vbypasss')
         Aph.set("{:10.4e}".format(pvapp.pvSys.pvconst.Aph))
         Isc0.set("{:10.4f}".format(pvapp.pvSys.pvconst.Isc0))
-        T.set("{:10.4f}".format(pvapp.pvSys.pvconst.T))
+        Tcell.set("{:10.4f}".format(pvapp.pvSys.pvconst.Tcell))
         Vbypass.set("{:10.4f}".format(pvapp.pvSys.pvconst.Vbypass))
         aRBD = self.aRBD = DoubleVar(self, name='aRBD')
         VRBD = self.VRBD = DoubleVar(self, name='VRBD')
@@ -77,16 +77,16 @@ class AdvCnf_tk(Frame):
         Isat2Entry = Entry(self, textvariable=Isat2, width=12, justify=RIGHT)
         Isat2Entry.grid(row=(_row + 3), column=1)
         _row += 4  # row 2, 3, 4, 5
-        # Aph, Isc0, T, Vbypasss
+        # Aph, Isc0, Tcell, Vbypasss
         Label(self, text='Aph').grid(row=_row, sticky=W)
         Label(self, text='Isc0 [A]').grid(row=(_row + 1), sticky=W)
-        Label(self, text='T [K]').grid(row=(_row + 2), sticky=W)
+        Label(self, text='Tcell [K]').grid(row=(_row + 2), sticky=W)
         Label(self, text='Vbypass [V]').grid(row=(_row + 3), sticky=W)
         RsEntry = Entry(self, textvariable=Aph, width=12, justify=RIGHT)
         RsEntry.grid(row=_row, column=1)
         RshEntry = Entry(self, textvariable=Isc0, width=12, justify=RIGHT)
         RshEntry.grid(row=(_row + 1), column=1)
-        Isat1Entry = Entry(self, textvariable=T, width=12, justify=RIGHT)
+        Isat1Entry = Entry(self, textvariable=Tcell, width=12, justify=RIGHT)
         Isat1Entry.grid(row=(_row + 2), column=1)
         Isat2Entry = Entry(self, textvariable=Vbypass, width=12, justify=RIGHT)
         Isat2Entry.grid(row=(_row + 3), column=1)
@@ -119,15 +119,16 @@ class AdvCnf_tk(Frame):
         Isat2 = self.Isat2.get()
         Aph = self.Aph.get()
         Isc0 = self.Isc0.get()
-        T = self.T.get()
+        Tcell = self.Tcell.get()
         cellArea = self.cellArea.get()
         Vbypass = self.Vbypass.get()
         aRBD = self.aRBD.get()
         VRBD = self.VRBD.get()
         nRBD = self.nRBD.get()
         # update PVconstants
-        self.pvapp.pvSys.pvconst.update(Rs, Rsh, Isat1, Isat2, Aph, Isc0, T,
-                                        cellArea, Vbypass, aRBD, VRBD, nRBD)
+        pvapp = self.pvapp
+        pvapp.pvSys.pvconst.update(Rs, Rsh, Isat1, Isat2, Aph, Isc0, Tcell,
+                                   cellArea, Vbypass, aRBD, VRBD, nRBD)
         # update PVapplication_tk
         self.pvapp.updatePVsys()
         self.pvapp.updateIVstats()
