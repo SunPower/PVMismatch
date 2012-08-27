@@ -8,14 +8,11 @@ from PIL import Image, ImageTk
 from Tkconstants import RIGHT, LEFT, BOTH, E, W, HORIZONTAL
 from Tkinter import Frame, Label, Button, Toplevel, OptionMenu, Scale, Entry, \
     Message, Spinbox, IntVar, StringVar, DoubleVar
-from copy import deepcopy
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, \
     NavigationToolbar2TkAgg
 from numpy import interp, squeeze
 from pvmismatch.pvconstants import NPTS, PTS, MODSIZES, NUMBERCELLS, \
     NUMBERMODS, NUMBERSTRS
-from pvmismatch.pvmodule import PVmodule
-from pvmismatch.pvstring import PVstring
 from pvmismatch.pvsystem import PVsystem
 from pvmismatch_tk.advCnf_tk import AdvCnf_tk
 from pvmismatch_tk.pvstring_tk import PVstring_tk
@@ -380,51 +377,11 @@ class PVapplicaton(Frame):
         numCells = self.numCells.get()
         sysEe = self.sysEe.get()
         pvconst = self.pvSys.pvconst
-#        self.pvMods = [PVmodule(pvconst, numCells, sysEe)] * numMods
-#        self.pvMods[1:] = [deepcopy(pvmod) for pvmod in self.pvMods[1:]]
-#        self.pvStrs = [PVstring(pvconst, numMods, self.pvMods)] * numStrs
-#        self.pvStrs[1:] = [deepcopy(pvstr) for pvstr in self.pvStrs[1:]]
         self.pvSys = PVsystem(pvconst, numStrs, numberMods=numMods,
                               numberCells=numCells, Ee=sysEe)
         (Isys, Vsys, Psys) = self.pvSys.calcSystem()
         self.pvSys.Isys, self.pvSys.Vsys, self.pvSys.Psys = Isys, Vsys, Psys
         self.updateIVstats()
-
-#    def setNumStrs(self):
-#        numStrs = self.numStrs.get()
-#        for pvstr in self.pvSys.pvstrs:
-#            for pvmod in pvstr.pvmods:
-#                pvmod.setSuns(sysEe)
-#        (Isys, Vsys, Psys) = self.pvSys.calcSystem()
-#        self.pvSys.Isys, self.pvSys.Vsys, self.pvSys.Psys = Isys, Vsys, Psys
-#        self.updateIVstats()
-#
-#    def setNumMods(self):
-#        numMods = self.numMods.get()
-#        for pvstr in self.pvSys.pvstrs:
-#            for pvmod in pvstr.pvmods:
-#                pvmod.setSuns(sysEe)
-#        (Isys, Vsys, Psys) = self.pvSys.calcSystem()
-#        self.pvSys.Isys, self.pvSys.Vsys, self.pvSys.Psys = Isys, Vsys, Psys
-#        self.updateIVstats()
-#
-#    def setNumCells(self):
-#        numCells = self.numCells.get()
-#        for pvstr in self.pvSys.pvstrs:
-#            for pvmod in pvstr.pvmods:
-#                pvmod.setSuns(sysEe)
-#        (Isys, Vsys, Psys) = self.pvSys.calcSystem()
-#        self.pvSys.Isys, self.pvSys.Vsys, self.pvSys.Psys = Isys, Vsys, Psys
-#        self.updateIVstats()
-#
-#    def setSuns(self):
-#        sysEe = self.sysEe.get()
-#        for pvstr in self.pvSys.pvstrs:
-#            for pvmod in pvstr.pvmods:
-#                pvmod.setSuns(sysEe)
-#        (Isys, Vsys, Psys) = self.pvSys.calcSystem()
-#        self.pvSys.Isys, self.pvSys.Vsys, self.pvSys.Psys = Isys, Vsys, Psys
-#        self.updateIVstats()
 
     def updateIVstats(self):
         # reuse sysPlot figure and update pvSysFigCanvas
