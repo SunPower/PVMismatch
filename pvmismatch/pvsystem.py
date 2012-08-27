@@ -7,12 +7,11 @@ Created on Jul 16, 2012
 
 from copy import deepcopy
 from matplotlib import pyplot as plt
-from pvmismatch.pvconstants import PVconstants, npinterpx
-from pvmismatch.pvmodule import PTS, NPTS
+from pvmismatch.pvconstants import PVconstants, npinterpx, NPTS, PTS, \
+    NUMBERCELLS, NUMBERMODS, NUMBERSTRS
+from pvmismatch.pvmodule import PVmodule
 from pvmismatch.pvstring import PVstring
 import numpy as np
-
-_numberStrs = 10  # default number of strings
 
 
 class PVsystem(object):
@@ -20,7 +19,7 @@ class PVsystem(object):
     PVsystem - A class for PV systems.
     """
 
-    def __init__(self, pvconst=PVconstants(), numberStrs=_numberStrs,
+    def __init__(self, pvconst=PVconstants(), numberStrs=NUMBERSTRS,
                  pvstrs=None, numberMods=None, pvmods=None,
                  numberCells=None, Ee=1):
         """

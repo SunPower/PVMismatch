@@ -12,7 +12,9 @@ from copy import deepcopy
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, \
     NavigationToolbar2TkAgg
 from numpy import interp, squeeze
-from pvmismatch.pvmodule import PTS, NPTS, PVmodule
+from pvmismatch.pvconstants import NPTS, PTS, MODSIZES, NUMBERCELLS, \
+    NUMBERMODS, NUMBERSTRS
+from pvmismatch.pvmodule import PVmodule
 from pvmismatch.pvstring import PVstring
 from pvmismatch.pvsystem import PVsystem
 from pvmismatch_tk.advCnf_tk import AdvCnf_tk
@@ -22,7 +24,6 @@ import os
 
 INTEGERS = '0123456789'
 FLOATS = '.' + INTEGERS
-MOD_SIZES = [72, 96, 128]
 MAX_STRINGS = 100
 MAX_MODULES = 20
 MAX_SUNS = 10
@@ -47,9 +48,9 @@ class PVapplicaton(Frame):
         CAPTION_FONT = nametofont('TkCaptionFont')  # font for titles
 
         # variables
-        numStrs = self.numStrs = IntVar(self, 10, 'numStrs')
-        numMods = self.numMods = IntVar(self, 10, 'numMods')
-        numCells = self.numCells = IntVar(self, MOD_SIZES[1], 'numCells')
+        numStrs = self.numStrs = IntVar(self, NUMBERSTRS, 'numStrs')
+        numMods = self.numMods = IntVar(self, NUMBERMODS, 'numMods')
+        numCells = self.numCells = IntVar(self, NUMBERCELLS, 'numCells')
         txtIsys = self.txtIsys = DoubleVar(self, name='txtIsys')
         txtVsys = self.txtVsys = DoubleVar(self, name='txtVsys')
         txtPsys = self.txtPsys = DoubleVar(self, name='txtPsys')
@@ -177,7 +178,7 @@ class PVapplicaton(Frame):
               text='Number of Cells').grid(row=_row, columnspan=2, sticky=W)
         # http://www.logilab.org/card/pylintfeatures#basic-checker
         # pylint: disable = W0142
-        self.numCellOption = OptionMenu(pvSysDataFrame, numCells, *MOD_SIZES,
+        self.numCellOption = OptionMenu(pvSysDataFrame, numCells, *MODSIZES,
                                         command=self.updatePVsys)
         # pylint: enable = W0142
         self.numCellOption._name = 'numCellOption'  # IGNORE:W0212
@@ -444,11 +445,11 @@ class PVapplicaton(Frame):
 
     def reset(self):
         # number of strings integer variable
-        self.numStrs.set(10)  # default
+        self.numStrs.set(NUMBERSTRS)  # default
         # number of modules integer variable
-        self.numMods.set(10)  # default
+        self.numMods.set(NUMBERMODS)  # default
         # number of cells integer variable
-        self.numCells.set(MOD_SIZES[1])  # default value is 96
+        self.numCells.set(NUMBERCELLS)  # default value is 96
         self.MESSAGE.config(fg='black', text=READY_MSG, width=150)
         print 'reset'
 

@@ -6,15 +6,16 @@ Created on Thu May 31 23:17:04 2012
 """
 
 import numpy as np
-from pvmismatch.pvconstants import PVconstants, npinterpx
+from pvmismatch.pvconstants import PVconstants, npinterpx, NPTS, PTS, \
+    MODSIZES, SUBSTRSIZES, NUMBERCELLS
 from matplotlib import pyplot as plt
 
-NPTS = 1001  # number of I-V points to calculate
-# http://www.logilab.org/card/pylintfeatures#typecheck-checker
-PTS = np.linspace(0, 1, NPTS).reshape(NPTS, 1)  # IGNORE:E1103
-NUMBERCELLS = [72, 96, 128]  # list of possible number of cells per module
-SUBSTRCELLS = [[24, 24, 24], [24, 48, 24], [32, 64, 32]]
-_numberCells = 96  # default number of cells
+#NPTS = 1001  # number of I-V points to calculate
+## http://www.logilab.org/card/pylintfeatures#typecheck-checker
+#PTS = np.linspace(0, 1, NPTS).reshape(NPTS, 1)  # IGNORE:E1103
+#MODSIZES = [72, 96, 128]  # list of possible number of cells per module
+#SUBSTRSIZES = [[24, 24, 24], [24, 48, 24], [32, 64, 32]]
+#NUMBERCELLS = 96  # default number of cells
 
 
 class PVmodule(object):
@@ -22,15 +23,15 @@ class PVmodule(object):
     PVmodule - A Class for PV modules.
     """
 
-    def __init__(self, pvconst=PVconstants(), numberCells=_numberCells, Ee=1):
+    def __init__(self, pvconst=PVconstants(), numberCells=NUMBERCELLS, Ee=1):
         """
         Constructor
         """
         self.pvconst = pvconst
         self.numberCells = numberCells
-        if numberCells not in NUMBERCELLS:
+        if numberCells not in MODSIZES:
             raise Exception("Invalid number of cells!")
-        self.subStrCells = SUBSTRCELLS[NUMBERCELLS.index(self.numberCells)]
+        self.subStrCells = SUBSTRSIZES[MODSIZES.index(self.numberCells)]
         self.numSubStr = len(self.subStrCells)
         if sum(self.subStrCells) != self.numberCells:
             raise Exception("Invalid cells per substring!")

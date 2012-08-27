@@ -7,11 +7,10 @@ Created on Mon Jun 11 14:07:12 2012
 
 from copy import deepcopy
 from matplotlib import pyplot as plt
-from pvmismatch.pvconstants import PVconstants, npinterpx
-from pvmismatch.pvmodule import PVmodule, PTS, NPTS
+from pvmismatch.pvconstants import PVconstants, npinterpx, NPTS, PTS, \
+    NUMBERMODS
+from pvmismatch.pvmodule import PVmodule
 import numpy as np
-
-_numberMods = 10  # default number of modules
 
 
 class PVstring(object):
@@ -19,7 +18,7 @@ class PVstring(object):
     PVstring - A class for PV strings.
     """
 
-    def __init__(self, pvconst=PVconstants(), numberMods=_numberMods,
+    def __init__(self, pvconst=PVconstants(), numberMods=NUMBERMODS,
                  pvmods=None):
         """
         Constructor

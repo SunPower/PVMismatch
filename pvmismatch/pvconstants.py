@@ -21,6 +21,15 @@ VRBD_ = -5.527260068445654  # [V] reverse breakdown voltage
 NRBD = 3.284628553041425  # reverse breakdown exponent
 CELLAREA = 153.33  # [cm^2] cell area
 
+# Constants
+NPTS = 1001  # number of I-V points to calculate
+PTS = np.linspace(0, 1, NPTS).reshape(NPTS, 1)  # IGNORE:E1103
+MODSIZES = [72, 96, 128]  # list of possible number of cells per module
+SUBSTRSIZES = [[24, 24, 24], [24, 48, 24], [32, 64, 32]]
+NUMBERCELLS = MODSIZES[1]  # default number of cells
+NUMBERMODS = 10  # default number of modules
+NUMBERSTRS = 10  # default number of strings
+
 
 def npinterpx(x, xp, fp):
     """np.interp function with linear extrapolation"""
