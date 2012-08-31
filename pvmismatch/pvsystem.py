@@ -5,7 +5,7 @@ Created on Jul 16, 2012
 @author: mmikofski
 """
 
-from Tkinter import Tk, Frame, Label, IntVar
+from Tkinter import Tk, Frame, Label, IntVar, Toplevel
 from copy import deepcopy
 from matplotlib import pyplot as plt
 from pvmismatch.pvconstants import PVconstants, npinterpx, NPTS, PTS, \
@@ -13,6 +13,11 @@ from pvmismatch.pvconstants import PVconstants, npinterpx, NPTS, PTS, \
 from pvmismatch.pvstring import PVstring
 from threading import Thread, Event
 import numpy as np
+import time
+import logging
+
+logging.basicConfig(level=logging.DEBUG,
+                    format='[%(levelname)s] (%(threadName)-10s) %(message)s')
 
 
 def waitbox(original_function):
@@ -27,32 +32,37 @@ def waitbox(original_function):
             self.grab_set()  # make this window modal
             master.resizable(False, False)  # not resizable
             master.title("")  # no title
-            master.protocol("WM_DELETE_WINDOW")  # do nothing
-            self.time = IntVar(master, 0, "time")
+            master.protocol("WM_DELETE_WINDOW", self.quit)  # do nothing
+            self.wait = IntVar(master, 0, "wait")
             Label(master, bitmap="hourglass").pack(fill="both")
             Label(master, text="Please wait ...").pack(fill="both",
                                                        side="left")
-            Label(master, textvariable=self.time).pack(fill="both",
+            Label(master, textvariable=self.wait).pack(fill="both",
                                                        side="right")
-            self.after(1000, self.callback)
+            self.timer()
 
-        def callback(self):
+        def timer(self):
             if self.event.is_set():
                 self.quit()
-            time = self.time.get() + 1
-            self.time.set(time)
+            wait = self.wait.get() + 1
+            print wait
+            self.wait.set(wait)
+            self.after(100, self.timer)
 
-    def waitfun(event=None):
-        master = Tk()
+    def waitfun(event):
+        logging.debug('Starting')
+        master = Toplevel()
         waitBox = waitWidget(event, master)
         waitBox.mainloop()
         master.destroy()
+        logging.debug('Exiting')
 
     def new_function(*args, **kwargs):
         event = Event()
-        thread = Thread(target=waitfun, kwargs={"event": event})
+        thread = Thread(target=waitfun, args=(event,))
         thread.start()
         result = original_function(*args, **kwargs)
+        time.sleep(5)
         event.set()
         return result
 
