@@ -16,7 +16,10 @@ from pvmismatch.pvconstants import NPTS, PTS, MODSIZES, NUMBERCELLS, \
 from pvmismatch.pvsystem import PVsystem
 from pvmismatch_tk.advCnf_tk import AdvCnf_tk
 from pvmismatch_tk.pvstring_tk import PVstring_tk
+from threading import Thread
 from tkFont import nametofont
+import Queue
+import logging
 import os
 
 INTEGERS = '0123456789'
@@ -27,6 +30,61 @@ MAX_SUNS = 10
 SPLOGO = os.path.join('res', 'logo_bg.png')
 PVAPP_TXT = 'PVmismatch'
 READY_MSG = 'Ready'
+
+logging.basicConfig(level=logging.DEBUG,
+                    format='[%(levelname)s] (%(threadName)-10s) %(message)s')
+
+
+class waitWidget(Frame):
+
+    def __init__(self, queue, master):
+        self.queue = queue
+        Frame.__init__(self, master)
+        self.pack(fill="both")
+        self.focus_set()  # get the focus
+        self.grab_set()  # make this window modal
+        master.resizable(False, False)  # not resizable
+        master.title("")  # no title
+        master.protocol("WM_DELETE_WINDOW", self.timer)
+        self.wait = IntVar(master, 0, "wait")
+        Label(master, bitmap="hourglass").pack(fill="both")
+        Label(master, text="Please wait ...").pack(fill="both")
+        Label(master, textvariable=self.wait).pack(fill="both")
+        self.timer()
+
+    def timer(self):
+        wait = self.wait.get() + 1
+        if not self.queue.empty():
+            print 'elapsed time = %3.2f [s]' % (wait * 0.010)
+            self.quit()
+        self.wait.set(wait)
+        self.after(10, self.timer)
+
+
+def setqueue(original_function, queue):
+
+    def queuefun(*args, **kwargs):
+        logging.debug('Starting')
+        queue.put(original_function(*args, **kwargs))
+        logging.debug('Exiting')
+
+    return queuefun
+
+
+def waitbox(original_function):
+
+    def new_function(*args, **kwargs):
+        queue = Queue.Queue()
+        queuefun = setqueue(original_function, queue)
+        thread = Thread(target=queuefun, args=args, kwargs=kwargs)
+        thread.start()
+        master = Toplevel()
+        waitBox = waitWidget(queue, master)
+        waitBox.mainloop()
+        master.destroy()
+        return queue.get()
+
+    return new_function
 
 
 class PVapplicaton(Frame):
@@ -46,7 +104,6 @@ class PVapplicaton(Frame):
 
         # PVsystem
         pvSys = self.pvSys = PVsystem()
-        # TODO: run in asynchronous thread, add progress meter in PVsystem!
 
         # variables
         numStrs = self.numStrs = IntVar(self, NUMBERSTRS, 'numStrs')
@@ -369,6 +426,7 @@ class PVapplicaton(Frame):
         # please destroy me or I'll continue to run in background
         top.destroy()
 
+    @waitbox
     def updatePVsys(self, *args, **kwargs):
         print args
         print kwargs

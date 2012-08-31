@@ -5,73 +5,12 @@ Created on Jul 16, 2012
 @author: mmikofski
 """
 
-from Tkinter import Tk, Frame, Label, IntVar
 from copy import deepcopy
 from matplotlib import pyplot as plt
 from pvmismatch.pvconstants import PVconstants, npinterpx, NPTS, PTS, \
     NUMBERCELLS, NUMBERMODS, NUMBERSTRS
 from pvmismatch.pvstring import PVstring
-from threading import Thread
-import Queue
-import logging
 import numpy as np
-import time
-
-logging.basicConfig(level=logging.DEBUG,
-                    format='[%(levelname)s] (%(threadName)-10s) %(message)s')
-
-
-class waitWidget(Frame):
-
-    def __init__(self, queue, master):
-        self.queue = queue
-        Frame.__init__(self, master)
-        self.pack(fill="both")
-        self.focus_set()  # get the focus
-        self.grab_set()  # make this window modal
-        master.resizable(False, False)  # not resizable
-        master.title("")  # no title
-        master.protocol("WM_DELETE_WINDOW", self.quit)
-        self.wait = IntVar(master, 0, "wait")
-        Label(master, bitmap="hourglass").pack(fill="both")
-        Label(master, text="Please wait ...").pack(fill="both")
-        Label(master, textvariable=self.wait).pack(fill="both")
-        self.timer()
-
-    def timer(self):
-        if not self.queue.empty():
-            self.quit()
-        wait = self.wait.get() + 1
-        print wait
-        self.wait.set(wait)
-        self.after(100, self.timer)
-
-
-def setqueue(original_function, queue):
-
-    def queuefun(*args, **kwargs):
-        logging.debug('Starting')
-        time.sleep(3)
-        queue.put(original_function(*args, **kwargs))
-        logging.debug('Exiting')
-
-    return queuefun
-
-
-def waitbox(original_function):
-
-    def new_function(*args, **kwargs):
-        queue = Queue.Queue()
-        queuefun = setqueue(original_function, queue)
-        thread = Thread(target=queuefun, args=args, kwargs=kwargs)
-        thread.start()
-        master = Tk()
-        waitBox = waitWidget(queue, master)
-        waitBox.mainloop()
-        master.destroy()
-        return queue.get()
-
-    return new_function
 
 
 class PVsystem(object):
@@ -123,7 +62,6 @@ class PVsystem(object):
         self.pvmods = [pvstr.pvmods for pvstr in self.pvstrs]
         (self.Isys, self.Vsys, self.Psys) = self.calcSystem()
 
-    @waitbox
     def calcSystem(self):
         """
         Calculate system I-V curves.
