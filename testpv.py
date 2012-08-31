@@ -4,7 +4,6 @@
 Created on Thu Jun 07 09:44:08 2012
 
 @author: mmikofski
-)
 """
 
 #from pvmismatch.pvmodule import PVmodule
