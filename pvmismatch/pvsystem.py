@@ -5,66 +5,71 @@ Created on Jul 16, 2012
 @author: mmikofski
 """
 
-from Tkinter import Tk, Frame, Label, IntVar, Toplevel
+from Tkinter import Tk, Frame, Label, IntVar
 from copy import deepcopy
 from matplotlib import pyplot as plt
 from pvmismatch.pvconstants import PVconstants, npinterpx, NPTS, PTS, \
     NUMBERCELLS, NUMBERMODS, NUMBERSTRS
 from pvmismatch.pvstring import PVstring
-from threading import Thread, Event
+from threading import Thread
+import Queue
+import logging
 import numpy as np
 import time
-import logging
 
 logging.basicConfig(level=logging.DEBUG,
                     format='[%(levelname)s] (%(threadName)-10s) %(message)s')
 
 
-def waitbox(original_function):
+class waitWidget(Frame):
 
-    class waitWidget(Frame):
+    def __init__(self, queue, master):
+        self.queue = queue
+        Frame.__init__(self, master)
+        self.pack(fill="both")
+        self.focus_set()  # get the focus
+        self.grab_set()  # make this window modal
+        master.resizable(False, False)  # not resizable
+        master.title("")  # no title
+        master.protocol("WM_DELETE_WINDOW", self.quit)
+        self.wait = IntVar(master, 0, "wait")
+        Label(master, bitmap="hourglass").pack(fill="both")
+        Label(master, text="Please wait ...").pack(fill="both")
+        Label(master, textvariable=self.wait).pack(fill="both")
+        self.timer()
 
-        def __init__(self, event, master):
-            self.event = event
-            Frame.__init__(self, master)
-            self.pack(fill="both")
-            self.focus_set()  # get the focus
-            self.grab_set()  # make this window modal
-            master.resizable(False, False)  # not resizable
-            master.title("")  # no title
-            master.protocol("WM_DELETE_WINDOW", self.quit)  # do nothing
-            self.wait = IntVar(master, 0, "wait")
-            Label(master, bitmap="hourglass").pack(fill="both")
-            Label(master, text="Please wait ...").pack(fill="both",
-                                                       side="left")
-            Label(master, textvariable=self.wait).pack(fill="both",
-                                                       side="right")
-            self.timer()
+    def timer(self):
+        if not self.queue.empty():
+            self.quit()
+        wait = self.wait.get() + 1
+        print wait
+        self.wait.set(wait)
+        self.after(100, self.timer)
 
-        def timer(self):
-            if self.event.is_set():
-                self.quit()
-            wait = self.wait.get() + 1
-            print wait
-            self.wait.set(wait)
-            self.after(100, self.timer)
 
-    def waitfun(event):
+def setqueue(original_function, queue):
+
+    def queuefun(*args, **kwargs):
         logging.debug('Starting')
-        master = Toplevel()
-        waitBox = waitWidget(event, master)
-        waitBox.mainloop()
-        master.destroy()
+        time.sleep(3)
+        queue.put(original_function(*args, **kwargs))
         logging.debug('Exiting')
 
+    return queuefun
+
+
+def waitbox(original_function):
+
     def new_function(*args, **kwargs):
-        event = Event()
-        thread = Thread(target=waitfun, args=(event,))
+        queue = Queue.Queue()
+        queuefun = setqueue(original_function, queue)
+        thread = Thread(target=queuefun, args=args, kwargs=kwargs)
         thread.start()
-        result = original_function(*args, **kwargs)
-        time.sleep(5)
-        event.set()
-        return result
+        master = Tk()
+        waitBox = waitWidget(queue, master)
+        waitBox.mainloop()
+        master.destroy()
+        return queue.get()
 
     return new_function
 
