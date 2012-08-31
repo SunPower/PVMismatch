@@ -5,12 +5,58 @@ Created on Jul 16, 2012
 @author: mmikofski
 """
 
+from Tkinter import Tk, Frame, Label, IntVar
 from copy import deepcopy
 from matplotlib import pyplot as plt
 from pvmismatch.pvconstants import PVconstants, npinterpx, NPTS, PTS, \
     NUMBERCELLS, NUMBERMODS, NUMBERSTRS
 from pvmismatch.pvstring import PVstring
+from threading import Thread, Event
 import numpy as np
+
+
+def waitbox(original_function):
+
+    class waitWidget(Frame):
+
+        def __init__(self, event, master):
+            self.event = event
+            Frame.__init__(self, master)
+            self.pack(fill="both")
+            self.focus_set()  # get the focus
+            self.grab_set()  # make this window modal
+            master.resizable(False, False)  # not resizable
+            master.title("")  # no title
+            master.protocol("WM_DELETE_WINDOW")  # do nothing
+            self.time = IntVar(master, 0, "time")
+            Label(master, bitmap="hourglass").pack(fill="both")
+            Label(master, text="Please wait ...").pack(fill="both",
+                                                       side="left")
+            Label(master, textvariable=self.time).pack(fill="both",
+                                                       side="right")
+            self.after(1000, self.callback)
+
+        def callback(self):
+            if self.event.is_set():
+                self.quit()
+            time = self.time.get() + 1
+            self.time.set(time)
+
+    def waitfun(event=None):
+        master = Tk()
+        waitBox = waitWidget(event, master)
+        waitBox.mainloop()
+        master.destroy()
+
+    def new_function(*args, **kwargs):
+        event = Event()
+        thread = Thread(target=waitfun, kwargs={"event": event})
+        thread.start()
+        result = original_function(*args, **kwargs)
+        event.set()
+        return result
+
+    return new_function
 
 
 class PVsystem(object):
@@ -62,6 +108,7 @@ class PVsystem(object):
         self.pvmods = [pvstr.pvmods for pvstr in self.pvstrs]
         (self.Isys, self.Vsys, self.Psys) = self.calcSystem()
 
+    @waitbox
     def calcSystem(self):
         """
         Calculate system I-V curves.

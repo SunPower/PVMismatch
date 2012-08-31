@@ -379,8 +379,8 @@ class PVapplicaton(Frame):
         pvconst = self.pvSys.pvconst
         self.pvSys = PVsystem(pvconst, numStrs, numberMods=numMods,
                               numberCells=numCells, Ee=sysEe)
-        (Isys, Vsys, Psys) = self.pvSys.calcSystem()
-        self.pvSys.Isys, self.pvSys.Vsys, self.pvSys.Psys = Isys, Vsys, Psys
+#        (Isys, Vsys, Psys) = self.pvSys.calcSystem()
+#        self.pvSys.Isys, self.pvSys.Vsys, self.pvSys.Psys = Isys, Vsys, Psys
         self.updateIVstats()
 
     def updateIVstats(self):
