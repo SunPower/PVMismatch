@@ -45,12 +45,11 @@ class waitWidget(Frame):
         self.grab_set()  # make this window modal
         master.resizable(False, False)  # not resizable
         master.title("")  # no title
-        master.protocol("WM_DELETE_WINDOW", self.quit)
+        master.protocol("WM_DELETE_WINDOW", self.timer)
         self.wait = IntVar(master, 0, "wait")
         Label(master, bitmap="hourglass").pack(fill="both")
         Label(master, text="Please wait ...").pack(fill="both")
         Label(master, textvariable=self.wait).pack(fill="both")
-        Button(master, text="Cancel", command=self.quit()).pack(fill="both")
         self.timer()
 
     def timer(self):
@@ -121,14 +120,13 @@ class PVapplicaton(Frame):
         txtFF = self.txtFF = StringVar(self, name='txtFF')
         txtEff = self.txtEff = StringVar(self, name='txtEff')
         sysEe = self.sysEe = DoubleVar(self, 1, name='sysEe')
-        (Imp, Vmp, Pmp, Isc, Voc, FF, eff) = pvSys.calcMPP_IscVocFFeff()
-        txtImp.set("{:7.3f}".format(Imp))  # [A]
-        txtVmp.set("{:7.3f}".format(Vmp))  # [V]
-        txtPmp.set("{:7.3f}".format(Pmp / 1000))  # [kW] convert to kW
-        txtIsc.set("{:7.3f}".format(Isc))  # [A]
-        txtVoc.set("{:7.3f}".format(Voc))  # [V]
-        txtFF.set("{:7.3f}".format(FF * 100))  # [%] convert to %
-        txtEff.set("{:7.3f}".format(eff * 100))  # [%] convert to %
+        txtImp.set("{:7.3f}".format(self.pvSys.Imp))  # [A]
+        txtVmp.set("{:7.3f}".format(self.pvSys.Vmp))  # [V]
+        txtPmp.set("{:7.3f}".format(self.pvSys.Pmp / 1000))  # [kW]
+        txtIsc.set("{:7.3f}".format(self.pvSys.Isc))  # [A]
+        txtVoc.set("{:7.3f}".format(self.pvSys.Voc))  # [V]
+        txtFF.set("{:7.3f}".format(self.pvSys.FF * 100))  # [%]
+        txtEff.set("{:7.3f}".format(self.pvSys.eff * 100))  # [%]
 
         # must register vcmd and invcmd as Tcl functions
         vcmd = (self.register(self.validateWidget),
@@ -209,7 +207,6 @@ class PVapplicaton(Frame):
                       'command': self.updatePVsys}
         self.numStrSpinbox = Spinbox(pvSysDataFrame, cnf=spinboxCnf)
         self.numStrSpinbox.bind("<Return>", self.keyBinding)
-        self.numStrSpinbox.bind("<FocusOut>", self.signalUser)
         self.numStrSpinbox.grid(row=_row, column=2)
 
         # number of modules
@@ -223,7 +220,6 @@ class PVapplicaton(Frame):
                       'command': self.updatePVsys}
         self.numModSpinbox = Spinbox(pvSysDataFrame, cnf=spinboxCnf)
         self.numModSpinbox.bind("<Return>", self.keyBinding)
-        self.numModSpinbox.bind("<FocusOut>", self.signalUser)
         self.numModSpinbox.grid(row=_row, column=2)
 
         # number of cells
@@ -247,7 +243,6 @@ class PVapplicaton(Frame):
 
         # slider to explore IV curves
         _row += 1  # row 4, 5 & 6
-#        _getIV = self.register(self.getIV)
         self.pvSysScale = Scale(pvSysDataFrame, orient=HORIZONTAL,
                                 label='I-V Curve', font=CAPTION_FONT,
                                 command=self.getIV, showvalue=False,
@@ -316,7 +311,6 @@ class PVapplicaton(Frame):
                       'invalidcommand': invcmd, 'command': self.updatePVsys}
         self.sunSpinbox = Spinbox(pvSysDataFrame, cnf=spinboxCnf)
         self.sunSpinbox.bind("<Return>", self.keyBinding)
-        self.sunSpinbox.bind("<FocusOut>", self.signalUser)
         self.sunSpinbox.grid(row=_row, column=2)
 
         # PVstring button
@@ -331,12 +325,14 @@ class PVapplicaton(Frame):
         toolbar.pack(fill=BOTH)
         self.QUIT = Button(toolbar, text='Quit', command=self._quit)
         self.QUIT.pack(side=RIGHT)
-        self.SAVE = Button(toolbar, text='Save', command=self.save)
+        self.SAVE = Button(toolbar, text='Save', command=self._save)
         self.SAVE.pack(side=RIGHT)
-        self.LOAD = Button(toolbar, text='Load', command=self.load)
+        self.LOAD = Button(toolbar, text='Load', command=self._load)
         self.LOAD.pack(side=RIGHT)
-        self.RESET = Button(toolbar, text='Reset', command=self.reset)
+        self.RESET = Button(toolbar, text='Reset', command=self._reset)
         self.RESET.pack(side=RIGHT)
+        self.UPDATE = Button(toolbar, text='Update', command=self._update)
+        self.UPDATE.pack(side=RIGHT)
         self.MESSAGE = Message(toolbar, text=READY_MSG, width=150)
         self.MESSAGE.pack(side=LEFT)
 
@@ -426,7 +422,6 @@ class PVapplicaton(Frame):
         """
         open advnaced config window
         """
-
         top = Toplevel()
         app = AdvCnf_tk(self, top)
         app.mainloop()
@@ -435,12 +430,8 @@ class PVapplicaton(Frame):
 
     def keyBinding(self, event):
         print event.widget
+        print event.widget.get()
         self.updatePVsys()
-
-    def signalUser(self, event):
-        print event.widget
-        event.widget.config(bg='red')
-        self.MESSAGE.config(fg='red', text='Update fields.')
 
     @waitbox
     def updatePVsys(self, *args, **kwargs):
@@ -453,24 +444,25 @@ class PVapplicaton(Frame):
         pvconst = self.pvSys.pvconst
         self.pvSys = PVsystem(pvconst, numStrs, numberMods=numMods,
                               numberCells=numCells, Ee=sysEe)
-#        (Isys, Vsys, Psys) = self.pvSys.calcSystem()
-#        self.pvSys.Isys, self.pvSys.Vsys, self.pvSys.Psys = Isys, Vsys, Psys
         self.updateIVstats()
 
     def updateIVstats(self):
         # reuse sysPlot figure and update pvSysFigCanvas
         self.pvSysPlot = self.pvSys.plotSys(self.pvSysPlot)
         self.pvSysFigCanvas.show()
-        (Imp, Vmp, Pmp, Isc, Voc, FF, eff) = self.pvSys.calcMPP_IscVocFFeff()
-        self.txtImp.set("{:7.3f}".format(Imp))  # [A]
-        self.txtVmp.set("{:7.3f}".format(Vmp))  # [V]
-        self.txtPmp.set("{:7.3f}".format(Pmp / 1000))  # [kW]
-        self.txtIsc.set("{:7.3f}".format(Isc))  # [A]
-        self.txtVoc.set("{:7.3f}".format(Voc))  # [V]
-        self.txtFF.set("{:7.3f}".format(FF * 100))  # [%]
-        self.txtEff.set("{:7.3f}".format(eff * 100))  # [%]
+        self.txtImp.set("{:7.3f}".format(self.pvSys.Imp))  # [A]
+        self.txtVmp.set("{:7.3f}".format(self.pvSys.Vmp))  # [V]
+        self.txtPmp.set("{:7.3f}".format(self.pvSys.Pmp / 1000))  # [kW]
+        self.txtIsc.set("{:7.3f}".format(self.pvSys.Isc))  # [A]
+        self.txtVoc.set("{:7.3f}".format(self.pvSys.Voc))  # [V]
+        self.txtFF.set("{:7.3f}".format(self.pvSys.FF * 100))  # [%]
+        self.txtEff.set("{:7.3f}".format(self.pvSys.eff * 100))  # [%]
 
-    def reset(self):
+    def _update(self):
+        self.MESSAGE.config(fg='black', text=READY_MSG, width=150)
+        self.updatePVsys()
+
+    def _reset(self):
         # number of strings integer variable
         self.numStrs.set(NUMBERSTRS)  # default
         # number of modules integer variable
@@ -480,10 +472,10 @@ class PVapplicaton(Frame):
         self.MESSAGE.config(fg='black', text=READY_MSG, width=150)
         print 'reset'
 
-    def load(self):
+    def _load(self):
         print 'load *.pv file'
 
-    def save(self):
+    def _save(self):
         print 'save *.pv file'
 
     def _quit(self):

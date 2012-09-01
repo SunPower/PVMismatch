@@ -61,6 +61,8 @@ class PVsystem(object):
             raise Exception("Invalid strings list!")
         self.pvmods = [pvstr.pvmods for pvstr in self.pvstrs]
         (self.Isys, self.Vsys, self.Psys) = self.calcSystem()
+        (self.Imp, self.Vmp, self.Pmp,
+         self.Isc, self.Voc, self.FF, self.eff) = self.calcMPP_IscVocFFeff()
 
     def calcSystem(self):
         """
@@ -97,7 +99,7 @@ class PVsystem(object):
         xp = self.Vsys.reshape(NPTS)
         fp = self.Isys.reshape(NPTS)
         ImpCheck = np.interp(Vmp, xp, fp)  # check Imp
-        print " Imp Error = {:10.4g}%".format((Imp - ImpCheck) / Imp * 100)
+        print "Imp Error = {:10.4g}%".format((Imp - ImpCheck) / Imp * 100)
         Isc = np.interp(0, xp, fp)
         FF = Pmp / Isc / Voc
         totalSuns = 0
@@ -128,24 +130,22 @@ class PVsystem(object):
                 print '%s is not a figure.' % sysPlot
                 print 'Sorry, "plotSys" takes a "int", "str" or "Figure".'
                 raise e
-        (Imp, Vmp, Pmp, Isc, Voc,
-         dummy, dummy) = self.calcMPP_IscVocFFeff()
         sysPlot.clear()
         plt.subplot(2, 1, 1)
         plt.plot(self.Vsys, self.Isys)
-        plt.xlim(0, Voc * 1.1)
-        plt.ylim(0, Isc * 1.1)
-        plt.axvline(Vmp, color='r', linestyle=':')
-        plt.axhline(Imp, color='r', linestyle=':')
+        plt.xlim(0, self.Voc * 1.1)
+        plt.ylim(0, self.Isc * 1.1)
+        plt.axvline(self.Vmp, color='r', linestyle=':')
+        plt.axhline(self.Imp, color='r', linestyle=':')
         plt.title('System I-V Characteristics')
         plt.ylabel('System Current, I [A]')
         plt.grid()
         plt.subplot(2, 1, 2)
         plt.plot(self.Vsys, self.Psys / 1000)
-        plt.xlim(0, Voc * 1.1)
-        plt.ylim(0, Pmp * 1.1 / 1000)
-        plt.axvline(Vmp, color='r', linestyle=':')
-        plt.axhline(Pmp / 1000, color='r', linestyle=':')
+        plt.xlim(0, self.Voc * 1.1)
+        plt.ylim(0, self.Pmp * 1.1 / 1000)
+        plt.axvline(self.Vmp, color='r', linestyle=':')
+        plt.axhline(self.Pmp / 1000, color='r', linestyle=':')
         plt.title('System P-V Characteristics')
         plt.xlabel('System Voltage, V [V]')
         plt.ylabel('System Power, P [kW]')
