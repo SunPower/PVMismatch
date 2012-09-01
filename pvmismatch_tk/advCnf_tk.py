@@ -10,6 +10,8 @@ from Tkinter import Frame, Label, Button, DoubleVar, Entry
 import tkFont
 
 PVAPP_TXT = 'PVmismatch'
+INTEGERS = '0123456789'
+FLOATS = '.' + INTEGERS
 
 
 class AdvCnf_tk(Frame):
@@ -24,6 +26,7 @@ class AdvCnf_tk(Frame):
         self.pvapp = pvapp
         Frame.__init__(self, top)
         self.pack()
+        self._name = 'advCnf'  # set name
         self.focus_set()  # get the focus
         self.grab_set()  # make this window modal
         top.resizable(False, False)  # not resizable in x or y
@@ -57,6 +60,12 @@ class AdvCnf_tk(Frame):
         nRBD.set("{:10.4f}".format(pvapp.pvSys.pvconst.nRBD))
         cellArea.set("{:10.4f}".format(pvapp.pvSys.pvconst.cellArea))
 
+        # must register vcmd and invcmd as Tcl functions
+        vcmd = (self.register(self.validateWidget),
+                '%d', '%i', '%P', '%s', '%S', '%v', '%V', '%W')
+        invcmd = (self.register(self.invalidWidget),
+                '%d', '%i', '%P', '%s', '%S', '%v', '%V', '%W')
+
         # layout
         _row = 0
         Label(self,
@@ -68,13 +77,21 @@ class AdvCnf_tk(Frame):
         Label(self, text='Rsh [Ohms]').grid(row=(_row + 1), sticky=W)
         Label(self, text='Isat1 [A]').grid(row=(_row + 2), sticky=W)
         Label(self, text='Isat2 [A]').grid(row=(_row + 3), sticky=W)
-        RsEntry = Entry(self, textvariable=Rs, width=12, justify=RIGHT)
+        RsEntry = Entry(self, textvariable=Rs, width=12, justify=RIGHT,
+                        name='rsEntry', validatecommand=vcmd,
+                        invalidcommand=invcmd)
         RsEntry.grid(row=_row, column=1)
-        RshEntry = Entry(self, textvariable=Rsh, width=12, justify=RIGHT)
+        RshEntry = Entry(self, textvariable=Rsh, width=12, justify=RIGHT,
+                        name='rshEntry', validatecommand=vcmd,
+                        invalidcommand=invcmd)
         RshEntry.grid(row=(_row + 1), column=1)
-        Isat1Entry = Entry(self, textvariable=Isat1, width=12, justify=RIGHT)
+        Isat1Entry = Entry(self, textvariable=Isat1, width=12, justify=RIGHT,
+                        name='isat1Entry', validatecommand=vcmd,
+                        invalidcommand=invcmd)
         Isat1Entry.grid(row=(_row + 2), column=1)
-        Isat2Entry = Entry(self, textvariable=Isat2, width=12, justify=RIGHT)
+        Isat2Entry = Entry(self, textvariable=Isat2, width=12, justify=RIGHT,
+                        name='isat2Entry', validatecommand=vcmd,
+                        invalidcommand=invcmd)
         Isat2Entry.grid(row=(_row + 3), column=1)
         _row += 4  # row 2, 3, 4, 5
         # Aph, Isc0, Tcell, Vbypasss
@@ -82,26 +99,27 @@ class AdvCnf_tk(Frame):
         Label(self, text='Isc0 [A]').grid(row=(_row + 1), sticky=W)
         Label(self, text='Tcell [K]').grid(row=(_row + 2), sticky=W)
         Label(self, text='Vbypass [V]').grid(row=(_row + 3), sticky=W)
-        RsEntry = Entry(self, textvariable=Aph, width=12, justify=RIGHT)
-        RsEntry.grid(row=_row, column=1)
-        RshEntry = Entry(self, textvariable=Isc0, width=12, justify=RIGHT)
-        RshEntry.grid(row=(_row + 1), column=1)
-        Isat1Entry = Entry(self, textvariable=Tcell, width=12, justify=RIGHT)
-        Isat1Entry.grid(row=(_row + 2), column=1)
-        Isat2Entry = Entry(self, textvariable=Vbypass, width=12, justify=RIGHT)
-        Isat2Entry.grid(row=(_row + 3), column=1)
+        AphEntry = Entry(self, textvariable=Aph, width=12, justify=RIGHT)
+        AphEntry.grid(row=_row, column=1)
+        IscEntry = Entry(self, textvariable=Isc0, width=12, justify=RIGHT)
+        IscEntry.grid(row=(_row + 1), column=1)
+        TcellEntry = Entry(self, textvariable=Tcell, width=12, justify=RIGHT)
+        TcellEntry.grid(row=(_row + 2), column=1)
+        VbypassEntry = Entry(self, textvariable=Vbypass, width=12,
+                             justify=RIGHT)
+        VbypassEntry.grid(row=(_row + 3), column=1)
         _row += 4
         # aRBD, VRBD, nRBD, cellArea
         Label(self, text='aRBD').grid(row=_row, sticky=W)
         Label(self, text='VRBD [V]').grid(row=(_row + 1), sticky=W)
         Label(self, text='nRBD').grid(row=(_row + 2), sticky=W)
         Label(self, text='cell area [cm^2]').grid(row=(_row + 3), sticky=W)
-        RsEntry = Entry(self, textvariable=aRBD, width=12, justify=RIGHT)
-        RsEntry.grid(row=_row, column=1)
-        RshEntry = Entry(self, textvariable=VRBD, width=12, justify=RIGHT)
-        RshEntry.grid(row=(_row + 1), column=1)
-        Isat1Entry = Entry(self, textvariable=nRBD, width=12, justify=RIGHT)
-        Isat1Entry.grid(row=(_row + 2), column=1)
+        aRBDEntry = Entry(self, textvariable=aRBD, width=12, justify=RIGHT)
+        aRBDEntry.grid(row=_row, column=1)
+        VRBDEntry = Entry(self, textvariable=VRBD, width=12, justify=RIGHT)
+        VRBDEntry.grid(row=(_row + 1), column=1)
+        nRBDEntry = Entry(self, textvariable=nRBD, width=12, justify=RIGHT)
+        nRBDEntry.grid(row=(_row + 2), column=1)
         Isat2Entry = Entry(self,
                            textvariable=cellArea, width=12, justify=RIGHT)
         Isat2Entry.grid(row=(_row + 3), column=1)
@@ -133,3 +151,73 @@ class AdvCnf_tk(Frame):
         self.pvapp.updatePVsys()
         self.pvapp.updateIVstats()
         self.quit()
+
+#    Validation substitutions
+#    %d  Type of action: 1 for insert, 0 for delete, or -1 for focus, forced or
+#        textvariable validation.
+#    %i  Index of char string to be inserted/deleted, if any, otherwise -1.
+#    %P  The value of the spinbox should edition occur. If you are configuring
+#        the spinbox widget to have a new textvariable, this will be the value
+#        of that textvariable.
+#    %s  The current value of spinbox before edition.
+#    %S  The text string being inserted/deleted, if any. Otherwise it is an
+#        empty string.
+#    %v  The type of validation currently set.
+#    %V  The type of validation that triggered the callback (key, focusin,
+#        focusout, forced).
+#    %W  The name of the spinbox widget.
+
+# TODO: Fix these functions so that delete and overwrite work
+
+    def validateWidget(self, *args):
+        # W = Tkinter.W = 'w' is already used, so use W_ instead
+        (d, i, P, s, S, v, V, W_) = args  # @UnusedVariable # IGNORE:W0612
+        print "OnValidate:",
+        print("d={}, i={}, P={}, s={}, S={}, v={}, V={}, W={}".format(*args))
+        if W_ == '.advCnf.rsEntry':
+            maxVal = 1
+            valType = FLOATS
+            valTest = lambda val: float(val)  # IGNORE:W0108
+        elif W_ == '.advCnf.rshEntry':
+            maxVal = 100
+            valType = FLOATS
+            valTest = lambda val: float(val)  # IGNORE:W0108
+        elif W_ == '.advCnf.isat1Entry':
+            maxVal = 1
+            valType = FLOATS
+            valTest = lambda val: float(val)  # IGNORE:W0108
+        elif W_ == '.advCnf.isat2Entry':
+            maxVal = 1
+            valType = FLOATS
+            valTest = lambda val: float(val)  # IGNORE:W0108
+        else:
+            return False
+        w = self.nametowidget(W_)
+        w.config(validate=v)
+        if S in valType:
+            try:
+                val = valTest(P)
+            except ValueError:
+                return False
+            return 0 < val <= maxVal
+        else:
+            return False
+
+    def invalidWidget(self, *args):
+        (d, i, P, s, S, v, V, W_) = args  # @UnusedVariable # IGNORE:W0612
+        print "OnInvalid: ",
+        print("d={}, i={}, P={}, s={}, S={}, v={}, V={}, W={}".format(*args))
+        if W_ == ".advCnf.rsEntry":
+            errText = 'Invalid series resistance!'
+        elif W_ == ".advCnf.rshEntry":
+            errText = 'Invalid shunt resistance!'
+        elif W_ == ".advCnf.isat1Entry":
+            errText = 'Invalid diode-1 saturation current!'
+        elif W_ == ".advCnf.isat2Entry":
+            errText = 'Invalid diode-2 saturation current!'
+        else:
+            errText = 'Unknown widget!'
+        w = self.nametowidget(W_)
+        w.config(validate=v)
+        self.pvapp.MESSAGE.config(fg='red', text=errText, width=150)
+        self.bell()
