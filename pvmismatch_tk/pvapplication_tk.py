@@ -45,20 +45,21 @@ class waitWidget(Frame):
         self.grab_set()  # make this window modal
         master.resizable(False, False)  # not resizable
         master.title("")  # no title
-        master.protocol("WM_DELETE_WINDOW", self.timer)
+        master.protocol("WM_DELETE_WINDOW", self.quit)
         self.wait = IntVar(master, 0, "wait")
         Label(master, bitmap="hourglass").pack(fill="both")
         Label(master, text="Please wait ...").pack(fill="both")
         Label(master, textvariable=self.wait).pack(fill="both")
+        Button(master, text="Cancel", command=self.quit()).pack(fill="both")
         self.timer()
 
     def timer(self):
         wait = self.wait.get() + 1
         if not self.queue.empty():
-            print 'elapsed time = %3.2f [s]' % (wait * 0.010)
+            print 'elapsed time = %2.1f [s]' % (wait * 0.10)
             self.quit()
         self.wait.set(wait)
-        self.after(10, self.timer)
+        self.after(100, self.timer)
 
 
 def setqueue(original_function, queue):
@@ -207,6 +208,8 @@ class PVapplicaton(Frame):
                       'validatecommand': vcmd, 'invalidcommand': invcmd,
                       'command': self.updatePVsys}
         self.numStrSpinbox = Spinbox(pvSysDataFrame, cnf=spinboxCnf)
+        self.numStrSpinbox.bind("<Return>", self.keyBinding)
+        self.numStrSpinbox.bind("<FocusOut>", self.signalUser)
         self.numStrSpinbox.grid(row=_row, column=2)
 
         # number of modules
@@ -219,6 +222,8 @@ class PVapplicaton(Frame):
                       'validatecommand': vcmd, 'invalidcommand': invcmd,
                       'command': self.updatePVsys}
         self.numModSpinbox = Spinbox(pvSysDataFrame, cnf=spinboxCnf)
+        self.numModSpinbox.bind("<Return>", self.keyBinding)
+        self.numModSpinbox.bind("<FocusOut>", self.signalUser)
         self.numModSpinbox.grid(row=_row, column=2)
 
         # number of cells
@@ -310,6 +315,8 @@ class PVapplicaton(Frame):
                       'validate': 'all', 'validatecommand': vcmd,
                       'invalidcommand': invcmd, 'command': self.updatePVsys}
         self.sunSpinbox = Spinbox(pvSysDataFrame, cnf=spinboxCnf)
+        self.sunSpinbox.bind("<Return>", self.keyBinding)
+        self.sunSpinbox.bind("<FocusOut>", self.signalUser)
         self.sunSpinbox.grid(row=_row, column=2)
 
         # PVstring button
@@ -401,8 +408,8 @@ class PVapplicaton(Frame):
         print args
         x = float(args[0]) / NPTS
         xp = np.squeeze(PTS)
-        Vsys = np.interp(x, xp, self.pvSys.Vsys.np.squeeze())
-        Isys = np.interp(x, xp, self.pvSys.Isys.np.squeeze())
+        Vsys = np.interp(x, xp, self.pvSys.Vsys.squeeze())
+        Isys = np.interp(x, xp, self.pvSys.Isys.squeeze())
         Psys = Vsys * Isys / 1000
         self.txtVsys.set("{:7.3f}".format(Vsys))
         self.txtIsys.set("{:7.3f}".format(Isys))
@@ -425,6 +432,15 @@ class PVapplicaton(Frame):
         app.mainloop()
         # please destroy me or I'll continue to run in background
         top.destroy()
+
+    def keyBinding(self, event):
+        print event.widget
+        self.updatePVsys()
+
+    def signalUser(self, event):
+        print event.widget
+        event.widget.config(bg='red')
+        self.MESSAGE.config(fg='red', text='Update fields.')
 
     @waitbox
     def updatePVsys(self, *args, **kwargs):
