@@ -10,7 +10,7 @@ from Tkinter import Frame, Label, Button, Toplevel, OptionMenu, Scale, Entry, \
     Message, Spinbox, IntVar, StringVar, DoubleVar
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, \
     NavigationToolbar2TkAgg
-from numpy import interp, squeeze
+import numpy as np
 from pvmismatch.pvconstants import NPTS, PTS, MODSIZES, NUMBERCELLS, \
     NUMBERMODS, NUMBERSTRS
 from pvmismatch.pvsystem import PVsystem
@@ -400,9 +400,9 @@ class PVapplicaton(Frame):
     def getIV(self, *args):
         print args
         x = float(args[0]) / NPTS
-        xp = squeeze(PTS)
-        Vsys = interp(x, xp, self.pvSys.Vsys.squeeze())
-        Isys = interp(x, xp, self.pvSys.Isys.squeeze())
+        xp = np.squeeze(PTS)
+        Vsys = np.interp(x, xp, self.pvSys.Vsys.np.squeeze())
+        Isys = np.interp(x, xp, self.pvSys.Isys.np.squeeze())
         Psys = Vsys * Isys / 1000
         self.txtVsys.set("{:7.3f}".format(Vsys))
         self.txtIsys.set("{:7.3f}".format(Isys))
