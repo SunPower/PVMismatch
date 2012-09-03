@@ -96,7 +96,13 @@ class PVapplicaton(Frame):
         """
         Constructor
         """
-        Frame.__init__(self, master)
+        Frame.__init__(self, master, name='pvApplication',
+                       bg='black', padx=5, pady=5)
+        # set black background, pad sides with 15 points, top/bottom 5 points
+        # fill=BOTH fills in padding with background color
+        # w/o fill=BOTH padding is default color
+        # side=TOP is the default
+        self.pack(fill=BOTH)
         master.resizable(False, False)  # not resizable in x or y
         master.title(PVAPP_TXT)  # set title bar of master (a.k.a. root)
         master.protocol("WM_DELETE_WINDOW", self._quit)  # close window to quit
@@ -127,6 +133,7 @@ class PVapplicaton(Frame):
         txtVoc.set("{:7.3f}".format(self.pvSys.Voc))  # [V]
         txtFF.set("{:7.3f}".format(self.pvSys.FF * 100))  # [%]
         txtEff.set("{:7.3f}".format(self.pvSys.eff * 100))  # [%]
+        self.msgtext = StringVar(self, READY_MSG, 'msgtext')
 
         # must register vcmd and invcmd as Tcl functions
         vcmd = (self.register(self.validateWidget),
@@ -135,13 +142,6 @@ class PVapplicaton(Frame):
                 '%d', '%i', '%P', '%s', '%S', '%v', '%V', '%W')
 
         # SP logo
-        self._name = 'pvApplication'  # set name of frame widget
-        # set black background, pad sides with 15 points, top/bottom 5 points
-        self.config(bg='black', padx=5, pady=5)
-        # fill=BOTH fills in padding with background color
-        # w/o fill=BOTH padding is default color
-        # side=TOP is the default
-        self.pack(fill=BOTH)
         # convert image to tk-compatible format (.gif, .pgm, or .ppm)
         self.SPlogo = ImageTk.PhotoImage(Image.open(SPLOGO))
         # bg='black' fills extra space with black
@@ -333,7 +333,8 @@ class PVapplicaton(Frame):
         self.RESET.pack(side=RIGHT)
         self.UPDATE = Button(toolbar, text='Update', command=self._update)
         self.UPDATE.pack(side=RIGHT)
-        self.MESSAGE = Message(toolbar, text=READY_MSG, width=150)
+        self.MESSAGE = Message(toolbar, textvariable=self.msgtext,
+                               width=500, fg='red')
         self.MESSAGE.pack(side=LEFT)
 
 #    Validation substitutions
@@ -421,7 +422,7 @@ class PVapplicaton(Frame):
             errText = 'Unknown widget!'
         w = self.nametowidget(W_)
         w.config(validate=v)
-        self.MESSAGE.config(fg='red', text=errText, width=150)
+        self.msgtext.set(errText)
         self.bell()
 
     def getIV(self, *args):
@@ -446,7 +447,7 @@ class PVapplicaton(Frame):
         """
         open advnaced config window
         """
-        top = Toplevel()
+        top = Toplevel(name='advCnfTop')
         app = AdvCnf_tk(self, top)
         app.mainloop()
         # please destroy me or I'll continue to run in background
@@ -483,7 +484,7 @@ class PVapplicaton(Frame):
         self.txtEff.set("{:7.3f}".format(self.pvSys.eff * 100))  # [%]
 
     def _update(self):
-        self.MESSAGE.config(fg='black', text=READY_MSG, width=150)
+        self.msgtext.set(READY_MSG)
         self.updatePVsys()
 
     def _reset(self):
@@ -493,7 +494,8 @@ class PVapplicaton(Frame):
         self.numMods.set(NUMBERMODS)  # default
         # number of cells integer variable
         self.numCells.set(NUMBERCELLS)  # default value is 96
-        self.MESSAGE.config(fg='black', text=READY_MSG, width=150)
+        self.msgtext.set(READY_MSG)
+        # TODO: need to reset advCnf too
         print 'reset'
 
     def _load(self):
