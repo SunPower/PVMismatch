@@ -371,22 +371,6 @@ class PVapplicaton(Frame):
             maxVal = MAX_SUNS
             valType = FLOATS
             valTest = lambda val: float(val)  # IGNORE:W0108
-        elif W_ == '.advCnf.rsEntry':
-            maxVal = 1
-            valType = FLOATS
-            valTest = lambda val: float(val)  # IGNORE:W0108
-        elif W_ == '.advCnf.rshEntry':
-            maxVal = 100
-            valType = FLOATS
-            valTest = lambda val: float(val)  # IGNORE:W0108
-        elif W_ == '.advCnf.rsat1Entry':
-            maxVal = 1
-            valType = FLOATS
-            valTest = lambda val: float(val)  # IGNORE:W0108
-        elif W_ == '.advCnf.rsat2Entry':
-            maxVal = 1
-            valType = FLOATS
-            valTest = lambda val: float(val)  # IGNORE:W0108
         else:
             return False
         w = self.nametowidget(W_)
@@ -410,14 +394,6 @@ class PVapplicaton(Frame):
             errText = 'Invalid number of modules!'
         elif W_ == ".pvSysFrame.pvSysDataFrame.sunSpinbox":
             errText = 'Invalid irradiance!'
-        elif W_ == ".advCnf.rsEntry":
-            errText = 'Invalid series resistance!'
-        elif W_ == ".advCnf.rshEntry":
-            errText = 'Invalid shunt resistance!'
-        elif W_ == ".advCnf.isat1Entry":
-            errText = 'Invalid diode-1 saturation current!'
-        elif W_ == ".advCnf.isat2Entry":
-            errText = 'Invalid diode-2 saturation current!'
         else:
             errText = 'Unknown widget!'
         w = self.nametowidget(W_)
