@@ -102,10 +102,10 @@ class AdvCnf_tk(Frame):
                          name='aphEntry', validatecommand=vcmd,
                          invalidcommand=invcmd, validate='all')
         AphEntry.grid(row=_row, column=1)
-        IscEntry = Entry(self, textvariable=Isc0, width=12, justify=RIGHT,
-                         name='iscEntry', validatecommand=vcmd,
+        Isc0Entry = Entry(self, textvariable=Isc0, width=12, justify=RIGHT,
+                         name='isc0Entry', validatecommand=vcmd,
                          invalidcommand=invcmd, validate='all')
-        IscEntry.grid(row=(_row + 1), column=1)
+        Isc0Entry.grid(row=(_row + 1), column=1)
         TcellEntry = Entry(self, textvariable=Tcell, width=12, justify=RIGHT,
                            name='tcellEntry', validatecommand=vcmd,
                            invalidcommand=invcmd, validate='all')
@@ -209,7 +209,7 @@ class AdvCnf_tk(Frame):
             maxVal = 10
             valType = FLOATS
             valTest = lambda val: float(val) - 1  # IGNORE:W0108
-        elif W_ == '.advCnfTop.advCnf.iscEntry':
+        elif W_ == '.advCnfTop.advCnf.isc0Entry':
             maxVal = 100
             valType = FLOATS
             valTest = lambda val: float(val)  # IGNORE:W0108
@@ -264,7 +264,7 @@ class AdvCnf_tk(Frame):
             errText = 'Invalid diode-2 saturation current!'
         elif W_ == ".advCnfTop.advCnf.aphEntry":
             errText = 'Invalid photo-generated current coefficient!'
-        elif W_ == ".advCnfTop.advCnf.iscEntry":
+        elif W_ == ".advCnfTop.advCnf.isc0Entry":
             errText = 'Invalid short circuit current!'
         elif W_ == ".advCnfTop.advCnf.tcellEntry":
             errText = 'Invalid cell temperature!'
