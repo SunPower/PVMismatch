@@ -146,19 +146,74 @@ class AdvCnf_tk(Frame):
 
     def okay(self):
         # get the new values
+        validationConstants = self.pvapp.validationConstants
         Rs = self.Rs.get()
+        if not (0 < Rs <= validationConstants["advCnf"]["Rs"]):
+            self.pvapp.msgtext.set('Invalid series resistance!')
+            self.bell()
+            return
         Rsh = self.Rsh.get()
+        if not (0 < Rsh <= validationConstants["advCnf"]["Rsh"]):
+            self.pvapp.msgtext.set('Invalid shunt resistance!')
+            self.bell()
+            return
         Isat1 = self.Isat1.get()
+        if not 0 < Isat1 <= validationConstants["advCnf"]["Isat1"]:
+            self.pvapp.msgtext.set('Invalid diode-1 saturation current!')
+            self.bell()
+            return
         Isat2 = self.Isat2.get()
+        if not 0 < Isat2 <= validationConstants["advCnf"]["Isat2"]:
+            self.pvapp.msgtext.set('Invalid diode-2 saturation current!')
+            self.bell()
+            return
         Aph = self.Aph.get()
+        if not 0 < Aph <= validationConstants["advCnf"]["Aph"]:
+            errtext = 'Invalid photo-generated current coefficient!'
+            self.pvapp.msgtext.set(errtext)
+            self.bell()
+            return
         Isc0 = self.Isc0.get()
+        if not 1 < Isc0 <= validationConstants["advCnf"]["Isc0"]:
+            self.pvapp.msgtext.set('Invalid short circuit current!')
+            self.bell()
+            return
         Tcell = self.Tcell.get()
+        if not 0 < Tcell <= validationConstants["advCnf"]["Tcell"]:
+            self.pvapp.msgtext.set('Invalid cell temperature!')
+            self.bell()
+            return
         cellArea = self.cellArea.get()
+        if not 0 < cellArea <= validationConstants["advCnf"]["cellArea"]:
+            self.pvapp.msgtext.set('Invalid cell area!')
+            self.bell()
+            return
         Vbypass = self.Vbypass.get()
+        if not 0 > Vbypass >= validationConstants["advCnf"]["Vbypass"]:
+            errtext = 'Invalid bypass diode trigger voltage!'
+            self.pvapp.msgtext.set(errtext)
+            self.bell()
+            return
         aRBD = self.aRBD.get()
+        if not 0 < aRBD <= validationConstants["advCnf"]["aRBD"]:
+            errtext = 'Invalid reverse bias breakdown coefficient (aRBD)!'
+            self.pvapp.msgtext.set(errtext)
+            self.bell()
+            return
         VRBD = self.VRBD.get()
+        if not 0 > VRBD >= validationConstants["advCnf"]["VRBD"]:
+            errtext = 'Invalid reverse bias breakdown voltage!'
+            self.pvapp.msgtext.set(errtext)
+            self.bell()
+            return
         nRBD = self.nRBD.get()
+        if not 0 < nRBD <= validationConstants["advCnf"]["nRBD"]:
+            errtext = 'Invalid reverse bias breakdown exponent (nRBD)!'
+            self.pvapp.msgtext.set(errtext)
+            self.bell()
+            return
         # update PVconstants
+        self.pvapp.msgtext.set('ready')
         pvapp = self.pvapp
         pvapp.pvSys.pvconst.update(Rs, Rsh, Isat1, Isat2, Aph, Isc0, Tcell,
                                    cellArea, Vbypass, aRBD, VRBD, nRBD)
@@ -190,51 +245,39 @@ class AdvCnf_tk(Frame):
         print "OnValidate:",
         print("d={}, i={}, P={}, s={}, S={}, v={}, V={}, W={}".format(*args))
         if W_ == '.advCnfTop.advCnf.rsEntry':
-            maxVal = 1
             valType = FLOATS
             valTest = lambda val: float(val)  # IGNORE:W0108
         elif W_ == '.advCnfTop.advCnf.rshEntry':
-            maxVal = 100
             valType = FLOATS
             valTest = lambda val: float(val)  # IGNORE:W0108
         elif W_ == '.advCnfTop.advCnf.isat1Entry':
-            maxVal = 1
             valType = FLOATS
             valTest = lambda val: float(val)  # IGNORE:W0108
         elif W_ == '.advCnfTop.advCnf.isat2Entry':
-            maxVal = 1
             valType = FLOATS
             valTest = lambda val: float(val)  # IGNORE:W0108
         elif W_ == '.advCnfTop.advCnf.aphEntry':
-            maxVal = 10
             valType = FLOATS
             valTest = lambda val: float(val) - 1  # IGNORE:W0108
         elif W_ == '.advCnfTop.advCnf.isc0Entry':
-            maxVal = 100
             valType = FLOATS
             valTest = lambda val: float(val)  # IGNORE:W0108
         elif W_ == '.advCnfTop.advCnf.tcellEntry':
-            maxVal = 500
             valType = FLOATS
             valTest = lambda val: float(val)  # IGNORE:W0108
         elif W_ == '.advCnfTop.advCnf.vbypassEntry':
-            maxVal = 1
             valType = FLOATS
             valTest = lambda val: -float(val)  # IGNORE:W0108
         elif W_ == '.advCnfTop.advCnf.aRBDEntry':
-            maxVal = 1
             valType = FLOATS
             valTest = lambda val: float(val)  # IGNORE:W0108
         elif W_ == '.advCnfTop.advCnf.vRBDEntry':
-            maxVal = 50
             valType = FLOATS
             valTest = lambda val: -float(val)  # IGNORE:W0108
         elif W_ == '.advCnfTop.advCnf.nRBDEntry':
-            maxVal = 10
             valType = FLOATS
             valTest = lambda val: float(val)  # IGNORE:W0108
         elif W_ == '.advCnfTop.advCnf.cellAreaEntry':
-            maxVal = 200
             valType = FLOATS
             valTest = lambda val: float(val)  # IGNORE:W0108
         else:
@@ -243,10 +286,10 @@ class AdvCnf_tk(Frame):
         w.config(validate=v)
         if S in valType:
             try:
-                val = valTest(P)
+                valTest(P)
             except ValueError:
                 return False
-            return 0 < val <= maxVal
+            return True
         else:
             return False
 

@@ -1,0 +1,23 @@
+{
+	"advCnf":
+	{
+		"Rs": 1,
+		"Rsh": 100,
+		"Isat1": 1,
+		"Isat2": 1,
+		"Aph": 11,
+		"Isc0": 100,
+		"Tcell": 500,
+		"Vbypass": -1,
+		"aRBD": 1,
+		"VRBD": -50,
+		"nRBD": 10,
+		"cellArea": 200
+	},
+	"pvapplication_tk":
+	{
+		"numStrs": 100,
+		"numMods": 20,
+		"sysEe": 10
+	}
+}

@@ -21,6 +21,7 @@ from tkFont import nametofont
 import Queue
 import logging
 import os
+import json
 
 INTEGERS = '0123456789'
 FLOATS = '.' + INTEGERS
@@ -106,6 +107,8 @@ class PVapplicaton(Frame):
         master.resizable(False, False)  # not resizable in x or y
         master.title(PVAPP_TXT)  # set title bar of master (a.k.a. root)
         master.protocol("WM_DELETE_WINDOW", self._quit)  # close window to quit
+
+        self.validationConstants = self.readValidationConstants()
         CAPTION_FONT = nametofont('TkCaptionFont')  # font for titles
 
         # PVsystem
@@ -485,3 +488,18 @@ class PVapplicaton(Frame):
         # Fatal Python Error: PyEval_RestoreThread: NULL tstate
         self.master.quit()  # stops mainloop
         self.master.destroy()
+
+    def readValidationConstants(self):
+        validConstFilename = os.path.join('pvmismatch_tk',
+                                          'validationConstants.json')
+        try:
+            validConstFile = open(validConstFilename, 'r')
+        except Exception as e:
+            raise e
+        try:
+            validationConstants = json.loads(validConstFile.read())
+        except Exception as e:
+            validConstFile.close()
+            raise e
+        validConstFile.close()
+        return validationConstants
