@@ -14,7 +14,7 @@
 		"nRBD": 10,
 		"cellArea": 200
 	},
-	"pvapplication_tk":
+	"pvapplication":
 	{
 		"numStrs": 100,
 		"numMods": 20,

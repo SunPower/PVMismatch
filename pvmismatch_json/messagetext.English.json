@@ -1,0 +1,24 @@
+{
+	"advCnf":
+	{
+		"Rs": "Invalid series resistance!",
+		"Rsh": "Invalid shunt resistance!",
+		"Isat1": "Invalid diode-1 saturation current!",
+		"Isat2": "Invalid diode-2 saturation current!",
+		"Aph": "Invalid photo-generated current coefficient!",
+		"Isc0": "Invalid short circuit current!",
+		"Tcell": "Invalid cell temperature!",
+		"Vbypass": "Invalid bypass diode trigger voltage!",
+		"cellArea": "Invalid cell area!",
+		"aRBD": "Invalid reverse bias breakdown coefficient (aRBD)!",
+		"VRBD": "Invalid reverse bias breakdown voltage!",
+		"nRBD": "Invalid reverse bias breakdown exponent (nRBD)!"
+	},
+	"pvapplication":
+	{
+		"Ready": "Ready",
+		"numStrs": "Invalid number of strings!",
+		"numMods": "Invalid number of modules!",
+		"sysEe": "Invalid irradiance!"
+	}
+}

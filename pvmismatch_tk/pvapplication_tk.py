@@ -10,27 +10,26 @@ from Tkinter import Frame, Label, Button, Toplevel, OptionMenu, Scale, Entry, \
     Message, Spinbox, IntVar, StringVar, DoubleVar
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, \
     NavigationToolbar2TkAgg
-import numpy as np
 from pvmismatch.pvconstants import NPTS, PTS, MODSIZES, NUMBERCELLS, \
-    NUMBERMODS, NUMBERSTRS
+     NUMBERMODS, NUMBERSTRS
 from pvmismatch.pvsystem import PVsystem
 from pvmismatch_tk.advCnf_tk import AdvCnf_tk
+from pvmismatch_tk.pvexceptions import PVValidationError
 from pvmismatch_tk.pvstring_tk import PVstring_tk
 from threading import Thread
 from tkFont import nametofont
 import Queue
-import logging
-import os
 import json
+import logging
+import numpy as np
+import os
 
 INTEGERS = '0123456789'
 FLOATS = '.' + INTEGERS
-MAX_STRINGS = 100
-MAX_MODULES = 20
-MAX_SUNS = 10
 SPLOGO = os.path.join('res', 'logo_bg.png')
 PVAPP_TXT = 'PVmismatch'
 READY_MSG = 'Ready'
+LANGUAGE = 'English'
 
 logging.basicConfig(level=logging.DEBUG,
                     format='[%(levelname)s] (%(threadName)-10s) %(message)s')
@@ -108,7 +107,11 @@ class PVapplicaton(Frame):
         master.title(PVAPP_TXT)  # set title bar of master (a.k.a. root)
         master.protocol("WM_DELETE_WINDOW", self._quit)  # close window to quit
 
-        self.validationConstants = self.readValidationConstants()
+        self.validationConstants = self.readJSON('validationConstants')
+        self.messagetext = self.readJSON('messagetext' + '.' + LANGUAGE)
+        MAX_STRINGS = self.validationConstants["pvapplication"]["numStrs"]
+        MAX_MODULES = self.validationConstants["pvapplication"]["numMods"]
+        MAX_SUNS = self.validationConstants["pvapplication"]["sysEe"]
         CAPTION_FONT = nametofont('TkCaptionFont')  # font for titles
 
         # PVsystem
@@ -308,7 +311,7 @@ class PVapplicaton(Frame):
         Label(pvSysDataFrame, text='Irradiance [suns]',
               font=CAPTION_FONT).grid(row=_row, columnspan=2, sticky=W)
         # number of modules spinbox
-        spinboxCnf = {'name': 'sunSpinbox', 'from_': 0.2, 'to': 10,
+        spinboxCnf = {'name': 'sunSpinbox', 'from_': 0.2, 'to': MAX_SUNS,
                       'increment': 0.1, 'textvariable': sysEe, 'width': 5,
                       'validate': 'all', 'validatecommand': vcmd,
                       'invalidcommand': invcmd, 'command': self.updatePVsys}
@@ -363,15 +366,12 @@ class PVapplicaton(Frame):
         print "OnValidate:",
         print("d={}, i={}, P={}, s={}, S={}, v={}, V={}, W={}".format(*args))
         if W_ == ".pvSysFrame.pvSysDataFrame.numStrSpinbox":
-            maxVal = MAX_STRINGS
             valType = INTEGERS
             valTest = lambda val: int(val)  # IGNORE:W0108
         elif W_ == ".pvSysFrame.pvSysDataFrame.numModSpinbox":
-            maxVal = MAX_MODULES
             valType = INTEGERS
             valTest = lambda val: int(val)  # IGNORE:W0108
         elif W_ == ".pvSysFrame.pvSysDataFrame.sunSpinbox":
-            maxVal = MAX_SUNS
             valType = FLOATS
             valTest = lambda val: float(val)  # IGNORE:W0108
         else:
@@ -380,10 +380,10 @@ class PVapplicaton(Frame):
         w.config(validate=v)
         if S in valType:
             try:
-                val = valTest(P)
+                valTest(P)
             except ValueError:
                 return False
-            return 0 < val <= maxVal
+            return True
         else:
             return False
 
@@ -441,10 +441,25 @@ class PVapplicaton(Frame):
     def updatePVsys(self, *args, **kwargs):
         print args
         print kwargs
-        numStrs = self.numStrs.get()
-        numMods = self.numMods.get()
+        PVAPP = "pvapplication"
+        try:
+            numStrs = self.numStrs.get()
+            if not (0 < numStrs <= self.validationConstants[PVAPP]["numStrs"]):
+                raise PVValidationError('numStrs', numStrs)
+            numMods = self.numMods.get()
+            if not (0 < numMods <= self.validationConstants[PVAPP]["numMods"]):
+                raise PVValidationError('numMods', numMods)
+            sysEe = self.sysEe.get()
+            if not (0 < sysEe <= self.validationConstants[PVAPP]["sysEe"]):
+                raise PVValidationError('sysEe', sysEe)
+        except PVValidationError as err:
+            print err
+            errtext = self.messagetext[PVAPP][err.argname]
+            self.msgtext.set(errtext)
+            self.bell()
+            return
         numCells = self.numCells.get()
-        sysEe = self.sysEe.get()
+        self.msgtext.set(self.messagetext[PVAPP]["Ready"])
         pvconst = self.pvSys.pvconst
         self.pvSys = PVsystem(pvconst, numStrs, numberMods=numMods,
                               numberCells=numCells, Ee=sysEe)
@@ -489,17 +504,28 @@ class PVapplicaton(Frame):
         self.master.quit()  # stops mainloop
         self.master.destroy()
 
-    def readValidationConstants(self):
-        validConstFilename = os.path.join('pvmismatch_tk',
-                                          'validationConstants.json')
+    def readJSON(self, JSONfilename):
+        JSONfilename += '.json'
+        JSONfullpath = os.path.join('pvmismatch_json', JSONfilename)
         try:
-            validConstFile = open(validConstFilename, 'r')
-        except Exception as e:
-            raise e
-        try:
-            validationConstants = json.loads(validConstFile.read())
-        except Exception as e:
-            validConstFile.close()
-            raise e
-        validConstFile.close()
-        return validationConstants
+            JSONfile = open(JSONfullpath, 'r')
+            JSONObjects = json.loads(JSONfile.read())
+            # use with to and f.close() is predefined, ie: finally not needed
+            # with open(JSONfullpath, 'r') as JSONfile:
+            #    JSONObjects = json.loads(JSONfile.read())
+        except ValueError as err:
+            print err.args
+            print err.message
+            raise err
+        except IOError as err:
+            print err.args
+            print err.message
+            print err.errno
+            print err.filename
+            print err.strerror
+            raise err
+        else:
+            print 'JSON objects loaded from %s\n.' % JSONfullpath
+        finally:
+            JSONfile.close()
+        return JSONObjects

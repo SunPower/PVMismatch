@@ -147,6 +147,7 @@ class AdvCnf_tk(Frame):
     def okay(self):
         # get the new values
         validationConstants = self.pvapp.validationConstants
+        messagetext = self.pvapp.messagetext
         Rs = self.Rs.get()
         if not (0 < Rs <= validationConstants["advCnf"]["Rs"]):
             self.pvapp.msgtext.set('Invalid series resistance!')
@@ -213,7 +214,7 @@ class AdvCnf_tk(Frame):
             self.bell()
             return
         # update PVconstants
-        self.pvapp.msgtext.set('ready')
+        self.pvapp.msgtext.set(messagetext["pvapplication"]["Ready"])
         pvapp = self.pvapp
         pvapp.pvSys.pvconst.update(Rs, Rsh, Isat1, Isat2, Aph, Isc0, Tcell,
                                    cellArea, Vbypass, aRBD, VRBD, nRBD)
