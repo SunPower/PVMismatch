@@ -86,6 +86,8 @@ def waitbox(original_function):
 
     return new_function
 
+PVsystem = waitbox(PVsystem)
+
 
 class PVapplicaton(Frame):
     """
@@ -437,7 +439,6 @@ class PVapplicaton(Frame):
         print event.widget.get()
         self.updatePVsys()
 
-    @waitbox
     def updatePVsys(self, *args, **kwargs):
         print args
         print kwargs
@@ -525,7 +526,7 @@ class PVapplicaton(Frame):
             print err.strerror
             raise err
         else:
-            print 'JSON objects loaded from %s\n.' % JSONfullpath
+            print 'JSON objects loaded from %s.' % JSONfullpath
         finally:
             JSONfile.close()
         return JSONObjects

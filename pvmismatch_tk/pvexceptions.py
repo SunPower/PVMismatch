@@ -19,5 +19,5 @@ class PVValidationError(PVexception):
         self.argvalue = argvalue
 
     def __str__(self):
-        return ('Invalid value, %s, for argument "%s".\n' % (self.argvalue,
+        return ('Invalid value, %s, for argument "%s".' % (self.argvalue,
                                                           self.argname))
