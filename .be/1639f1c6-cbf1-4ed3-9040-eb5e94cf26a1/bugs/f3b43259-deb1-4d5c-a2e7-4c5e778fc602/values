@@ -1,17 +1,50 @@
-creator: Mark Mikofski <bwanamarko@yahoo.com>
+{
 
 
-reporter: Mark Mikofski <bwanamarko@yahoo.com>
 
 
-severity: minor
 
 
-status: open
+    "creator": "Mark Mikofski <bwanamarko@yahoo.com>", 
 
 
-summary: reset button should also reset advCnf
 
 
-time: Mon, 27 Aug 2012 04:03:08 +0000
 
+
+    "reporter": "Mark Mikofski <bwanamarko@yahoo.com>", 
+
+
+
+
+
+
+    "severity": "minor", 
+
+
+
+
+
+
+    "status": "open", 
+
+
+
+
+
+
+    "summary": "reset button should also reset advCnf", 
+
+
+
+
+
+
+    "time": "Mon, 27 Aug 2012 04:03:08 +0000"
+
+
+
+
+
+
+}

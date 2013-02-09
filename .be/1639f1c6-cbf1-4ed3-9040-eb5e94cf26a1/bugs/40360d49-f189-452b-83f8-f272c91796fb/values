@@ -1,17 +1,50 @@
-creator: Mark Mikofski <mark.mikofski@sunpowercorp.com>
+{
 
 
-reporter: Mark Mikofski <mark.mikofski@sunpowercorp.com>
 
 
-severity: critical
 
 
-status: closed
+    "creator": "Mark Mikofski <mark.mikofski@sunpowercorp.com>", 
 
 
-summary: incorrect bypass diode function
 
 
-time: Thu, 14 Jun 2012 07:16:50 +0000
 
+
+    "reporter": "Mark Mikofski <mark.mikofski@sunpowercorp.com>", 
+
+
+
+
+
+
+    "severity": "critical", 
+
+
+
+
+
+
+    "status": "closed", 
+
+
+
+
+
+
+    "summary": "incorrect bypass diode function", 
+
+
+
+
+
+
+    "time": "Thu, 14 Jun 2012 07:16:50 +0000"
+
+
+
+
+
+
+}
