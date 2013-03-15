@@ -1,17 +1,50 @@
-creator: Mark Mikofski <mark.mikofski@sunpowercorp.com>
+{
 
 
-reporter: Mark Mikofski <mark.mikofski@sunpowercorp.com>
 
 
-severity: wishlist
 
 
-status: open
+    "creator": "Mark Mikofski <mark.mikofski@sunpowercorp.com>", 
 
 
-summary: add a Django interface
 
 
-time: Mon, 11 Jun 2012 23:17:15 +0000
 
+
+    "reporter": "Mark Mikofski <mark.mikofski@sunpowercorp.com>", 
+
+
+
+
+
+
+    "severity": "wishlist", 
+
+
+
+
+
+
+    "status": "open", 
+
+
+
+
+
+
+    "summary": "add a Django interface", 
+
+
+
+
+
+
+    "time": "Mon, 11 Jun 2012 23:17:15 +0000"
+
+
+
+
+
+
+}

@@ -1,17 +1,50 @@
-creator: Mark Mikofski <bwanamarko@yahoo.com>
+{
 
 
-reporter: Mark Mikofski <bwanamarko@yahoo.com>
 
 
-severity: minor
 
 
-status: open
+    "creator": "Mark Mikofski <bwanamarko@yahoo.com>", 
 
 
-summary: add an update button to bottom toolbar until keybindings are complete
 
 
-time: Mon, 27 Aug 2012 04:03:29 +0000
 
+
+    "reporter": "Mark Mikofski <bwanamarko@yahoo.com>", 
+
+
+
+
+
+
+    "severity": "minor", 
+
+
+
+
+
+
+    "status": "open", 
+
+
+
+
+
+
+    "summary": "add an update button to bottom toolbar until keybindings are complete", 
+
+
+
+
+
+
+    "time": "Mon, 27 Aug 2012 04:03:29 +0000"
+
+
+
+
+
+
+}

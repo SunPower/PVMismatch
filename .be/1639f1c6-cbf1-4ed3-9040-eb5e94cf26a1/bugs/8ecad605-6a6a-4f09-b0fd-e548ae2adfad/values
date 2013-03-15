@@ -1,17 +1,50 @@
-creator: Mark Mikofski <bwanamarko@yahoo.com>
+{
 
 
-reporter: Mark Mikofski <bwanamarko@yahoo.com>
 
 
-severity: minor
 
 
-status: open
+    "creator": "Mark Mikofski <bwanamarko@yahoo.com>", 
 
 
-summary: reset button should update IV plots/stats
 
 
-time: Mon, 27 Aug 2012 04:02:49 +0000
 
+
+    "reporter": "Mark Mikofski <bwanamarko@yahoo.com>", 
+
+
+
+
+
+
+    "severity": "minor", 
+
+
+
+
+
+
+    "status": "open", 
+
+
+
+
+
+
+    "summary": "reset button should update IV plots/stats", 
+
+
+
+
+
+
+    "time": "Mon, 27 Aug 2012 04:02:49 +0000"
+
+
+
+
+
+
+}
