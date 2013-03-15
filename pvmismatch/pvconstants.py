@@ -22,8 +22,8 @@ NRBD = 3.284628553041425  # reverse breakdown exponent
 CELLAREA = 153.33  # [cm^2] cell area
 
 # Constants
-NPTS = 1001  # number of I-V points to calculate
-PTS = np.linspace(0, 1, NPTS).reshape(NPTS, 1)  # IGNORE:E1103
+NPTS = 101  # number of I-V points to calculate
+#PTS = np.linspace(0, 1, NPTS).reshape(NPTS, 1)  # IGNORE:E1103
 MODSIZES = [72, 96, 128]  # list of possible number of cells per module
 SUBSTRSIZES = [[24, 24, 24], [24, 48, 24], [32, 64, 32]]
 NUMBERCELLS = MODSIZES[1]  # default number of cells
@@ -53,7 +53,7 @@ class PVconstants(object):
     """
     def __init__(self, Rs=RS, Rsh=RSH, Isat1=ISAT1, Isat2=ISAT2, Aph=APH,
                  Isc0=ISC0, Tcell=TCELL, cellArea=CELLAREA, Vbypass=VBYPASS,
-                 aRBD=ARBD, VRBD=VRBD_, nRBD=NRBD):
+                 aRBD=ARBD, VRBD=VRBD_, nRBD=NRBD, npts=NPTS):
         self.Rs = Rs  # [ohm] series resistance
         self.Rsh = Rsh  # [ohm] shunt resistance
         self.Isat1 = Isat1  # [A] diode one saturation current
@@ -69,6 +69,11 @@ class PVconstants(object):
         self.k = scipy.constants.k  # [kJ/mole/K] Boltzmann constant
         self.q = scipy.constants.e  # [Coloumbs] elementary charge
         self.E0 = 1000  # [W/m^2] irradiance of 1 sun
+        # set number of points in IV curve(s)
+        self.npts = npts # number of points
+        # decrease point spacing as voltage approaches Voc by using logspace
+        pts = (11. - np.logspace(1, 0, npts - 1)) / 10. # point spacing
+        self.pts = np.append(0, pts).reshape(NPTS, 1)  # IGNORE:E1103
 
     def update(self, *args, **kwargs):
         kw = ['Rs', 'Rsh', 'Isat1', 'Isat2', 'Aph', 'Isc0', 'Tcell',
