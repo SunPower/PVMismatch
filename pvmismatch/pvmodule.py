@@ -6,16 +6,9 @@ Created on Thu May 31 23:17:04 2012
 """
 
 import numpy as np
-from pvmismatch.pvconstants import PVconstants, npinterpx, NPTS, PTS, \
-    MODSIZES, SUBSTRSIZES, NUMBERCELLS
+from pvmismatch.pvconstants import PVconstants, npinterpx, MODSIZES, \
+    SUBSTRSIZES, NUMBERCELLS
 from matplotlib import pyplot as plt
-
-#NPTS = 1001  # number of I-V points to calculate
-## http://www.logilab.org/card/pylintfeatures#typecheck-checker
-#PTS = np.linspace(0, 1, NPTS).reshape(NPTS, 1)  # IGNORE:E1103
-#MODSIZES = [72, 96, 128]  # list of possible number of cells per module
-#SUBSTRSIZES = [[24, 24, 24], [24, 48, 24], [32, 64, 32]]
-#NUMBERCELLS = 96  # default number of cells
 
 
 class PVmodule(object):
@@ -90,11 +83,11 @@ class PVmodule(object):
         Calculate cell I-V curves.
         Returns (Icell, Vcell, Pcell) : tuple of numpy.ndarray of float
         """
-        Vdiode = self.Voc * PTS
+        Vdiode = self.Voc * self.pvconst.pts
         # http://www.logilab.org/card/pylintfeatures#typecheck-checker
         # pylint: disable = E1103
         VPTS = np.linspace(self.pvconst.VRBD,
-                           -1 / float(NPTS), NPTS).reshape(NPTS, 1)
+                           -1 / float(self.pvconst.npts), self.pvconst.npts).reshape(self.pvconst.npts, 1)
         # pylint: enable = E1103
         VPTS = VPTS.repeat(self.numberCells, axis=1)
         Vdiode = np.concatenate((VPTS, Vdiode), axis=0)
@@ -117,13 +110,13 @@ class PVmodule(object):
         Returns (Imod, Vmod, Pmod) : tuple of numpy.ndarray of float
         """
         # scale with max irradiance, so that Ee > 1 is not a problem
-        Imod = np.max(self.Ee) * self.pvconst.Isc0 * PTS
+        Imod = np.max(self.Ee) * self.pvconst.Isc0 * self.pvconst.pts
         # pylint: disable = E1103
         Ineg = np.linspace(-np.max(Imod),
-                           -1 / float(NPTS), NPTS).reshape(NPTS, 1)
+                           -1 / float(self.pvconst.npts), self.pvconst.npts).reshape(self.pvconst.npts, 1)
         # pylint: enable = E1103
         Imod = np.concatenate((Ineg, Imod), axis=0)
-        Vsubstr = np.zeros((2 * NPTS, 3))
+        Vsubstr = np.zeros((2 * self.pvconst.npts, 3))
         start = np.cumsum(self.subStrCells) - self.subStrCells
         stop = np.cumsum(self.subStrCells)
         for substr in range(self.numSubStr):
@@ -133,7 +126,7 @@ class PVmodule(object):
                 Vsubstr[:, [substr]] += npinterpx(Imod, xp, fp)
         bypassed = Vsubstr < self.pvconst.Vbypass
         Vsubstr[bypassed] = self.pvconst.Vbypass
-        Vmod = np.sum(Vsubstr, 1).reshape(2 * NPTS, 1)
+        Vmod = np.sum(Vsubstr, 1).reshape(2 * self.pvconst.npts, 1)
         Pmod = Imod * Vmod
         return (Imod, Vmod, Pmod, Vsubstr)
 

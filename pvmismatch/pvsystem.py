@@ -7,8 +7,8 @@ Created on Jul 16, 2012
 
 from copy import deepcopy
 from matplotlib import pyplot as plt
-from pvmismatch.pvconstants import PVconstants, npinterpx, NPTS, PTS, \
-    NUMBERCELLS, NUMBERMODS, NUMBERSTRS
+from pvmismatch.pvconstants import PVconstants, npinterpx, NUMBERCELLS, \
+    NUMBERMODS, NUMBERSTRS
 from pvmismatch.pvstring import PVstring
 import numpy as np
 
@@ -69,9 +69,9 @@ class PVsystem(object):
         Calculate system I-V curves.
         Returns (Isys, Vsys, Psys) : tuple of numpy.ndarray of float
         """
-        Isys = np.zeros((NPTS, 1))
+        Isys = np.zeros((self.pvconst.npts, 1))
         Vstring = np.array([pvstr.Vstring for pvstr in self.pvstrs])
-        Vsys = np.max(Vstring) * PTS
+        Vsys = np.max(Vstring) * self.pvconst.pts
         for pvstr in self.pvstrs:
             (pvstr.Istring, pvstr.Vstring, pvstr.Pstring) = pvstr.calcString()
             xp = np.flipud(pvstr.Vstring.squeeze())
@@ -88,16 +88,16 @@ class PVsystem(object):
         dV = np.diff(self.Vsys, axis=0)  # (1000, 1)
         Pv = dP / dV  # (1000, 1) decreasing
         # reshape(scalar) converts 2-D array to 1-D array (vector)
-        Pv = np.flipud(Pv.reshape(NPTS - 1))  # (1000,) increasing
+        Pv = np.flipud(Pv.reshape(self.pvconst.npts - 1))  # (1000,) increasing
         Vhalf = (self.Vsys[1:] + self.Vsys[:-1]) / 2  # (1000, 1) increasing
-        Vhalf = np.flipud(Vhalf.reshape(NPTS - 1))  # (1000,)
+        Vhalf = np.flipud(Vhalf.reshape(self.pvconst.npts - 1))  # (1000,)
         Vmp = np.interp(0., Pv, Vhalf)  # estimate Vmp
         Imp = Pmp / Vmp  # calculate Imp
-        xp = np.flipud(self.Isys.reshape(NPTS))  # must be increasing
-        fp = np.flipud(self.Vsys.reshape(NPTS))  # keep data correspondence
+        xp = np.flipud(self.Isys.reshape(self.pvconst.npts))  # must be increasing
+        fp = np.flipud(self.Vsys.reshape(self.pvconst.npts))  # keep data correspondence
         Voc = np.interp(0., xp, fp)  # calucalte Voc
-        xp = self.Vsys.reshape(NPTS)
-        fp = self.Isys.reshape(NPTS)
+        xp = self.Vsys.reshape(self.pvconst.npts)
+        fp = self.Isys.reshape(self.pvconst.npts)
         ImpCheck = np.interp(Vmp, xp, fp)  # check Imp
         print "Imp Error = {:10.4g}%".format((Imp - ImpCheck) / Imp * 100)
         Isc = np.interp(0, xp, fp)

@@ -7,8 +7,8 @@ Created on Mon Jun 11 14:07:12 2012
 
 from copy import deepcopy
 from matplotlib import pyplot as plt
-from pvmismatch.pvconstants import PVconstants, npinterpx, NPTS, PTS, \
-    NUMBERMODS, NUMBERCELLS
+from pvmismatch.pvconstants import PVconstants, npinterpx, NUMBERMODS, \
+    NUMBERCELLS
 from pvmismatch.pvmodule import PVmodule
 import numpy as np
 
@@ -53,13 +53,13 @@ class PVstring(object):
         """
         # scale with max irradiance, so that Ee > 1 is not a problem
         maxEe = np.max([np.max(pvmod.Ee) for pvmod in self.pvmods])
-        Istring = np.max(maxEe) * self.pvconst.Isc0 * PTS
+        Istring = np.max(maxEe) * self.pvconst.Isc0 * self.pvconst.pts
         # pylint: disable = E1103
         Ineg = np.linspace(-np.max(Istring),
-                           -1 / float(NPTS), NPTS).reshape(NPTS, 1)
+                           -1 / float(self.pvconst.npts), self.pvconst.npts).reshape(self.pvconst.npts, 1)
         # pylint: disable = E1103
         Istring = np.concatenate((Ineg, Istring), axis=0)
-        Vstring = np.zeros((2 * NPTS, 1))
+        Vstring = np.zeros((2 * self.pvconst.npts, 1))
         for mod in self.pvmods:
             xp = mod.Imod.squeeze()  # IGNORE:E1103
             fp = mod.Vmod.squeeze()  # IGNORE:E1103

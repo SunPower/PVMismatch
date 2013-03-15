@@ -10,8 +10,8 @@ from Tkinter import Frame, Label, Button, Toplevel, OptionMenu, Scale, Entry, \
     Message, Spinbox, IntVar, StringVar, DoubleVar
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, \
     NavigationToolbar2TkAgg
-from pvmismatch.pvconstants import NPTS, PTS, MODSIZES, NUMBERCELLS, \
-     NUMBERMODS, NUMBERSTRS
+from pvmismatch.pvconstants import MODSIZES, NUMBERCELLS, NUMBERMODS, \
+    NUMBERSTRS
 from pvmismatch.pvsystem import PVsystem
 from pvmismatch_tk.advCnf_tk import AdvCnf_tk
 from pvmismatch_tk.pvexceptions import PVValidationError
@@ -254,7 +254,7 @@ class PVapplicaton(Frame):
         self.pvSysScale = Scale(pvSysDataFrame, orient=HORIZONTAL,
                                 label='I-V Curve', font=CAPTION_FONT,
                                 command=self.getIV, showvalue=False,
-                                from_=0, to=(NPTS - 1))
+                                from_=0, to=(pvSys.pvconst.npts - 1))
         self.pvSysScale.grid(row=_row, columnspan=3, sticky=(E + W))
         # Isys
         Label(pvSysDataFrame, text='Isys [A]').grid(row=(_row + 1))
@@ -408,8 +408,8 @@ class PVapplicaton(Frame):
 
     def getIV(self, *args):
         print args
-        x = float(args[0]) / NPTS
-        xp = np.squeeze(PTS)
+        x = float(args[0]) / self.pvSys.pvconst.npts
+        xp = np.squeeze(self.pvSys.pvconst.pts)
         Vsys = np.interp(x, xp, self.pvSys.Vsys.squeeze())
         Isys = np.interp(x, xp, self.pvSys.Isys.squeeze())
         Psys = Vsys * Isys / 1000
