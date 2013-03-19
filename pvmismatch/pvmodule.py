@@ -87,7 +87,8 @@ class PVmodule(object):
         # http://www.logilab.org/card/pylintfeatures#typecheck-checker
         # pylint: disable = E1103
         VPTS = np.linspace(self.pvconst.VRBD,
-                           -1 / float(self.pvconst.npts), self.pvconst.npts).reshape(self.pvconst.npts, 1)
+                           -1 / float(self.pvconst.npts),
+                           self.pvconst.npts).reshape(self.pvconst.npts, 1)
         # pylint: enable = E1103
         VPTS = VPTS.repeat(self.numberCells, axis=1)
         Vdiode = np.concatenate((VPTS, Vdiode), axis=0)
@@ -113,7 +114,8 @@ class PVmodule(object):
         Imod = np.max(self.Ee) * self.pvconst.Isc0 * self.pvconst.pts
         # pylint: disable = E1103
         Ineg = np.linspace(-np.max(Imod),
-                           -1 / float(self.pvconst.npts), self.pvconst.npts).reshape(self.pvconst.npts, 1)
+                           -1 / float(self.pvconst.npts),
+                           self.pvconst.npts).reshape(self.pvconst.npts, 1)
         # pylint: enable = E1103
         Imod = np.concatenate((Ineg, Imod), axis=0)
         Vsubstr = np.zeros((2 * self.pvconst.npts, 3))

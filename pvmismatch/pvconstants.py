@@ -70,9 +70,9 @@ class PVconstants(object):
         self.q = scipy.constants.e  # [Coloumbs] elementary charge
         self.E0 = 1000  # [W/m^2] irradiance of 1 sun
         # set number of points in IV curve(s)
-        self.npts = npts # number of points
+        self.npts = npts  # number of points
         # decrease point spacing as voltage approaches Voc by using logspace
-        pts = (11. - np.logspace(1, 0, npts - 1)) / 10. # point spacing
+        pts = (11. - np.logspace(1, 0, npts - 1)) / 10.  # point spacing
         self.pts = np.append(0, pts).reshape(NPTS, 1)  # IGNORE:E1103
 
     def update(self, *args, **kwargs):
