@@ -7,19 +7,20 @@ Created on Wed May 30 11:53:52 2012
 import numpy as np
 import scipy.constants
 
-# defaults
+# Defaults
 RS = 0.004267236774264931  # [ohm] series resistance
 RSH = 10.01226369025448  # [ohm] shunt resistance
 ISAT1 = 2.286188161253440E-11  # [A] diode one saturation current
 ISAT2 = 1.117455042372326E-6  # [A] diode two saturation current
 APH = 1.000426348582935  # photovoltaic current coefficient
-ISC0 = 6  # [A] reference short circuit current
+ISC0 = 6.3056  # [A] reference short circuit current
 TCELL = 298.15  # [K] cell temperature
 VBYPASS = -0.5  # [V] trigger voltage of bypass diode
 ARBD = 1.036748445065697E-4  # reverse breakdown coefficient
 VRBD_ = -5.527260068445654  # [V] reverse breakdown voltage
 NRBD = 3.284628553041425  # reverse breakdown exponent
 CELLAREA = 153.33  # [cm^2] cell area
+EG = 1.1  # [eV] band gap of cSi
 
 # Constants
 NPTS = 101  # number of I-V points to calculate
@@ -53,22 +54,30 @@ class PVconstants(object):
     """
     def __init__(self, Rs=RS, Rsh=RSH, Isat1=ISAT1, Isat2=ISAT2, Aph=APH,
                  Isc0=ISC0, Tcell=TCELL, cellArea=CELLAREA, Vbypass=VBYPASS,
-                 aRBD=ARBD, VRBD=VRBD_, nRBD=NRBD, npts=NPTS):
+                 aRBD=ARBD, VRBD=VRBD_, nRBD=NRBD, npts=NPTS, Eg=EG):
+        # hard constants
+        self.k = scipy.constants.k  # [kJ/mole/K] Boltzmann constant
+        self.q = scipy.constants.e  # [Coloumbs] elementary charge
+        self.E0 = 1000.  # [W/m^2] irradiance of 1 sun
+        self.T0 = 298.15  # [K] reference temperature
+        # user inputs
+        self.Eg = EG  # [eV] band gap of cSi
+        self.Tcell = Tcell  # [K] cell temperature
         self.Rs = Rs  # [ohm] series resistance
         self.Rsh = Rsh  # [ohm] shunt resistance
-        self.Isat1 = Isat1  # [A] diode one saturation current
+        # [A] diode one saturation current at Tcell
+        _Tstar = self.Tcell**3 / self.T0**3
+        _invTstar = 1 / self.T0 - 1 / self.Tcell
+        _expTstar = np.exp(self.Eg * self.q / self.k * _invTstar)
+        self.Isat1 = Isat1 * _Tstar * _expTstar
         self.Isat2 = Isat2  # [A] diode two saturation current
         self.Aph = Aph  # photovoltaic current coefficient
         self.Isc0 = Isc0  # [A] reference short circuit current
-        self.Tcell = Tcell  # [K] cell temperature
         self.cellArea = cellArea  # [cm^2] cell area
         self.Vbypass = Vbypass  # [V] trigger voltage of bypass diode
         self.aRBD = aRBD  # reverse breakdown coefficient
         self.VRBD = VRBD  # [V] reverse breakdown voltage
         self.nRBD = nRBD  # reverse breakdown exponent
-        self.k = scipy.constants.k  # [kJ/mole/K] Boltzmann constant
-        self.q = scipy.constants.e  # [Coloumbs] elementary charge
-        self.E0 = 1000  # [W/m^2] irradiance of 1 sun
         # set number of points in IV curve(s)
         self.npts = npts  # number of points
         # decrease point spacing as voltage approaches Voc by using logspace
