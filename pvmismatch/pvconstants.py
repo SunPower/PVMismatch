@@ -10,10 +10,10 @@ import scipy.constants
 # Defaults
 RS = 0.004267236774264931  # [ohm] series resistance
 RSH = 10.01226369025448  # [ohm] shunt resistance
-ISAT1 = 2.286188161253440E-11  # [A] diode one saturation current
+ISAT1_T0 = 2.286188161253440E-11  # [A] diode one saturation current
 ISAT2 = 1.117455042372326E-6  # [A] diode two saturation current
 APH = 1.000426348582935  # photovoltaic current coefficient
-ISC0 = 6.3056  # [A] reference short circuit current
+ISC0_T0 = 6.3056  # [A] reference short circuit current
 TCELL = 298.15  # [K] cell temperature
 VBYPASS = -0.5  # [V] trigger voltage of bypass diode
 ARBD = 1.036748445065697E-4  # reverse breakdown coefficient
@@ -21,6 +21,7 @@ VRBD_ = -5.527260068445654  # [V] reverse breakdown voltage
 NRBD = 3.284628553041425  # reverse breakdown exponent
 CELLAREA = 153.33  # [cm^2] cell area
 EG = 1.1  # [eV] band gap of cSi
+ALPHA_ISC = 0.0003551  # [1/K] short circuit current temperature coefficient
 
 # Constants
 NPTS = 101  # number of I-V points to calculate
@@ -33,7 +34,9 @@ NUMBERSTRS = 10  # default number of strings
 
 
 def npinterpx(x, xp, fp):
-    """np.interp function with linear extrapolation"""
+    """
+    Numpy interpolation function with linear extrapolation.
+    """
     y = np.interp(x, xp, fp)
     # extrapolate left
     left = x < xp[0]
@@ -52,27 +55,27 @@ class PVconstants(object):
     """
     PVconstants - Class for PV constants
     """
-    def __init__(self, Rs=RS, Rsh=RSH, Isat1=ISAT1, Isat2=ISAT2, Aph=APH,
-                 Isc0=ISC0, Tcell=TCELL, cellArea=CELLAREA, Vbypass=VBYPASS,
-                 aRBD=ARBD, VRBD=VRBD_, nRBD=NRBD, npts=NPTS, Eg=EG):
+    def __init__(self, Rs=RS, Rsh=RSH, Isat1_T0=ISAT1_T0, Isat2=ISAT2, Aph=APH,
+                 Isc0_T0=ISC0_T0, Tcell=TCELL, cellArea=CELLAREA,
+                 Vbypass=VBYPASS, aRBD=ARBD, VRBD=VRBD_, nRBD=NRBD, npts=NPTS,
+                 Eg=EG, alpha_Isc=ALPHA_ISC):
         # hard constants
         self.k = scipy.constants.k  # [kJ/mole/K] Boltzmann constant
         self.q = scipy.constants.e  # [Coloumbs] elementary charge
         self.E0 = 1000.  # [W/m^2] irradiance of 1 sun
         self.T0 = 298.15  # [K] reference temperature
         # user inputs
-        self.Eg = EG  # [eV] band gap of cSi
+        self.Eg = Eg  # [eV] band gap of cSi
+        self.alpha_Isc = alpha_Isc  # [1/K] short circuit temp. coefficient
         self.Tcell = Tcell  # [K] cell temperature
         self.Rs = Rs  # [ohm] series resistance
         self.Rsh = Rsh  # [ohm] shunt resistance
-        # [A] diode one saturation current at Tcell
-        _Tstar = self.Tcell**3 / self.T0**3
-        _invTstar = 1 / self.T0 - 1 / self.Tcell
-        _expTstar = np.exp(self.Eg * self.q / self.k * _invTstar)
-        self.Isat1 = Isat1 * _Tstar * _expTstar
+        self.Isat1_T0 = Isat1_T0  # [A] Isat1(Tcell)
+        self.Isat1 = self.calc_Isat1()  # [A] Isat1(Tcell)
         self.Isat2 = Isat2  # [A] diode two saturation current
         self.Aph = Aph  # photovoltaic current coefficient
-        self.Isc0 = Isc0  # [A] reference short circuit current
+        self.Isc0_T0 = Isc0_T0  # [A] Isc0(Tcell)
+        self.Isc0 = self.calc_Isc0()  # [A] Isc0(Tcell)
         self.cellArea = cellArea  # [cm^2] cell area
         self.Vbypass = Vbypass  # [V] trigger voltage of bypass diode
         self.aRBD = aRBD  # reverse breakdown coefficient
@@ -85,12 +88,50 @@ class PVconstants(object):
         self.pts = np.append(0, pts).reshape(NPTS, 1)  # IGNORE:E1103
 
     def update(self, *args, **kwargs):
-        kw = ['Rs', 'Rsh', 'Isat1', 'Isat2', 'Aph', 'Isc0', 'Tcell',
-              'cellArea', 'Vbypass', 'aRBD', 'VRBD', 'nRBD']
+        """
+        Update user-defined constants.
+        """
+        kw = ['Rs', 'Rsh', 'Isat1_T0', 'Isat2', 'Aph', 'Isc0_T0', 'Tcell',
+              'cellArea', 'Vbypass', 'aRBD', 'VRBD', 'nRBD', 'npts', 'Eg',
+              'alpha_Isc']
         key = 0
+        keys = []
+        # set positional arguements (*args)
         for val in args:
             self.__setattr__(kw[key], val)
             key += 1
+            keys.append(kw[key])
+        # set optional arguments (*kwargs)
         for key in kwargs:
             if key in kw:
                 self.__setattr__(key, kwargs[key])
+        # Check & update Isat1
+        calc_Isat1 = 'Isat1_T0' in keys or 'Isat1_T0' in kwargs.keys()
+        calc_Isat1 = calc_Isat1 or 'Tcell' in keys or 'Tcell' in kwargs.keys()
+        calc_Isat1 = calc_Isat1 or 'Eg' in keys or 'Eg' in kwargs.keys()
+        if calc_Isat1:
+            self.Isat1 = self.calc_Isat1()  # [A] Isat1
+        # Check & update Isc0
+        calc_Isc0 = 'Isc0_T0' in keys or 'Isc0_T0' in kwargs.keys()
+        calc_Isc0 = calc_Isc0 or 'Tcell' in keys or 'Tcell' in kwargs.keys()
+        calc_Isc0 = (calc_Isc0 or
+                       'alpha_Isc' in keys or 'alpha_Isc' in kwargs.keys())
+        if calc_Isc0:
+            self.Isc0 = self.calc_Isc0()  # [A] Isc0
+
+    # TODO: try to override self.__setattr__
+    def calc_Isat1(self):
+        """
+        Diode one saturation current at Tcell.
+        """
+        _Tstar = self.Tcell ** 3 / self.T0 ** 3  # scaled temperature
+        _inv_delta_T = 1 / self.T0 - 1 / self.Tcell  # [1/K]
+        _expTstar = np.exp(self.Eg * self.q / self.k * _inv_delta_T)
+        return self.Isat1_T0 * _Tstar * _expTstar  # [A] Isat1(Tcell)
+
+    def calc_Isc0(self):
+        """
+        Short circuit current at Tcell
+        """
+        _delta_T = self.Tcell - self.T0  # [K] temperature difference
+        return self.Isc0_T0 * (1 + self.alpha_Isc * _delta_T)  # [A] Isc0

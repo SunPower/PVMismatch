@@ -36,18 +36,18 @@ class AdvCnf_tk(Frame):
         # variables
         Rs = self.Rs = DoubleVar(self, name='Rs')
         Rsh = self.Rsh = DoubleVar(self, name='Rsh')
-        Isat1 = self.Isat1 = DoubleVar(self, name='Isat1')
+        Isat1_T0 = self.Isat1_T0 = DoubleVar(self, name='Isat1_T0')
         Isat2 = self.Isat2 = DoubleVar(self, name='Isat2')
         Rs.set("{:10.4e}".format(pvapp.pvSys.pvconst.Rs))
         Rsh.set("{:10.4f}".format(pvapp.pvSys.pvconst.Rsh))
-        Isat1.set("{:10.4e}".format(pvapp.pvSys.pvconst.Isat1))
+        Isat1_T0.set("{:10.4e}".format(pvapp.pvSys.pvconst.Isat1_T0))
         Isat2.set("{:10.4e}".format(pvapp.pvSys.pvconst.Isat2))
         Aph = self.Aph = DoubleVar(self, name='Aph')
-        Isc0 = self.Isc0 = DoubleVar(self, name='Isc0')
+        Isc0_T0 = self.Isc0_T0 = DoubleVar(self, name='Isc0_T0')
         Tcell = self.Tcell = DoubleVar(self, name='Tcell')
         Vbypass = self.Vbypass = DoubleVar(self, name='Vbypasss')
         Aph.set("{:10.4f}".format(pvapp.pvSys.pvconst.Aph))
-        Isc0.set("{:10.4f}".format(pvapp.pvSys.pvconst.Isc0))
+        Isc0_T0.set("{:10.4f}".format(pvapp.pvSys.pvconst.Isc0_T0))
         Tcell.set("{:10.4f}".format(pvapp.pvSys.pvconst.Tcell))
         Vbypass.set("{:10.4f}".format(pvapp.pvSys.pvconst.Vbypass))
         aRBD = self.aRBD = DoubleVar(self, name='aRBD')
@@ -71,10 +71,10 @@ class AdvCnf_tk(Frame):
               text='Advanced Configuration',
               font=CAPTION_FONT).grid(row=_row, columnspan=3, sticky=W)
         _row += 1
-        # Rs, Rsh, Isat1, Isat2
+        # Rs, Rsh, Isat1_T0, Isat2
         Label(self, text='Rs [Ohms]').grid(row=_row, sticky=W)
         Label(self, text='Rsh [Ohms]').grid(row=(_row + 1), sticky=W)
-        Label(self, text='Isat1 [A]').grid(row=(_row + 2), sticky=W)
+        Label(self, text='Isat1_T0 [A]').grid(row=(_row + 2), sticky=W)
         Label(self, text='Isat2 [A]').grid(row=(_row + 3), sticky=W)
         RsEntry = Entry(self, textvariable=Rs, width=12, justify=RIGHT,
                         name='rsEntry', validatecommand=vcmd,
@@ -84,28 +84,30 @@ class AdvCnf_tk(Frame):
                          name='rshEntry', validatecommand=vcmd,
                          invalidcommand=invcmd, validate='all')
         RshEntry.grid(row=(_row + 1), column=1)
-        Isat1Entry = Entry(self, textvariable=Isat1, width=12, justify=RIGHT,
-                           name='isat1Entry', validatecommand=vcmd,
-                           invalidcommand=invcmd, validate='all')
-        Isat1Entry.grid(row=(_row + 2), column=1)
+        Isat1_T0Entry = Entry(self, textvariable=Isat1_T0, width=12,
+                              justify=RIGHT, name='isat1_T0Entry',
+                              validatecommand=vcmd, invalidcommand=invcmd,
+                              validate='all')
+        Isat1_T0Entry.grid(row=(_row + 2), column=1)
         Isat2Entry = Entry(self, textvariable=Isat2, width=12, justify=RIGHT,
                            name='isat2Entry', validatecommand=vcmd,
                            invalidcommand=invcmd, validate='all')
         Isat2Entry.grid(row=(_row + 3), column=1)
         _row += 4  # row 2, 3, 4, 5
-        # Aph, Isc0, Tcell, Vbypasss
+        # Aph, Isc0_T0, Tcell, Vbypasss
         Label(self, text='Aph').grid(row=_row, sticky=W)
-        Label(self, text='Isc0 [A]').grid(row=(_row + 1), sticky=W)
+        Label(self, text='Isc0_T0 [A]').grid(row=(_row + 1), sticky=W)
         Label(self, text='Tcell [K]').grid(row=(_row + 2), sticky=W)
         Label(self, text='Vbypass [V]').grid(row=(_row + 3), sticky=W)
         AphEntry = Entry(self, textvariable=Aph, width=12, justify=RIGHT,
                          name='aphEntry', validatecommand=vcmd,
                          invalidcommand=invcmd, validate='all')
         AphEntry.grid(row=_row, column=1)
-        Isc0Entry = Entry(self, textvariable=Isc0, width=12, justify=RIGHT,
-                         name='isc0Entry', validatecommand=vcmd,
-                         invalidcommand=invcmd, validate='all')
-        Isc0Entry.grid(row=(_row + 1), column=1)
+        Isc01_T0Entry = Entry(self, textvariable=Isc0_T0, width=12,
+                             justify=RIGHT, name='isc01_T0Entry',
+                             validatecommand=vcmd, invalidcommand=invcmd,
+                             validate='all')
+        Isc01_T0Entry.grid(row=(_row + 1), column=1)
         TcellEntry = Entry(self, textvariable=Tcell, width=12, justify=RIGHT,
                            name='tcellEntry', validatecommand=vcmd,
                            invalidcommand=invcmd, validate='all')
@@ -158,8 +160,8 @@ class AdvCnf_tk(Frame):
             self.pvapp.msgtext.set('Invalid shunt resistance!')
             self.bell()
             return
-        Isat1 = self.Isat1.get()
-        if not 0 < Isat1 <= validationConstants["advCnf"]["Isat1"]:
+        Isat1_T0 = self.Isat1_T0.get()
+        if not 0 < Isat1_T0 <= validationConstants["advCnf"]["Isat1_T0"]:
             self.pvapp.msgtext.set('Invalid diode-1 saturation current!')
             self.bell()
             return
@@ -174,8 +176,8 @@ class AdvCnf_tk(Frame):
             self.pvapp.msgtext.set(errtext)
             self.bell()
             return
-        Isc0 = self.Isc0.get()
-        if not 1 < Isc0 <= validationConstants["advCnf"]["Isc0"]:
+        Isc0_T0 = self.Isc0_T0.get()
+        if not 1 < Isc0_T0 <= validationConstants["advCnf"]["Isc0_T0"]:
             self.pvapp.msgtext.set('Invalid short circuit current!')
             self.bell()
             return
@@ -216,8 +218,8 @@ class AdvCnf_tk(Frame):
         # update PVconstants
         self.pvapp.msgtext.set(messagetext["pvapplication"]["Ready"])
         pvapp = self.pvapp
-        pvapp.pvSys.pvconst.update(Rs, Rsh, Isat1, Isat2, Aph, Isc0, Tcell,
-                                   cellArea, Vbypass, aRBD, VRBD, nRBD)
+        pvapp.pvSys.pvconst.update(Rs, Rsh, Isat1_T0, Isat2, Aph, Isc0_T0,
+                                   Tcell, cellArea, Vbypass, aRBD, VRBD, nRBD)
         # update PVapplication_tk
         self.pvapp.updatePVsys()
         self.pvapp.updateIVstats()
@@ -251,7 +253,7 @@ class AdvCnf_tk(Frame):
         elif W_ == '.advCnfTop.advCnf.rshEntry':
             valType = FLOATS
             valTest = lambda val: float(val)  # IGNORE:W0108
-        elif W_ == '.advCnfTop.advCnf.isat1Entry':
+        elif W_ == '.advCnfTop.advCnf.isat1_T0Entry':
             valType = FLOATS
             valTest = lambda val: float(val)  # IGNORE:W0108
         elif W_ == '.advCnfTop.advCnf.isat2Entry':
@@ -260,7 +262,7 @@ class AdvCnf_tk(Frame):
         elif W_ == '.advCnfTop.advCnf.aphEntry':
             valType = FLOATS
             valTest = lambda val: float(val) - 1  # IGNORE:W0108
-        elif W_ == '.advCnfTop.advCnf.isc0Entry':
+        elif W_ == '.advCnfTop.advCnf.isc01_T0Entry':
             valType = FLOATS
             valTest = lambda val: float(val)  # IGNORE:W0108
         elif W_ == '.advCnfTop.advCnf.tcellEntry':
@@ -302,13 +304,13 @@ class AdvCnf_tk(Frame):
             errText = 'Invalid series resistance!'
         elif W_ == ".advCnfTop.advCnf.rshEntry":
             errText = 'Invalid shunt resistance!'
-        elif W_ == ".advCnfTop.advCnf.isat1Entry":
+        elif W_ == ".advCnfTop.advCnf.isat1_T0Entry":
             errText = 'Invalid diode-1 saturation current!'
         elif W_ == ".advCnfTop.advCnf.isat2Entry":
             errText = 'Invalid diode-2 saturation current!'
         elif W_ == ".advCnfTop.advCnf.aphEntry":
             errText = 'Invalid photo-generated current coefficient!'
-        elif W_ == ".advCnfTop.advCnf.isc0Entry":
+        elif W_ == ".advCnfTop.advCnf.isc01_T0Entry":
             errText = 'Invalid short circuit current!'
         elif W_ == ".advCnfTop.advCnf.tcellEntry":
             errText = 'Invalid cell temperature!'

@@ -3,10 +3,10 @@
 	{
 		"Rs": 1,
 		"Rsh": 100,
-		"Isat1": 1,
+		"Isat1_T0": 1,
 		"Isat2": 1,
 		"Aph": 11,
-		"Isc0": 100,
+		"Isc0_T0": 100,
 		"Tcell": 500,
 		"Vbypass": -1,
 		"aRBD": 1,
