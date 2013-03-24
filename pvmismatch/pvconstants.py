@@ -65,22 +65,22 @@ class PVconstants(object):
         self.E0 = 1000.  # [W/m^2] irradiance of 1 sun
         self.T0 = 298.15  # [K] reference temperature
         # user inputs
-        self.Eg = Eg  # [eV] band gap of cSi
-        self.alpha_Isc = alpha_Isc  # [1/K] short circuit temp. coefficient
-        self.Tcell = Tcell  # [K] cell temperature
-        self.Rs = Rs  # [ohm] series resistance
-        self.Rsh = Rsh  # [ohm] shunt resistance
-        self.Isat1_T0 = Isat1_T0  # [A] Isat1(Tcell)
-        self.Isat1 = self.calc_Isat1()  # [A] Isat1(Tcell)
-        self.Isat2 = Isat2  # [A] diode two saturation current
-        self.Aph = Aph  # photovoltaic current coefficient
-        self.Isc0_T0 = Isc0_T0  # [A] Isc0(Tcell)
-        self.Isc0 = self.calc_Isc0()  # [A] Isc0(Tcell)
-        self.cellArea = cellArea  # [cm^2] cell area
-        self.Vbypass = Vbypass  # [V] trigger voltage of bypass diode
-        self.aRBD = aRBD  # reverse breakdown coefficient
-        self.VRBD = VRBD  # [V] reverse breakdown voltage
-        self.nRBD = nRBD  # reverse breakdown exponent
+        self.Eg = float(Eg)  # [eV] band gap of cSi
+        self.alpha_Isc = float(alpha_Isc)  # [1/K] short circuit temp. coeff.
+        self.Tcell = float(Tcell)  # [K] cell temperature
+        self.Rs = float(Rs)  # [ohm] series resistance
+        self.Rsh = float(Rsh)  # [ohm] shunt resistance
+        self.Isat1_T0 = float(Isat1_T0)  # [A] diode one sat. current at T0
+        self.Isat1 = self.calc_Isat1()  # [A] Isat1 at Tcell
+        self.Isat2 = float(Isat2)  # [A] diode two saturation current
+        self.Aph = float(Aph)  # photovoltaic current coefficient
+        self.Isc0_T0 = float(Isc0_T0)  # [A] short circuit current at T0
+        self.Isc0 = self.calc_Isc0()  # [A] Isc0 at Tcell
+        self.cellArea = float(cellArea)  # [cm^2] cell area
+        self.Vbypass = float(Vbypass)  # [V] trigger voltage of bypass diode
+        self.aRBD = float(aRBD)  # reverse breakdown coefficient
+        self.VRBD = float(VRBD)  # [V] reverse breakdown voltage
+        self.nRBD = float(nRBD)  # reverse breakdown exponent
         # set number of points in IV curve(s)
         self.npts = npts  # number of points
         # decrease point spacing as voltage approaches Voc by using logspace
@@ -98,13 +98,13 @@ class PVconstants(object):
         keys = []
         # set positional arguements (*args)
         for val in args:
-            self.__setattr__(kw[key], val)
+            self.__setattr__(kw[key], float(val))
             key += 1
             keys.append(kw[key])
         # set optional arguments (*kwargs)
         for key in kwargs:
             if key in kw:
-                self.__setattr__(key, kwargs[key])
+                self.__setattr__(key, float(kwargs[key]))
         # Check & update Isat1
         calc_Isat1 = 'Isat1_T0' in keys or 'Isat1_T0' in kwargs.keys()
         calc_Isat1 = calc_Isat1 or 'Tcell' in keys or 'Tcell' in kwargs.keys()
