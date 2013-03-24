@@ -25,7 +25,6 @@ ALPHA_ISC = 0.0003551  # [1/K] short circuit current temperature coefficient
 
 # Constants
 NPTS = 101  # number of I-V points to calculate
-#PTS = np.linspace(0, 1, NPTS).reshape(NPTS, 1)  # IGNORE:E1103
 MODSIZES = [72, 96, 128]  # list of possible number of cells per module
 SUBSTRSIZES = [[24, 24, 24], [24, 48, 24], [32, 64, 32]]
 NUMBERCELLS = MODSIZES[1]  # default number of cells
@@ -85,7 +84,7 @@ class PVconstants(object):
         self.npts = npts  # number of points
         # decrease point spacing as voltage approaches Voc by using logspace
         pts = (11. - np.logspace(1, 0, npts - 1)) / 10.  # point spacing
-        self.pts = np.append(0, pts).reshape(NPTS, 1)  # IGNORE:E1103
+        self.pts = np.append(0, pts).reshape(self.npts, 1)  # IGNORE:E1103
 
     def update(self, *args, **kwargs):
         """
