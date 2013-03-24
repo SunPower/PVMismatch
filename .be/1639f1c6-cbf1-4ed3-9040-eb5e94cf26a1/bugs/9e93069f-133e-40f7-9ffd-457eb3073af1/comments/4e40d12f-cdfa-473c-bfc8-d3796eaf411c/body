@@ -1,0 +1,4 @@
+* Isat1 and Isc0 are temp dependent.
+* resolved in commits #3b5f466 & #3b31a1c
+* Isc0 uses alpha_Isc temperature coefficient
+* Isat1 uses cubic dependence on temperature
