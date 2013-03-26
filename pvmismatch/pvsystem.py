@@ -93,8 +93,10 @@ class PVsystem(object):
         Vhalf = np.flipud(Vhalf.reshape(self.pvconst.npts - 1))  # (1000,)
         Vmp = np.interp(0., Pv, Vhalf)  # estimate Vmp
         Imp = Pmp / Vmp  # calculate Imp
-        xp = np.flipud(self.Isys.reshape(self.pvconst.npts))  # must be increasing
-        fp = np.flipud(self.Vsys.reshape(self.pvconst.npts))  # keep data correspondence
+        # xp must be increasing
+        xp = np.flipud(self.Isys.reshape(self.pvconst.npts))
+        # keep xp & fp correspondence
+        fp = np.flipud(self.Vsys.reshape(self.pvconst.npts))
         Voc = np.interp(0., xp, fp)  # calucalte Voc
         xp = self.Vsys.reshape(self.pvconst.npts)
         fp = self.Isys.reshape(self.pvconst.npts)

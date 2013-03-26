@@ -56,7 +56,8 @@ class PVstring(object):
         Istring = np.max(maxEe) * self.pvconst.Isc0 * self.pvconst.pts
         # pylint: disable = E1103
         Ineg = np.linspace(-np.max(Istring),
-                           -1 / float(self.pvconst.npts), self.pvconst.npts).reshape(self.pvconst.npts, 1)
+                           -1 / float(self.pvconst.npts),
+                           self.pvconst.npts).reshape(self.pvconst.npts, 1)
         # pylint: disable = E1103
         Istring = np.concatenate((Ineg, Istring), axis=0)
         Vstring = np.zeros((2 * self.pvconst.npts, 1))
