@@ -82,9 +82,11 @@ class PVconstants(object):
         self.nRBD = float(nRBD)  # reverse breakdown exponent
         # set number of points in IV curve(s)
         self.npts = npts  # number of points
+        # point spacing from 0 to 1, used for Vcell, Vmod, Vsys and Istring
         # decrease point spacing as voltage approaches Voc by using logspace
-        pts = (11. - np.logspace(1, 0, npts - 1)) / 10.  # point spacing
-        self.pts = np.append(0, pts).reshape(self.npts, 1)  # IGNORE:E1103
+        pts = (11. - np.logspace(np.log10(11.), 0., self.npts)) / 10.
+        pts[0] = 0.  # first point must be exactly zero
+        self.pts = pts.reshape(self.npts, 1)  # IGNORE:E1103
 
     def update(self, *args, **kwargs):
         """
