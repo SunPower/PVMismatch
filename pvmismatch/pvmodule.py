@@ -84,12 +84,7 @@ class PVmodule(object):
         Returns (Icell, Vcell, Pcell) : tuple of numpy.ndarray of float
         """
         Vdiode = self.Voc * self.pvconst.pts
-        # http://www.logilab.org/card/pylintfeatures#typecheck-checker
-        # pylint: disable = E1103
-        VPTS = np.linspace(self.pvconst.VRBD,
-                           -1 / float(self.pvconst.npts),
-                           self.pvconst.npts).reshape(self.pvconst.npts, 1)
-        # pylint: enable = E1103
+        VPTS = self.pvconst.VRBD * self.pvconst.negpts
         VPTS = VPTS.repeat(self.numberCells, axis=1)
         Vdiode = np.concatenate((VPTS, Vdiode), axis=0)
         Igen = self.pvconst.Aph * self.pvconst.Isc0 * self.Ee
@@ -113,9 +108,7 @@ class PVmodule(object):
         # scale with max irradiance, so that Ee > 1 is not a problem
         Imod = np.max(self.Ee) * self.pvconst.Isc0 * self.pvconst.pts
         # pylint: disable = E1103
-        Ineg = np.linspace(-np.max(Imod),
-                           -1 / float(self.pvconst.npts),
-                           self.pvconst.npts).reshape(self.pvconst.npts, 1)
+        Ineg = -np.max(Imod) * self.pvconst.negpts
         # pylint: enable = E1103
         Imod = np.concatenate((Ineg, Imod), axis=0)
         Vsubstr = np.zeros((2 * self.pvconst.npts, 3))

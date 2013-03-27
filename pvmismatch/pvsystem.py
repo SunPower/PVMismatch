@@ -38,19 +38,21 @@ class PVsystem(object):
                 pvstrs = [deepcopy(pvstr) for pvstr in self.pvstrs[1:]]
                 self.pvstrs[1:] = pvstrs
             else:
+                pvmods = np.array(pvmods).flat  # flatten
                 if len(pvmods) % self.numberStrs == 0:
                     self.pvstrs = []
                     self.numberMods = len(pvmods) / self.numberStrs
                     self.numberCells = pvmods[0].numberCells
-                    for Nstr in range(self.numberStrs):
-                        mod1 = Nstr * self.numberMods
-                        mod2 = mod1 + self.numberMods - 1
-                        if pvmods[mod1].numberCells != pvmods[0].numberCells:
-                            errString = ('All modules must have the same' +
-                                         ' number of cells.')
-                            raise Exception(errString)
-                        self.pvstrs.append(PVstring(self.pvconst,
-                                                    pvmods=pvmods[mod1:mod2]))
+                    pvmods = np.array(pvmods).reshape(self.numberStrs,
+                                                      self.numberMods)
+                    self.pvstrs = [PVstring(self.pvconst, pvmods=pvmodstr)
+                                   for pvmodstr in pvmods]
+                    pvmodstrNumCells = [pvmodstr[0].numberCells
+                                   for pvmodstr in pvmods]
+                    if any(pvmodstrNumCells != self.numberCells):
+                        errString = ('All modules must have the same' +
+                                     ' number of cells.')
+                        raise Exception(errString)
         elif ((type(pvstrs) is list) and
               all([(type(pvstr) is PVstring) for pvstr in pvstrs])):
             # Make sure that all strings have the same number of modules.
@@ -88,7 +90,7 @@ class PVsystem(object):
         Vmax = np.max([pvstr.Vstring for pvstr in self.pvstrs])
         Vsys = Vmax * self.pvconst.pts
         if self.pvconst.parallel:
-            Isys = parallel_calcSystem(self)
+            Isys = parallel_calcSystem(self, Vsys)
         else:
             for pvstr in self.pvstrs:
                 (pvstr.Istring,
@@ -114,12 +116,13 @@ class PVsystem(object):
         Vmp = np.interp(0., Pv, Vhalf)  # estimate Vmp
         Imp = Pmp / Vmp  # calculate Imp
         # xp must be increasing
-        xp = np.flipud(self.Isys.reshape(self.pvconst.npts))
-        # keep xp & fp correspondence
-        fp = np.flipud(self.Vsys.reshape(self.pvconst.npts))
+        Isys = self.Isys.reshape(self.pvconst.npts)  # IGNORE:E1103
+        Vsys = self.Vsys.reshape(self.pvconst.npts)  # IGNORE:E1103
+        xp = np.flipud(Isys)
+        fp = np.flipud(Vsys)
         Voc = np.interp(0., xp, fp)  # calucalte Voc
-        xp = self.Vsys.reshape(self.pvconst.npts)
-        fp = self.Isys.reshape(self.pvconst.npts)
+        xp = Vsys
+        fp = Isys
         ImpCheck = np.interp(Vmp, xp, fp)  # check Imp
         print "Imp Error = {:10.4g}%".format((Imp - ImpCheck) / Imp * 100)
         Isc = np.interp(0, xp, fp)

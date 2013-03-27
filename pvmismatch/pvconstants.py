@@ -93,7 +93,9 @@ class PVconstants(object):
         # decrease point spacing as voltage approaches Voc by using logspace
         pts = (11. - np.logspace(np.log10(11.), 0., self.npts)) / 10.
         pts[0] = 0.  # first point must be exactly zero
-        self.pts = pts.reshape(self.npts, 1)  # IGNORE:E1103
+        self.pts = pts.reshape(self.npts, 1)
+        negpts = (11. - np.logspace(1., 0., self.npts)) / 10.
+        self.negpts = negpts.reshape(self.npts, 1)
         # multiprocessing
         self.parallel = parallel  # use multiprocessing if True
         self.procs = procs  # number of processes in pool

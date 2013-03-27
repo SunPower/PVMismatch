@@ -55,10 +55,7 @@ class PVstring(object):
         Ee = [pvmod.Ee for pvmod in self.pvmods]
         Imax = np.max(Ee) * self.pvconst.Isc0
         Istring = Imax * self.pvconst.pts
-        # pylint: disable = E1103
-        Ineg = np.linspace(-Imax, -1 / float(self.pvconst.npts),
-                           self.pvconst.npts).reshape(self.pvconst.npts, 1)
-        # pylint: disable = E1103
+        Ineg = -Imax * self.pvconst.negpts
         Istring = np.concatenate((Ineg, Istring), axis=0)
         Vstring = np.zeros((2 * self.pvconst.npts, 1))
         for mod in self.pvmods:
