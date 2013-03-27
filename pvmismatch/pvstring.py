@@ -33,11 +33,11 @@ class PVstring(object):
             self.pvmods[1:] = [deepcopy(pvmod) for pvmod in self.pvmods[1:]]
         elif ((type(pvmods) is list) and
               all([(type(pvmod) is PVmodule) for pvmod in pvmods])):
-            self.numberMods = len(pvmods)
-            self.pvmods = pvmods
             pvmodsNumCells = [pvmod.numberCells == pvmods[0].numberCells
                               for pvmod in pvmods]
             if all(pvmodsNumCells):
+                self.numberMods = len(pvmods)
+                self.pvmods = pvmods
                 self.numberCells = pvmods[0].numberCells
             else:
                 errString = 'All modules must have the same number of cells.'
@@ -52,11 +52,11 @@ class PVstring(object):
         Returns (Istring, Vstring, Pstring) : tuple of numpy.ndarray of float
         """
         # scale with max irradiance, so that Ee > 1 is not a problem
-        maxEe = np.max([np.max(pvmod.Ee) for pvmod in self.pvmods])
-        Istring = np.max(maxEe) * self.pvconst.Isc0 * self.pvconst.pts
+        Ee = [pvmod.Ee for pvmod in self.pvmods]
+        Imax = np.max(Ee) * self.pvconst.Isc0
+        Istring = Imax * self.pvconst.pts
         # pylint: disable = E1103
-        Ineg = np.linspace(-np.max(Istring),
-                           -1 / float(self.pvconst.npts),
+        Ineg = np.linspace(-Imax, -1 / float(self.pvconst.npts),
                            self.pvconst.npts).reshape(self.pvconst.npts, 1)
         # pylint: disable = E1103
         Istring = np.concatenate((Ineg, Istring), axis=0)

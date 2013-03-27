@@ -11,6 +11,7 @@ from pvmismatch.pvconstants import PVconstants, npinterpx, NUMBERCELLS, \
     NUMBERMODS, NUMBERSTRS
 from pvmismatch.pvstring import PVstring
 import numpy as np
+from parallel_calcs import parallel_calcSystem
 
 
 class PVsystem(object):
@@ -31,16 +32,37 @@ class PVsystem(object):
         if pvstrs is None:
             if pvmods is None:
                 # use deep copy instead of making each object in a for-loop
-                pvstrs = PVstring(self.pvconst, self.numberMods,
+                pvstr = PVstring(self.pvconst, self.numberMods,
                                   numberCells=self.numberCells, Ee=Ee)
+                self.pvstrs = [pvstr] * self.numberStrs
+                pvstrs = [deepcopy(pvstr) for pvstr in self.pvstrs[1:]]
+                self.pvstrs[1:] = pvstrs
             else:
-                pvstrs = PVstring(self.pvconst, pvmods=pvmods)
-            self.pvstrs = [pvstrs] * self.numberStrs
-            self.pvstrs[1:] = [deepcopy(pvstr) for pvstr in self.pvstrs[1:]]
+                if len(pvmods) % self.numberStrs == 0:
+                    self.pvstrs = []
+                    self.numberMods = len(pvmods) / self.numberStrs
+                    self.numberCells = pvmods[0].numberCells
+                    for Nstr in range(self.numberStrs):
+                        mod1 = Nstr * self.numberMods
+                        mod2 = mod1 + self.numberMods - 1
+                        if pvmods[mod1].numberCells != pvmods[0].numberCells:
+                            errString = ('All modules must have the same' +
+                                         ' number of cells.')
+                            raise Exception(errString)
+                        self.pvstrs.append(PVstring(self.pvconst,
+                                                    pvmods=pvmods[mod1:mod2]))
         elif ((type(pvstrs) is list) and
               all([(type(pvstr) is PVstring) for pvstr in pvstrs])):
-            self.numberStrs = len(pvstrs)
-            self.pvstrs = pvstrs
+            # Make sure that all strings have the same number of modules.
+            pvstrsNumMods = [pvstr.numberMods == pvstrs[0].numberMods
+                             for pvstr in pvstrs]
+            if all(pvstrsNumMods):
+                self.numberStrs = len(pvstrs)
+                self.pvstrs = pvstrs
+                self.numberMods = pvstrs[0].numberMods
+            else:
+                errString = 'All strings must have the same number of modules.'
+                raise Exception(errString)
             # Make sure that all modules have the same number of cells.
             pvstrsNumCells = [pvstr.numberCells == pvstrs[0].numberCells
                               for pvstr in pvstrs]
@@ -49,16 +71,9 @@ class PVsystem(object):
             else:
                 errString = 'All modules must have the same number of cells.'
                 raise Exception(errString)
-            # Make sure that all strings have the same number of modules.
-            pvstrsNumMods = [pvstr.numberMods == pvstrs[0].numberMods
-                             for pvstr in pvstrs]
-            if all(pvstrsNumMods):
-                self.numberMods = pvstrs[0].numberMods
-            else:
-                errString = 'All strings must have the same number of modules.'
-                raise Exception(errString)
         else:
             raise Exception("Invalid strings list!")
+        # organize modules into strings
         self.pvmods = [pvstr.pvmods for pvstr in self.pvstrs]
         (self.Isys, self.Vsys, self.Psys) = self.calcSystem()
         (self.Imp, self.Vmp, self.Pmp,
@@ -70,13 +85,18 @@ class PVsystem(object):
         Returns (Isys, Vsys, Psys) : tuple of numpy.ndarray of float
         """
         Isys = np.zeros((self.pvconst.npts, 1))
-        Vstring = np.array([pvstr.Vstring for pvstr in self.pvstrs])
-        Vsys = np.max(Vstring) * self.pvconst.pts
-        for pvstr in self.pvstrs:
-            (pvstr.Istring, pvstr.Vstring, pvstr.Pstring) = pvstr.calcString()
-            xp = np.flipud(pvstr.Vstring.squeeze())
-            fp = np.flipud(pvstr.Istring.squeeze())
-            Isys += npinterpx(Vsys, xp, fp)
+        Vmax = np.max([pvstr.Vstring for pvstr in self.pvstrs])
+        Vsys = Vmax * self.pvconst.pts
+        if self.pvconst.parallel:
+            Isys = parallel_calcSystem(self)
+        else:
+            for pvstr in self.pvstrs:
+                (pvstr.Istring,
+                 pvstr.Vstring,
+                 pvstr.Pstring) = pvstr.calcString()
+                xp = np.flipud(pvstr.Vstring.squeeze())
+                fp = np.flipud(pvstr.Istring.squeeze())
+                Isys += npinterpx(Vsys, xp, fp)
         Psys = Isys * Vsys
         return (Isys, Vsys, Psys)
 

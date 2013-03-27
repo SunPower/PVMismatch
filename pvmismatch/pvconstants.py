@@ -31,6 +31,12 @@ NUMBERCELLS = MODSIZES[1]  # default number of cells
 NUMBERMODS = 10  # default number of modules
 NUMBERSTRS = 10  # default number of strings
 
+# Multiprocessing
+PARALLEL = True  # <boolean> use multiprocessing
+PROCS = None  # number of processes in pool, defaults to cpu_count()
+MAXTASKSPERCHILD = 10  # number of tasks before worker exits to free memory
+CHUNKSIZE = 10  # size of each task sent to process and assign to workers
+
 
 def npinterpx(x, xp, fp):
     """
@@ -57,7 +63,8 @@ class PVconstants(object):
     def __init__(self, Rs=RS, Rsh=RSH, Isat1_T0=ISAT1_T0, Isat2=ISAT2, Aph=APH,
                  Isc0_T0=ISC0_T0, Tcell=TCELL, cellArea=CELLAREA,
                  Vbypass=VBYPASS, aRBD=ARBD, VRBD=VRBD_, nRBD=NRBD, npts=NPTS,
-                 Eg=EG, alpha_Isc=ALPHA_ISC):
+                 Eg=EG, alpha_Isc=ALPHA_ISC, parallel=PARALLEL, procs=PROCS,
+                 maxtasksperchild=MAXTASKSPERCHILD, chunksize=CHUNKSIZE):
         # hard constants
         self.k = scipy.constants.k  # [kJ/mole/K] Boltzmann constant
         self.q = scipy.constants.e  # [Coloumbs] elementary charge
@@ -87,6 +94,11 @@ class PVconstants(object):
         pts = (11. - np.logspace(np.log10(11.), 0., self.npts)) / 10.
         pts[0] = 0.  # first point must be exactly zero
         self.pts = pts.reshape(self.npts, 1)  # IGNORE:E1103
+        # multiprocessing
+        self.parallel = parallel  # use multiprocessing if True
+        self.procs = procs  # number of processes in pool
+        self.maxtasksperchild = maxtasksperchild  # number of tasks per worker
+        self.chunksize = chunksize  # size of tasks
 
     def update(self, *args, **kwargs):
         """
