@@ -24,8 +24,9 @@ def parallel_calcSystem(pvsys, Vsys):
     # expand Istring for every module in each string
     # convert Istring and pvmods into nice iterables
     Imodstr = Istring.repeat(pvsys.numberMods, axis=0).tolist()
-    pvmods = np.array(pvsys.pvmods).flat
-    Vstring = pool.map(interpCells, zip(pvmods, Imodstr))
+    pvmods = np.array(pvsys.pvmods).reshape(pvsys.numberStrs *
+                                            pvsys.numberMods, ).tolist()
+    Vstring = pool.map(interpMods, zip(pvmods, Imodstr))
     Vstring = np.array(Vstring).reshape(pvsys.numberStrs, pvsys.numberMods)
     Vstring = np.sum(Vstring)
     Pstring = Istring * Vstring
@@ -43,10 +44,10 @@ def calcIstring(pvstr):
     return Istring
 
 
-def interpCells((pvmod, Istring)):
+def interpMods((pvmod, Istring)):
     xp = pvmod.Imod.squeeze()
     fp = pvmod.Vmod.squeeze()
-    return npinterpx(Istring, xp, fp)
+    return npinterpx(np.array(Istring), xp, fp)
 
 
 def updateInterp_pvstr((pvstr, P, I, V, Vsys)):

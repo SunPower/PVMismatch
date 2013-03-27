@@ -38,7 +38,7 @@ class PVsystem(object):
                 pvstrs = [deepcopy(pvstr) for pvstr in self.pvstrs[1:]]
                 self.pvstrs[1:] = pvstrs
             else:
-                pvmods = np.array(pvmods).flat  # flatten
+                pvmods = np.array(pvmods).reshape(-1, )  # flatten
                 if len(pvmods) % self.numberStrs == 0:
                     self.pvstrs = []
                     self.numberMods = len(pvmods) / self.numberStrs

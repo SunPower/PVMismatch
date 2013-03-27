@@ -134,7 +134,7 @@ class PVconstants(object):
         if calc_Isc0:
             self.Isc0 = self.calc_Isc0()  # [A] Isc0
 
-    # TODO: try to override self.__setattr__
+    # TODO: try to override self.__setattr__  # IGNORE:W0511
     def calc_Isat1(self):
         """
         Diode one saturation current at Tcell.
