@@ -26,12 +26,16 @@ def parallel_calcSystem(pvsys, Vsys):
     Imodstr = Istring.repeat(pvsys.numberMods, axis=0).tolist()
     pvmods = np.array(pvsys.pvmods).reshape(pvsys.numberStrs *
                                             pvsys.numberMods, ).tolist()
-    Vstring = pool.map(interpMods, zip(pvmods, Imodstr))
-    Vstring = np.array(Vstring).reshape(pvsys.numberStrs, pvsys.numberMods)
-    Vstring = np.sum(Vstring)
+    Vstring = pool.map(interpMods, zip(pvmods, Imodstr),
+                       pvsys.pvconst.chunksize)
+    Vstring = np.array(Vstring).reshape(pvsys.numberStrs, pvsys.numberMods,
+                                        2 * pvsys.pvconst.npts)
+    Vstring = np.sum(Vstring, axis=1)
     Pstring = Istring * Vstring
+    Vsys = Vsys.T.repeat(pvsys.numberStrs, axis=0).squeeze()
     update = zip(pvsys.pvstrs, Pstring, Istring, Vstring, Vsys)
-    return pool.map(updateInterp_pvstr, update, pvsys.pvconst.chunksize)
+    Isys = pool.map(updateInterp_pvstr, update, pvsys.pvconst.chunksize)
+    return np.sum(np.array(Isys), axis=0).reshape(pvsys.pvconst.npts, 1)
 
 
 def calcIstring(pvstr):
