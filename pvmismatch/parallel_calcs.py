@@ -25,7 +25,7 @@ def parallel_calcSystem(pvsys, Vsys):
     # convert Istring and pvmods into nice iterables
     Imodstr = Istring.repeat(pvsys.numberMods, axis=0).tolist()
     pvmods = np.array(pvsys.pvmods).reshape(pvsys.numberStrs *
-                                            pvsys.numberMods, ).tolist()
+                                            pvsys.numberMods, )
     Vstring = pool.map(interpMods, zip(pvmods, Imodstr),
                        pvsys.pvconst.chunksize)
     Vstring = np.array(Vstring).reshape(pvsys.numberStrs, pvsys.numberMods,
@@ -35,6 +35,8 @@ def parallel_calcSystem(pvsys, Vsys):
     Vsys = Vsys.T.repeat(pvsys.numberStrs, axis=0).squeeze()
     update = zip(pvsys.pvstrs, Pstring, Istring, Vstring, Vsys)
     Isys = pool.map(updateInterp_pvstr, update, pvsys.pvconst.chunksize)
+    pool.close()
+    pool.join()
     return np.sum(np.array(Isys), axis=0).reshape(pvsys.pvconst.npts, 1)
 
 
