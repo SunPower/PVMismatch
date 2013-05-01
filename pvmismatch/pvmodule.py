@@ -93,8 +93,12 @@ class PVmodule(object):
         Idiode2 = (self.pvconst.Isat2 * (np.exp(self.pvconst.q * Vdiode / 2 /
                    self.pvconst.k / self.pvconst.Tcell) - 1))
         Ishunt = Vdiode / self.pvconst.Rsh
-        fRBD = self.pvconst.aRBD
-        fRBD = fRBD * (1 - Vdiode / self.pvconst.VRBD) ** (-self.pvconst.nRBD)
+        fRBD = (1 - Vdiode / self.pvconst.VRBD)
+        zero_fRBD_idx = (fRBD == 0)
+        if np.any(zero_fRBD_idx):
+            # use epsilon = 2.2204460492503131e-16 to avoid "divide by zero"
+            fRBD[zero_fRBD_idx] = np.finfo(np.float64).eps
+        fRBD = self.pvconst.aRBD * fRBD ** (-self.pvconst.nRBD)
         Icell = Igen - Idiode1 - Idiode2 - Ishunt * (1 + fRBD)
         Vcell = Vdiode - Icell * self.pvconst.Rs
         Pcell = Icell * Vcell
@@ -105,12 +109,14 @@ class PVmodule(object):
         Calculate module I-V curves.
         Returns (Imod, Vmod, Pmod) : tuple of numpy.ndarray of float
         """
-        # scale with max irradiance, so that Ee > 1 is not a problem
-        Imod = np.max(self.Ee) * self.pvconst.Isc0 * self.pvconst.pts
-        # pylint: disable = E1103
-        Ineg = -np.max(Imod) * self.pvconst.negpts
-        # pylint: enable = E1103
-        Imod = np.concatenate((Ineg, Imod), axis=0)
+        # create range for interpolation, it must include reverse bias
+        # and some negative current to interpolate all cells 
+        # find Icell at Vrbd for all cells in module
+        IatVrbd = [np.interp(self.pvconst.VRBD, Vcell, Icell) for
+                (Vcell, Icell) in zip(self.Vcell.T, self.Icell.T)]
+        Imax = np.max(IatVrbd) * self.pvconst.pts  # max current
+        Ineg = np.min(self.Icell) * self.pvconst.negpts  # min current
+        Imod = np.concatenate((Ineg, Imax), axis=0)  # interpolation range
         Vsubstr = np.zeros((2 * self.pvconst.npts, 3))
         start = np.cumsum(self.subStrCells) - self.subStrCells
         stop = np.cumsum(self.subStrCells)

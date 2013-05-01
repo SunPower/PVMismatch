@@ -51,12 +51,13 @@ class PVstring(object):
         Calculate string I-V curves.
         Returns (Istring, Vstring, Pstring) : tuple of numpy.ndarray of float
         """
-        # scale with max irradiance, so that Ee > 1 is not a problem
-        Ee = [pvmod.Ee for pvmod in self.pvmods]
-        Imax = np.max(Ee) * self.pvconst.Isc0
-        Istring = Imax * self.pvconst.pts
-        Ineg = -Imax * self.pvconst.negpts
-        Istring = np.concatenate((Ineg, Istring), axis=0)
+        IatVrbd = [[np.interp(self.pvconst.VRBD, Vcell, Icell) for
+                    (Vcell, Icell) in zip(pvmod.Vcell.T, pvmod.Icell.T)] for
+                   pvmod in self.pvmods]
+        Imax = np.max(IatVrbd) * self.pvconst.pts  # max current
+        Ineg = (np.min([pvmod.Icell for pvmod in self.pvmods]) *
+                self.pvconst.negpts)  # min current
+        Istring = np.concatenate((Ineg, Imax), axis=0)
         Vstring = np.zeros((2 * self.pvconst.npts, 1))
         for mod in self.pvmods:
             xp = mod.Imod.squeeze()  # IGNORE:E1103
