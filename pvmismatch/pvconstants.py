@@ -94,7 +94,7 @@ class PVconstants(object):
         pts = (11. - np.logspace(np.log10(11.), 0., self.npts)) / 10.
         pts[0] = 0.  # first point must be exactly zero
         self.pts = pts.reshape(self.npts, 1)
-        negpts = (11. - np.logspace(1., 0., self.npts)) / 10.
+        negpts = np.flipud((11. - np.logspace(1., 0., self.npts)) / 10.)
         self.negpts = negpts.reshape(self.npts, 1)
         # multiprocessing
         self.parallel = parallel  # use multiprocessing if True
