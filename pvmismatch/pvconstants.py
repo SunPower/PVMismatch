@@ -94,8 +94,14 @@ class PVconstants(object):
         pts = (11. - np.logspace(np.log10(11.), 0., self.npts)) / 10.
         pts[0] = 0.  # first point must be exactly zero
         self.pts = pts.reshape(self.npts, 1)
-        negpts = np.flipud((11. - np.logspace(1., 0., self.npts)) / 10.)
-        self.negpts = negpts.reshape(self.npts, 1)
+        negpts = (11. - np.logspace(np.log10(11. - 1./float(self.npts)),
+                                    0., self.npts)) / 10.
+        negpts = negpts.reshape(self.npts, 1)
+        self.Imod_negpts = 1 + 1./float(self.npts)/10. - negpts
+        self.negpts = np.flipud(negpts)  # reverse the order
+        # shift and concatenate pvconst.negpts and pvconst.pts
+        # so that tight spacing is around MPP and RBD
+        self.Imod_pts = 1 - np.flipud(self.pts)
         # multiprocessing
         self.parallel = parallel  # use multiprocessing if True
         self.procs = procs  # number of processes in pool
