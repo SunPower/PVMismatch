@@ -94,10 +94,10 @@ class PVmodule(object):
                    self.pvconst.k / self.pvconst.Tcell) - 1))
         Ishunt = Vdiode / self.pvconst.Rsh
         fRBD = (1 - Vdiode / self.pvconst.VRBD)
-        zero_fRBD_idx = (fRBD == 0)
-        if np.any(zero_fRBD_idx):
+        fRBD_zeros = (fRBD == 0)
+        if np.any(fRBD_zeros):
             # use epsilon = 2.2204460492503131e-16 to avoid "divide by zero"
-            fRBD[zero_fRBD_idx] = np.finfo(np.float64).eps
+            fRBD[fRBD_zeros] = np.finfo(np.float64).eps
         fRBD = self.pvconst.aRBD * fRBD ** (-self.pvconst.nRBD)
         Icell = Igen - Idiode1 - Idiode2 - Ishunt * (1 + fRBD)
         Vcell = Vdiode - Icell * self.pvconst.Rs
@@ -114,8 +114,11 @@ class PVmodule(object):
         # find Icell at Vrbd for all cells in module
         IatVrbd = [np.interp(self.pvconst.VRBD, Vcell, Icell) for
                 (Vcell, Icell) in zip(self.Vcell.T, self.Icell.T)]
-        Imax = np.max(IatVrbd) * self.pvconst.pts  # max current
-        Ineg = np.min(self.Icell) * self.pvconst.negpts  # min current
+        Isc = np.mean(self.Ee) * self.pvconst.Isc0
+        Imax = (np.max(IatVrbd) - Isc) * self.pvconst.Imod_pts + Isc # max current
+        Imin = np.min(self.Icell)
+        Imin = Imin if Imin < 0 else 0
+        Ineg = (Imin - Isc) * self.pvconst.Imod_negpts + Isc  # min current
         Imod = np.concatenate((Ineg, Imax), axis=0)  # interpolation range
         Vsubstr = np.zeros((2 * self.pvconst.npts, 3))
         start = np.cumsum(self.subStrCells) - self.subStrCells

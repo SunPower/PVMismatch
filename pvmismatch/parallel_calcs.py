@@ -41,12 +41,19 @@ def parallel_calcSystem(pvsys, Vsys):
 
 
 def calcIstring(pvstr):
-    # scale with max irradiance, so that Ee > 1 is not a problem
-    Ee = [pvmod.Ee for pvmod in pvstr.pvmods]
-    Imax = np.max(Ee) * pvstr.pvconst.Isc0
-    Istring = Imax * pvstr.pvconst.pts
-    Ineg = -Imax * pvstr.pvconst.negpts
-    Istring = np.concatenate((Ineg, Istring), axis=0)
+    # Imod is already set to the range from Vrbd to the minimum current
+    zipped = zip(*[(pvmod.Imod[0], pvmod.Imod[-1], np.mean(pvmod.Ee)) for
+                   pvmod in pvstr.pvmods])
+    Isc = np.mean(zipped[2])
+    Imax = (np.max(zipped[1]) - Isc) * pvstr.pvconst.Imod_pts + Isc  # max current
+    Ineg = (np.min(zipped[0]) - Isc) * pvstr.pvconst.Imod_negpts + Isc  # min current
+    # OLD CODE: scale with max irradiance, so that Ee > 1 is not a problem
+    #Ee = [pvmod.Ee for pvmod in pvstr.pvmods]
+    #Imax = np.max(Ee) * pvstr.pvconst.Isc0
+    #Ineg = -Imax/10. * np.linspace(1., 1./float(self.pvconst.npts),
+    #                               self.pvconst.npts)
+    #Imax = Imax * Imod_pts
+    Istring = np.concatenate((Ineg, Imax), axis=0)
     return Istring
 
 
