@@ -19,29 +19,59 @@ def parallel_calcSystem(pvsys, Vsys):
     # pool overhead is high, create once and reuse processes
     pool = Pool(processes=pvsys.pvconst.procs,
                 maxtasksperchild=pvsys.pvconst.maxtasksperchild)
-    # can't use lambda, must be pickle-able, lamnda can't be pickled
-    Istring = pool.map(calcIstring, pvsys.pvstrs, pvsys.pvconst.chunksize)
-    Istring = np.array(Istring).squeeze()
-    # expand Istring for every module in each string
-    # convert Istring and pvmods into nice iterables
-    Imodstr = Istring.repeat(pvsys.numberMods, axis=0).tolist()
-    pvmods = np.array(pvsys.pvmods).reshape(pvsys.numberStrs *
-                                            pvsys.numberMods, )
-    Vstring = pool.map(interpMods, zip(pvmods, Imodstr),
-                       pvsys.pvconst.chunksize)
-    Vstring = np.array(Vstring).reshape(pvsys.numberStrs, pvsys.numberMods,
-                                        2 * pvsys.pvconst.npts)
-    Vstring = np.sum(Vstring, axis=1)
+    # only use pool if more than one string
+    if pvsys.numberStrs == 1:
+        # transpose from (<npts>, 1) to (1, <npts>) to match pool.map
+        Istring = calcIstring(pvsys.pvstrs[0]).T
+    else:
+        Istring = pool.map(calcIstring, pvsys.pvstrs, pvsys.pvconst.chunksize)
+        # squeeze take array-like, removes singleton dimensions
+        # converts (<numberStrs>, <npts>, 1) to (<numberStrs>, <npts>)
+        Istring = np.squeeze(Istring)
+    # only use pool if more than one module
+    if pvsys.numberStrs * pvsys.numberMods == 1:
+        Vstring = interpMods((pvsys.pvmods[0][0], Istring))
+    else:
+        # expand Istring for every module in each string
+        # repeat is smart - it repeats the each row <repeats> times,
+        # so each string is kept together [[str1-mod1],...,[str2-mod1],...]
+        Imodstr = Istring.repeat(pvsys.numberMods, axis=0)
+        # reshape modules to align with Istring, take array-like, reshape
+        # and it concatenates from outside in - EG: [[row 1]+[row2]+...]
+        # the opposite of MATLAB; use 1-D to return iterable of pvmod's,
+        # instead of 2-D which returns iterable of array(pvmod)'s
+        pvmods = np.reshape(pvsys.pvmods, (pvsys.numberStrs *
+                                           pvsys.numberMods, ))
+        Vstring = pool.map(interpMods, zip(pvmods, Imodstr),
+                           pvsys.pvconst.chunksize)
+        # reshape Vstring to reorganize mods in each string
+        # IE (<numberStrs>, <numberMods>, <npts>)
+        Vstring = np.reshape(Vstring, (pvsys.numberStrs, pvsys.numberMods,
+                                       2 * pvsys.pvconst.npts))
+        # add up voltages from each mod to get Vstring
+        # NOTE: str: 0th dim, mod: 1st dim, npts: 2nd dim 
+        Vstring = np.sum(Vstring, axis=1)
     Pstring = Istring * Vstring
-    Vsys = Vsys.T.repeat(pvsys.numberStrs, axis=0).squeeze()
-    update = zip(pvsys.pvstrs, Pstring, Istring, Vstring, Vsys)
-    Isys = pool.map(updateInterp_pvstr, update, pvsys.pvconst.chunksize)
+    #Vsys = Vsys.T.repeat(pvsys.numberStrs, axis=0).squeeze()
+    partial_updateInterp_pvstr = partial(updateInterp_pvstr, Vsys=Vsys)
+    update = zip(pvsys.pvstrs, Pstring, Istring, Vstring)
+    Isys = pool.map(partial_updateInterp_pvstr, update,
+                    pvsys.pvconst.chunksize)
     pool.close()
     pool.join()
-    return np.sum(np.array(Isys), axis=0).reshape(pvsys.pvconst.npts, 1)
+    # np.sum takes array-like, Isys is already in (<numberStrs>, <npts>, 1)
+    # summation along 0th dim reduces shape to (<npts>, 1)
+    return np.sum(Isys, axis=0)
 
 
 def calcIstring(pvstr):
+    """
+    Calculate Istring appropriate to interpolate Vmod.
+    :param pvstr: A PVstring class instance.
+    :type pvstr: :class:`PVstring`
+    :returns: Istring
+    :rtype: {float, ndarray (PVconstants.npts 1)}
+    """
     # Imod is already set to the range from Vrbd to the minimum current
     zipped = zip(*[(pvmod.Imod[0], pvmod.Imod[-1], np.mean(pvmod.Ee)) for
                    pvmod in pvstr.pvmods])
@@ -53,15 +83,29 @@ def calcIstring(pvstr):
 
 
 def interpMods((pvmod, Istring)):
-    xp = pvmod.Imod.squeeze()
-    fp = pvmod.Vmod.squeeze()
-    return npinterpx(np.array(Istring), xp, fp)
+    """
+    Interpolate Vmod from Istring.
+    :param pvmod: A PVmodule class instance.
+    :type pvstr: :class:`PVmodule`
+    :returns: Vmod at Istring
+    :rtype: {float, ndarray (1 PVconstants.npts)}
+    """
+    xp = pvmod.Imod.flatten()
+    fp = pvmod.Vmod.flatten()
+    return npinterpx(Istring, xp, fp)
 
 
-def updateInterp_pvstr((pvstr, P, I, V, Vsys)):
+def updateInterp_pvstr((pvstr, P, I, V), Vsys):
+    """
+    Interpolate Istring from Vsys & update P, I, V in pvstr.
+    :param pvstr: A PVstring class instance.
+    :type pvstr: :class:`PVstring`
+    :returns: Istring at Vsys
+    :rtype: {float, ndarray (PVconstants.npts, 1)}
+    """
     pvstr.Pstring, pvstr.Istring, pvstr.Vstring = P, I, V
-    xp = np.flipud(pvstr.Vstring.squeeze())
-    fp = np.flipud(pvstr.Istring.squeeze())
+    xp = np.flipud(pvstr.Vstring.flatten())
+    fp = np.flipud(pvstr.Istring.flatten())
     return npinterpx(Vsys, xp, fp)
 
 
