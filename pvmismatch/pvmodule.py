@@ -9,6 +9,7 @@ import numpy as np
 from pvmismatch.pvconstants import PVconstants, npinterpx, MODSIZES, \
     SUBSTRSIZES, NUMBERCELLS
 from matplotlib import pyplot as plt
+from parallel_calcs import parallel_calcMod
 
 
 class PVmodule(object):
@@ -110,28 +111,31 @@ class PVmodule(object):
         Returns (Imod, Vmod, Pmod) : tuple of numpy.ndarray of float
         """
         # create range for interpolation, it must include reverse bias
-        # and some negative current to interpolate all cells 
-        # find Icell at Vrbd for all cells in module
-        IatVrbd = [np.interp(self.pvconst.VRBD, Vcell, Icell) for
-                (Vcell, Icell) in zip(self.Vcell.T, self.Icell.T)]
-        Isc = np.mean(self.Ee) * self.pvconst.Isc0
-        Imax = (np.max(IatVrbd) - Isc) * self.pvconst.Imod_pts + Isc # max current
-        Imin = np.min(self.Icell)
-        Imin = Imin if Imin < 0 else 0
-        Ineg = (Imin - Isc) * self.pvconst.Imod_negpts + Isc  # min current
-        Imod = np.concatenate((Ineg, Imax), axis=0)  # interpolation range
-        Vsubstr = np.zeros((2 * self.pvconst.npts, 3))
-        start = np.cumsum(self.subStrCells) - self.subStrCells
-        stop = np.cumsum(self.subStrCells)
-        for substr in range(self.numSubStr):
-            for cell in range(start[substr], stop[substr]):
-                xp = np.flipud(self.Icell[:, cell])
-                fp = np.flipud(self.Vcell[:, cell])
-                Vsubstr[:, [substr]] += npinterpx(Imod, xp, fp)
-        bypassed = Vsubstr < self.pvconst.Vbypass
-        Vsubstr[bypassed] = self.pvconst.Vbypass
-        Vmod = np.sum(Vsubstr, 1).reshape(2 * self.pvconst.npts, 1)
-        Pmod = Imod * Vmod
+        # and some negative current to interpolate all cells
+        if self.pvconst.parallel:
+            Imod, Vmod, Pmod, Vsubstr = parallel_calcMod(self)
+        else:
+            # find Icell at Vrbd for all cells in module
+            IatVrbd = [np.interp(self.pvconst.VRBD, Vcell, Icell) for
+                    (Vcell, Icell) in zip(self.Vcell.T, self.Icell.T)]
+            Isc = np.mean(self.Ee) * self.pvconst.Isc0
+            Imax = (np.max(IatVrbd) - Isc) * self.pvconst.Imod_pts + Isc # max current
+            Imin = np.min(self.Icell)
+            Imin = Imin if Imin < 0 else 0
+            Ineg = (Imin - Isc) * self.pvconst.Imod_negpts + Isc  # min current
+            Imod = np.concatenate((Ineg, Imax), axis=0)  # interpolation range
+            Vsubstr = np.zeros((2 * self.pvconst.npts, 3))
+            start = np.cumsum(self.subStrCells) - self.subStrCells
+            stop = np.cumsum(self.subStrCells)
+            for substr in range(self.numSubStr):
+                for cell in range(start[substr], stop[substr]):
+                    xp = np.flipud(self.Icell[:, cell])
+                    fp = np.flipud(self.Vcell[:, cell])
+                    Vsubstr[:, substr] += npinterpx(Imod.flatten(), xp, fp)
+            bypassed = Vsubstr < self.pvconst.Vbypass
+            Vsubstr[bypassed] = self.pvconst.Vbypass
+            Vmod = np.sum(Vsubstr, 1).reshape(2 * self.pvconst.npts, 1)
+            Pmod = Imod * Vmod
         return (Imod, Vmod, Pmod, Vsubstr)
 
     def plotCell(self):

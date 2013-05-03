@@ -52,9 +52,8 @@ def parallel_calcSystem(pvsys, Vsys):
         # NOTE: str: 0th dim, mod: 1st dim, npts: 2nd dim 
         Vstring = np.sum(Vstring, axis=1)
     Pstring = Istring * Vstring
-    for pvstr in pvsys.pvstrs:
-        pvstr.Pstring, pvstr.Istring, pvstr.Vstring = (Pstring.T, Istring.T,
-                                                       Vstring.T)
+    for (pvstr, P, I, V) in zip(pvsys.pvstrs, Pstring, Istring, Vstring):
+        pvstr.Pstring, pvstr.Istring, pvstr.Vstring = P, I, V
     # only use pool if more than one string
     if pvsys.numberStrs == 1:
         Isys = interpString((Vstring, Istring), Vsys)
@@ -138,10 +137,11 @@ def parallel_calcMod(pvmod):
     for substr in range(pvmod.numSubStr):
         cells = range(start[substr], stop[substr])
         Vsubstrcells = pool.map(partial_interpVsubstrcells,
-                                zip(pvmod.Icell[:, cells],
-                                    pvmod.Icell[:, cells]),
+                                zip(pvmod.Icell[:, cells].T,
+                                    pvmod.Vcell[:, cells].T),
                                 pvmod.pvconst.chunksize)
-        Vsubstr[: substr] = np.sum(Vsubstrcells, axis=1)
+        Vsubstrcells = np.sum(Vsubstrcells, axis=0)
+        Vsubstr[:, substr] = Vsubstrcells.flatten()
     bypassed = Vsubstr < pvmod.pvconst.Vbypass
     Vsubstr[bypassed] = pvmod.pvconst.Vbypass
     Vmod = np.sum(Vsubstr, 1).reshape(2 * pvmod.pvconst.npts, 1)
