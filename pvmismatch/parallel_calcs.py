@@ -5,6 +5,7 @@ Created on Tue Mar 26 13:49:04 2013
 @author: mmikofski
 """
 
+from functools import partial
 from multiprocessing import current_process, Pool
 from pvmismatch.pvconstants import npinterpx
 from pvmismatch.pvexceptions import PVparallel_calcError
@@ -47,12 +48,6 @@ def calcIstring(pvstr):
     Isc = np.mean(zipped[2])
     Imax = (np.max(zipped[1]) - Isc) * pvstr.pvconst.Imod_pts + Isc  # max current
     Ineg = (np.min(zipped[0]) - Isc) * pvstr.pvconst.Imod_negpts + Isc  # min current
-    # OLD CODE: scale with max irradiance, so that Ee > 1 is not a problem
-    #Ee = [pvmod.Ee for pvmod in pvstr.pvmods]
-    #Imax = np.max(Ee) * pvstr.pvconst.Isc0
-    #Ineg = -Imax/10. * np.linspace(1., 1./float(self.pvconst.npts),
-    #                               self.pvconst.npts)
-    #Imax = Imax * Imod_pts
     Istring = np.concatenate((Ineg, Imax), axis=0)
     return Istring
 
@@ -70,16 +65,52 @@ def updateInterp_pvstr((pvstr, P, I, V, Vsys)):
     return npinterpx(Vsys, xp, fp)
 
 
+def parallel_calcMod(pvmod):
+    # protect main thread
+    if current_process().name != 'MainProcess':
+        raise PVparallel_calcError(__name__)
+    # pool overhead is high, create once and reuse processes
+    pool = Pool(processes=pvmod.pvconst.procs,
+                maxtasksperchild=pvmod.pvconst.maxtasksperchild)
+    partial_calcIatVrbd = partial(calcIatVrbd, VRBD=pvmod.pvconst.VRBD)
+    IatVrbd = pool.map(partial_calcIatVrbd, zip(pvmod.Vcell.T, pvmod.Icell.T),
+                       pvmod.pvconst.chunksize)
+    Isc = np.mean(pvmod.Ee) * pvmod.pvconst.Isc0
+    Imax = (np.max(IatVrbd) - Isc) * pvmod.pvconst.Imod_pts + Isc # max current
+    Imin = np.min(pvmod.Icell)
+    Imin = Imin if Imin < 0 else 0
+    Ineg = (Imin - Isc) * pvmod.pvconst.Imod_negpts + Isc  # min current
+    Imod = np.concatenate((Ineg, Imax), axis=0)  # interpolation range
+    Vsubstr = np.zeros((2 * pvmod.pvconst.npts, 3))
+    start = np.cumsum(pvmod.subStrCells) - pvmod.subStrCells
+    stop = np.cumsum(pvmod.subStrCells)
+    partial_interpVsubstrcells = partial(interpVsubstrcells,Imod=Imod)
+    for substr in range(pvmod.numSubStr):
+        cells = range(start[substr], stop[substr])
+        Vsubstrcells = pool.map(partial_interpVsubstrcells,
+                                zip(pvmod.Icell[:, cells],
+                                    pvmod.Icell[:, cells]),
+                                pvmod.pvconst.chunksize)
+        Vsubstr[: substr] = np.sum(Vsubstrcells, axis=1)
+    bypassed = Vsubstr < pvmod.pvconst.Vbypass
+    Vsubstr[bypassed] = pvmod.pvconst.Vbypass
+    Vmod = np.sum(Vsubstr, 1).reshape(2 * pvmod.pvconst.npts, 1)
+    Pmod = Imod * Vmod
+    pool.close()
+    pool.join()
+    return (Imod, Vmod, Pmod, Vsubstr)
+
+
+def calcIatVrbd((Vcell, Icell), VRBD):
+    return np.interp(VRBD, Vcell, Icell)
+
+
+def interpVsubstrcells((Icell, Vcell), Imod):
+    xp = np.flipud(Icell)
+    fp = np.flipud(Vcell)
+    return npinterpx(Imod, xp, fp)
+
+
 def parallel_calcString():
-    pass
-#     pool.map()
-
-
-def parallel_calcMod():
-    pass
-#     pool.map()
-
-
-def parallel_setSuns():
     pass
 #     pool.map()
