@@ -14,7 +14,7 @@ from matplotlib import pyplot as plt
 if __name__ == '__main__':
     pvconst = PVconstants(npts=101, parallel=True, chunksize=4,
                           maxtasksperchild=100)  # increase number of points to calculate
-    pvsys = PVsystem(pvconst=pvconst, numberStrs=1, numberMods=8)
+    pvsys = PVsystem(pvconst=pvconst, numberStrs=2, numberMods=8)
     print "Imp: %10.4f [A], Vmp: %10.4f [V], Pmp: %10.4f [W]" % (pvsys.Imp,
                                                                  pvsys.Vmp,
                                                                  pvsys.Pmp)

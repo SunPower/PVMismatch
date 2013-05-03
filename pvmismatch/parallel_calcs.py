@@ -52,16 +52,23 @@ def parallel_calcSystem(pvsys, Vsys):
         # NOTE: str: 0th dim, mod: 1st dim, npts: 2nd dim 
         Vstring = np.sum(Vstring, axis=1)
     Pstring = Istring * Vstring
-    #Vsys = Vsys.T.repeat(pvsys.numberStrs, axis=0).squeeze()
-    partial_updateInterp_pvstr = partial(updateInterp_pvstr, Vsys=Vsys)
-    update = zip(pvsys.pvstrs, Pstring, Istring, Vstring)
-    Isys = pool.map(partial_updateInterp_pvstr, update,
-                    pvsys.pvconst.chunksize)
+    for pvstr in pvsys.pvstrs:
+        pvstr.Pstring, pvstr.Istring, pvstr.Vstring = (Pstring.T, Istring.T,
+                                                       Vstring.T)
+    # only use pool if more than one string
+    if pvsys.numberStrs == 1:
+        Isys = interpString((Vstring, Istring), Vsys)
+    else:
+        partial_interpString = partial(interpString, Vsys=Vsys)
+        update = zip(Vstring, Istring)
+        Isys = pool.map(partial_interpString, update,
+                        pvsys.pvconst.chunksize)
+        Isys = np.sum(Isys, axis=0)
     pool.close()
     pool.join()
     # np.sum takes array-like, Isys is already in (<numberStrs>, <npts>, 1)
     # summation along 0th dim reduces shape to (<npts>, 1)
-    return np.sum(Isys, axis=0)
+    return Isys
 
 
 def calcIstring(pvstr):
@@ -95,17 +102,16 @@ def interpMods((pvmod, Istring)):
     return npinterpx(Istring, xp, fp)
 
 
-def updateInterp_pvstr((pvstr, P, I, V), Vsys):
+def interpString((Vstring, Istring), Vsys):
     """
-    Interpolate Istring from Vsys & update P, I, V in pvstr.
+    Interpolate Istring from Vsys.
     :param pvstr: A PVstring class instance.
     :type pvstr: :class:`PVstring`
     :returns: Istring at Vsys
     :rtype: {float, ndarray (PVconstants.npts, 1)}
     """
-    pvstr.Pstring, pvstr.Istring, pvstr.Vstring = P, I, V
-    xp = np.flipud(pvstr.Vstring.flatten())
-    fp = np.flipud(pvstr.Istring.flatten())
+    xp = np.flipud(Vstring.flatten())
+    fp = np.flipud(Istring.flatten())
     return npinterpx(Vsys, xp, fp)
 
 
