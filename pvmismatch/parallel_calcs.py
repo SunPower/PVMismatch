@@ -81,7 +81,7 @@ def calcIstring(pvstr):
     # Imod is already set to the range from Vrbd to the minimum current
     zipped = zip(*[(pvmod.Imod[0], pvmod.Imod[-1], np.mean(pvmod.Ee)) for
                    pvmod in pvstr.pvmods])
-    Isc = np.mean(zipped[2])
+    Isc = np.mean(zipped[2]) * self.pvconst.Isc0
     Imax = (np.max(zipped[1]) - Isc) * pvstr.pvconst.Imod_pts + Isc  # max current
     Ineg = (np.min(zipped[0]) - Isc) * pvstr.pvconst.Imod_negpts + Isc  # min current
     Istring = np.concatenate((Ineg, Imax), axis=0)
