@@ -19,6 +19,14 @@ def parallel_calcSystem(pvsys, Vsys):
     # pool overhead is high, create once and reuse processes
     pool = Pool(processes=pvsys.pvconst.procs,
                 maxtasksperchild=pvsys.pvconst.maxtasksperchild)
+    # reduce data pickled and sent to process to reduce overhead
+    pvmods = np.reshape(pvsys.pvmods, (pvsys.numberStrs * pvsys.numberMods, ))
+    zipped = [(pvmod.Imod, pvmod.Vmod, pvmod.Ee) for pvmod in pvmods]
+    partial_calcIsys = partial(calcIsys, Vsys=Vsys)
+    # TODO: figure out intelligent chunksize
+    if not chunksize:
+        chunksize = len(zipped)/multiprocessing.cpu_count
+    Isys = pool.map(calcIsys, zipped, pvsys.pvconst,chunksize)
     # only use pool if more than one string
     if pvsys.numberStrs == 1:
         # transpose from (<npts>, 1) to (1, <npts>) to match pool.map
@@ -36,7 +44,7 @@ def parallel_calcSystem(pvsys, Vsys):
         # repeat is smart - it repeats the each row <repeats> times,
         # so each string is kept together [[str1-mod1],...,[str2-mod1],...]
         Imodstr = Istring.repeat(pvsys.numberMods, axis=0)
-        # reshape modules to align with Istring, take array-like, reshape
+        # reshape modules to align with Istring, reshape takes array-like
         # and it concatenates from outside in - EG: [[row 1]+[row2]+...]
         # the opposite of MATLAB; use 1-D to return iterable of pvmod's,
         # instead of 2-D which returns iterable of array(pvmod)'s
@@ -68,6 +76,20 @@ def parallel_calcSystem(pvsys, Vsys):
     # np.sum takes array-like, Isys is already in (<numberStrs>, <npts>, 1)
     # summation along 0th dim reduces shape to (<npts>, 1)
     return Isys
+
+
+def calcIsys(zipped,Vsys):
+    """
+    Embarrassingly parallel calculation.
+    """
+    unzipped = zip(*zipped)
+    Imod = unzipped[0]
+    Vmod = unzipped[1]
+    Ee = unzipped[2]
+    Isc = np.mean(zipped[2])
+    Imax = (np.max(zipped[1]) - Isc) * pvstr.pvconst.Imod_pts + Isc  # max current
+    Ineg = (np.min(zipped[0]) - Isc) * pvstr.pvconst.Imod_negpts + Isc  # min current
+    Istring = np.concatenate((Ineg, Imax), axis=0)
 
 
 def calcIstring(pvstr):
