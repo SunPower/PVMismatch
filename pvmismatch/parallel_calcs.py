@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+
 """
 Created on Tue Mar 26 13:49:04 2013
 
@@ -13,26 +14,37 @@ import numpy as np
 
 
 def parallel_calcSystem(pvsys, Vsys):
-    # protect main thread
+    """
+    Embarrassingly parallel calculations.
+    """    # protect main thread
     if current_process().name != 'MainProcess':
         raise PVparallel_calcError(__name__)
     # pool overhead is high, create once and reuse processes
     pool = Pool(processes=pvsys.pvconst.procs,
                 maxtasksperchild=pvsys.pvconst.maxtasksperchild)
+    # TODO: figure out intelligent chunksize
+    chunksize = pvsys.pvconst.chunksize
+    if not chunksize:
+        chunksize = len(zipped) / multiprocessing.cpu_count
     # reduce data pickled and sent to process to reduce overhead
     pvmods = np.reshape(pvsys.pvmods, (pvsys.numberStrs * pvsys.numberMods, ))
     zipped = [(pvmod.Imod, pvmod.Vmod, pvmod.Ee) for pvmod in pvmods]
-    partial_calcIsys = partial(calcIsys, Vsys=Vsys)
-    # TODO: figure out intelligent chunksize
-    if not chunksize:
-        chunksize = len(zipped)/multiprocessing.cpu_count
-    Isys = pool.map(calcIsys, zipped, pvsys.pvconst,chunksize)
+    # Imods, Vmods, Ees = zip(*zipped)
+    # Imod_extrema = [(Imod[0], Imod[-1]) for Imod in Imods]
+    # Ee_mean = [np.mean(Ee) for Ee in Ees]
+    Istring_args = np.reshape([(Imod[0], Imod[-1],
+                                np.mean(Ee)) for (Imod, _, Ee) in zipped],
+                              (pvsys.numberStrs, pvsys.numberMods, 3))
+    Istring_args = np.append(np.max(Istring_args[:, :, :2], 1),
+                        [np.mean(Istring_args[:, :, -1], 1) *
+                         pvsys.pvconst.Isc0], 0).T
     # only use pool if more than one string
     if pvsys.numberStrs == 1:
         # transpose from (<npts>, 1) to (1, <npts>) to match pool.map
-        Istring = calcIstring(pvsys.pvstrs[0]).T
+        Istring = calcIstring(calcIstring_args, Imod_pts, Imod_negpts).T
     else:
-        Istring = pool.map(calcIstring, pvsys.pvstrs, pvsys.pvconst.chunksize)
+        partial_calcIstring = partial(calcIstring, pts)
+        Istring = pool.map(calcIstring, calcIstring_args, chunksize)
         # squeeze take array-like, removes singleton dimensions
         # converts (<numberStrs>, <npts>, 1) to (<numberStrs>, <npts>)
         Istring = np.squeeze(Istring)
@@ -51,7 +63,7 @@ def parallel_calcSystem(pvsys, Vsys):
         pvmods = np.reshape(pvsys.pvmods, (pvsys.numberStrs *
                                            pvsys.numberMods, ))
         Vstring = pool.map(interpMods, zip(pvmods, Imodstr),
-                           pvsys.pvconst.chunksize)
+                           chunksize)
         # reshape Vstring to reorganize mods in each string
         # IE (<numberStrs>, <numberMods>, <npts>)
         Vstring = np.reshape(Vstring, (pvsys.numberStrs, pvsys.numberMods,
@@ -69,7 +81,7 @@ def parallel_calcSystem(pvsys, Vsys):
         partial_interpString = partial(interpString, Vsys=Vsys)
         update = zip(Vstring, Istring)
         Isys = pool.map(partial_interpString, update,
-                        pvsys.pvconst.chunksize)
+                        chunksize)
         Isys = np.sum(Isys, axis=0)
     pool.close()
     pool.join()
@@ -78,34 +90,18 @@ def parallel_calcSystem(pvsys, Vsys):
     return Isys
 
 
-def calcIsys(zipped,Vsys):
-    """
-    Embarrassingly parallel calculation.
-    """
-    unzipped = zip(*zipped)
-    Imod = unzipped[0]
-    Vmod = unzipped[1]
-    Ee = unzipped[2]
-    Isc = np.mean(zipped[2])
-    Imax = (np.max(zipped[1]) - Isc) * pvstr.pvconst.Imod_pts + Isc  # max current
-    Ineg = (np.min(zipped[0]) - Isc) * pvstr.pvconst.Imod_negpts + Isc  # min current
-    Istring = np.concatenate((Ineg, Imax), axis=0)
-
-
-def calcIstring(pvstr):
+def calcIstring(args, Imod_pts, Imod_negpts):
     """
     Calculate Istring appropriate to interpolate Vmod.
-    :param pvstr: A PVstring class instance.
-    :type pvstr: :class:`PVstring`
+    :param args: A tuple of Imod[0], Imod[-1] and np.mean(Ee) from each module.
     :returns: Istring
     :rtype: {float, ndarray (PVconstants.npts 1)}
     """
     # Imod is already set to the range from Vrbd to the minimum current
-    zipped = zip(*[(pvmod.Imod[0], pvmod.Imod[-1], np.mean(pvmod.Ee)) for
-                   pvmod in pvstr.pvmods])
-    Isc = np.mean(zipped[2]) * self.pvconst.Isc0
-    Imax = (np.max(zipped[1]) - Isc) * pvstr.pvconst.Imod_pts + Isc  # max current
-    Ineg = (np.min(zipped[0]) - Isc) * pvstr.pvconst.Imod_negpts + Isc  # min current
+    unzipped = zip(*args)
+    Isc = np.mean(unzipped[2]) * self.pvconst.Isc0
+    Imax = (np.max(unzipped[1]) - Isc) * pvstr.pvconst.Imod_pts + Isc  # max current
+    Ineg = (np.min(unzipped[0]) - Isc) * pvstr.pvconst.Imod_negpts + Isc  # min current
     Istring = np.concatenate((Ineg, Imax), axis=0)
     return Istring
 
