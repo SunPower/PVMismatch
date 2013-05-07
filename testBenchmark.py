@@ -12,11 +12,13 @@ from pvmismatch.pvsystem import PVsystem
 import numpy as np
 import os
 import sys
+import ipdb
 
 NPTS = 1001
 BENCHMARK = False
 
 if __name__ == "__main__":
+    ipdb.set_trace()
     if len(sys.argv)>= 2:
         if sys.argv[1] in ['False', 'None', '']:
             print "No data will be saved."
