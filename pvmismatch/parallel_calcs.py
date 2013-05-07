@@ -7,7 +7,7 @@ Created on Tue Mar 26 13:49:04 2013
 """
 
 from functools import partial
-from multiprocessing import current_process, Pool
+from multiprocessing import current_process, Pool, cpu_count
 from pvmismatch.pvconstants import npinterpx
 from pvmismatch.pvexceptions import PVparallel_calcError
 import numpy as np
@@ -25,7 +25,7 @@ def parallel_calcSystem(pvsys, Vsys):
     # TODO: figure out intelligent chunksize
     chunksize = pvsys.pvconst.chunksize
     if not chunksize:
-        chunksize = len(zipped) / multiprocessing.cpu_count
+        chunksize = (len(pvsys.numberStrs * pvsys.numberMods) / cpu_count)
     # reduce data pickled and sent to process to reduce overhead
     pvmods = np.reshape(pvsys.pvmods, (pvsys.numberStrs * pvsys.numberMods, ))
     zipped = [(pvmod.Imod, pvmod.Vmod, pvmod.Ee) for pvmod in pvmods]
@@ -41,10 +41,13 @@ def parallel_calcSystem(pvsys, Vsys):
     # only use pool if more than one string
     if pvsys.numberStrs == 1:
         # transpose from (<npts>, 1) to (1, <npts>) to match pool.map
-        Istring = calcIstring(calcIstring_args, Imod_pts, Imod_negpts).T
+        Istring = calcIstring(Istring_args, pvsys.pvconst.Imod_pts,
+                              pvsys.pvconst.Imod_negpts).T
     else:
-        partial_calcIstring = partial(calcIstring, pts)
-        Istring = pool.map(calcIstring, calcIstring_args, chunksize)
+        partial_calcIstring = partial(calcIstring,
+                                      Imod_pts=pvsys.pvconst.Imod_pts,
+                                      Imod_negpts=pvsys.pvconst.Imod_negpts)
+        Istring = pool.map(partial_calcIstring, Istring_args, chunksize)
         # squeeze take array-like, removes singleton dimensions
         # converts (<numberStrs>, <npts>, 1) to (<numberStrs>, <npts>)
         Istring = np.squeeze(Istring)
