@@ -25,14 +25,14 @@ def parallel_calcSystem(pvsys, Vsys):
     # if procs is None, set it cpu_count - 2, so 2 cores are free
     procs = pvsys.pvconst.procs
     if not procs:
-        procs = cpu_count() - 2
+        procs = max(cpu_count() - 2, 1)
     pool = Pool(processes=procs,
                 maxtasksperchild=pvsys.pvconst.maxtasksperchild)
     # if chunksize is None, then divide tasks evenly between all procs
     tot_mods = pvsys.numberStrs * pvsys.numberMods
     chunksize = pvsys.pvconst.chunksize
     if not chunksize:
-        chunksize = tot_mods / procs
+        chunksize = max(tot_mods / procs, 1)
     # limit data pickled and sent to process to reduce overhead
     # flatten pvmods to 1-D
     pvmods = np.reshape(pvsys.pvmods, (tot_mods, ))
@@ -149,13 +149,13 @@ def parallel_calcMod(pvmod):
     
     procs = pvmod.pvconst.procs
     if not procs:
-        procs = cpu_count() - 2
+        procs = max(cpu_count() - 2, 1)
     pool = Pool(processes=procs,
                 maxtasksperchild=pvmod.pvconst.maxtasksperchild)
     # if chunksize is None, then divide tasks evenly between all procs
     chunksize = pvmod.pvconst.chunksize
     if not chunksize:
-        chunksize = pvmod.numberCells / procs
+        chunksize = max(pvmod.numberCells / procs, 1)
     # create partial funcion with VRBD constant
     partial_calcIatVrbd = partial(calcIatVrbd, VRBD=pvmod.pvconst.VRBD)
     # calculate I at VRBD for every cell
