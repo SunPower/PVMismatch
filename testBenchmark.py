@@ -32,7 +32,7 @@ if __name__ == "__main__":
             print "This branch does **not** support multi-threading."
             raise(e)
         pvconst = PVconstants(npts=NPTS, #pylint: disable=C0103
-                            parallel=(sys.argv[2] in ['True', 'Yes', '1']))
+                              parallel=(sys.argv[2] in ['True', 'Yes', '1']))
         print "Multithreading: %s." % sys.argv[2]
     else:
         pvconst = PVconstants(npts=NPTS, parallel=False)
@@ -53,8 +53,8 @@ if __name__ == "__main__":
                                                   pvsys.eff * 100.0)
     IcellData[:, 0] = pvsys.pvstrs[0].pvmods[0].Icell[:, 0]
     VcellData[:, 0] = pvsys.pvstrs[0].pvmods[0].Vcell[:, 0].squeeze()
-    ImodData[:, 0] = pvsys.pvstrs[0].pvmods[0].Imod.squeeze()
-    VmodData[:, 0] = pvsys.pvstrs[0].pvmods[0].Vmod.squeeze()
+    ImodData[:, 0] = pvsys.pvstrs[0].pvmods[0].Imod.squeeze() #pylint: disable=E1103,C0301
+    VmodData[:, 0] = pvsys.pvstrs[0].pvmods[0].Vmod.squeeze() #pylint: disable=E1103,C0301
     IstringData[:, 0] = pvsys.pvstrs[0].Istring.squeeze()
     VstringData[:, 0] = pvsys.pvstrs[0].Vstring.squeeze()
     IsysData[:, 0] = pvsys.Isys.squeeze()
@@ -78,10 +78,14 @@ if __name__ == "__main__":
         print "FF:  %10.4f [%%], eff: %10.4f [%%]" % (pvsys.FF * 100.0,
                                                       pvsys.eff * 100.0)
         print "======================" + str(testNum) + "======================"
-        IcellData[:, testNum + 1] = pvsys.pvstrs[testNum].pvmods[testNum].Icell[:, testNum]
-        VcellData[:, testNum + 1] = pvsys.pvstrs[testNum].pvmods[testNum].Vcell[:, testNum].squeeze()
-        ImodData[:, testNum + 1] = pvsys.pvstrs[testNum].pvmods[testNum].Imod.squeeze()
-        VmodData[:, testNum + 1] = pvsys.pvstrs[testNum].pvmods[testNum].Vmod.squeeze()
+        IcellData[:, testNum + 1] = \
+            pvsys.pvstrs[testNum].pvmods[testNum].Icell[:, testNum]
+        VcellData[:, testNum + 1] = \
+            pvsys.pvstrs[testNum].pvmods[testNum].Vcell[:, testNum].squeeze()
+        ImodData[:, testNum + 1] = \
+            pvsys.pvstrs[testNum].pvmods[testNum].Imod.squeeze()
+        VmodData[:, testNum + 1] = \
+            pvsys.pvstrs[testNum].pvmods[testNum].Vmod.squeeze()
         IstringData[:, testNum + 1] = pvsys.pvstrs[testNum].Istring.squeeze()
         VstringData[:, testNum + 1] = pvsys.pvstrs[testNum].Vstring.squeeze()
         IsysData[:, testNum + 1] = pvsys.Isys.squeeze()
@@ -90,12 +94,20 @@ if __name__ == "__main__":
     print "Test complete."
     if BENCHMARK:
         os.mkdir(BENCHMARK)
-        np.savetxt(os.path.join(BENCHMARK,'ICellData.csv'),IcellData, delimiter=',')
-        np.savetxt(os.path.join(BENCHMARK,'VCellData.csv'),VcellData, delimiter=',')
-        np.savetxt(os.path.join(BENCHMARK,'ImodData.csv'),ImodData, delimiter=',')
-        np.savetxt(os.path.join(BENCHMARK,'VmodData.csv'),VmodData, delimiter=',')
-        np.savetxt(os.path.join(BENCHMARK,'IstringData.csv'),IstringData, delimiter=',')
-        np.savetxt(os.path.join(BENCHMARK,'VstringData.csv'),VstringData, delimiter=',')
-        np.savetxt(os.path.join(BENCHMARK,'IsysData.csv'),IsysData, delimiter=',')
-        np.savetxt(os.path.join(BENCHMARK,'VsysData.csv'),VsysData, delimiter=',')
+        np.savetxt(os.path.join(BENCHMARK, 'ICellData.csv'), IcellData,
+                   delimiter=',')
+        np.savetxt(os.path.join(BENCHMARK, 'VCellData.csv'), VcellData,
+                   delimiter=',')
+        np.savetxt(os.path.join(BENCHMARK, 'ImodData.csv'), ImodData,
+                   delimiter=',')
+        np.savetxt(os.path.join(BENCHMARK, 'VmodData.csv'), VmodData,
+                   delimiter=',')
+        np.savetxt(os.path.join(BENCHMARK, 'IstringData.csv'), IstringData,
+                   delimiter=',')
+        np.savetxt(os.path.join(BENCHMARK, 'VstringData.csv'), VstringData,
+                   delimiter=',')
+        np.savetxt(os.path.join(BENCHMARK, 'IsysData.csv'), IsysData,
+                   delimiter=',')
+        np.savetxt(os.path.join(BENCHMARK, 'VsysData.csv'), VsysData,
+                   delimiter=',')
         print "Data saved."

@@ -36,7 +36,7 @@ NUMBERSTRS = 10  # default number of strings
 PARALLEL = False  # <boolean> use multiprocessing
 PROCS = None  # number of processes in pool, defaults to cpu_count()
 MAXTASKSPERCHILD = 10  # number of tasks before worker exits to free memory
-CHUNKSIZE = 10  # size of each task sent to process and assign to workers
+CHUNKSIZE = None  # size of each task sent to process and assign to workers
 
 
 def npinterpx(x, xp, fp):

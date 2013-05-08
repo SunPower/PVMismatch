@@ -16,7 +16,9 @@ import numpy as np
 def parallel_calcSystem(pvsys, Vsys):
     """
     Embarrassingly parallel calculations.
-    """    # protect main thread
+    """
+
+    # protect main thread
     if current_process().name != 'MainProcess':
         raise PVparallel_calcError(__name__)
     # pool overhead is high, create once and reuse processes
@@ -27,12 +29,13 @@ def parallel_calcSystem(pvsys, Vsys):
     pool = Pool(processes=procs,
                 maxtasksperchild=pvsys.pvconst.maxtasksperchild)
     # if chunksize is None, then divide tasks evenly between all procs
+    tot_mods = pvsys.numberStrs * pvsys.numberMods
     chunksize = pvsys.pvconst.chunksize
     if not chunksize:
-        chunksize = (pvsys.numberStrs * pvsys.numberMods) / procs
+        chunksize = tot_mods / procs
     # limit data pickled and sent to process to reduce overhead
     # flatten pvmods to 1-D
-    pvmods = np.reshape(pvsys.pvmods, (pvsys.numberStrs * pvsys.numberMods, ))
+    pvmods = np.reshape(pvsys.pvmods, (tot_mods, ))
     # extract Imod[0], Imod[-1] and Ee, reorganize back into strings of modules
     Istring_args = np.array([(pvmod.Imod[0], pvmod.Imod[-1],
                               np.mean(pvmod.Ee, dtype=float)) for pvmod in
@@ -55,33 +58,33 @@ def parallel_calcSystem(pvsys, Vsys):
         partial_calcIstring = partial(calcIstring,
                                       Imod_pts=pvsys.pvconst.Imod_pts,
                                       Imod_negpts=pvsys.pvconst.Imod_negpts)
-        Istring = pool.map(partial_calcIstring, Istring_args, chunksize)
+        Istring = np.squeeze(pool.map(partial_calcIstring, Istring_args,
+                                      chunksize))
         # squeeze take array-like, removes singleton dimensions
         # converts (<numberStrs>, <npts>, 1) to (<numberStrs>, <npts>)
-        Istring = np.squeeze(Istring)
     # only use pool if more than one module
-    if pvsys.numberStrs * pvsys.numberMods == 1:
-        Vstring = interpMods((pvsys.pvmods[0][0], Istring))
+    if tot_mods == 1:
+        Vstring = interpMods(np.squeeze([pvsys.pvmods[0][0].Imod.T,
+                                         pvsys.pvmods[0][0].Vmod.T, Istring]))
     else:
         # expand Istring for every module in each string
         # repeat is smart - it repeats the each row <repeats> times,
         # so each string is kept together [[str1-mod1],...,[str2-mod1],...]
-        Imodstr = Istring.repeat(pvsys.numberMods, axis=0)
-        # reshape modules to align with Istring, reshape takes array-like
-        # and it concatenates from outside in - EG: [[row 1]+[row2]+...]
-        # the opposite of MATLAB; use 1-D to return iterable of pvmod's,
-        # instead of 2-D which returns iterable of array(pvmod)'s
-        pvmods = np.reshape(pvsys.pvmods, (pvsys.numberStrs *
-                                           pvsys.numberMods, ))
-        Vstring = pool.map(interpMods, zip(pvmods, Imodstr),
-                           chunksize)
+        Imodstr = Istring.repeat(pvsys.numberMods,
+                                 axis=0).reshape(tot_mods, 1,
+                                                 2 * pvsys.pvconst.npts)
+        IVmods = np.array([(pvmod.Imod, pvmod.Vmod) for pvmod in pvmods],
+                          dtype=float).reshape(tot_mods, 2,
+                                               2 * pvsys.pvconst.npts)
+        Vstring_args = np.append(IVmods, Imodstr,1)
+        Vstring = np.sum(np.reshape(pool.map(interpMods, Vstring_args,
+                                             chunksize),
+                                    (pvsys.numberStrs, pvsys.numberMods,
+                                     2 * pvsys.pvconst.npts)), axis=1)
         # reshape Vstring to reorganize mods in each string
         # IE (<numberStrs>, <numberMods>, <npts>)
-        Vstring = np.reshape(Vstring, (pvsys.numberStrs, pvsys.numberMods,
-                                       2 * pvsys.pvconst.npts))
         # add up voltages from each mod to get Vstring
         # NOTE: str: 0th dim, mod: 1st dim, npts: 2nd dim 
-        Vstring = np.sum(Vstring, axis=1)
     Pstring = Istring * Vstring
     for (pvstr, P, I, V) in zip(pvsys.pvstrs, Pstring, Istring, Vstring):
         pvstr.Pstring, pvstr.Istring, pvstr.Vstring = P, I, V
@@ -90,8 +93,7 @@ def parallel_calcSystem(pvsys, Vsys):
         Isys = interpString((Vstring, Istring), Vsys)
     else:
         partial_interpString = partial(interpString, Vsys=Vsys)
-        update = zip(Vstring, Istring)
-        Isys = pool.map(partial_interpString, update,
+        Isys = pool.map(partial_interpString, zip(Vstring, Istring),
                         chunksize)
         Isys = np.sum(Isys, axis=0)
     pool.close()
@@ -114,7 +116,7 @@ def calcIstring(Istring_args, Imod_pts, Imod_negpts):
     return np.concatenate((Ineg, Imax), axis=0)
 
 
-def interpMods((pvmod, Istring)):
+def interpMods(Vstring_arg):
     """
     Interpolate Vmod from Istring.
     :param pvmod: A PVmodule class instance.
@@ -122,9 +124,9 @@ def interpMods((pvmod, Istring)):
     :returns: Vmod at Istring
     :rtype: {float, ndarray (1 PVconstants.npts)}
     """
-    xp = pvmod.Imod.flatten()
-    fp = pvmod.Vmod.flatten()
-    return npinterpx(Istring, xp, fp)
+    xp = Vstring_arg[0].flatten()
+    fp = Vstring_arg[1].flatten()
+    return npinterpx(Vstring_arg[2], xp, fp)
 
 
 def interpString((Vstring, Istring), Vsys):
@@ -144,12 +146,21 @@ def parallel_calcMod(pvmod):
     # protect main thread
     if current_process().name != 'MainProcess':
         raise PVparallel_calcError(__name__)
-    # pool overhead is high, create once and reuse processes
-    pool = Pool(processes=pvmod.pvconst.procs,
+    
+    procs = pvmod.pvconst.procs
+    if not procs:
+        procs = cpu_count() - 2
+    pool = Pool(processes=procs,
                 maxtasksperchild=pvmod.pvconst.maxtasksperchild)
+    # if chunksize is None, then divide tasks evenly between all procs
+    chunksize = pvmod.pvconst.chunksize
+    if not chunksize:
+        chunksize = pvmod.numberCells / procs
+    # create partial funcion with VRBD constant
     partial_calcIatVrbd = partial(calcIatVrbd, VRBD=pvmod.pvconst.VRBD)
+    # calculate I at VRBD for every cell
     IatVrbd = pool.map(partial_calcIatVrbd, zip(pvmod.Vcell.T, pvmod.Icell.T),
-                       pvmod.pvconst.chunksize)
+                       chunksize)
     Isc = np.mean(pvmod.Ee) * pvmod.pvconst.Isc0
     Imax = (np.max(IatVrbd) - Isc) * pvmod.pvconst.Imod_pts + Isc # max current
     Imin = np.min(pvmod.Icell)
@@ -159,15 +170,16 @@ def parallel_calcMod(pvmod):
     Vsubstr = np.zeros((2 * pvmod.pvconst.npts, 3))
     start = np.cumsum(pvmod.subStrCells) - pvmod.subStrCells
     stop = np.cumsum(pvmod.subStrCells)
+    # partial with Imod constant
     partial_interpVsubstrcells = partial(interpVsubstrcells,Imod=Imod)
+    # interpolate cell voltages
+    Vsubstrcells = np.squeeze(pool.map(partial_interpVsubstrcells,
+                              zip(pvmod.Icell.T, pvmod.Vcell.T), chunksize))
+    # loop over substrings
     for substr in range(pvmod.numSubStr):
         cells = range(start[substr], stop[substr])
-        Vsubstrcells = pool.map(partial_interpVsubstrcells,
-                                zip(pvmod.Icell[:, cells].T,
-                                    pvmod.Vcell[:, cells].T),
-                                pvmod.pvconst.chunksize)
-        Vsubstrcells = np.sum(Vsubstrcells, axis=0)
-        Vsubstr[:, substr] = Vsubstrcells.flatten()
+        # calculate substring voltages
+        Vsubstr[:, substr] = np.sum(Vsubstrcells[cells][:], axis=0).flatten()
     bypassed = Vsubstr < pvmod.pvconst.Vbypass
     Vsubstr[bypassed] = pvmod.pvconst.Vbypass
     Vmod = np.sum(Vsubstr, 1).reshape(2 * pvmod.pvconst.npts, 1)
