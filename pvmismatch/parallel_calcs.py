@@ -20,28 +20,36 @@ def parallel_calcSystem(pvsys, Vsys):
     if current_process().name != 'MainProcess':
         raise PVparallel_calcError(__name__)
     # pool overhead is high, create once and reuse processes
-    pool = Pool(processes=pvsys.pvconst.procs,
+    # if procs is None, set it cpu_count - 2, so 2 cores are free
+    procs = pvsys.pvconst.procs
+    if not procs:
+        procs = cpu_count() - 2
+    pool = Pool(processes=procs,
                 maxtasksperchild=pvsys.pvconst.maxtasksperchild)
-    # TODO: figure out intelligent chunksize
+    # if chunksize is None, then divide tasks evenly between all procs
     chunksize = pvsys.pvconst.chunksize
     if not chunksize:
-        chunksize = (len(pvsys.numberStrs * pvsys.numberMods) / cpu_count)
-    # reduce data pickled and sent to process to reduce overhead
+        chunksize = (pvsys.numberStrs * pvsys.numberMods) / procs
+    # limit data pickled and sent to process to reduce overhead
+    # flatten pvmods to 1-D
     pvmods = np.reshape(pvsys.pvmods, (pvsys.numberStrs * pvsys.numberMods, ))
-    zipped = [(pvmod.Imod, pvmod.Vmod, pvmod.Ee) for pvmod in pvmods]
-    # Imods, Vmods, Ees = zip(*zipped)
-    # Imod_extrema = [(Imod[0], Imod[-1]) for Imod in Imods]
-    # Ee_mean = [np.mean(Ee) for Ee in Ees]
-    Istring_args = np.reshape([(Imod[0], Imod[-1],
-                                np.mean(Ee)) for (Imod, _, Ee) in zipped],
-                              (pvsys.numberStrs, pvsys.numberMods, 3))
-    Istring_args = np.append(np.max(Istring_args[:, :, :2], 1),
-                        [np.mean(Istring_args[:, :, -1], 1) *
-                         pvsys.pvconst.Isc0], 0).T
+    # extract Imod[0], Imod[-1] and Ee, reorganize back into strings of modules
+    Istring_args = np.array([(pvmod.Imod[0], pvmod.Imod[-1],
+                              np.mean(pvmod.Ee, dtype=float)) for pvmod in
+                             pvmods], dtype=float).reshape(pvsys.numberStrs,
+                                                           pvsys.numberMods, 3)
+    # index-0: strings, index-1: modules, index-2: (Imax, Imin, Eavg)
+    Istring_args = np.concatenate((np.min(Istring_args[:, :, 0], 1,
+                                          keepdims=True),
+                                   np.max(Istring_args[:, :, 1], 1,
+                                          keepdims=True),
+                                   (np.mean(Istring_args[:, :, 2], 1,
+                                            dtype=float, keepdims=True) *
+                                    pvsys.pvconst.Isc0)), 1)
     # only use pool if more than one string
     if pvsys.numberStrs == 1:
         # transpose from (<npts>, 1) to (1, <npts>) to match pool.map
-        Istring = calcIstring(Istring_args, pvsys.pvconst.Imod_pts,
+        Istring = calcIstring(Istring_args.squeeze(), pvsys.pvconst.Imod_pts,
                               pvsys.pvconst.Imod_negpts).T
     else:
         partial_calcIstring = partial(calcIstring,
@@ -93,20 +101,17 @@ def parallel_calcSystem(pvsys, Vsys):
     return Isys
 
 
-def calcIstring(args, Imod_pts, Imod_negpts):
+def calcIstring(Istring_args, Imod_pts, Imod_negpts):
     """
     Calculate Istring appropriate to interpolate Vmod.
-    :param args: A tuple of Imod[0], Imod[-1] and np.mean(Ee) from each module.
+    :param args: min Imod, max Imod and mean Ee for all modules in each string.
     :returns: Istring
     :rtype: {float, ndarray (PVconstants.npts 1)}
     """
-    # Imod is already set to the range from Vrbd to the minimum current
-    unzipped = zip(*args)
-    Isc = np.mean(unzipped[2]) * self.pvconst.Isc0
-    Imax = (np.max(unzipped[1]) - Isc) * pvstr.pvconst.Imod_pts + Isc  # max current
-    Ineg = (np.min(unzipped[0]) - Isc) * pvstr.pvconst.Imod_negpts + Isc  # min current
-    Istring = np.concatenate((Ineg, Imax), axis=0)
-    return Istring
+    Isc = Istring_args[2]
+    Imax = (Istring_args[1] - Isc) * Imod_pts + Isc
+    Ineg = (Istring_args[0] - Isc) * Imod_negpts + Isc
+    return np.concatenate((Ineg, Imax), axis=0)
 
 
 def interpMods((pvmod, Istring)):
