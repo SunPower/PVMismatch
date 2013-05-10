@@ -9,7 +9,6 @@ import numpy as np
 from pvmismatch.pvconstants import PVconstants, npinterpx, MODSIZES, \
     SUBSTRSIZES, NUMBERCELLS
 from matplotlib import pyplot as plt
-from parallel_calcs import parallel_calcMod
 
 
 class PVmodule(object):
@@ -116,7 +115,8 @@ class PVmodule(object):
         IatVrbd = [np.interp(self.pvconst.VRBD, Vcell, Icell) for
                 (Vcell, Icell) in zip(self.Vcell.T, self.Icell.T)]
         Isc = np.mean(self.Ee) * self.pvconst.Isc0
-        Imax = (np.max(IatVrbd) - Isc) * self.pvconst.Imod_pts + Isc # max current
+        # max current
+        Imax = (np.max(IatVrbd) - Isc) * self.pvconst.Imod_pts + Isc
         Imin = np.min(self.Icell)
         Imin = Imin if Imin < 0 else 0
         Ineg = (Imin - Isc) * self.pvconst.Imod_negpts + Isc  # min current
