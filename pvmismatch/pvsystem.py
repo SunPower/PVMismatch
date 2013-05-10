@@ -136,6 +136,41 @@ class PVsystem(object):
         eff = Pmp / Psun
         return (Imp, Vmp, Pmp, Isc, Voc, FF, eff)
 
+    def setSuns(self, Ee, cells=None, modules=None, strings=None):
+        """
+        Set irradiance on cells in modules of string in system.
+        :param Ee: irradiance [W/m^2]
+        :type Ee: {float, 3-D iterable} dim-0: strings, dim-1: modules, \
+            dim-2: cells
+        :param cells: id numbers of cells with changing Ee
+        :type cells: {int, 3-D iterable} same size as Ee, dim-0: strings, \
+            dim-1: modules, dim-2: cells
+        :param modules: id numbers of modules with changing Ee
+        :type modules: {int, 2-D iterable} same size as Ee, dim-0: strings, \
+            dim-1: modules
+        :param strings: id numbers of strings with changing Ee
+        :type strings: {int, 1-D iterable} same size as Ee, dim-0: strings
+        
+        """
+        if cells is None:
+            if np.isscalar(Ee):
+                self.Ee = np.ones((1, self.numberCells)) * Ee
+            elif np.size(Ee) == self.numberCells:
+                self.Ee = np.reshape(Ee, (1, self.numberCells))
+            else:
+                raise Exception("Input irradiance value (Ee) for each cell!")
+        else:
+            Nsuns = np.size(cells)
+            if np.isscalar(Ee):
+                self.Ee[0, cells] = np.ones(Nsuns) * Ee
+            elif np.size(Ee) == Nsuns:
+                self.Ee[0, cells] = Ee
+            else:
+                raise Exception("Input irradiance value (Ee) for each cell!")
+        self.Voc = self.calcVoc()
+        (self.Icell, self.Vcell, self.Pcell) = self.calcCell()
+        (self.Imod, self.Vmod, self.Pmod, self.Vsubstr) = self.calcMod()
+
     def plotSys(self, sysPlot=None):
         """
         Plot system I-V curves.

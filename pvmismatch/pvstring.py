@@ -55,8 +55,10 @@ class PVstring(object):
         zipped = zip(*[(pvmod.Imod[0], pvmod.Imod[-1], np.mean(pvmod.Ee)) for
                        pvmod in self.pvmods])
         Isc = np.mean(zipped[2]) * self.pvconst.Isc0
-        Imax = (np.max(zipped[1]) - Isc) * self.pvconst.Imod_pts + Isc  # max current
-        Ineg = (np.min(zipped[0]) - Isc) * self.pvconst.Imod_negpts + Isc  # min current
+        # max current
+        Imax = (np.max(zipped[1]) - Isc) * self.pvconst.Imod_pts + Isc
+        # min current
+        Ineg = (np.min(zipped[0]) - Isc) * self.pvconst.Imod_negpts + Isc
         Istring = np.concatenate((Ineg, Imax), axis=0)
         Vstring = np.zeros((2 * self.pvconst.npts, 1))
         for mod in self.pvmods:
@@ -65,6 +67,12 @@ class PVstring(object):
             Vstring += npinterpx(Istring, xp, fp)
         Pstring = Istring * Vstring
         return (Istring, Vstring, Pstring)
+
+    def setSuns(self, Ee, cells=None, modules=None):
+        """
+        Set irradiance on cells in modules of string.
+        """
+        pass
 
     def plotStr(self):
         """
