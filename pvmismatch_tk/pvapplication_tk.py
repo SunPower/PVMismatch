@@ -35,8 +35,10 @@ logging.basicConfig(level=logging.DEBUG,
                     format='[%(levelname)s] (%(threadName)-10s) %(message)s')
 
 
-class waitWidget(Frame):
-
+class waitWidget(Frame):  # pylint: disable=R0924,R0904
+    """
+    A wait widget that shows something is happening.
+    """
     def __init__(self, queue, master):
         self.queue = queue
         Frame.__init__(self, master)
@@ -45,6 +47,7 @@ class waitWidget(Frame):
         self.grab_set()  # make this window modal
         master.resizable(False, False)  # not resizable
         master.title("")  # no title
+        # don't let user close window using X - instead call timer
         master.protocol("WM_DELETE_WINDOW", self.timer)
         self.wait = IntVar(master, 0, "wait")
         Label(master, bitmap="hourglass").pack(fill="both")
@@ -53,17 +56,39 @@ class waitWidget(Frame):
         self.timer()
 
     def timer(self):
+        """
+        A callback that counts milliseconds until SELF.QUEUE has somthing in it
+        """
         wait = self.wait.get() + 1
         if not self.queue.empty():
+            # when queue is filled, quit loop and print elapsed time
             print 'elapsed time = %2.1f [s]' % (wait * 0.10)
             self.quit()
         self.wait.set(wait)
+        # loop over this callback every 100[ms] until queue is filled
         self.after(100, self.timer)
 
 
 def setqueue(original_function, queue):
-
+    """
+    Create a new function QUEUEFUN that calculates the results from the
+    ORIGINAL_FUNCTION and puts them in a queue.
+    :param original_function: The function the results of which are added to \
+        the queue.
+    :param queue: The queue to which the results of the original_function are \
+        added.
+    :return queuefun: The new function.
+    """
     def queuefun(*args, **kwargs):
+        """
+        Call ORIGINAL_FUNCTION with ARGS & KWARGS and put the results in QUEUE.
+        NOTE: this is function *call*, not a function object!
+        This is equivalent to:
+        >>> results = original_function(*args, **kwargs)  # calc results
+        >>> queue.put(results)  # put results in queue
+        >>> results = queue.get()  # get results from queue
+        
+        """
         logging.debug('Starting')
         queue.put(original_function(*args, **kwargs))
         logging.debug('Exiting')
@@ -72,8 +97,20 @@ def setqueue(original_function, queue):
 
 
 def waitbox(original_function):
-
+    """
+    Create a new function that adds a waitbox widget to original_function.
+    :param original_function: A funciton to wrap with a waitbox waitWidget
+    """
     def new_function(*args, **kwargs):
+        """
+        Create a queue, create a queuefun from original_function and make the
+        new queuefun the target of a thread, passing the thread target
+        original_function's args and kwargs. Then instantiate a new Tk Toplevel
+        Frame called master and a new waitWidget with the queue and master.
+        Start master's mainloop which exits when the original_function's
+        results are fed to the queue. Destroy master and return the
+        original_function's results.
+        """
         queue = Queue.Queue()
         queuefun = setqueue(original_function, queue)
         thread = Thread(target=queuefun, args=args, kwargs=kwargs)
@@ -86,7 +123,7 @@ def waitbox(original_function):
 
     return new_function
 
-PVsystem = waitbox(PVsystem)
+PVsystem = waitbox(PVsystem)  # wrap PVsystem with a waitbox waitWidget
 
 
 class PVapplicaton(Frame):
