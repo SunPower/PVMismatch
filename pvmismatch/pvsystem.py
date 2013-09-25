@@ -152,24 +152,7 @@ class PVsystem(object):
         :type strings: {int, 1-D iterable} same size as Ee, dim-0: strings
         
         """
-        if cells is None:
-            if np.isscalar(Ee):
-                self.Ee = np.ones((1, self.numberCells)) * Ee
-            elif np.size(Ee) == self.numberCells:
-                self.Ee = np.reshape(Ee, (1, self.numberCells))
-            else:
-                raise Exception("Input irradiance value (Ee) for each cell!")
-        else:
-            Nsuns = np.size(cells)
-            if np.isscalar(Ee):
-                self.Ee[0, cells] = np.ones(Nsuns) * Ee
-            elif np.size(Ee) == Nsuns:
-                self.Ee[0, cells] = Ee
-            else:
-                raise Exception("Input irradiance value (Ee) for each cell!")
-        self.Voc = self.calcVoc()
-        (self.Icell, self.Vcell, self.Pcell) = self.calcCell()
-        (self.Imod, self.Vmod, self.Pmod, self.Vsubstr) = self.calcMod()
+        pass
 
     def plotSys(self, sysPlot=None):
         """
