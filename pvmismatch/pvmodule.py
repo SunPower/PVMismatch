@@ -10,23 +10,33 @@ from pvmismatch.pvconstants import PVconstants, npinterpx, MODSIZES, \
     SUBSTRSIZES, NUMBERCELLS
 from matplotlib import pyplot as plt
 
+SUBSTRCELLS = SUBSTRSIZES[MODSIZES.index(NUMBERCELLS)]
+
 
 class PVmodule(object):
     """
     PVmodule - A Class for PV modules.
-    """
 
+    :param pvconst: An object with common parameters and constants.
+    :type pvconst: :class:`PVconstants`
+    :param numberCells: The number of cells in the module.
+    :type numberCells: int
+    :param subStrCells: A sequence of the number of cells in each
+        substring. The length of the sequence is the number of substrings.
+        The sum of the sequence must equal the number of cells in the
+        module or else raises error.
+    :param Ee: Effective irradiance in suns [1].
+    :type Ee: float
+    """
     def __init__(self, pvconst=PVconstants(), numberCells=NUMBERCELLS,
-                 sub_str_sizes=SUBSTRSIZES, Ee=1):
-        """
-        Constructor
-        """
+                 subStrCells=SUBSTRCELLS, Ee=1):
+        # Constructor
         self.pvconst = pvconst
         self.numberCells = numberCells
-        if numberCells not in MODSIZES:
-            raise Exception("Invalid number of cells!")
-        self.subStrCells = SUBSTRSIZES[MODSIZES.index(self.numberCells)]
-        self.numSubStr = len(self.subStrCells)
+#        if numberCells not in MODSIZES:
+#            raise Exception("Invalid number of cells!")
+        self.subStrCells = subStrCells  # sequence of cells per substring
+        self.numSubStr = len(self.subStrCells)  # number of substrings
         if sum(self.subStrCells) != self.numberCells:
             raise Exception("Invalid cells per substring!")
         self.Ee = Ee
@@ -122,7 +132,7 @@ class PVmodule(object):
         Imin = Imin if Imin < 0 else 0
         Ineg = (Imin - Isc) * self.pvconst.Imod_negpts + Isc  # min current
         Imod = np.concatenate((Ineg, Imax), axis=0)  # interpolation range
-        Vsubstr = np.zeros((2 * self.pvconst.npts, 3))
+        Vsubstr = np.zeros((2 * self.pvconst.npts, self.numSubStr))
         start = np.cumsum(self.subStrCells) - self.subStrCells
         stop = np.cumsum(self.subStrCells)
         for substr in range(self.numSubStr):

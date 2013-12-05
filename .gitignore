@@ -1,11 +1,10 @@
 *.pyc
 .spyderproject
-.be/id-cache
 .project
 .pydevproject
 .settings/
-/testPV
+testPV/
 pvmismatch.sublime-project
 pvmismatch.sublime-workspace
-/benchmark_*
+benchmark_*/
 *.orig
