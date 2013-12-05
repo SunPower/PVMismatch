@@ -16,7 +16,8 @@ class PVmodule(object):
     PVmodule - A Class for PV modules.
     """
 
-    def __init__(self, pvconst=PVconstants(), numberCells=NUMBERCELLS, Ee=1):
+    def __init__(self, pvconst=PVconstants(), numberCells=NUMBERCELLS,
+                 sub_str_sizes=SUBSTRSIZES, Ee=1):
         """
         Constructor
         """
