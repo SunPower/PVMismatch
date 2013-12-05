@@ -8,3 +8,7 @@ pvmismatch.sublime-project
 pvmismatch.sublime-workspace
 benchmark_*/
 *.orig
+_*/
+!docs/_templates/
+
+
