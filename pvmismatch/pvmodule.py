@@ -10,8 +10,6 @@ from pvmismatch.pvconstants import PVconstants, npinterpx, MODSIZES, \
     SUBSTRSIZES, NUMBERCELLS
 from matplotlib import pyplot as plt
 
-SUBSTRCELLS = SUBSTRSIZES[MODSIZES.index(NUMBERCELLS)]
-
 
 class PVmodule(object):
     """
@@ -28,14 +26,17 @@ class PVmodule(object):
     :param Ee: Effective irradiance in suns [1].
     :type Ee: float
     """
-    def __init__(self, pvconst=PVconstants(), numberCells=NUMBERCELLS,
-                 subStrCells=SUBSTRCELLS, Ee=1):
+    def __init__(self, pvconst=PVconstants(), numberCells=NUMBERCELLS, Ee=1,
+                 subStrCells=None):
         # Constructor
         self.pvconst = pvconst
         self.numberCells = numberCells
-#        if numberCells not in MODSIZES:
-#            raise Exception("Invalid number of cells!")
-        self.subStrCells = subStrCells  # sequence of cells per substring
+        if subStrCells:        
+            self.subStrCells = subStrCells  # sequence of cells per substring
+        elif self.numberCells in MODSIZES:
+            self.subStrCells = SUBSTRSIZES[MODSIZES.index(self.numberCells)]
+        else:
+            self.subStrCells = [self.numberCells]
         self.numSubStr = len(self.subStrCells)  # number of substrings
         if sum(self.subStrCells) != self.numberCells:
             raise Exception("Invalid cells per substring!")
