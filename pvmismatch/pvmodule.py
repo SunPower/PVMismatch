@@ -31,7 +31,7 @@ class PVmodule(object):
         # Constructor
         self.pvconst = pvconst
         self.numberCells = numberCells
-        if subStrCells:        
+        if subStrCells:
             self.subStrCells = subStrCells  # sequence of cells per substring
         elif self.numberCells in MODSIZES:
             self.subStrCells = SUBSTRSIZES[MODSIZES.index(self.numberCells)]
