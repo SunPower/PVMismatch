@@ -125,7 +125,7 @@ class PVmodule(object):
         # and some negative current to interpolate all cells
         # find Icell at Vrbd for all cells in module
         IatVrbd = [np.interp(self.pvconst.VRBD, Vcell, Icell) for
-                (Vcell, Icell) in zip(self.Vcell.T, self.Icell.T)]
+                   (Vcell, Icell) in zip(self.Vcell.T, self.Icell.T)]
         Isc = np.mean(self.Ee) * self.pvconst.Isc0
         # max current
         Imax = (np.max(IatVrbd) - Isc) * self.pvconst.Imod_pts + Isc

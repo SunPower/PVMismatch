@@ -33,7 +33,7 @@ class PVsystem(object):
             if pvmods is None:
                 # use deep copy instead of making each object in a for-loop
                 pvstr = PVstring(self.pvconst, self.numberMods,
-                                  numberCells=self.numberCells, Ee=Ee)
+                                 numberCells=self.numberCells, Ee=Ee)
                 self.pvstrs = [pvstr] * self.numberStrs
                 pvstrs = [deepcopy(pvstr) for pvstr in self.pvstrs[1:]]
                 self.pvstrs[1:] = pvstrs
@@ -48,7 +48,7 @@ class PVsystem(object):
                     self.pvstrs = [PVstring(self.pvconst, pvmods=pvmodstr)
                                    for pvmodstr in pvmods]
                     pvmodstrNumCells = [pvmodstr[0].numberCells
-                                   for pvmodstr in pvmods]
+                                        for pvmodstr in pvmods]
                     if any(pvmodstrNumCells != self.numberCells):
                         errString = ('All modules must have the same' +
                                      ' number of cells.')
@@ -136,23 +136,38 @@ class PVsystem(object):
         eff = Pmp / Psun
         return (Imp, Vmp, Pmp, Isc, Voc, FF, eff)
 
-    def setSuns(self, Ee, cells=None, modules=None, strings=None):
+    def setSuns(self, Ee):
         """
         Set irradiance on cells in modules of string in system.
+        If Ee is ...
+        ... scalar, then sets the entire system to that irradiance.
+        ... a dictionary, then each key refers to a pv-string in the system,
+        and the corresponding value is either a dictionary or a scalar.
+        If the dictionary's value is another dictionary, then its keys are pv-
+        modules and its values are either cells and corresponding Ee, cells and
+        a scalar Ee, a scalar Ee value for all cells or an array of Ee values
+        for all cells in the module. The values of pv-modules are passed to
+        :meth:`~pvmodules.PVmodules.setSuns()`
+
+        Example::
+        Ee={0: {0: {'cells': (0, 1, 2), 'Ee': (0.9, 0.3, 0.5)}}}
+        Ee=0.91  # set all modules in all strings to 0.91 suns
+        Ee={12: 0.77}  # set all modules in string with index 12 to 0.77 suns
+        Ee={3: {8: 0.23, 7: 0.45}}  # set module with index 8 to 0.23 suns and
+            module with index 7 to 0.45 suns in string with index 3
+
         :param Ee: irradiance [W/m^2]
-        :type Ee: {float, 3-D iterable} dim-0: strings, dim-1: modules, \
-            dim-2: cells
-        :param cells: id numbers of cells with changing Ee
-        :type cells: {int, 3-D iterable} same size as Ee, dim-0: strings, \
-            dim-1: modules, dim-2: cells
-        :param modules: id numbers of modules with changing Ee
-        :type modules: {int, 2-D iterable} same size as Ee, dim-0: strings, \
-            dim-1: modules
-        :param strings: id numbers of strings with changing Ee
-        :type strings: {int, 1-D iterable} same size as Ee, dim-0: strings
-        
+        :type Ee: dict or float
         """
-        pass
+        if np.isscalar(Ee):
+            for pvstr in self.pvstrs:
+                pvstr.setSuns(Ee)
+        else:
+            for pvstr, pvmod_Ee in Ee.iteritems():
+                self.pvstrs[pvstr].setSuns(pvmod_Ee)
+        (self.Isys, self.Vsys, self.Psys) = self.calcSystem()
+        (self.Imp, self.Vmp, self.Pmp,
+         self.Isc, self.Voc, self.FF, self.eff) = self.calcMPP_IscVocFFeff()
 
     def plotSys(self, sysPlot=None):
         """

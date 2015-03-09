@@ -68,11 +68,35 @@ class PVstring(object):
         Pstring = Istring * Vstring
         return (Istring, Vstring, Pstring)
 
-    def setSuns(self, Ee, cells=None, modules=None):
+    def setSuns(self, Ee):
         """
-        Set irradiance on cells in modules of string.
+        Set irradiance on cells in modules of string in system.
+        If Ee is ...
+        ... scalar, then sets the entire string to that irradiance.
+        ... a dictionary, then each key refers to a module in the string,
+        and the corresponding value are passed to
+        :meth:`~pvmodules.PVmodules.setSuns()`
+
+        Example::
+        Ee={0: {'cells': (1,2,3), 'Ee': (0.9, 0.3, 0.5)}}  # set module 0
+        Ee=0.91  # set all modules to 0.91 suns
+        Ee={12: 0.77}  # set module with index 12 to 0.77 suns
+        Ee={8: [0.23 (0, 1, 2)], 7: [(0.45, 0.35), (71, 72)]}
+
+        :param Ee: irradiance [W/m^2]
+        :type Ee: dict or float
         """
-        pass
+        if np.isscalar(Ee):
+            for pvmod in self.pvmods:
+                pvmod.setSuns(Ee)
+        else:
+            for pvmod, cell_Ee in Ee.iteritems():
+                if hasattr(cell_Ee, 'keys'):
+                    self.pvmods[pvmod].setSuns(**cell_Ee)
+                else:
+                    self.pvmods[pvmod].setSuns(*cell_Ee)
+        # update modules
+        self.Istring, self.Vstring, self.Pstring = self.calcString()
 
     def plotStr(self):
         """

@@ -76,7 +76,7 @@ def parallel_calcSystem(pvsys, Vsys):
         IVmods = np.array([(pvmod.Imod, pvmod.Vmod) for pvmod in pvmods],
                           dtype=float).reshape(tot_mods, 2,
                                                2 * pvsys.pvconst.npts)
-        Vstring_args = np.append(IVmods, Imodstr,1)
+        Vstring_args = np.append(IVmods, Imodstr, 1)
         Vstring = np.sum(np.reshape(pool.map(interpMods, Vstring_args,
                                              chunksize),
                                     (pvsys.numberStrs, pvsys.numberMods,
@@ -84,7 +84,7 @@ def parallel_calcSystem(pvsys, Vsys):
         # reshape Vstring to reorganize mods in each string
         # IE (<numberStrs>, <numberMods>, <npts>)
         # add up voltages from each mod to get Vstring
-        # NOTE: str: 0th dim, mod: 1st dim, npts: 2nd dim 
+        # NOTE: str: 0th dim, mod: 1st dim, npts: 2nd dim
     Pstring = Istring * Vstring
     for (pvstr, P, I, V) in zip(pvsys.pvstrs, Pstring, Istring, Vstring):
         pvstr.Pstring, pvstr.Istring, pvstr.Vstring = P, I, V
@@ -146,7 +146,7 @@ def parallel_calcMod(pvmod):
     # protect main thread
     if current_process().name != 'MainProcess':
         raise PVparallel_calcError(__name__)
-    
+
     procs = pvmod.pvconst.procs
     if not procs:
         procs = max(cpu_count() - 2, 1)
@@ -162,7 +162,7 @@ def parallel_calcMod(pvmod):
     IatVrbd = pool.map(partial_calcIatVrbd, zip(pvmod.Vcell.T, pvmod.Icell.T),
                        chunksize)
     Isc = np.mean(pvmod.Ee) * pvmod.pvconst.Isc0
-    Imax = (np.max(IatVrbd) - Isc) * pvmod.pvconst.Imod_pts + Isc # max current
+    Imax = (np.max(IatVrbd) - Isc) * pvmod.pvconst.Imod_pts + Isc  # Imax
     Imin = np.min(pvmod.Icell)
     Imin = Imin if Imin < 0 else 0
     Ineg = (Imin - Isc) * pvmod.pvconst.Imod_negpts + Isc  # min current
@@ -171,7 +171,7 @@ def parallel_calcMod(pvmod):
     start = np.cumsum(pvmod.subStrCells) - pvmod.subStrCells
     stop = np.cumsum(pvmod.subStrCells)
     # partial with Imod constant
-    partial_interpVsubstrcells = partial(interpVsubstrcells,Imod=Imod)
+    partial_interpVsubstrcells = partial(interpVsubstrcells, Imod=Imod)
     # interpolate cell voltages
     Vsubstrcells = np.squeeze(pool.map(partial_interpVsubstrcells,
                               zip(pvmod.Icell.T, pvmod.Vcell.T), chunksize))
