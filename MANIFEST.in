@@ -1,0 +1,7 @@
+include pvmismatch_json/*.json
+include res/*.png
+include CHANGES
+recursive-include docs *.rst
+include docs/conf.py
+include docs/make.bat
+include docs/Makefile

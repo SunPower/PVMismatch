@@ -1,14 +1,21 @@
-*.pyc
+# ide
 .spyderproject
 .project
 .pydevproject
 .settings/
-testPV/
+.idea/
 pvmismatch.sublime-project
 pvmismatch.sublime-workspace
-benchmark_*/
+
+# files
+*.pyc
 *.orig
+
+# folders
 _*/
 !docs/_templates/
-
-
+testPV/
+benchmark_*/
+dist/
+pvmismatch.egg-info
+venv/

@@ -103,28 +103,18 @@ class PVsystem(object):
         return (Isys, Vsys, Psys)
 
     def calcMPP_IscVocFFeff(self):
-        Pmp = np.max(self.Psys)
-        # np.interp only likes 1-D data & xp must be increasing
-        # Psys is *not* monotonically increasing but its derivative *is*
-        dP = np.diff(self.Psys, axis=0)  # (1000, 1)
-        dV = np.diff(self.Vsys, axis=0)  # (1000, 1)
-        Pv = dP / dV  # (1000, 1) decreasing
-        # reshape(scalar) converts 2-D array to 1-D array (vector)
-        Pv = np.flipud(Pv.reshape(self.pvconst.npts - 1))  # (1000,) increasing
-        Vhalf = (self.Vsys[1:] + self.Vsys[:-1]) / 2  # (1000, 1) increasing
-        Vhalf = np.flipud(Vhalf.reshape(self.pvconst.npts - 1))  # (1000,)
-        Vmp = np.interp(0., Pv, Vhalf)  # estimate Vmp
-        Imp = Pmp / Vmp  # calculate Imp
+        mpp = np.argmax(self.Psys)
+        Pmp = self.Psys[mpp,0]
+        Vmp = self.Vsys[mpp,0]
+        Imp = self.Isys[mpp,0]
         # xp must be increasing
         Isys = self.Isys.reshape(self.pvconst.npts)  # IGNORE:E1103
         Vsys = self.Vsys.reshape(self.pvconst.npts)  # IGNORE:E1103
         xp = np.flipud(Isys)
         fp = np.flipud(Vsys)
-        Voc = np.interp(0., xp, fp)  # calucalte Voc
+        Voc = np.interp(0, xp, fp)  # calculate Voc
         xp = Vsys
         fp = Isys
-        ImpCheck = np.interp(Vmp, xp, fp)  # check Imp
-        print "Imp Error = {:10.4g}%".format((Imp - ImpCheck) / Imp * 100)
         Isc = np.interp(0, xp, fp)
         FF = Pmp / Isc / Voc
         totalSuns = 0
@@ -134,7 +124,7 @@ class PVsystem(object):
         # convert cellArea from cm^2 to m^2
         Psun = self.pvconst.E0 * totalSuns * self.pvconst.cellArea / 100 / 100
         eff = Pmp / Psun
-        return (Imp, Vmp, Pmp, Isc, Voc, FF, eff)
+        return Imp, Vmp, Pmp, Isc, Voc, FF, eff
 
     def setSuns(self, Ee):
         """
