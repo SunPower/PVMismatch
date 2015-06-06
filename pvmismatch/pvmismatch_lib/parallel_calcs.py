@@ -7,10 +7,10 @@ Created on Tue Mar 26 13:49:04 2013
 """
 
 from functools import partial
-from multiprocessing import current_process, Pool, cpu_count
-from pvmismatch.pvconstants import npinterpx
-from pvmismatch.pvexceptions import PVparallel_calcError
 import numpy as np
+from multiprocessing import current_process, Pool, cpu_count
+from pvmismatch.pvmismatch_lib.pvconstants import npinterpx
+from pvmismatch.pvmismatch_lib.pvexceptions import PVparallel_calcError
 
 
 def parallel_calcSystem(pvsys, Vsys):

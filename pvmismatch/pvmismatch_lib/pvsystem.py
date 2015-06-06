@@ -5,13 +5,14 @@ Created on Jul 16, 2012
 @author: mmikofski
 """
 
+import numpy as np
 from copy import deepcopy
 from matplotlib import pyplot as plt
-from pvmismatch.pvconstants import PVconstants, npinterpx, NUMBERCELLS, \
-    NUMBERMODS, NUMBERSTRS
-from pvmismatch.pvstring import PVstring
-import numpy as np
-from parallel_calcs import parallel_calcSystem
+# use absolute imports instead of relative, so modules are portable
+from pvmismatch.pvmismatch_lib.pvconstants import PVconstants, npinterpx, \
+    NUMBERCELLS, NUMBERMODS, NUMBERSTRS
+from pvmismatch.pvmismatch_lib.pvstring import PVstring
+from pvmismatch.pvmismatch_lib.parallel_calcs import parallel_calcSystem
 
 
 class PVsystem(object):

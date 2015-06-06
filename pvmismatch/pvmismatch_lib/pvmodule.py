@@ -6,9 +6,10 @@ Created on Thu May 31 23:17:04 2012
 """
 
 import numpy as np
-from pvmismatch.pvconstants import PVconstants, npinterpx, MODSIZES, \
-    SUBSTRSIZES, NUMBERCELLS
 from matplotlib import pyplot as plt
+# use absolute imports instead of relative, so modules are portable
+from pvmismatch.pvmismatch_lib.pvconstants import PVconstants, npinterpx, \
+    MODSIZES, SUBSTRSIZES, NUMBERCELLS
 
 
 class PVmodule(object):

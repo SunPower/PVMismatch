@@ -5,12 +5,13 @@ Created on Mon Jun 11 14:07:12 2012
 @author: mmikofski
 """
 
+import numpy as np
 from copy import deepcopy
 from matplotlib import pyplot as plt
-from pvmismatch.pvconstants import PVconstants, npinterpx, NUMBERMODS, \
-    NUMBERCELLS
-from pvmismatch.pvmodule import PVmodule
-import numpy as np
+# use absolute imports instead of relative, so modules are portable
+from pvmismatch.pvmismatch_lib.pvconstants import PVconstants, npinterpx, \
+    NUMBERMODS, NUMBERCELLS
+from pvmismatch.pvmismatch_lib.pvmodule import PVmodule
 
 
 class PVstring(object):

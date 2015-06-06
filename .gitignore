@@ -11,11 +11,19 @@ pvmismatch.sublime-workspace
 *.pyc
 *.orig
 
-# folders
-_*/
+# build
+dist/
+pvmismatch.egg-info/
+build/
+Makefile
+
+# docs
 !docs/_templates/
+_*/
+
+# test
 testPV/
 benchmark_*/
-dist/
-pvmismatch.egg-info
+
+# virtualenv
 venv/

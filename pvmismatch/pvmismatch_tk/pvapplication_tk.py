@@ -10,12 +10,6 @@ from Tkinter import Frame, Label, Button, Toplevel, OptionMenu, Scale, Entry, \
     Message, Spinbox, IntVar, StringVar, DoubleVar
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, \
     NavigationToolbar2TkAgg
-from pvmismatch.pvconstants import MODSIZES, NUMBERCELLS, NUMBERMODS, \
-    NUMBERSTRS
-from pvmismatch.pvsystem import PVsystem
-from pvmismatch_tk.advCnf_tk import AdvCnf_tk
-from pvmismatch_tk.pvexceptions import PVValidationError
-from pvmismatch_tk.pvstring_tk import PVstring_tk
 from threading import Thread
 from tkFont import nametofont
 import Queue
@@ -23,13 +17,23 @@ import json
 import logging
 import numpy as np
 import os
+from pvmismatch.pvmismatch_lib.pvconstants import MODSIZES, NUMBERCELLS, \
+    NUMBERMODS, NUMBERSTRS
+from pvmismatch import PVsystem
+# use absolute imports instead of relative, so modules are portable
+from pvmismatch import __name__ as __pkg_name__, __file__ as __pkg_file__
+from pvmismatch.pvmismatch_tk.advCnf_tk import AdvCnf_tk
+from pvmismatch.pvmismatch_tk.pvexceptions import PVValidationError
+from pvmismatch.pvmismatch_tk.pvstring_tk import PVstring_tk
 
 INTEGERS = '0123456789'
 FLOATS = '.' + INTEGERS
-SPLOGO = os.path.join('res', 'logo_bg.png')
-PVAPP_TXT = 'PVmismatch'
+PVAPP_TXT = __pkg_name__
 READY_MSG = 'Ready'
 LANGUAGE = 'English'
+PKG_BASEDIR = os.path.dirname(__pkg_file__)
+JSONDIR = os.path.join(PKG_BASEDIR, 'pvmismatch_json')
+SPLOGO = os.path.join(PKG_BASEDIR, 'res', 'logo_bg.png')
 
 logging.basicConfig(level=logging.DEBUG,
                     format='[%(levelname)s] (%(threadName)-10s) %(message)s')
@@ -543,27 +547,10 @@ class PVapplicaton(Frame):
         self.master.destroy()
 
     def readJSON(self, JSONfilename):
-        JSONfilename += '.json'
-        JSONfullpath = os.path.join('pvmismatch_json', JSONfilename)
-        try:
-            JSONfile = open(JSONfullpath, 'r')
-            JSONObjects = json.loads(JSONfile.read())
-            # use with to and f.close() is predefined, ie: finally not needed
-            # with open(JSONfullpath, 'r') as JSONfile:
-            #    JSONObjects = json.loads(JSONfile.read())
-        except ValueError as err:
-            print err.args
-            print err.message
-            raise err
-        except IOError as err:
-            print err.args
-            print err.message
-            print err.errno
-            print err.filename
-            print err.strerror
-            raise err
-        else:
-            print 'JSON objects loaded from %s.' % JSONfullpath
-        finally:
-            JSONfile.close()
+        if not JSONfilename.endswith('json'):
+            JSONfilename += '.json'
+        JSONfullpath = os.path.join(JSONDIR, JSONfilename)
+        with open(JSONfullpath, 'r') as JSONfile:
+            JSONObjects = json.load(JSONfile)
+            logging.debug('JSON objects loaded from %s.', JSONfullpath)
         return JSONObjects

@@ -7,7 +7,8 @@ Created on Mar 22, 2013
 @author: mmikofski
 '''
 
-from pvmismatch.pvconstants import PVconstants
+from pvmismatch import PVconstants
+
 if __name__ == "__main__":
     pvconst = PVconstants()
     print pvconst.Tcell, pvconst.Isat1, pvconst.Isc0

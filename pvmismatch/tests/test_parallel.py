@@ -7,11 +7,11 @@ Created on Mar 22, 2013
 @author: mmikofski
 '''
 
-from pvmismatch.pvsystem import PVsystem
-from pvmismatch.pvconstants import PVconstants
 from matplotlib import pyplot as plt
 import time
 import sys
+from pvmismatch import PVsystem
+from pvmismatch import PVconstants
 
 if __name__ == "__main__":
     numMods = 10

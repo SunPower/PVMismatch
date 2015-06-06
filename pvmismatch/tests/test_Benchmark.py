@@ -7,11 +7,11 @@ Created on Thu Jun 07 09:44:08 2012
 @author: mmikofski
 """
 
-from pvmismatch.pvconstants import PVconstants
-from pvmismatch.pvsystem import PVsystem
 import numpy as np
 import os
 import sys
+from pvmismatch import PVconstants
+from pvmismatch import PVsystem
 
 NPTS = 1001
 BENCHMARK = False

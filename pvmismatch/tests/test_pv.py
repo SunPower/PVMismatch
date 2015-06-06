@@ -7,14 +7,14 @@ Created on Thu Jun 07 09:44:08 2012
 @author: mmikofski
 """
 
-#from pvmismatch.pvmodule import PVmodule
-#from pvmismatch.pvstring import PVstring
-from pvmismatch.pvsystem import PVsystem
 import sys
 import os
 import random
 import shutil
 import numpy as np
+#from pvmismatch.pvmodule import PVmodule
+#from pvmismatch.pvstring import PVstring
+from pvmismatch import PVsystem
 
 
 def testPV():

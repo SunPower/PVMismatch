@@ -8,7 +8,8 @@ Created on Jul 30, 2012
 from Tkinter import Frame, Label, Button, Toplevel
 #from Tkinter import IntVar
 #import tkFont
-from pvmismatch_tk.pvmodule_tk import PVmodule_tk
+# use absolute imports instead of relative, so modules are portable
+from pvmismatch.pvmismatch_tk.pvmodule_tk import PVmodule_tk
 
 
 class PVstring_tk(Frame):

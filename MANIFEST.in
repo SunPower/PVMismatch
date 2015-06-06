@@ -1,7 +1,9 @@
-include pvmismatch_json/*.json
-include res/*.png
+include pvmismatch/pvmismatch_json/*.json
+include pvmismatch/res/*.png
 include CHANGES
-recursive-include docs *.rst
-include docs/conf.py
-include docs/make.bat
-include docs/Makefile
+include README
+recursive-include pvmismatch/docs *.rst
+include pvmismatch/docs/conf.py
+include pvmismatch/docs/make.bat
+include pvmismatch/docs/Makefile
+recursive-include pvmismatch/tests *.py

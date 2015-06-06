@@ -19,4 +19,4 @@ class PVparallel_calcError(PVexception):
     def __str__(self):
         errmsg = ('Parallel function from module, %s, must be on the main' +
                   ' thread.')
-        return errmsg % (self.name)
+        return errmsg % self.name

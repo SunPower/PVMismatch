@@ -6,7 +6,7 @@ Created on Jul 29, 2012
 
 @author: marko
 """
-from pvmismatch_tk.pvapplication_tk import PVapplicaton
+from pvmismatch.pvmismatch_tk.pvapplication_tk import PVapplicaton
 from Tkinter import Tk
 import sys
 import re

@@ -7,13 +7,14 @@ Created on Apr 29, 2013
 @author: mmikofski
 '''
 
-from pvmismatch.pvconstants import PVconstants
-from pvmismatch.pvsystem import PVsystem
 from matplotlib import pyplot as plt
+from pvmismatch import PVconstants
+from pvmismatch import PVsystem
 
 if __name__ == '__main__':
+    # increase number of points to calculate
     pvconst = PVconstants(npts=101, parallel=True, chunksize=4,
-                          maxtasksperchild=100)  # increase number of points to calculate
+                          maxtasksperchild=100)
     pvsys = PVsystem(pvconst=pvconst, numberStrs=2, numberMods=8)
     print "Imp: %10.4f [A], Vmp: %10.4f [V], Pmp: %10.4f [W]" % (pvsys.Imp,
                                                                  pvsys.Vmp,
