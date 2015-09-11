@@ -1,10 +1,13 @@
 # -*- coding: utf-8 -*-
-
 """
-Created on Wed May 30 11:53:52 2012
-
-@author: mmikofski
+This module contains configuration constants for PVMismatch, such as number of
+points in IV curve to calculate, flag to use parallel processing and parallel
+processing parameters. This module also contains some utility functions like
+:func:`~pvmismatch.pvmismatch_lib.npinterpx()` are defined here too.
 """
+
+# TODO: move this to pvmismatch_lib/__init__.py
+
 import numpy as np
 import scipy.constants
 
