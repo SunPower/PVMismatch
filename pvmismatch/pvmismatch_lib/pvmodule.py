@@ -12,6 +12,30 @@ from pvmismatch.pvmismatch_lib.pvconstants import PVconstants, npinterpx, \
 from pvmismatch.pvmismatch_lib.pvcell import PVcell
 
 
+def zip_flat_meshgrid(nrows, ncols):
+    x, y = np.meshgrid(np.arange(nrows), np.arange(ncols))
+    return zip(x.flat, y.flat)
+
+
+def serpentine(nrows, ncols):
+    x, y = np.meshgrid(np.arange(nrows), np.arange(ncols))
+    x[1::2] = np.fliplr(x[1::2])  # flip alternate rows
+    return zip(x.flat,y.flat)
+
+
+# cell positions presets
+STD96 = [
+    {'row': r, 'col': c,
+     'series': (n + 1 if n < 96 else None), 'parallel': None,
+     'substring': (n + 24) / 48} for n, (r, c) in enumerate(serpentine(12, 8))
+]
+TCT96 = [
+    {'row': r, 'col': c,
+     'series': c*12+r+1 if r<11 else None, 'parallel': (c+1)*12+r if c<7 else None,
+     'substring': r / 4} for r, c in zip_flat_meshgrid(12, 8)
+]
+
+
 class PVmodule(object):
     """
     PVmodule - A Class for PV modules.
@@ -27,10 +51,14 @@ class PVmodule(object):
     :param Ee: Effective irradiance in suns [1].
     :type Ee: float
     """
-    def __init__(self, pvcells=PVcell(), numberCells=NUMBERCELLS, Ee=1.,
-                 subStrCells=None, pvconst=PVconstants()):
+    def __init__(self, pvcells=None, cell_pos=STD96, Ee=1.,
+                 pvconst=PVconstants(), numberCells=None, subStrCells=None):
         # Constructor
         self.numberCells = numberCells
+        if pvcells is None:
+            # use deep copy instead of making each object in a for-loop
+            pvc = PVcell(pvconst=pvconst, Ee=Ee)
+            self.pvcells = [deepcopy(pvc) for _ in xrange(self.numberCells)]
         if subStrCells:
             self.subStrCells = subStrCells  # sequence of cells per substring
         elif self.numberCells in MODSIZES:
