@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Created on Thu May 31 23:17:04 2012
-
-@author: mmikofski
+This module defines the :class:`~pvmismatch.pvmismatch_lib.pvmodule.PVmodule`.
 """
 
 import numpy as np
@@ -10,6 +8,7 @@ from matplotlib import pyplot as plt
 # use absolute imports instead of relative, so modules are portable
 from pvmismatch.pvmismatch_lib.pvconstants import PVconstants, npinterpx, \
     MODSIZES, SUBSTRSIZES, NUMBERCELLS
+from pvmismatch.pvmismatch_lib.pvcell import PVcell
 
 
 class PVmodule(object):
@@ -27,8 +26,8 @@ class PVmodule(object):
     :param Ee: Effective irradiance in suns [1].
     :type Ee: float
     """
-    def __init__(self, pvconst=PVconstants(), numberCells=NUMBERCELLS, Ee=1,
-                 subStrCells=None):
+    def __init__(self, pvcells=PVcell(), numberCells=NUMBERCELLS, Ee=1,
+                 subStrCells=None, pvconst=PVconstants()):
         # Constructor
         self.pvconst = pvconst
         self.numberCells = numberCells
@@ -77,19 +76,6 @@ class PVmodule(object):
         self.Voc = self.calcVoc()
         (self.Icell, self.Vcell, self.Pcell) = self.calcCell()
         (self.Imod, self.Vmod, self.Pmod, self.Vsubstr) = self.calcMod()
-
-    def calcVoc(self):
-        """
-        Estimate open circuit voltage of cells.
-        Returns Voc : numpy.ndarray of float, estimated open circuit voltage
-        """
-        C = self.pvconst.Aph * self.pvconst.Isc0 * self.Ee
-        C += self.pvconst.Isat1 + self.pvconst.Isat2
-        VT = self.pvconst.k * self.pvconst.Tcell / self.pvconst.q
-        delta = self.pvconst.Isat2 ** 2 + 4 * self.pvconst.Isat1 * C
-        Voc = VT * np.log(((-self.pvconst.Isat2 + np.sqrt(delta)) / 2 /
-                           self.pvconst.Isat1) ** 2)
-        return Voc
 
     def calcCell(self):
         """

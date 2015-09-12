@@ -1,6 +1,10 @@
 # -*- coding: utf-8 -*-
 """
-This is the PVMismatch Library.
+This is the PVMismatch Library. Configuration constants and classes like
+:class:`~pvmismatch.pvmismatch_lib.pvconstants.PVconstants`,
+:class:`~pvmismatch.pvmismatch_lib.pvcell.PVcell`,
+:class:`~pvmismatch.pvmismatch_lib.pvmodule.PVmodule`,
+PV strings and PV system objects are all defined here.
 """
 
-# move imports, version and other info to package top level
+# imports, version and other info moved to package top level

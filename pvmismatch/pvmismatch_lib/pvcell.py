@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 
 """
-Created on Wed May 30 11:53:52 2012
-
-@author: mmikofski
+This module contains the :class:`~pvmismatch.pvmismatch_lib.pvcell.PVcell`
+object which is used by modules, strings and systems.
 """
 import numpy as np
 import scipy.constants
+from pvmismatch.pvmismatch_lib.pvconstants import PVconstants
 
 # Defaults
 RS = 0.004267236774264931  # [ohm] series resistance
@@ -32,49 +32,47 @@ class PVcell(object):
     def __init__(self, Rs=RS, Rsh=RSH, Isat1_T0=ISAT1_T0, Isat2=ISAT2, Aph=APH,
                  Isc0_T0=ISC0_T0, Tcell=TCELL, cellArea=CELLAREA,
                  Vbypass=VBYPASS, aRBD=ARBD, VRBD=VRBD_, nRBD=NRBD, Eg=EG,
-                 alpha_Isc=ALPHA_ISC):
-        # hard constants
-        self.k = scipy.constants.k  # [kJ/mole/K] Boltzmann constant
-        self.q = scipy.constants.e  # [Coloumbs] elementary charge
-        self.E0 = 1000.  # [W/m^2] irradiance of 1 sun
-        self.T0 = 298.15  # [K] reference temperature
+                 alpha_Isc=ALPHA_ISC, Ee=1, pvconst=PVconstants()):
         # user inputs
-        self.Eg = float(Eg)  # [eV] band gap of cSi
-        self.alpha_Isc = float(alpha_Isc)  # [1/K] short circuit temp. coeff.
-        self.Tcell = float(Tcell)  # [K] cell temperature
-        self.Rs = float(Rs)  # [ohm] series resistance
-        self.Rsh = float(Rsh)  # [ohm] shunt resistance
-        self.Isat1_T0 = float(Isat1_T0)  # [A] diode one sat. current at T0
-        self.Isat1 = self.calc_Isat1()  # [A] Isat1 at Tcell
-        self.Isat2 = float(Isat2)  # [A] diode two saturation current
-        self.Aph = float(Aph)  # photovoltaic current coefficient
-        self.Isc0_T0 = float(Isc0_T0)  # [A] short circuit current at T0
-        self.Isc0 = self.calc_Isc0()  # [A] Isc0 at Tcell
-        self.cellArea = float(cellArea)  # [cm^2] cell area
-        self.Vbypass = float(Vbypass)  # [V] trigger voltage of bypass diode
-        self.aRBD = float(aRBD)  # reverse breakdown coefficient
-        self.VRBD = float(VRBD)  # [V] reverse breakdown voltage
-        self.nRBD = float(nRBD)  # reverse breakdown exponent
-        # set number of points in IV curve(s)
-        self.npts = npts  # number of points
-        # point spacing from 0 to 1, used for Vcell, Vmod, Vsys and Istring
-        # decrease point spacing as voltage approaches Voc by using logspace
-        pts = (11. - np.logspace(np.log10(11.), 0., self.npts)) / 10.
-        pts[0] = 0.  # first point must be exactly zero
-        self.pts = pts.reshape(self.npts, 1)
-        negpts = (11. - np.logspace(np.log10(11. - 1./float(self.npts)),
-                                    0., self.npts)) / 10.
-        negpts = negpts.reshape(self.npts, 1)
-        self.Imod_negpts = 1 + 1./float(self.npts)/10. - negpts
-        self.negpts = np.flipud(negpts)  # reverse the order
-        # shift and concatenate pvconst.negpts and pvconst.pts
-        # so that tight spacing is around MPP and RBD
-        self.Imod_pts = 1 - np.flipud(self.pts)
-        # multiprocessing
-        self.parallel = parallel  # use multiprocessing if True
-        self.procs = procs  # number of processes in pool
-        self.maxtasksperchild = maxtasksperchild  # number of tasks per worker
-        self.chunksize = chunksize  # size of tasks
+        self.Ee = Ee  #: [suns] incident effective irradiance on cell
+        self.pvconst = pvconst  #: configuration constants
+        self.Eg = float(Eg)  #: [eV] band gap of cSi
+        self.alpha_Isc = float(alpha_Isc)  #: [1/K] short circuit temp. coeff.
+        self.Tcell = float(Tcell)  #: [K] cell temperature
+        self.Rs = float(Rs)  #: [ohm] series resistance
+        self.Rsh = float(Rsh)  #: [ohm] shunt resistance
+        self.Isat1_T0 = float(Isat1_T0)  #: [A] diode one sat. current at T0
+        self.Isat1 = self.calc_Isat1()  #: [A] Isat1 at Tcell
+        self.Isat2 = float(Isat2)  #: [A] diode two saturation current
+        self.Aph = float(Aph)  #: photovoltaic current coefficient
+        self.Isc0_T0 = float(Isc0_T0)  #: [A] short circuit current at T0
+        self.Isc0 = self.calc_Isc0()  #: [A] Isc0 at Tcell
+        self.cellArea = float(cellArea)  #: [cm^2] cell area
+        self.Vbypass = float(Vbypass)  #: [V] trigger voltage of bypass diode
+        self.aRBD = float(aRBD)  #: reverse breakdown coefficient
+        self.VRBD = float(VRBD)  #: [V] reverse breakdown voltage
+        self.nRBD = float(nRBD)  #: reverse breakdown exponent
+        self.Voc = self.calcVoc()  #: [V] cell open circuit voltage
+
+    def calcVoc(self):
+        """
+        Estimate open circuit voltage of cells.
+        Returns Voc : numpy.ndarray of float, estimated open circuit voltage
+        """
+        C = self.Aph * self.Isc0 * self.Ee
+        C += self.Isat1 + self.Isat2
+        VT = self.pvconst.k * self.Tcell / self.pvconst.q
+        delta = self.Isat2 ** 2 + 4 * self.Isat1 * C
+        Voc = VT * np.log(((-self.Isat2 + np.sqrt(delta)) / 2 /
+                           self.Isat1) ** 2)
+        return Voc
+
+    def __str__(self):
+        fmt = '<PVcell(Ee=%g, Tcell=%g, Isc=%g, Voc=%g)>'
+        return fmt % (self.Ee, self.Tcell, self.Isc0 * self.Ee, self.Voc)
+
+    def __repr__(self):
+        return str(self)
 
     def update(self, *args, **kwargs):
         """
@@ -113,14 +111,16 @@ class PVcell(object):
         """
         Diode one saturation current at Tcell.
         """
-        _Tstar = self.Tcell ** 3 / self.T0 ** 3  # scaled temperature
-        _inv_delta_T = 1 / self.T0 - 1 / self.Tcell  # [1/K]
-        _expTstar = np.exp(self.Eg * self.q / self.k * _inv_delta_T)
+        _Tstar = self.Tcell ** 3 / self.pvconst.T0 ** 3  # scaled temperature
+        _inv_delta_T = 1 / self.pvconst.T0 - 1 / self.Tcell  # [1/K]
+        _expTstar = np.exp(
+            self.Eg * self.pvconst.q / self.pvconst.k * _inv_delta_T
+        )
         return self.Isat1_T0 * _Tstar * _expTstar  # [A] Isat1(Tcell)
 
     def calc_Isc0(self):
         """
         Short circuit current at Tcell
         """
-        _delta_T = self.Tcell - self.T0  # [K] temperature difference
+        _delta_T = self.Tcell - self.pvconst.T0  # [K] temperature difference
         return self.Isc0_T0 * (1 + self.alpha_Isc * _delta_T)  # [A] Isc0
