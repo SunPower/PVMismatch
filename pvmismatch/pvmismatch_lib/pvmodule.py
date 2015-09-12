@@ -77,31 +77,7 @@ class PVmodule(object):
         (self.Icell, self.Vcell, self.Pcell) = self.calcCell()
         (self.Imod, self.Vmod, self.Pmod, self.Vsubstr) = self.calcMod()
 
-    def calcCell(self):
-        """
-        Calculate cell I-V curves.
-        Returns (Icell, Vcell, Pcell) : tuple of numpy.ndarray of float
-        """
-        Vdiode = self.Voc * self.pvconst.pts
-        VPTS = self.pvconst.VRBD * self.pvconst.negpts
-        VPTS = VPTS.repeat(self.numberCells, axis=1)
-        Vdiode = np.concatenate((VPTS, Vdiode), axis=0)
-        Igen = self.pvconst.Aph * self.pvconst.Isc0 * self.Ee
-        Idiode1 = (self.pvconst.Isat1 * (np.exp(self.pvconst.q * Vdiode /
-                   self.pvconst.k / self.pvconst.Tcell) - 1))
-        Idiode2 = (self.pvconst.Isat2 * (np.exp(self.pvconst.q * Vdiode / 2 /
-                   self.pvconst.k / self.pvconst.Tcell) - 1))
-        Ishunt = Vdiode / self.pvconst.Rsh
-        fRBD = (1 - Vdiode / self.pvconst.VRBD)
-        fRBD_zeros = (fRBD == 0)
-        if np.any(fRBD_zeros):
-            # use epsilon = 2.2204460492503131e-16 to avoid "divide by zero"
-            fRBD[fRBD_zeros] = np.finfo(np.float64).eps
-        fRBD = self.pvconst.aRBD * fRBD ** (-self.pvconst.nRBD)
-        Icell = Igen - Idiode1 - Idiode2 - Ishunt * (1 + fRBD)
-        Vcell = Vdiode - Icell * self.pvconst.Rs
-        Pcell = Icell * Vcell
-        return (Icell, Vcell, Pcell)
+        # VPTS = VPTS.repeat(self.numberCells, axis=1)
 
     def calcMod(self):
         """

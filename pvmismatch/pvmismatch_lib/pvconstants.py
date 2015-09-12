@@ -121,3 +121,19 @@ class PVconstants(object):
 
     def __repr__(self):
         return str(self)
+
+
+def Vdiode(Icell, Vcell, Rs):
+    return Vcell + Icell * Rs
+
+
+def Idiode(Isat, Vdiode, Vt, n):
+    return Isat * (np.exp(Vdiode / n / Vt) - 1)
+
+
+def Ishunt(Vdiode, Rsh):
+    return Vdiode / Rsh
+
+
+def Igen(Aph, Ee, Isc0):
+    return Aph * Ee * Isc0

@@ -32,8 +32,7 @@ class PVstring(object):
             self.pvmods = ([PVmodule(self.pvconst, self.numberCells, Ee)] *
                            self.numberMods)
             self.pvmods[1:] = [deepcopy(pvmod) for pvmod in self.pvmods[1:]]
-        elif ((type(pvmods) is list) and
-              all([(type(pvmod) is PVmodule) for pvmod in pvmods])):
+        elif all(isinstance(pvmod, PVmodule) for pvmod in pvmods):
             pvmodsNumCells = [pvmod.numberCells == pvmods[0].numberCells
                               for pvmod in pvmods]
             if all(pvmodsNumCells):
