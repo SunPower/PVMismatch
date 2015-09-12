@@ -4,7 +4,7 @@ This module defines the :class:`~pvmismatch.pvmismatch_lib.pvmodule.PVmodule`.
 """
 
 import numpy as np
-from copy import deepcopy
+from copy import copy
 from matplotlib import pyplot as plt
 # use absolute imports instead of relative, so modules are portable
 from pvmismatch.pvmismatch_lib.pvconstants import PVconstants, npinterpx, \
@@ -24,14 +24,25 @@ def serpentine(nrows, ncols):
 
 
 # cell positions presets
+STD72 = [
+    {'row': r, 'col': c,
+     'series': (n + 1 if n < 71 else None), 'parallel': None,
+     'substring': n / 24} for n, (r, c) in enumerate(serpentine(12, 6))
+]
 STD96 = [
     {'row': r, 'col': c,
-     'series': (n + 1 if n < 96 else None), 'parallel': None,
+     'series': (n + 1 if n < 95 else None), 'parallel': None,
      'substring': (n + 24) / 48} for n, (r, c) in enumerate(serpentine(12, 8))
+]
+STD128 = [
+    {'row': r, 'col': c,
+     'series': (n + 1 if n < 127 else None), 'parallel': None,
+     'substring': (n + 32) / 64} for n, (r, c) in enumerate(serpentine(16, 8))
 ]
 TCT96 = [
     {'row': r, 'col': c,
-     'series': c*12+r+1 if r<11 else None, 'parallel': (c+1)*12+r if c<7 else None,
+     'series': c * 12 + r + 1 if r < 11 else None,
+     'parallel': (c + 1) * 12 + r if c < 7 else None,
      'substring': r / 4} for r, c in zip_flat_meshgrid(12, 8)
 ]
 
@@ -43,38 +54,72 @@ class PVmodule(object):
     :param pvconst: An object with common parameters and constants.
     :type pvconst: :class:`PVconstants`
     :param numberCells: The number of cells in the module.
-    :type numberCells: int
-    :param subStrCells: A sequence of the number of cells in each
-        substring. The length of the sequence is the number of substrings.
-        The sum of the sequence must equal the number of cells in the
-        module or else raises error.
     :param Ee: Effective irradiance in suns [1].
     :type Ee: float
     """
-    def __init__(self, pvcells=None, cell_pos=STD96, Ee=1.,
-                 pvconst=PVconstants(), numberCells=None, subStrCells=None):
-        # Constructor
-        self.numberCells = numberCells
-        if pvcells is None:
-            # use deep copy instead of making each object in a for-loop
-            pvc = PVcell(pvconst=pvconst, Ee=Ee)
-            self.pvcells = [deepcopy(pvc) for _ in xrange(self.numberCells)]
-        if subStrCells:
-            self.subStrCells = subStrCells  # sequence of cells per substring
-        elif self.numberCells in MODSIZES:
-            self.subStrCells = SUBSTRSIZES[MODSIZES.index(self.numberCells)]
-        else:
-            self.subStrCells = [self.numberCells]
-        self.numSubStr = len(self.subStrCells)  # number of substrings
-        if sum(self.subStrCells) != self.numberCells:
-            raise Exception("Invalid cells per substring!")
-        self.Ee = Ee
-        # initialize members so PyLint doesn't get upset
-        self.Voc = self.Vcell = self.Vmod = self.Vsubstr = 0
-        self.Icell = self.Imod = 0
-        self.Pcell = self.Pmod = 0
+    def __init__(self, cell_pos=STD96, pvcells=None, pvconst=PVconstants()):
+        # TODO: check cell position pattern
+        self.cell_pos = cell_pos
+        self.numberCells = len(self.cell_pos)
         self.pvconst = pvconst
-        self.setSuns(Ee)
+        if pvcells is None:
+            # faster to use copy instead of making each object in a for-loop
+            # use copy instead of deepcopy to keey same pvconst for all objects
+            # PVcell.calcCell() creates new np.ndarray if attributes change
+            pvc = PVcell(pvconst=pvconst)
+            pvcells = [copy(pvc) for _ in xrange(self.numberCells)]
+        else:
+            if len(pvcells) != self.numberCells:
+                # TODO: use pvexception
+                raise Exception(
+                    "Number of cells doesn't match cell position pattern."
+                )
+        self.pvcells = pvcells  #: list of `PVcell` objects in this `PVmodule`
+        self.substrings = {z['substring'] for z in self.cell_pos}
+        self.substr_cellidx = [[idx for idx, cidx in enumerate(self.cell_pos)
+                                if cidx['substring'] == substr]
+                               for substr in self.substrings]
+        self.subStrCells = [len([_ for _ in self.substr_cellidx])]
+        self.numSubStr = len(self.substrings)  # number of substrings
+        if sum(self.subStrCells) != self.numberCells:
+            # TODO: use pvexception
+            raise Exception("Invalid cells per substring!")
+        # initialize members so PyLint doesn't get upset
+        self.Vmod = self.Vsubstr =  self.Imod = self.Pmod = 0
+        # self.setSuns(Ee)
+
+    # copy some values from cells to modules
+    @property
+    def Ee(self):
+        return np.array([pvc.Ee.flatten() for pvc in self.pvcells])
+
+    @property
+    def Tcell(self):
+        return np.array([pvc.Tcell.flatten() for pvc in self.pvcells])
+
+    @property
+    def Icell(self):
+        return np.array([pvc.Icell.flatten() for pvc in self.pvcells])
+
+    @property
+    def Vcell(self):
+        return np.array([pvc.Vcell.flatten() for pvc in self.pvcells])
+
+    @property
+    def Pcell(self):
+        return np.array([pvc.Pcell.flatten() for pvc in self.pvcells])
+
+    @property
+    def Isc(self):
+        return np.array([pvc.Isc.flatten() for pvc in self.pvcells])
+
+    @property
+    def Voc(self):
+        return np.array([pvc.Voc.flatten() for pvc in self.pvcells])
+
+    @property
+    def VRBD(self):
+        return np.array([pvc.VRBD.flatten() for pvc in self.pvcells])
 
     def setSuns(self, Ee, cells=None):
         """
@@ -102,7 +147,6 @@ class PVmodule(object):
                 self.Ee[0, cells] = Ee
             else:
                 raise Exception("Input irradiance value (Ee) for each cell!")
-        self.Voc = self.calcVoc()
         (self.Icell, self.Vcell, self.Pcell) = self.calcCell()
         (self.Imod, self.Vmod, self.Pmod, self.Vsubstr) = self.calcMod()
 
@@ -113,18 +157,14 @@ class PVmodule(object):
         Calculate module I-V curves.
         Returns (Imod, Vmod, Pmod) : tuple of numpy.ndarray of float
         """
-        # create range for interpolation, it must include reverse bias
-        # and some negative current to interpolate all cells
-        # find Icell at Vrbd for all cells in module
-        IatVrbd = [np.interp(self.pvconst.VRBD, Vcell, Icell) for
-                   (Vcell, Icell) in zip(self.Vcell.T, self.Icell.T)]
-        Isc = np.mean(self.Ee) * self.pvconst.Isc0
-        # max current
-        Imax = (np.max(IatVrbd) - Isc) * self.pvconst.Imod_pts + Isc
-        Imin = np.min(self.Icell)
-        Imin = Imin if Imin < 0 else 0
-        Ineg = (Imin - Isc) * self.pvconst.Imod_negpts + Isc  # min current
-        Imod = np.concatenate((Ineg, Imax), axis=0)  # interpolation range
+        # range of currents in reverse bias from max cell current to mean Isc
+        meanIsc = self.Isc.mean()  # average short circuit current
+        Imax = (self.Icell.max() - meanIsc) * self.pvconst.Imod_pts + meanIsc
+        Imin = min(self.Icell.min(), 0.)  # minimum cell current, at most zero
+        # range of currents in forward bias from mean Isc to min current
+        Imin = (Imin - meanIsc) * self.pvconst.Imod_negpts + meanIsc
+        # create range for interpolation from reverse and forward bias
+        Imod = np.concatenate((Imin, Imax), axis=0)  # interpolation range
         Vsubstr = np.zeros((2 * self.pvconst.npts, self.numSubStr))
         start = np.cumsum(self.subStrCells) - self.subStrCells
         stop = np.cumsum(self.subStrCells)

@@ -8,3 +8,5 @@ PV strings and PV system objects are all defined here.
 """
 
 # imports, version and other info moved to package top level
+
+# TODO: move pvconstants here

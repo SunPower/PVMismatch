@@ -10,6 +10,7 @@ processing parameters. This module also contains some utility functions like
 
 import numpy as np
 import scipy.constants
+from scipy.interpolate import interp1d
 
 # Constants
 NPTS = 101  # number of I-V points to calculate
@@ -122,6 +123,22 @@ class PVconstants(object):
     def __repr__(self):
         return str(self)
 
+    def calcSeries(self, I, V, Isc):
+        I = np.asarray(I)
+        V = np.asarray(V)
+        Isc = np.asarray(Isc)
+        meanIsc = Isc.mean()
+        Iforward = (I.max() - meanIsc) * self.Imod_pts + meanIsc
+        Imin = min(I.min(), 0.)  # minimum cell current, at most zero
+        # range of currents in forward bias from mean Isc to min current
+        Ireverse = (Imin - meanIsc) * self.Imod_negpts + meanIsc
+        # create range for interpolation from reverse and forward bias
+        Itot = np.concatenate((Ireverse, Iforward), axis=0)  # common currents
+        Vtot = np.zeros(2 * self.npts, 1)
+        for i, v in zip(I.T, V.T):
+            Vtot += npinterpx(Itot.flatten(), i, v)
+        return Vtot
+
 
 def Vdiode(Icell, Vcell, Rs):
     return Vcell + Icell * Rs
@@ -137,3 +154,8 @@ def Ishunt(Vdiode, Rsh):
 
 def Igen(Aph, Ee, Isc0):
     return Aph * Ee * Isc0
+
+
+
+def calcParallel(self):
+    pass

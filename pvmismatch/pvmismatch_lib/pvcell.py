@@ -71,7 +71,7 @@ class PVcell(object):
 
     def __str__(self):
         fmt = '<PVcell(Ee=%g[suns], Tcell=%g[K], Isc=%g[A], Voc=%g[V])>'
-        return fmt % (self.Ee, self.Tcell, self.Isc0 * self.Ee, self.Voc)
+        return fmt % (self.Ee, self.Tcell, self.Isc, self.Voc)
 
     def __repr__(self):
         return str(self)
@@ -104,18 +104,21 @@ class PVcell(object):
         return self.pvconst.k * self.Tcell / self.pvconst.q
 
     @property
+    def Isc(self):
+        return self.Ee * self.Isc0
+
+    @property
     def Aph(self):
         """
         Photogenerated current coefficient, non-dimensional.
         """
         # short current (SC) conditions (Vcell = 0)
-        Isc = self.Ee * self.Isc0
-        Vdiode_sc = Isc * self.Rs  # diode voltage at SC
+        Vdiode_sc = self.Isc * self.Rs  # diode voltage at SC
         Idiode1_sc = self.Isat1 * (np.exp(Vdiode_sc / self.Vt) - 1.)
         Idiode2_sc = self.Isat2 * (np.exp(Vdiode_sc / 2. / self.Vt) - 1.)
         Ishunt_sc = Vdiode_sc / self.Rsh  # diode voltage at SC
         # photogenerated current coefficient
-        return 1. + (Idiode1_sc + Idiode2_sc + Ishunt_sc) / Isc
+        return 1. + (Idiode1_sc + Idiode2_sc + Ishunt_sc) / self.Isc
 
     @property
     def Isat1(self):
