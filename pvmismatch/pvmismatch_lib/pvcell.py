@@ -4,8 +4,10 @@
 This module contains the :class:`~pvmismatch.pvmismatch_lib.pvcell.PVcell`
 object which is used by modules, strings and systems.
 """
-import numpy as np
+
 from pvmismatch.pvmismatch_lib.pvconstants import PVconstants
+import numpy as np
+from matplotlib import pyplot as plt
 from scipy.optimize import fsolve
 
 # Defaults
@@ -28,32 +30,44 @@ ALPHA_ISC = 0.0003551  # [1/K] short circuit current temperature coefficient
 class PVcell(object):
     """
     PVconstants - Class for PV constants
+    :param Rs: series resistance [ohms]
+    :param Rsh: shunt resistance [ohms]
+    :param Isat1_T0: first saturation diode current at ref temp [A]
+    :param Isat2: second saturation diode current [A]
+    :param Isc0_T0: short circuit current at ref temp [A]
+    :param cellArea: cell area [cm^2]
+    :param Vbypass: bypass diode trigger voltage [V]
+    :param aRBD: reverse breakdown coefficient
+    :param VRBD: reverse breakdown voltage [V]
+    :param nRBD: reverse breakdown exponent
+    :param Eg: band gap [eV]
+    :param alpha_Isc: short circuit current temp coeff [1/K]
+    :param Tcell: cell temperature [K]
+    :param Ee: incident effective irradiance [suns]
     """
     def __init__(self, Rs=RS, Rsh=RSH, Isat1_T0=ISAT1_T0, Isat2=ISAT2,
-                 Isc0_T0=ISC0_T0, Tcell=TCELL, cellArea=CELLAREA,
-                 Vbypass=VBYPASS, aRBD=ARBD, VRBD=VRBD_, nRBD=NRBD, Eg=EG,
-                 alpha_Isc=ALPHA_ISC, Ee=1., pvconst=PVconstants()):
+                 Isc0_T0=ISC0_T0, cellArea=CELLAREA, Vbypass=VBYPASS,
+                 aRBD=ARBD, VRBD=VRBD_, nRBD=NRBD, Eg=EG, alpha_Isc=ALPHA_ISC,
+                 Tcell=TCELL, Ee=1., pvconst=PVconstants()):
         # user inputs
-        self.Ee = float(Ee)  #: [suns] incident effective irradiance on cell
+        self.Rs = Rs  #: [ohm] series resistance
+        self.Rsh = Rsh  #: [ohm] shunt resistance
+        self.Isat1_T0 = Isat1_T0  #: [A] diode one sat. current at T0
+        self.Isat2 = Isat2  #: [A] diode two saturation current
+        self.Isc0_T0 = Isc0_T0  #: [A] short circuit current at T0
+        self.cellArea = cellArea  #: [cm^2] cell area
+        self.Vbypass = Vbypass  #: [V] trigger voltage of bypass diode
+        self.aRBD = aRBD  #: reverse breakdown coefficient
+        self.VRBD = VRBD  #: [V] reverse breakdown voltage
+        self.nRBD = nRBD  #: reverse breakdown exponent
+        self.Eg = Eg  #: [eV] band gap of cSi
+        self.alpha_Isc = alpha_Isc  #: [1/K] short circuit temp. coeff.
+        self.Tcell = Tcell  #: [K] cell temperature
+        self.Ee = Ee  #: [suns] incident effective irradiance on cell
         self.pvconst = pvconst  #: configuration constants
-        self.Eg = float(Eg)  #: [eV] band gap of cSi
-        self.alpha_Isc = float(alpha_Isc)  #: [1/K] short circuit temp. coeff.
-        self.Tcell = float(Tcell)  #: [K] cell temperature
-        self.Rs = float(Rs)  #: [ohm] series resistance
-        self.Rsh = float(Rsh)  #: [ohm] shunt resistance
-        self.Isat1_T0 = float(Isat1_T0)  #: [A] diode one sat. current at T0
-        # Isat1(Tcell) is a property
-        self.Isat2 = float(Isat2)  #: [A] diode two saturation current
-        # Aph is a property
-        self.Isc0_T0 = float(Isc0_T0)  #: [A] short circuit current at T0
-        # Isc(E0, Tcell) is a property
-        self.cellArea = float(cellArea)  #: [cm^2] cell area
-        self.Vbypass = float(Vbypass)  #: [V] trigger voltage of bypass diode
-        self.aRBD = float(aRBD)  #: reverse breakdown coefficient
-        self.VRBD = float(VRBD)  #: [V] reverse breakdown voltage
-        self.nRBD = float(nRBD)  #: reverse breakdown exponent
-        # Voc(Ee, Tcell) is a property
-        # IVcurve(Ee, Tcell) is a property
+        self.Icell = None  #: cell currents on IV curve [A]
+        self.Vcell = None  #: cell voltages on IV curve [V]
+        self.Pcell = None  #: cell power on IV curve [W]
 
     def __str__(self):
         fmt = '<PVcell(Ee=%g[suns], Tcell=%g[K], Isc=%g[A], Voc=%g[V])>'
@@ -63,9 +77,16 @@ class PVcell(object):
         return str(self)
 
     def __setattr__(self, key, value):
-        if key not in ['pvconst']:
+        if key not in ['pvconst', 'Icell', 'Vcell', 'Pcell']:
             value = float(value)
         super(PVcell, self).__setattr__(key, value)
+        # after all attributes have been initialized, recalculate IV curve
+        # every time __setattr__() is called
+        if hasattr(self, 'pvconst'):
+            Icell, Vcell, Pcell = self.calcCell()
+            super(PVcell, self).__setattr__('Icell', Icell)
+            super(PVcell, self).__setattr__('Vcell', Vcell)
+            super(PVcell, self).__setattr__('Pcell', Pcell)
 
     def update(self, **kwargs):
         """
@@ -128,8 +149,7 @@ class PVcell(object):
             ((-self.Isat2 + np.sqrt(delta)) / 2. / self.Isat1) ** 2.
         )
 
-    @property
-    def IVcurve(self):
+    def calcCell(self):
         """
         Calculate cell I-V curves.
         Returns (Icell, Vcell, Pcell) : tuple of numpy.ndarray of float
@@ -162,10 +182,10 @@ class PVcell(object):
     # http://en.wikipedia.org/wiki/William_Shockley
 
     @staticmethod
-    def f_Icell(Icell0, Vcell, Ee, Isc0, Aph, Rs, Vt, Isat1, Isat2, Rsh):
+    def f_Icell(Icell, Vcell, Ee, Isc0, Aph, Rs, Vt, Isat1, Isat2, Rsh):
         """
         Objective function for Icell.
-        :param Icell0: guess cell current [A]
+        :param Icell: cell current [A]
         :param Vcell: cell voltage [V]
         :param Ee: incident effective irradiance [suns]
         :param Isc0: short circuit current at Tcell and E0 [A]
@@ -179,17 +199,72 @@ class PVcell(object):
         """
         # arbitrary current condition
         Igen = Aph * Ee * Isc0  # photogenerated current
-        Vdiode = float(Vcell) + Icell0 * Rs  # diode voltage
+        Vdiode = float(Vcell) + Icell * Rs  # diode voltage
         Idiode1 = Isat1 * (np.exp(Vdiode / Vt) - 1.)  # diode current
         Idiode2 = Isat2 * (np.exp(Vdiode / 2. / Vt) - 1.)  # diode current
         Ishunt = Vdiode / Rsh  # shunt current
-        return Igen - Idiode1 - Idiode2 - Ishunt - Icell0
+        return Igen - Idiode1 - Idiode2 - Ishunt - Icell
 
-    def Icell(self, Vcell):
+    def calcIcell(self, Vcell):
         """
         Calculate Icell as a function of Vcell.
         :param Vcell: cell voltage [V]
         :return: Icell
         """
-        return fsolve(self.f_Icell, 0, (Vcell, self.Ee, self.Isc0, self.Aph,
-                      self.Rs, self.Vt, self.Isat1, self.Isat2, self.Rsh))
+        args = (Vcell, self.Ee, self.Isc0, self.Aph, self.Rs, self.Vt,
+                self.Isat1, self.Isat2, self.Rsh)
+        return fsolve(self.f_Icell, self.Isc0, args)
+
+    @staticmethod
+    def f_Vcell(Vcell, Icell, Ee, Isc0, Aph, Rs, Vt, Isat1, Isat2, Rsh):
+        return PVcell.f_Icell(
+            Icell, Vcell, Ee, Isc0, Aph, Rs, Vt, Isat1, Isat2, Rsh
+        )
+
+    def calcVcell(self, Icell):
+        """
+        Calculate Vcell as a function of Icell.
+        :param Icell: cell current [A]
+        :return: Vcell
+        """
+        args = (Icell, self.Ee, self.Isc0, self.Aph, self.Rs, self.Vt,
+                self.Isat1, self.Isat2, self.Rsh)
+        return fsolve(self.f_Vcell, self.Voc, args)
+
+    def plot(self):
+        """
+        Plot cell I-V curve.
+        Returns cellPlot : matplotlib.pyplot figure
+        """
+        cell_plot = plt.figure()
+        plt.subplot(2, 2, 1)
+        plt.plot(self.Vcell, self.Icell)
+        plt.title('Cell Reverse I-V Characteristics')
+        plt.ylabel('Cell Current, I [A]')
+        plt.xlim(self.VRBD - 1, 0)
+        plt.ylim(0, self.Ee * (self.Isc0 + 10))
+        plt.grid()
+        plt.subplot(2, 2, 2)
+        plt.plot(self.Vcell, self.Icell)
+        plt.title('Cell Forward I-V Characteristics')
+        plt.ylabel('Cell Current, I [A]')
+        plt.xlim(0, self.Voc)
+        plt.ylim(0, self.Ee * (self.Isc0 + 1))
+        plt.grid()
+        plt.subplot(2, 2, 3)
+        plt.plot(self.Vcell, self.Pcell)
+        plt.title('Cell Reverse P-V Characteristics')
+        plt.xlabel('Cell Voltage, V [V]')
+        plt.ylabel('Cell Power, P [W]')
+        plt.xlim(self.VRBD - 1, 0)
+        plt.ylim(self.Ee * (self.Isc0 + 10) * (self.VRBD - 1), -1)
+        plt.grid()
+        plt.subplot(2, 2, 4)
+        plt.plot(self.Vcell, self.Pcell)
+        plt.title('Cell Forward P-V Characteristics')
+        plt.xlabel('Cell Voltage, V [V]')
+        plt.ylabel('Cell Power, P [W]')
+        plt.xlim(0, self.Voc)
+        plt.ylim(0, self.Ee * (self.Isc0 + 1) * self.Voc)
+        plt.grid()
+        return cell_plot

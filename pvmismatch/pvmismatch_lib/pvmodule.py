@@ -4,6 +4,7 @@ This module defines the :class:`~pvmismatch.pvmismatch_lib.pvmodule.PVmodule`.
 """
 
 import numpy as np
+from copy import deepcopy
 from matplotlib import pyplot as plt
 # use absolute imports instead of relative, so modules are portable
 from pvmismatch.pvmismatch_lib.pvconstants import PVconstants, npinterpx, \
@@ -26,7 +27,7 @@ class PVmodule(object):
     :param Ee: Effective irradiance in suns [1].
     :type Ee: float
     """
-    def __init__(self, pvcells=PVcell(), numberCells=NUMBERCELLS, Ee=1,
+    def __init__(self, pvcells=PVcell(), numberCells=NUMBERCELLS, Ee=1.,
                  subStrCells=None, pvconst=PVconstants()):
         # Constructor
         self.pvconst = pvconst
