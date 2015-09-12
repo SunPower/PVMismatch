@@ -30,7 +30,6 @@ class PVmodule(object):
     def __init__(self, pvcells=PVcell(), numberCells=NUMBERCELLS, Ee=1.,
                  subStrCells=None, pvconst=PVconstants()):
         # Constructor
-        self.pvconst = pvconst
         self.numberCells = numberCells
         if subStrCells:
             self.subStrCells = subStrCells  # sequence of cells per substring
@@ -46,6 +45,7 @@ class PVmodule(object):
         self.Voc = self.Vcell = self.Vmod = self.Vsubstr = 0
         self.Icell = self.Imod = 0
         self.Pcell = self.Pmod = 0
+        self.pvconst = pvconst
         self.setSuns(Ee)
 
     def setSuns(self, Ee, cells=None):
