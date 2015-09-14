@@ -10,7 +10,6 @@ processing parameters. This module also contains some utility functions like
 
 import numpy as np
 import scipy.constants
-from scipy.interpolate import interp1d
 
 # Constants
 NPTS = 101  # number of I-V points to calculate
@@ -98,10 +97,10 @@ class PVconstants(object):
         pts[0] = 0.  # first point must be exactly zero
         self.pts = pts.reshape(self.npts, 1)
         """array of points with decreasing spacing from 0 to 1"""
-        negpts = (11. - np.logspace(np.log10(11. - 1./float(self.npts)),
+        negpts = (11. - np.logspace(np.log10(11. - 1. / np.float64(self.npts)),
                                     0., self.npts)) / 10.
         negpts = negpts.reshape(self.npts, 1)
-        self.Imod_negpts = 1 + 1./float(self.npts)/10. - negpts
+        self.Imod_negpts = 1 + 1. / np.float64(self.npts) / 10. - negpts
         """array of points with decreasing spacing from 1 to just less than but
         not including zero"""
         self.negpts = np.flipud(negpts)  # reverse the order
@@ -123,21 +122,41 @@ class PVconstants(object):
     def __repr__(self):
         return str(self)
 
-    def calcSeries(self, I, V, Isc):
-        I = np.asarray(I)
-        V = np.asarray(V)
-        Isc = np.asarray(Isc)
-        meanIsc = Isc.mean()
-        Iforward = (I.max() - meanIsc) * self.Imod_pts + meanIsc
-        Imin = min(I.min(), 0.)  # minimum cell current, at most zero
-        # range of currents in forward bias from mean Isc to min current
-        Ireverse = (Imin - meanIsc) * self.Imod_negpts + meanIsc
-        # create range for interpolation from reverse and forward bias
-        Itot = np.concatenate((Ireverse, Iforward), axis=0)  # common currents
-        Vtot = np.zeros(2 * self.npts, 1)
-        for i, v in zip(I.T, V.T):
-            Vtot += npinterpx(Itot.flatten(), i, v)
-        return Vtot
+    def calcSeries(self, I, V, Isc, VRBD):
+        """
+        Calculate IV curve for cells and substrings in series.
+        :param I: cell or substring currents [A]
+        :param V: cell or substring voltages [V]
+        :param Isc: cell or substring short circuit currenta [A]
+        :return: current [A] and voltage [V] of series
+        """
+        # make sure all inputs are numpy arrays, but don't make extra copies
+        I = np.asarray(I)  # currents [A]
+        V = np.asarray(V)  # voltages [V]
+        Isc = np.asarray(Isc)  # short circuit currents [A]
+        VRBD = np.asarray(VRBD)  # reverse breakdown voltages [V]
+        # limit maximum current to values at VRBD so that interpolation points
+        # are optimally distributed only from VRBD to Isc
+        IatVrbd = np.asarray(
+            [np.interp(vrbd, v, i) for (vrbd, v, i) in zip(VRBD, V, I)]
+        )  # voltage is already monotonically increasing
+        meanIsc = Isc.mean()  # average short circuit current
+        # create array of currents optimally spaced from mean Isc to  max VRBD
+        Ireverse = (IatVrbd.max() - meanIsc) * self.Imod_pts + meanIsc
+        Imin = np.minimum(I.min(), 0.)  # minimum cell current, at most zero
+        # range of currents in forward bias from min current to mean Isc
+        Iforward = (Imin - meanIsc) * self.Imod_negpts + meanIsc
+        # create range for interpolation from forward to reverse bias
+        Itot = np.concatenate((Iforward, Ireverse), axis=0).flatten()
+        Vtot = np.zeros((2 * self.npts,))
+        # add up all series cell voltages
+        for i, v in zip(I, V):
+            # interp requires x, y to be sorted by x in increasing order
+            Vtot += npinterpx(Itot, np.flipud(i), np.flipud(v))
+        return Itot, Vtot
+
+    def calcParallel(self):
+        pass
 
 
 def Vdiode(Icell, Vcell, Rs):
@@ -154,8 +173,3 @@ def Ishunt(Vdiode, Rsh):
 
 def Igen(Aph, Ee, Isc0):
     return Aph * Ee * Isc0
-
-
-
-def calcParallel(self):
-    pass

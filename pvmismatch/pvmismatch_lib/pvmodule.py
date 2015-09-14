@@ -11,6 +11,7 @@ from pvmismatch.pvmismatch_lib.pvconstants import PVconstants, npinterpx, \
     MODSIZES, SUBSTRSIZES, NUMBERCELLS
 from pvmismatch.pvmismatch_lib.pvcell import PVcell
 
+VBYPASS = -0.5  # [V] trigger voltage of bypass diode
 
 def zip_flat_meshgrid(nrows, ncols):
     x, y = np.meshgrid(np.arange(nrows), np.arange(ncols))
@@ -51,17 +52,22 @@ class PVmodule(object):
     """
     PVmodule - A Class for PV modules.
 
+    :param cell_pos: cell position pattern
+    :type cell_pos: dict
+    :param pvcells: An sequence of objects representing solar cells.
+    :type pvcell: :class:`~pvmismatch.pvmismatch_lib.pvcell.PVcell`
     :param pvconst: An object with common parameters and constants.
-    :type pvconst: :class:`PVconstants`
-    :param numberCells: The number of cells in the module.
-    :param Ee: Effective irradiance in suns [1].
-    :type Ee: float
+    :type pvconst: :class:`~pvmismatch.pvmismatch_lib.pvconstants.PVconstants`
+    :param Vbypass: bypass diode trigger voltage [V]
+    :type Vbypass: float
     """
-    def __init__(self, cell_pos=STD96, pvcells=None, pvconst=PVconstants()):
+    def __init__(self, cell_pos=STD96, pvcells=None, pvconst=PVconstants(),
+                 Vbypass=VBYPASS):
         # TODO: check cell position pattern
-        self.cell_pos = cell_pos
-        self.numberCells = len(self.cell_pos)
-        self.pvconst = pvconst
+        self.cell_pos = cell_pos  #: cell position pattern dictionary
+        self.numberCells = len(self.cell_pos)  #: number of cells in the module
+        self.pvconst = pvconst  #: configuration constants
+        self.Vbypass = Vbypass  #: [V] trigger voltage of bypass diode
         if pvcells is None:
             # faster to use copy instead of making each object in a for-loop
             # use copy instead of deepcopy to keey same pvconst for all objects
@@ -79,13 +85,10 @@ class PVmodule(object):
         self.substr_cellidx = [[idx for idx, cidx in enumerate(self.cell_pos)
                                 if cidx['substring'] == substr]
                                for substr in self.substrings]
-        self.subStrCells = [len([_ for _ in self.substr_cellidx])]
+        self.subStrCells = [len(_) for _ in self.substr_cellidx]
         self.numSubStr = len(self.substrings)  # number of substrings
-        if sum(self.subStrCells) != self.numberCells:
-            # TODO: use pvexception
-            raise Exception("Invalid cells per substring!")
         # initialize members so PyLint doesn't get upset
-        self.Vmod = self.Vsubstr =  self.Imod = self.Pmod = 0
+        self.Imod = self.Vmod = self.Pmod = self.Vsubstr = 0
         # self.setSuns(Ee)
 
     # copy some values from cells to modules
@@ -134,23 +137,24 @@ class PVmodule(object):
         """
         if cells is None:
             if np.isscalar(Ee):
-                self.Ee = np.ones((1, self.numberCells)) * Ee
+                for pvc in self.pvcells:
+                    pvc.Ee = Ee
             elif np.size(Ee) == self.numberCells:
-                self.Ee = np.reshape(Ee, (1, self.numberCells))
+                for pvc, Ee_idx in zip(self.pvcells, Ee):
+                    pvc.Ee = Ee_idx
             else:
                 raise Exception("Input irradiance value (Ee) for each cell!")
         else:
             Nsuns = np.size(cells)
             if np.isscalar(Ee):
-                self.Ee[0, cells] = np.ones(Nsuns) * Ee
+                for cell_idx in cells:
+                    self.pvcells[cell_idx].Ee = Ee
             elif np.size(Ee) == Nsuns:
-                self.Ee[0, cells] = Ee
+                for cell_idx in cells:
+                    self.pvcells[cell_idx].Ee = Ee[cell_idx]
             else:
                 raise Exception("Input irradiance value (Ee) for each cell!")
-        (self.Icell, self.Vcell, self.Pcell) = self.calcCell()
         (self.Imod, self.Vmod, self.Pmod, self.Vsubstr) = self.calcMod()
-
-        # VPTS = VPTS.repeat(self.numberCells, axis=1)
 
     def calcMod(self):
         """
@@ -173,8 +177,8 @@ class PVmodule(object):
                 xp = np.flipud(self.Icell[:, cell])
                 fp = np.flipud(self.Vcell[:, cell])
                 Vsubstr[:, substr] += npinterpx(Imod.flatten(), xp, fp)
-        bypassed = Vsubstr < self.pvconst.Vbypass
-        Vsubstr[bypassed] = self.pvconst.Vbypass
+        bypassed = Vsubstr < self.Vbypass
+        Vsubstr[bypassed] = self.Vbypass
         Vmod = np.sum(Vsubstr, 1).reshape(2 * self.pvconst.npts, 1)
         Pmod = Imod * Vmod
         return (Imod, Vmod, Pmod, Vsubstr)
