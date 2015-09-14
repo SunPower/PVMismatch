@@ -167,15 +167,6 @@ class PVmodule(object):
                 raise Exception("Input irradiance value (Ee) for each cell!")
         self.Imod, self.Vmod, self.Pmod, self.Vsubstr = self.calcMod()
 
-
-    # TODO: calcmod
-    #   1. check if all parallel - sum all parallel currents
-    #   2. check if any parallel
-    #   2a. how many columns are parallel at node before/after this cell
-    #   2b. how many rows are series before the next parallel
-    #   2c. sum series cells until next parallel
-    #   3. all cells are in series
-
     def calcMod(self):
         """
         Calculate module I-V curves.
@@ -195,7 +186,6 @@ class PVmodule(object):
                     self.Icell[idxs], self.Vcell[idxs], self.Isc[idxs].mean(),
                     IatVrbd.max()
                 )
-                Isub, Vsub = np.flipud(Isub), np.flipud(Vsub)
             elif all(r['circuit'] == 'parallel' for c in substr for r in c):
                 pass
             else:

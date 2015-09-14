@@ -124,7 +124,10 @@ class PVconstants(object):
 
     def calcSeries(self, I, V, meanIsc, Imax):
         """
-        Calculate IV curve for cells and substrings in series.
+        Calculate IV curve for cells and substrings in series given current and
+        voltage in increasing order by voltage, the average short circuit
+        current and the max current at the breakdown voltage.
+
         :param I: cell or substring currents [A]
         :param V: cell or substring voltages [V]
         :param meanIsc: average short circuit currenta [A]
@@ -148,8 +151,7 @@ class PVconstants(object):
         for i, v in zip(I, V):
             # interp requires x, y to be sorted by x in increasing order
             Vtot += npinterpx(Itot, np.flipud(i), np.flipud(v))
-        # TODO: flip again on the way out so that voltage is always increasing
-        return Itot, Vtot
+        return np.flipud(Itot), np.flipud(Vtot)
 
     def calcParallel(self):
         pass

@@ -74,8 +74,10 @@ class PVcell(object):
         return str(self)
 
     def __setattr__(self, key, value):
-        if key not in ['pvconst', 'Icell', 'Vcell', 'Pcell']:
+        try:
             value = np.float64(value)
+        except (TypeError, ValueError):
+            pass
         super(PVcell, self).__setattr__(key, value)
         # after all attributes have been initialized, recalculate IV curve
         # every time __setattr__() is called
