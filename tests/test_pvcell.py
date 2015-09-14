@@ -20,22 +20,22 @@ def test_pvcell_basic():
     ok_(isinstance(pvc, PVcell))
 
 
-def test_pvcell_setattr_recalcs_IV():
+def test_pvcell_setattr_recalc():
     pvc = PVcell()
-    I183 = pvc.Icell[183]
+    i183 = pvc.Icell[183]
     pvc.Tcell = 323
     pvc.Ee = 0.65
-    ok_(pvc.Icell[183] != I183)
+    ok_(pvc.Icell[183] != i183)
 
 
-def test_pvcell_calcIcell():
+def test_pvcell_calc_icell():
     pvc = PVcell()
     ok_(np.isclose(pvc.Icell[123], pvc.calcIcell(pvc.Vcell[123])))
     ok_(np.isclose(pvc.Icell[153], pvc.calcIcell(pvc.Vcell[153])))
     ok_(np.isclose(pvc.Icell[183], pvc.calcIcell(pvc.Vcell[183])))
 
 
-def test_pvcell_calcVcell():
+def test_pvcell_calc_vcell():
     pvc = PVcell()
     ok_(np.isclose(pvc.Vcell[123], pvc.calcVcell(pvc.Icell[123]), 1e-4))
     ok_(np.isclose(pvc.Vcell[153], pvc.calcVcell(pvc.Icell[153])))
@@ -44,18 +44,21 @@ def test_pvcell_calcVcell():
 
 def test_calc_series():
     pvconst = PVconstants()
-    pvcells = []
-    pvcells.append(PVcell(pvconst=pvconst, Tcell=323))
-    pvcells.append(PVcell(pvconst=pvconst, Ee=0.75, Tcell=313))
-    pvcells.append(PVcell(pvconst=pvconst, Ee=0.55, Tcell=303))
-    IatVrbd = np.asarray([np.interp(pvc.VRBD, pvc.Vcell.flat, pvc.Icell.flat)
-                          for pvc in pvcells])
-    Icells = np.asarray([pvc.Icell.flatten() for pvc in pvcells])
-    Vcells = np.asarray([pvc.Vcell.flatten() for pvc in pvcells])
-    Isc = np.asarray([pvc.Isc for pvc in pvcells])
-    i, v = pvconst.calcSeries(Icells, Vcells, Isc.mean(), IatVrbd.max())
+    pvcells = [
+        PVcell(pvconst=pvconst, Tcell=323),
+        PVcell(pvconst=pvconst, Ee=0.75, Tcell=313),
+        PVcell(pvconst=pvconst, Ee=0.55, Tcell=303)
+    ]
+    i_at_vrbd = np.asarray([np.interp(pvc.VRBD, pvc.Vcell.flat, pvc.Icell.flat)
+                            for pvc in pvcells])
+    icells = np.asarray([pvc.Icell.flatten() for pvc in pvcells])
+    vcells = np.asarray([pvc.Vcell.flatten() for pvc in pvcells])
+    isc = np.asarray([pvc.Isc for pvc in pvcells])
+    i, v = pvconst.calcSeries(icells, vcells, isc.mean(), i_at_vrbd.max())
     iv = np.loadtxt(os.path.join(BASE_DIR, 'calc_series_test_iv.dat'))
+    # noinspection PyTypeChecker
     ok_(np.all(i == iv[0]))
+    # noinspection PyTypeChecker
     ok_(np.all(v == iv[1]))
     return i, v
 
