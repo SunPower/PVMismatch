@@ -7,8 +7,7 @@ import numpy as np
 from copy import copy
 from matplotlib import pyplot as plt
 # use absolute imports instead of relative, so modules are portable
-from pvmismatch.pvmismatch_lib.pvconstants import PVconstants, npinterpx, \
-    MODSIZES, SUBSTRSIZES, NUMBERCELLS
+from pvmismatch.pvmismatch_lib.pvconstants import PVconstants
 from pvmismatch.pvmismatch_lib.pvcell import PVcell
 
 VBYPASS = -0.5  # [V] trigger voltage of bypass diode
@@ -68,8 +67,8 @@ class PVmodule(object):
 
     :param cell_pos: cell position pattern
     :type cell_pos: dict
-    :param pvcells: An sequence of objects representing solar cells.
-    :type pvcell: :class:`~pvmismatch.pvmismatch_lib.pvcell.PVcell`
+    :param pvcells: list of :class:`~pvmismatch.pvmismatch_lib.pvcell.PVcell`
+    :type pvcells: list
     :param pvconst: An object with common parameters and constants.
     :type pvconst: :class:`~pvmismatch.pvmismatch_lib.pvconstants.PVconstants`
     :param Vbypass: bypass diode trigger voltage [V]
@@ -173,6 +172,7 @@ class PVmodule(object):
         Returns (Imod, Vmod, Pmod) : tuple of numpy.ndarray of float
         """
         # iterate over substrings
+        # TODO: benchmark speed difference append() vs preallocate space
         Isubstr, Vsubstr, Isc_substr, Imax_substr = [], [], [], []
         for substr in self.cell_pos:
             # check if cells are in series or any parallel circuits
@@ -187,7 +187,24 @@ class PVmodule(object):
                     IatVrbd.max()
                 )
             elif all(r['circuit'] == 'parallel' for c in substr for r in c):
-                pass
+                Irows, Vrows = [], []
+                Isc_rows, Imax_rows = [], []
+                for row in zip(*substr):
+                    idxs = [c['idx'] for c in row]
+                    Irow, Vrow = self.pvconst.calcParallel(
+                        self.Icell[idxs], self.Vcell[idxs],
+                        self.Voc[idxs].mean(), self.VRBD.min()
+                    )
+                    Irows.append(Irow)
+                    Vrows.append(Vrow)
+                    Isc_rows.append(np.interp(0., Vrow, Irow))
+                    Imax_rows.append(Irow.max())
+                Irows, Vrows = np.asarray(Irows), np.asarray(Vrows)
+                Isc_rows = np.asarray(Isc_rows)
+                Imax_rows = np.asarray(Imax_rows)
+                Isub, Vsub = self.pvconst.calcSeries(
+                    Irows, Vrows, Isc_rows.mean(), Imax_rows.max()
+                )
             else:
                 pass
             bypassed = Vsub < self.Vbypass
@@ -253,15 +270,15 @@ class PVmodule(object):
         plt.plot(self.Vmod, self.Imod)
         plt.title('Module I-V Characteristics')
         plt.ylabel('Module Current, I [A]')
-        plt.ylim(0, self.Isc.mean() + 1)
-        plt.xlim(self.numSubStr * self.Vbypass - 1, self.Voc.sum() + 1)
+        plt.ylim(ymin=0)
+        plt.xlim(self.Vmod.min() - 1, self.Vmod.max() + 1)
         plt.grid()
         plt.subplot(2, 1, 2)
         plt.plot(self.Vmod, self.Pmod)
         plt.title('Module P-V Characteristics')
         plt.xlabel('Module Voltage, V [V]')
         plt.ylabel('Module Power, P [W]')
-        plt.ylim(ymin=0.)
-        plt.xlim(self.numSubStr * self.Vbypass - 1, self.Voc.sum() + 1)
+        plt.ylim(ymin=0)
+        plt.xlim(self.Vmod.min() - 1, self.Vmod.max() + 1)
         plt.grid()
         return modPlot

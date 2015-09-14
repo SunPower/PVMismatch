@@ -130,7 +130,7 @@ class PVconstants(object):
 
         :param I: cell or substring currents [A]
         :param V: cell or substring voltages [V]
-        :param meanIsc: average short circuit currenta [A]
+        :param meanIsc: average short circuit current [A]
         :param Imax: maximum current [A]
         :return: current [A] and voltage [V] of series
         """
@@ -153,8 +153,17 @@ class PVconstants(object):
             Vtot += npinterpx(Itot, np.flipud(i), np.flipud(v))
         return np.flipud(Itot), np.flipud(Vtot)
 
-    def calcParallel(self):
-        pass
+    def calcParallel(self, I, V, meanVoc, Vmin):
+        I, V = np.asarray(I), np.asarray(V)
+        meanVoc = np.asarray(meanVoc)
+        Vmin = np.asarray(Vmin)
+        Vreverse = Vmin * self.negpts
+        Vforward = meanVoc * self.pts
+        Vtot = np.concatenate((Vreverse, Vforward), axis=0).flatten()
+        Itot = np.zeros((2 * self.npts,))
+        for i, v in zip(I, V):
+            Itot += npinterpx(Vtot, v, i)
+        return Itot, Vtot
 
 
 def Vdiode(Icell, Vcell, Rs):

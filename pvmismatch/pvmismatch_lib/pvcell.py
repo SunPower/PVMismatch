@@ -157,9 +157,9 @@ class PVcell(object):
         Calculate cell I-V curves.
         Returns (Icell, Vcell, Pcell) : tuple of numpy.ndarray of float
         """
-        Vdiode = self.Voc * self.pvconst.pts
-        VPTS = self.VRBD * self.pvconst.negpts
-        Vdiode = np.concatenate((VPTS, Vdiode), axis=0)
+        Vreverse = self.VRBD * self.pvconst.negpts
+        Vforward = self.Voc * self.pvconst.pts
+        Vdiode = np.concatenate((Vreverse, Vforward), axis=0)
         Igen = self.Aph * self.Isc
         Idiode1 = self.Isat1 * (np.exp(Vdiode / self.Vt) - 1)
         Idiode2 = self.Isat2 * (np.exp(Vdiode / 2 / self.Vt) - 1)
