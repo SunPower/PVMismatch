@@ -44,7 +44,8 @@ class PVcell(object):
     :param Ee: incident effective irradiance [suns]
     """
     def __init__(self, Rs=RS, Rsh=RSH, Isat1_T0=ISAT1_T0, Isat2=ISAT2,
-                 Isc0_T0=ISC0_T0, cellArea=CELLAREA, aRBD=ARBD, VRBD=VRBD_, nRBD=NRBD, Eg=EG, alpha_Isc=ALPHA_ISC,
+                 Isc0_T0=ISC0_T0, cellArea=CELLAREA, aRBD=ARBD, VRBD=VRBD_,
+                 nRBD=NRBD, Eg=EG, alpha_Isc=ALPHA_ISC,
                  Tcell=TCELL, Ee=1., pvconst=PVconstants()):
         # user inputs
         self.Rs = Rs  #: [ohm] series resistance

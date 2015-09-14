@@ -128,6 +128,7 @@ class PVconstants(object):
         :param I: cell or substring currents [A]
         :param V: cell or substring voltages [V]
         :param Isc: cell or substring short circuit currenta [A]
+        :param VRBD: reverse breakdown voltage [V]
         :return: current [A] and voltage [V] of series
         """
         # make sure all inputs are numpy arrays, but don't make extra copies

@@ -13,39 +13,42 @@ from pvmismatch.pvmismatch_lib.pvcell import PVcell
 
 VBYPASS = -0.5  # [V] trigger voltage of bypass diode
 
-def zip_flat_meshgrid(nrows, ncols):
-    x, y = np.meshgrid(np.arange(nrows), np.arange(ncols))
-    return zip(x.flat, y.flat)
 
-
-def serpentine(nrows, ncols):
-    x, y = np.meshgrid(np.arange(nrows), np.arange(ncols))
-    x[1::2] = np.fliplr(x[1::2])  # flip alternate rows
-    return zip(x.flat,y.flat)
-
+def standard_cellpos_pat(nrows, ncols, substr_offset, substr_ncells):
+    cellpos = []
+    for col in xrange(ncols):
+        newrow = []
+        for row in xrange(nrows):
+            idx = col * nrows
+            if col % 2 == 0:
+                idx += row
+            else:
+                idx += (nrows - row - 1)
+            newrow.append({
+                'series': True, 'parallel': False, 'idx': idx,
+                'substring': (idx + substr_offset) / substr_ncells
+            })
+        cellpos.append(newrow)
+    return cellpos
 
 # cell positions presets
-STD72 = [
-    {'row': r, 'col': c,
-     'series': (n + 1 if n < 71 else None), 'parallel': None,
-     'substring': n / 24} for n, (r, c) in enumerate(serpentine(12, 6))
-]
-STD96 = [
-    {'row': r, 'col': c,
-     'series': (n + 1 if n < 95 else None), 'parallel': None,
-     'substring': (n + 24) / 48} for n, (r, c) in enumerate(serpentine(12, 8))
-]
-STD128 = [
-    {'row': r, 'col': c,
-     'series': (n + 1 if n < 127 else None), 'parallel': None,
-     'substring': (n + 32) / 64} for n, (r, c) in enumerate(serpentine(16, 8))
-]
-TCT96 = [
-    {'row': r, 'col': c,
-     'series': c * 12 + r + 1 if r < 11 else None,
-     'parallel': (c + 1) * 12 + r if c < 7 else None,
-     'substring': r / 4} for r, c in zip_flat_meshgrid(12, 8)
-]
+STD72 = standard_cellpos_pat(12, 6, 0, 24)
+STD96 = standard_cellpos_pat(12, 8, 24, 48)
+STD128 = standard_cellpos_pat(16, 8, 32, 64)
+
+
+def crosstied_cellpos_pat(nrows, ncols, nrows_per_substrs):
+    cellpos = []
+    for col in xrange(ncols):
+        newrow = []
+        for row in xrange(nrows):
+            newrow.append({
+                'series': True, 'parallel': True, 'idx': col * nrows + row,
+                'substring': row / nrows_per_substrs
+            })
+        cellpos.append(newrow)
+    return cellpos
+TCT96 = crosstied_cellpos_pat(12, 8, 4)
 
 
 class PVmodule(object):
