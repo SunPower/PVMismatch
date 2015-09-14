@@ -14,41 +14,52 @@ from pvmismatch.pvmismatch_lib.pvcell import PVcell
 VBYPASS = -0.5  # [V] trigger voltage of bypass diode
 
 
-def standard_cellpos_pat(nrows, ncols, substr_offset, substr_ncells):
+def standard_cellpos_pat(nrows, ncols_per_substr):
     cellpos = []
-    for col in xrange(ncols):
-        newrow = []
-        for row in xrange(nrows):
-            idx = col * nrows
-            if col % 2 == 0:
-                idx += row
-            else:
-                idx += (nrows - row - 1)
-            newrow.append({
-                'series': True, 'parallel': False, 'idx': idx,
-                'substring': (idx + substr_offset) / substr_ncells
-            })
-        cellpos.append(newrow)
+    ncols = [0, 0]
+    for substr_cols in ncols_per_substr:
+        ncols[0], ncols[1] = ncols[1], ncols[1] + substr_cols
+        newsubstr = []
+        for col in xrange(*ncols):
+            newrow = []
+            for row in xrange(nrows):
+                idx = col * nrows
+                if col % 2 == 0:
+                    idx += row
+                else:
+                    idx += (nrows - row - 1)
+                newrow.append({'circuit': 'series', 'idx': idx})
+            newsubstr.append(newrow)
+        cellpos.append(newsubstr)
     return cellpos
 
-# cell positions presets
-STD72 = standard_cellpos_pat(12, 6, 0, 24)
-STD96 = standard_cellpos_pat(12, 8, 24, 48)
-STD128 = standard_cellpos_pat(16, 8, 32, 64)
+# standard cell positions presets
+STD72 = standard_cellpos_pat(12, [2, 2, 2])
+STD96 = standard_cellpos_pat(12, [2, 4, 2])
+STD128 = standard_cellpos_pat(16, [2, 4, 2])
 
 
-def crosstied_cellpos_pat(nrows, ncols, nrows_per_substrs):
+def crosstied_cellpos_pat(nrows_per_substrs, ncols, partial=False):
+    trows = sum(nrows_per_substrs)
     cellpos = []
-    for col in xrange(ncols):
-        newrow = []
-        for row in xrange(nrows):
-            newrow.append({
-                'series': True, 'parallel': True, 'idx': col * nrows + row,
-                'substring': row / nrows_per_substrs
-            })
-        cellpos.append(newrow)
+    nrows = [0, 0]
+    for substr_row in nrows_per_substrs:
+        nrows[0], nrows[1] = nrows[1], nrows[1] + substr_row
+        newsubstr = []
+        for col in xrange(ncols):
+            newrow = []
+            for row in xrange(*nrows):
+                circuit = 'parallel'
+                if partial and newrow:
+                    circuit = 'series'
+                newrow.append({'circuit': circuit, 'idx': col * trows + row})
+            newsubstr.append(newrow)
+        cellpos.append(newsubstr)
     return cellpos
-TCT96 = crosstied_cellpos_pat(12, 8, 4)
+
+# crosstied cell positions presets
+TCT96 = crosstied_cellpos_pat([4, 4, 4], 8)
+PCT96 = crosstied_cellpos_pat([4, 4, 4], 8, partial=True)
 
 
 class PVmodule(object):
@@ -68,7 +79,8 @@ class PVmodule(object):
                  Vbypass=VBYPASS):
         # TODO: check cell position pattern
         self.cell_pos = cell_pos  #: cell position pattern dictionary
-        self.numberCells = len(self.cell_pos)  #: number of cells in the module
+        self.numberCells = sum([len(c) for s in self.cell_pos for c in s])
+        """number of cells in the module"""
         self.pvconst = pvconst  #: configuration constants
         self.Vbypass = Vbypass  #: [V] trigger voltage of bypass diode
         if pvcells is None:
@@ -84,14 +96,10 @@ class PVmodule(object):
                     "Number of cells doesn't match cell position pattern."
                 )
         self.pvcells = pvcells  #: list of `PVcell` objects in this `PVmodule`
-        self.substrings = {z['substring'] for z in self.cell_pos}
-        self.substr_cellidx = [[idx for idx, cidx in enumerate(self.cell_pos)
-                                if cidx['substring'] == substr]
-                               for substr in self.substrings]
-        self.subStrCells = [len(_) for _ in self.substr_cellidx]
-        self.numSubStr = len(self.substrings)  # number of substrings
+        self.numSubStr = len(self.cell_pos)  #: number of substrings
+        self.subStrCells = [len(_) for _ in self.cell_pos]  #: cells per substr
         # initialize members so PyLint doesn't get upset
-        self.Imod = self.Vmod = self.Pmod = self.Vsubstr = 0
+        self.Imod, self.Vmod, self.Pmod, self.Vsubstr = self.calcMod()
         # self.setSuns(Ee)
 
     # copy some values from cells to modules
@@ -157,34 +165,55 @@ class PVmodule(object):
                     self.pvcells[cell_idx].Ee = Ee[cell_idx]
             else:
                 raise Exception("Input irradiance value (Ee) for each cell!")
-        (self.Imod, self.Vmod, self.Pmod, self.Vsubstr) = self.calcMod()
+        self.Imod, self.Vmod, self.Pmod, self.Vsubstr = self.calcMod()
+
+
+    # TODO: calcmod
+    #   1. check if all parallel - sum all parallel currents
+    #   2. check if any parallel
+    #   2a. how many columns are parallel at node before/after this cell
+    #   2b. how many rows are series before the next parallel
+    #   2c. sum series cells until next parallel
+    #   3. all cells are in series
 
     def calcMod(self):
         """
         Calculate module I-V curves.
         Returns (Imod, Vmod, Pmod) : tuple of numpy.ndarray of float
         """
-        # range of currents in reverse bias from max cell current to mean Isc
-        meanIsc = self.Isc.mean()  # average short circuit current
-        Imax = (self.Icell.max() - meanIsc) * self.pvconst.Imod_pts + meanIsc
-        Imin = min(self.Icell.min(), 0.)  # minimum cell current, at most zero
-        # range of currents in forward bias from mean Isc to min current
-        Imin = (Imin - meanIsc) * self.pvconst.Imod_negpts + meanIsc
-        # create range for interpolation from reverse and forward bias
-        Imod = np.concatenate((Imin, Imax), axis=0)  # interpolation range
-        Vsubstr = np.zeros((2 * self.pvconst.npts, self.numSubStr))
-        start = np.cumsum(self.subStrCells) - self.subStrCells
-        stop = np.cumsum(self.subStrCells)
-        for substr in range(self.numSubStr):
-            for cell in range(start[substr], stop[substr]):
-                xp = np.flipud(self.Icell[:, cell])
-                fp = np.flipud(self.Vcell[:, cell])
-                Vsubstr[:, substr] += npinterpx(Imod.flatten(), xp, fp)
-        bypassed = Vsubstr < self.Vbypass
-        Vsubstr[bypassed] = self.Vbypass
-        Vmod = np.sum(Vsubstr, 1).reshape(2 * self.pvconst.npts, 1)
+        # iterate over substrings
+        Isubstr, Vsubstr, Isc_substr, Imax_substr = [], [], [], []
+        for substr in self.cell_pos:
+            # check if cells are in series or any parallel circuits
+            if all(r['circuit'] == 'series' for c in substr for r in c):
+                idxs = [r['idx'] for c in substr for r in c]
+                IatVrbd = np.asarray(
+                    [np.interp(vrbd, v, i) for vrbd, v, i in
+                     zip(self.VRBD[idxs], self.Vcell[idxs], self.Icell[idxs])]
+                )
+                Isub, Vsub = self.pvconst.calcSeries(
+                    self.Icell[idxs], self.Vcell[idxs], self.Isc[idxs].mean(),
+                    IatVrbd.max()
+                )
+                Isub, Vsub = np.flipud(Isub), np.flipud(Vsub)
+            elif all(r['circuit'] == 'parallel' for c in substr for r in c):
+                pass
+            else:
+                pass
+            bypassed = Vsub < self.Vbypass
+            Vsub[bypassed] = self.Vbypass
+            Isubstr.append(Isub)
+            Vsubstr.append(Vsub)
+            Isc_substr.append(np.interp(0., Vsub, Isub))
+            Imax_substr.append(Isub.max())
+        Isubstr, Vsubstr = np.asarray(Isubstr), np.asarray(Vsubstr)
+        Isc_substr = np.asarray(Isc_substr)
+        Imax_substr = np.asarray(Imax_substr)
+        Imod, Vmod = self.pvconst.calcSeries(
+            Isubstr, Vsubstr, Isc_substr.mean(), Imax_substr.max()
+        )
         Pmod = Imod * Vmod
-        return (Imod, Vmod, Pmod, Vsubstr)
+        return Imod, Vmod, Pmod, Vsubstr
 
     def plotCell(self):
         """
@@ -193,34 +222,34 @@ class PVmodule(object):
         """
         cellPlot = plt.figure()
         plt.subplot(2, 2, 1)
-        plt.plot(self.Vcell, self.Icell)
+        plt.plot(self.Vcell.T, self.Icell.T)
         plt.title('Cell Reverse I-V Characteristics')
         plt.ylabel('Cell Current, I [A]')
-        plt.xlim(self.pvconst.VRBD - 1, 0)
-        plt.ylim(0, self.pvconst.Isc0 + 10)
+        plt.xlim(self.VRBD.min() - 1, 0)
+        plt.ylim(0, self.Isc.mean() + 10)
         plt.grid()
         plt.subplot(2, 2, 2)
-        plt.plot(self.Vcell, self.Icell)
+        plt.plot(self.Vcell.T, self.Icell.T)
         plt.title('Cell Forward I-V Characteristics')
         plt.ylabel('Cell Current, I [A]')
-        plt.xlim(0, np.max(self.Voc))
-        plt.ylim(0, self.pvconst.Isc0 + 1)
+        plt.xlim(0, self.Voc.max())
+        plt.ylim(0, self.Isc.mean() + 1)
         plt.grid()
         plt.subplot(2, 2, 3)
-        plt.plot(self.Vcell, self.Pcell)
+        plt.plot(self.Vcell.T, self.Pcell.T)
         plt.title('Cell Reverse P-V Characteristics')
         plt.xlabel('Cell Voltage, V [V]')
         plt.ylabel('Cell Power, P [W]')
-        plt.xlim(self.pvconst.VRBD - 1, 0)
-        plt.ylim((self.pvconst.Isc0 + 10) * (self.pvconst.VRBD - 1), -1)
+        plt.xlim(self.VRBD.min() - 1, 0)
+        plt.ylim((self.Isc.mean() + 10) * (self.VRBD.min() - 1), -1)
         plt.grid()
         plt.subplot(2, 2, 4)
-        plt.plot(self.Vcell, self.Pcell)
+        plt.plot(self.Vcell.T, self.Pcell.T)
         plt.title('Cell Forward P-V Characteristics')
         plt.xlabel('Cell Voltage, V [V]')
         plt.ylabel('Cell Power, P [W]')
-        plt.xlim(0, np.max(self.Voc))
-        plt.ylim(0, (self.pvconst.Isc0 + 1) * np.max(self.Voc))
+        plt.xlim(0, self.Voc.max())
+        plt.ylim(0, (self.Isc.mean() + 1) * self.Voc.max())
         plt.grid()
         return cellPlot
 
@@ -234,7 +263,7 @@ class PVmodule(object):
         plt.plot(self.Vmod, self.Imod)
         plt.title('Module I-V Characteristics')
         plt.ylabel('Module Current, I [A]')
-        plt.ylim(ymax=self.pvconst.Isc0 + 1)
+        plt.ylim(ymax=(self.Isc.mean() + 1))
         plt.grid()
         plt.subplot(2, 1, 2)
         plt.plot(self.Vmod, self.Pmod)

@@ -122,28 +122,22 @@ class PVconstants(object):
     def __repr__(self):
         return str(self)
 
-    def calcSeries(self, I, V, Isc, VRBD):
+    def calcSeries(self, I, V, meanIsc, Imax):
         """
         Calculate IV curve for cells and substrings in series.
         :param I: cell or substring currents [A]
         :param V: cell or substring voltages [V]
-        :param Isc: cell or substring short circuit currenta [A]
-        :param VRBD: reverse breakdown voltage [V]
+        :param meanIsc: average short circuit currenta [A]
+        :param Imax: maximum current [A]
         :return: current [A] and voltage [V] of series
         """
         # make sure all inputs are numpy arrays, but don't make extra copies
         I = np.asarray(I)  # currents [A]
         V = np.asarray(V)  # voltages [V]
-        Isc = np.asarray(Isc)  # short circuit currents [A]
-        VRBD = np.asarray(VRBD)  # reverse breakdown voltages [V]
-        # limit maximum current to values at VRBD so that interpolation points
-        # are optimally distributed only from VRBD to Isc
-        IatVrbd = np.asarray(
-            [np.interp(vrbd, v, i) for (vrbd, v, i) in zip(VRBD, V, I)]
-        )  # voltage is already monotonically increasing
-        meanIsc = Isc.mean()  # average short circuit current
+        meanIsc = np.asarray(meanIsc)  # mean Isc [A]
+        Imax = np.asarray(Imax)  # max current [A]
         # create array of currents optimally spaced from mean Isc to  max VRBD
-        Ireverse = (IatVrbd.max() - meanIsc) * self.Imod_pts + meanIsc
+        Ireverse = (Imax - meanIsc) * self.Imod_pts + meanIsc
         Imin = np.minimum(I.min(), 0.)  # minimum cell current, at most zero
         # range of currents in forward bias from min current to mean Isc
         Iforward = (Imin - meanIsc) * self.Imod_negpts + meanIsc
@@ -154,6 +148,7 @@ class PVconstants(object):
         for i, v in zip(I, V):
             # interp requires x, y to be sorted by x in increasing order
             Vtot += npinterpx(Itot, np.flipud(i), np.flipud(v))
+        # TODO: flip again on the way out so that voltage is always increasing
         return Itot, Vtot
 
     def calcParallel(self):
