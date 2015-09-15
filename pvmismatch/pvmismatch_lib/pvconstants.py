@@ -180,3 +180,37 @@ def Ishunt(Vdiode, Rsh):
 
 def Igen(Aph, Ee, Isc0):
     return Aph * Ee * Isc0
+
+
+def get_series_cells(cell_pos_column, prev_col=None):
+    """
+    Get the sequence of series cells between parallel crossties.
+    :param cell_pos_column: column in cell position pattern
+    :param prev_col: previous column in cell position pattern
+    :return: indices of series cells
+    """
+    series_cells = []  # empty list of indices of cells in series
+    # if the previous column is specified, find the indices of cells in the
+    # current column that correspond to cells between parallel crossties in the
+    # previous column
+    if prev_col:
+        # cell_pos_column, next_col = prev_col, cell_pos_column
+        cell_pos_column = zip(prev_col, cell_pos_column)
+    # else:
+    #     next_col = None
+    for cell in cell_pos_column:
+        if prev_col:
+            cell, next_col = cell
+        else:
+            next_col = None
+        if cell['circuit'] == 'parallel':
+            yield series_cells
+            series_cells = []
+        # if the next column is specified, return the cell indices that
+        # correspond to the previous column since they must be the same
+        if next_col:
+            cell_idx = next_col['idx']
+        else:
+            cell_idx = cell['idx']
+        series_cells.append(cell_idx)
+    yield series_cells

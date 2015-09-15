@@ -7,7 +7,7 @@ import numpy as np
 from copy import copy
 from matplotlib import pyplot as plt
 # use absolute imports instead of relative, so modules are portable
-from pvmismatch.pvmismatch_lib.pvconstants import PVconstants
+from pvmismatch.pvmismatch_lib.pvconstants import PVconstants, get_series_cells
 from pvmismatch.pvmismatch_lib.pvcell import PVcell
 
 VBYPASS = -0.5  # [V] trigger voltage of bypass diode
@@ -206,7 +206,45 @@ class PVmodule(object):
                     Irows, Vrows, Isc_rows.mean(), Imax_rows.max()
                 )
             else:
-                pass
+                prev_col = None
+                for col in substr:
+                    Icols, Vcols = [], []
+                    is_first = True
+                    # return the indices of cells in series between crossties
+                    # for the 1st column use the 1st column in the cell
+                    # position pattern, but for all other columns use the
+                    # previous column in the cell position pattern since they
+                    # must match and then combine the parallel circuits
+                    for idxs in get_series_cells(col, prev_col):
+                        if not idxs:
+                            # first row should always be empty since it must be
+                            # crosstied
+                            is_first = False
+                            continue
+                        elif is_first:
+                            # TODO: use pvmismatch exceptions
+                            raise Exception(
+                                "First row and last rows must be crosstied."
+                            )
+                        elif len(idxs) > 1:
+                            IatVrbd = np.asarray(
+                                [np.interp(vrbd, v, i) for vrbd, v, i in
+                                 zip(self.VRBD[idxs], self.Vcell[idxs],
+                                     self.Icell[idxs])]
+                            )
+                            Icol, Vcol = self.pvconst.calcSeries(
+                                self.Icell[idxs], self.Vcell[idxs],
+                                self.Isc[idxs].mean(), IatVrbd.max()
+                            )
+                        else:
+                            Icol, Vcol = self.Icell[idxs], self.Vcell[idxs]
+                        Icols.append(Icol)
+                        Vcols.append(Vcol)
+                    if prev_col:
+                        pass
+                        # now combine parallel circuits from previous column
+                    prev_col = col
+                    Iprev_cols, Vprev_cols = Icols, Vcols
             bypassed = Vsub < self.Vbypass
             Vsub[bypassed] = self.Vbypass
             Isubstr.append(Isub)
