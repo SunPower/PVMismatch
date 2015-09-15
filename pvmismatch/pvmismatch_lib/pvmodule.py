@@ -244,10 +244,8 @@ class PVmodule(object):
                             # combine parallel circuits
                             Irows, Vrows = [], []
                             Isc_rows, Imax_rows = [], []
-                            for IVprev_col, IVnext_col in zip(IVcols,
-                                                              IVprev_cols):
-                                Iparallel, Vparallel = zip(IVprev_col,
-                                                           IVnext_col)
+                            for IVcols in zip(*IVprev_cols):
+                                Iparallel, Vparallel = zip(*IVcols)
                                 Iparallel = np.asarray(Iparallel).flatten()
                                 Vparallel = np.asarray(Vparallel).flatten()
                                 # interpolate Voc where Iparallel is 0
@@ -276,10 +274,21 @@ class PVmodule(object):
                     # set prev_col, append IVcols and continue
                     IVprev_cols.append(IVcols)
                     prev_col = col
-                if len(IVall_cols) > 1:
-                    pass
+                # combine any remaining parallel circuits in substring
+                if len(IVall_cols) == 1:
+                    Isub, Vsub = IVall_cols[0]
                 else:
-                    pass
+                    Iparallel, Vparallel = zip(*IVall_cols)
+                    Iparallel = np.asarray(Iparallel).flatten()
+                    Vparallel = np.asarray(Vparallel).flatten()
+                    # interpolate Voc where Iparallel is 0
+                    parallelVoc = np.interp(0.,
+                                            np.flipud(Iparallel),
+                                            np.flipud(Vparallel))
+                    Isub, Vsub = self.pvconst.calcParallel(
+                                    Iparallel, Vparallel, parallelVoc.mean(),
+                                    Vparallel.min()
+                                )
             bypassed = Vsub < self.Vbypass
             Vsub[bypassed] = self.Vbypass
             Isubstr.append(Isub)
