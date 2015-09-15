@@ -27,9 +27,14 @@ class PVstring(object):
         self.pvconst = pvconst
         self.numberMods = numberMods
         if pvmods is None:
-            # use copy instead of making each object in a for-loop
+            # use deepcopy instead of making each object in for-loop, 2x faster
             pvmod = PVmodule(pvconst=self.pvconst)
             pvmods = [deepcopy(pvmod) for _ in xrange(self.numberMods)]
+            # reset pvconsts in all pvcells and pvmodules
+            for p in pvmods:
+                for c in p.pvcells:
+                    c.pvconst = self.pvconst
+                p.pvconst = self.pvconst
         elif len(pvmods) != self.numberMods:
             # TODO: use pvmismatch exceptions
             raise Exception("Number of modules doesn't match.")
