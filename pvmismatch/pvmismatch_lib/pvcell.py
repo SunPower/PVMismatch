@@ -161,13 +161,13 @@ class PVcell(object):
         Vforward = self.Voc * self.pvconst.pts
         Vdiode = np.concatenate((Vreverse, Vforward), axis=0)
         Igen = self.Aph * self.Isc
-        Idiode1 = self.Isat1 * (np.exp(Vdiode / self.Vt) - 1)
-        Idiode2 = self.Isat2 * (np.exp(Vdiode / 2 / self.Vt) - 1)
+        Idiode1 = self.Isat1 * (np.exp(Vdiode / self.Vt) - 1.)
+        Idiode2 = self.Isat2 * (np.exp(Vdiode / 2. / self.Vt) - 1.)
         Ishunt = Vdiode / self.Rsh
-        fRBD = np.asarray(1 - Vdiode / self.VRBD)
+        fRBD = np.asarray(1. - Vdiode / self.VRBD)
         fRBD[fRBD == 0] = np.finfo(np.float64).eps
         fRBD = self.aRBD * fRBD ** (-self.nRBD)
-        Icell = Igen - Idiode1 - Idiode2 - Ishunt * (1 + fRBD)
+        Icell = Igen - Idiode1 - Idiode2 - Ishunt * (1. + fRBD)
         Vcell = Vdiode - Icell * self.Rs
         Pcell = Icell * Vcell
         return Icell, Vcell, Pcell

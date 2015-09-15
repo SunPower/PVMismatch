@@ -42,25 +42,23 @@ class PVstring(object):
         self.pvmods = pvmods
         self.Istring, self.Vstring, self.Pstring = self.calcString()
 
+    @property
+    def Imod(self):
+        return np.array([mod.Imod.flatten() for mod in self.pvmods])
+
+    @property
+    def Vmod(self):
+        return np.array([mod.Vmod.flatten() for mod in self.pvmods])
+
     def calcString(self):
         """
         Calculate string I-V curves.
         Returns (Istring, Vstring, Pstring) : tuple of numpy.ndarray of float
         """
         # Imod is already set to the range from Vrbd to the minimum current
-        zipped = zip(*[(pvmod.Imod[0], pvmod.Imod[-1], np.mean(pvmod.Ee)) for
-                       pvmod in self.pvmods])
-        Isc = np.mean(zipped[2]) * self.pvconst.Isc0
-        # max current
-        Imax = (np.max(zipped[1]) - Isc) * self.pvconst.Imod_pts + Isc
-        # min current
-        Ineg = (np.min(zipped[0]) - Isc) * self.pvconst.Imod_negpts + Isc
-        Istring = np.concatenate((Ineg, Imax), axis=0)
-        Vstring = np.zeros((2 * self.pvconst.npts, 1))
-        for mod in self.pvmods:
-            xp = mod.Imod.squeeze()  # IGNORE:E1103
-            fp = mod.Vmod.squeeze()  # IGNORE:E1103
-            Vstring += npinterpx(Istring, xp, fp)
+        meanIsc = np.mean([pvmod.Isc.mean() for pvmod in self.pvmods])
+        Istring, Vstring = self.pvconst.calcSeries(self.Imod, self.Vmod,
+                                                   meanIsc, self.Imod.max())
         Pstring = Istring * Vstring
         return (Istring, Vstring, Pstring)
 
