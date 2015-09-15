@@ -114,14 +114,13 @@ class PVmodule(object):
             # faster to use copy instead of making each object in a for-loop
             # use copy instead of deepcopy to keey same pvconst for all objects
             # PVcell.calcCell() creates new np.ndarray if attributes change
-            pvc = PVcell(pvconst=pvconst)
+            pvc = PVcell(pvconst=self.pvconst)
             pvcells = [copy(pvc) for _ in xrange(self.numberCells)]
-        else:
-            if len(pvcells) != self.numberCells:
-                # TODO: use pvexception
-                raise Exception(
-                    "Number of cells doesn't match cell position pattern."
-                )
+        elif len(pvcells) != self.numberCells:
+            # TODO: use pvexception
+            raise Exception(
+                "Number of cells doesn't match cell position pattern."
+            )
         self.pvcells = pvcells  #: list of `PVcell` objects in this `PVmodule`
         self.numSubStr = len(self.cell_pos)  #: number of substrings
         self.subStrCells = [len(_) for _ in self.cell_pos]  #: cells per substr

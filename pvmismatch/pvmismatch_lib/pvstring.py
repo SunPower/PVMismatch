@@ -19,32 +19,23 @@ class PVstring(object):
     PVstring - A class for PV strings.
     """
 
-    def __init__(self, pvconst=PVconstants(), numberMods=NUMBERMODS,
-                 pvmods=None, numberCells=NUMBERCELLS, Ee=1):
+    def __init__(self, numberMods=NUMBERMODS, pvmods=None,
+                 pvconst=PVconstants()):
         """
         Constructor
         """
         self.pvconst = pvconst
         self.numberMods = numberMods
-        self.numberCells = numberCells
         if pvmods is None:
-            # use deep copy instead of making each object in a for-loop
-            self.pvmods = ([PVmodule(self.pvconst, self.numberCells, Ee)] *
-                           self.numberMods)
-            self.pvmods[1:] = [deepcopy(pvmod) for pvmod in self.pvmods[1:]]
-        elif all(isinstance(pvmod, PVmodule) for pvmod in pvmods):
-            pvmodsNumCells = [pvmod.numberCells == pvmods[0].numberCells
-                              for pvmod in pvmods]
-            if all(pvmodsNumCells):
-                self.numberMods = len(pvmods)
-                self.pvmods = pvmods
-                self.numberCells = pvmods[0].numberCells
-            else:
-                errString = 'All modules must have the same number of cells.'
-                raise Exception(errString)
-        else:
-            raise Exception("Invalid modules list!")
-        (self.Istring, self.Vstring, self.Pstring) = self.calcString()
+            # use copy instead of making each object in a for-loop
+            pvmod = PVmodule(pvconst=self.pvconst)
+            pvmods = [deepcopy(pvmod) for _ in xrange(self.numberMods)]
+        elif len(pvmods) != self.numberMods:
+            # TODO: use pvmismatch exceptions
+            raise Exception("Number of modules doesn't match.")
+        self.numberMods = len(pvmods)
+        self.pvmods = pvmods
+        self.Istring, self.Vstring, self.Pstring = self.calcString()
 
     def calcString(self):
         """
