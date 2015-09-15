@@ -61,6 +61,34 @@ TCT96 = crosstied_cellpos_pat([4, 4, 4], 8)
 PCT96 = crosstied_cellpos_pat([4, 4, 4], 8, partial=True)
 
 
+def combine_parallel_circuits(IVprev_cols, pvconst):
+    """
+    Combine parallel circuits in a substring
+    :param IVprev_cols: lists of IV curves of parallel and series circuits
+    :return:
+    """
+    # combine parallel circuits
+    Irows, Vrows = [], []
+    Isc_rows, Imax_rows = [], []
+    for IVcols in zip(*IVprev_cols):
+        Iparallel, Vparallel = zip(*IVcols)
+        Iparallel = np.asarray(Iparallel)
+        Vparallel = np.asarray(Vparallel)
+        Irow, Vrow = pvconst.calcParallel(
+            Iparallel, Vparallel, Vparallel.max(),
+            Vparallel.min()
+        )
+        Irows.append(Irow)
+        Vrows.append(Vrow)
+        Isc_rows.append(np.interp(0., Vrow, Irow))
+        Imax_rows.append(Irow.max())
+    Irows, Vrows = np.asarray(Irows), np.asarray(Vrows)
+    Isc_rows = np.asarray(Isc_rows)
+    Imax_rows = np.asarray(Imax_rows)
+    return pvconst.calcSeries(
+        Irows, Vrows, Isc_rows.mean(), Imax_rows.max()
+    )
+
 class PVmodule(object):
     """
     PVmodule - A Class for PV modules.
@@ -155,13 +183,13 @@ class PVmodule(object):
             else:
                 raise Exception("Input irradiance value (Ee) for each cell!")
         else:
-            Nsuns = np.size(cells)
+            Ncells = np.size(cells)
             if np.isscalar(Ee):
                 for cell_idx in cells:
                     self.pvcells[cell_idx].Ee = Ee
-            elif np.size(Ee) == Nsuns:
-                for cell_idx in cells:
-                    self.pvcells[cell_idx].Ee = Ee[cell_idx]
+            elif np.size(Ee) == Ncells:
+                for cell_idx, Ee_idx in zip(cells, Ee):
+                    self.pvcells[cell_idx].Ee = Ee_idx
             else:
                 raise Exception("Input irradiance value (Ee) for each cell!")
         self.Imod, self.Vmod, self.Pmod, self.Vsubstr = self.calcMod()
@@ -242,25 +270,8 @@ class PVmodule(object):
                         if not all(icol['circuit'] == jcol['circuit']
                                    for icol, jcol in zip(prev_col, col)):
                             # combine parallel circuits
-                            Irows, Vrows = [], []
-                            Isc_rows, Imax_rows = [], []
-                            for IVcols in zip(*IVprev_cols):
-                                Iparallel, Vparallel = zip(*IVcols)
-                                Iparallel = np.asarray(Iparallel)
-                                Vparallel = np.asarray(Vparallel)
-                                Irow, Vrow = self.pvconst.calcParallel(
-                                    Iparallel, Vparallel, Vparallel.max(),
-                                    Vparallel.min()
-                                )
-                                Irows.append(Irow)
-                                Vrows.append(Vrow)
-                                Isc_rows.append(np.interp(0., Vrow, Irow))
-                                Imax_rows.append(Irow.max())
-                            Irows, Vrows = np.asarray(Irows), np.asarray(Vrows)
-                            Isc_rows = np.asarray(Isc_rows)
-                            Imax_rows = np.asarray(Imax_rows)
-                            Iparallel, Vparallel = self.pvconst.calcSeries(
-                                Irows, Vrows, Isc_rows.mean(), Imax_rows.max()
+                            Iparallel, Vparallel = combine_parallel_circuits(
+                                IVprev_cols, self.pvconst
                             )
                             IVall_cols.append([Iparallel, Vparallel])
                             # reset prev_col
@@ -273,39 +284,16 @@ class PVmodule(object):
                 # combine any remaining parallel circuits in substring
                 if not IVall_cols:
                     # combine parallel circuits
-                    Irows, Vrows = [], []
-                    Isc_rows, Imax_rows = [], []
-                    for IVcols in zip(*IVprev_cols):
-                        Iparallel, Vparallel = zip(*IVcols)
-                        Iparallel = np.asarray(Iparallel)
-                        Vparallel = np.asarray(Vparallel)
-                        Irow, Vrow = self.pvconst.calcParallel(
-                            Iparallel, Vparallel, Vparallel.max(),
-                            Vparallel.min()
-                        )
-                        Irows.append(Irow)
-                        Vrows.append(Vrow)
-                        Isc_rows.append(np.interp(0., Vrow, Irow))
-                        Imax_rows.append(Irow.max())
-                    Irows, Vrows = np.asarray(Irows), np.asarray(Vrows)
-                    Isc_rows = np.asarray(Isc_rows)
-                    Imax_rows = np.asarray(Imax_rows)
-                    Isub, Vsub = self.pvconst.calcSeries(
-                        Irows, Vrows, Isc_rows.mean(), Imax_rows.max()
+                    Isub, Vsub = combine_parallel_circuits(
+                        IVprev_cols, self.pvconst
                     )
-                    # TODO: replace these with DRY methods!!!
                 else:
                     Iparallel, Vparallel = zip(*IVall_cols)
-                    Iparallel = np.asarray(Iparallel).flatten()
-                    Vparallel = np.asarray(Vparallel).flatten()
-                    # interpolate Voc where Iparallel is 0
-                    parallelVoc = np.interp(0.,
-                                            np.flipud(Iparallel),
-                                            np.flipud(Vparallel))
+                    Iparallel = np.asarray(Iparallel)
+                    Vparallel = np.asarray(Vparallel)
                     Isub, Vsub = self.pvconst.calcParallel(
-                                    Iparallel, Vparallel, parallelVoc.mean(),
-                                    Vparallel.min()
-                                )
+                        Iparallel, Vparallel, Vparallel.max(), Vparallel.min()
+                    )
             bypassed = Vsub < self.Vbypass
             Vsub[bypassed] = self.Vbypass
             Isubstr.append(Isub)
