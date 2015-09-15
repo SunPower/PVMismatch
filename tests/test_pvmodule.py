@@ -27,3 +27,4 @@ def test_calc_PCT_mod():
 if __name__ == "__main__":
     test_calc_mod()
     test_calc_TCT_mod()
+    test_calc_PCT_mod()

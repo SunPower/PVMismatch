@@ -193,7 +193,7 @@ class PVmodule(object):
                     idxs = [c['idx'] for c in row]
                     Irow, Vrow = self.pvconst.calcParallel(
                         self.Icell[idxs], self.Vcell[idxs],
-                        self.Voc[idxs].mean(), self.VRBD.min()
+                        self.Voc[idxs].max(), self.VRBD.min()
                     )
                     Irows.append(Irow)
                     Vrows.append(Vrow)
@@ -246,14 +246,10 @@ class PVmodule(object):
                             Isc_rows, Imax_rows = [], []
                             for IVcols in zip(*IVprev_cols):
                                 Iparallel, Vparallel = zip(*IVcols)
-                                Iparallel = np.asarray(Iparallel).flatten()
-                                Vparallel = np.asarray(Vparallel).flatten()
-                                # interpolate Voc where Iparallel is 0
-                                parallelVoc = np.interp(0.,
-                                                        np.flipud(Iparallel),
-                                                        np.flipud(Vparallel))
+                                Iparallel = np.asarray(Iparallel)
+                                Vparallel = np.asarray(Vparallel)
                                 Irow, Vrow = self.pvconst.calcParallel(
-                                    Iparallel, Vparallel, parallelVoc.mean(),
+                                    Iparallel, Vparallel, Vparallel.max(),
                                     Vparallel.min()
                                 )
                                 Irows.append(Irow)
@@ -275,8 +271,29 @@ class PVmodule(object):
                     IVprev_cols.append(IVcols)
                     prev_col = col
                 # combine any remaining parallel circuits in substring
-                if len(IVall_cols) == 1:
-                    Isub, Vsub = IVall_cols[0]
+                if not IVall_cols:
+                    # combine parallel circuits
+                    Irows, Vrows = [], []
+                    Isc_rows, Imax_rows = [], []
+                    for IVcols in zip(*IVprev_cols):
+                        Iparallel, Vparallel = zip(*IVcols)
+                        Iparallel = np.asarray(Iparallel)
+                        Vparallel = np.asarray(Vparallel)
+                        Irow, Vrow = self.pvconst.calcParallel(
+                            Iparallel, Vparallel, Vparallel.max(),
+                            Vparallel.min()
+                        )
+                        Irows.append(Irow)
+                        Vrows.append(Vrow)
+                        Isc_rows.append(np.interp(0., Vrow, Irow))
+                        Imax_rows.append(Irow.max())
+                    Irows, Vrows = np.asarray(Irows), np.asarray(Vrows)
+                    Isc_rows = np.asarray(Isc_rows)
+                    Imax_rows = np.asarray(Imax_rows)
+                    Isub, Vsub = self.pvconst.calcSeries(
+                        Irows, Vrows, Isc_rows.mean(), Imax_rows.max()
+                    )
+                    # TODO: replace these with DRY methods!!!
                 else:
                     Iparallel, Vparallel = zip(*IVall_cols)
                     Iparallel = np.asarray(Iparallel).flatten()
