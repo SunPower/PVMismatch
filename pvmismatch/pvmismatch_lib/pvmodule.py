@@ -265,6 +265,8 @@ class PVmodule(object):
                         else:
                             Icol, Vcol = self.Icell[idxs], self.Vcell[idxs]
                         IVcols.append([Icol, Vcol])
+                    # append IVcols and continue
+                    IVprev_cols.append(IVcols)
                     if prev_col:
                         # if circuits are same in both columns then continue
                         if not all(icol['circuit'] == jcol['circuit']
@@ -278,8 +280,7 @@ class PVmodule(object):
                             prev_col = None
                             IVprev_cols = []
                             continue
-                    # set prev_col, append IVcols and continue
-                    IVprev_cols.append(IVcols)
+                    # set prev_col and continue
                     prev_col = col
                 # combine any remaining parallel circuits in substring
                 if not IVall_cols:
