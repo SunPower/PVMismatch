@@ -67,7 +67,7 @@ def npinterpx(x, xp, fp):
 
 class PVconstants(object):
     """
-    PVconstants - Class for PV constants
+    Class for configuration constants
 
     :param npts: number of points in IV curve
     :type npts: int
@@ -80,7 +80,6 @@ class PVconstants(object):
     :param chunksize: amount of data per task
     :type chunksize: int
     """
-
     # hard constants
     k = scipy.constants.k  #: [kJ/mole/K] Boltzmann constant
     q = scipy.constants.e  #: [Coloumbs] elementary charge

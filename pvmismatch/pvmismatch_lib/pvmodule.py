@@ -91,7 +91,7 @@ def combine_parallel_circuits(IVprev_cols, pvconst):
 
 class PVmodule(object):
     """
-    PVmodule - A Class for PV modules.
+    A Class for PV modules.
 
     :param cell_pos: cell position pattern
     :type cell_pos: dict
@@ -114,9 +114,10 @@ class PVmodule(object):
             # faster to use copy instead of making each object in a for-loop
             # use copy instead of deepcopy to keey same pvconst for all objects
             # PVcell.calcCell() creates new np.ndarray if attributes change
-            pvc = PVcell(pvconst=self.pvconst)
-            pvcells = [copy(pvc) for _ in xrange(self.numberCells)]
-        elif len(pvcells) != self.numberCells:
+            pvcells = PVcell(pvconst=self.pvconst)
+        if isinstance(pvcells, PVcell):
+            pvcells = [copy(pvcells) for _ in xrange(self.numberCells)]
+        if len(pvcells) != self.numberCells:
             # TODO: use pvexception
             raise Exception(
                 "Number of cells doesn't match cell position pattern."

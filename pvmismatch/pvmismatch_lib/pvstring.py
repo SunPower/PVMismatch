@@ -15,14 +15,16 @@ from pvmismatch.pvmismatch_lib.pvmodule import PVmodule
 
 class PVstring(object):
     """
-    PVstring - A class for PV strings.
-    """
+    A class for PV strings.
 
+    :param numberMods: number of modules in string
+    :param pvmods: either a list of modules, an instance of
+        :class:`pvmismatch.pvmismatch_lib.pvmodule.PVmodule` or None
+    :type pvmods: list or :class:`pvmismatch.pvmismatch_lib.pvmodule.PVmodule`
+    :param pvconst: a configuration constants object
+    """
     def __init__(self, numberMods=NUMBERMODS, pvmods=None,
                  pvconst=PVconstants()):
-        """
-        Constructor
-        """
         self.pvconst = pvconst
         self.numberMods = numberMods
         if pvmods is None:
@@ -35,11 +37,9 @@ class PVstring(object):
                 for c in p.pvcells:
                     c.pvconst = self.pvconst
                 p.pvconst = self.pvconst
-
         if len(pvmods) != self.numberMods:
             # TODO: use pvmismatch exceptions
             raise Exception("Number of modules doesn't match.")
-        self.numberMods = len(pvmods)
         self.pvmods = pvmods
         self.Istring, self.Vstring, self.Pstring = self.calcString()
 
@@ -82,7 +82,7 @@ class PVstring(object):
         :type Ee: dict or float
         """
         if np.isscalar(Ee):
-            for pvmod in self.pvmods:
+            for pvmod in iter(self.pvmods):
                 pvmod.setSuns(Ee)
         else:
             for pvmod, cell_Ee in Ee.iteritems():

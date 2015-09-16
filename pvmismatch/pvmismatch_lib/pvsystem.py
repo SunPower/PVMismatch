@@ -12,73 +12,44 @@ from matplotlib import pyplot as plt
 from pvmismatch.pvmismatch_lib.pvconstants import PVconstants, NUMBERMODS, \
     NUMBERSTRS
 from pvmismatch.pvmismatch_lib.pvstring import PVstring
+from pvmismatch.pvmismatch_lib.pvmodule import PVmodule
 from pvmismatch.pvmismatch_lib.parallel_calcs import parallel_calcSystem
 
 
 class PVsystem(object):
     """
-    PVsystem - A class for PV systems.
+    A class for PV systems.
     """
-
     def __init__(self, pvconst=PVconstants(), numberStrs=NUMBERSTRS,
                  pvstrs=None, numberMods=NUMBERMODS, pvmods=None):
-        """
-        Constructor
-        """
         self.pvconst = pvconst
         self.numberStrs = numberStrs
         self.numberMods = numberMods
         if pvstrs is None:
-            if pvmods is None:
-                # use deep copy instead of making each object in a for-loop
-                pvstr = PVstring(self.pvconst, self.numberMods,
-                                 numberCells=self.numberCells, Ee=Ee)
-                self.pvstrs = [pvstr] * self.numberStrs
-                pvstrs = [deepcopy(pvstr) for pvstr in self.pvstrs[1:]]
-                self.pvstrs[1:] = pvstrs
-            else:
-                pvmods = np.array(pvmods).reshape(-1, )  # flatten
-                if len(pvmods) % self.numberStrs == 0:
-                    self.pvstrs = []
-                    self.numberMods = len(pvmods) / self.numberStrs
-                    self.numberCells = pvmods[0].numberCells
-                    pvmods = np.array(pvmods).reshape(self.numberStrs,
-                                                      self.numberMods)
-                    self.pvstrs = [PVstring(self.pvconst, pvmods=pvmodstr)
-                                   for pvmodstr in pvmods]
-                    pvmodstrNumCells = [pvmodstr[0].numberCells
-                                        for pvmodstr in pvmods]
-                    if any(pvmodstrNumCells != self.numberCells):
-                        errString = ('All modules must have the same' +
-                                     ' number of cells.')
-                        raise Exception(errString)
-        elif ((type(pvstrs) is list) and
-              all([(type(pvstr) is PVstring) for pvstr in pvstrs])):
-            # Make sure that all strings have the same number of modules.
-            pvstrsNumMods = [pvstr.numberMods == pvstrs[0].numberMods
-                             for pvstr in pvstrs]
-            if all(pvstrsNumMods):
-                self.numberStrs = len(pvstrs)
-                self.pvstrs = pvstrs
-                self.numberMods = pvstrs[0].numberMods
-            else:
-                errString = 'All strings must have the same number of modules.'
-                raise Exception(errString)
-            # Make sure that all modules have the same number of cells.
-            pvstrsNumCells = [pvstr.numberCells == pvstrs[0].numberCells
-                              for pvstr in pvstrs]
-            if all(pvstrsNumCells):
-                self.numberCells = pvstrs[0].numberCells
-            else:
-                errString = 'All modules must have the same number of cells.'
-                raise Exception(errString)
-        else:
-            raise Exception("Invalid strings list!")
-        # organize modules into strings
-        self.pvmods = [pvstr.pvmods for pvstr in self.pvstrs]
+            pvstrs = PVstring(numberMods=self.numberMods, pvmods=pvmods,
+                              pvconst=self.pvconst)
+        # use deep copy instead of making each object in a for-loop
+        if isinstance(pvstrs, PVstring):
+            pvstrs = [deepcopy(pvstrs) for _ in self.numberStrs]
+        if len(pvstrs) != self.numberStrs:
+            # TODO: use pvmismatch excecptions
+            raise Exception("Number of strings don't match.")
+        self.pvstrs = pvstrs
         (self.Isys, self.Vsys, self.Psys) = self.calcSystem()
         (self.Imp, self.Vmp, self.Pmp,
          self.Isc, self.Voc, self.FF, self.eff) = self.calcMPP_IscVocFFeff()
+
+    @property
+    def pvmods(self):
+        return  [pvstr.pvmods for pvstr in self.pvstrs]
+
+    @property
+    def Istring(self):
+        return [pvstr.Istring.flatten() for pvstr in self.pvstrs]
+
+    @property
+    def Vstring(self):
+        return [pvstr.Vstring.flatten() for pvstr in self.pvstrs]
 
     def calcSystem(self):
         """
@@ -88,16 +59,8 @@ class PVsystem(object):
         Isys = np.zeros((self.pvconst.npts, 1))
         Vmax = np.max([pvstr.Vstring for pvstr in self.pvstrs])
         Vsys = Vmax * self.pvconst.pts
-        if self.pvconst.parallel:
-            Isys = parallel_calcSystem(self, Vsys)
-        else:
-            for pvstr in self.pvstrs:
-                (pvstr.Istring,
-                 pvstr.Vstring,
-                 pvstr.Pstring) = pvstr.calcString()
-                xp = np.flipud(pvstr.Vstring.squeeze())
-                fp = np.flipud(pvstr.Istring.squeeze())
-                Isys += npinterpx(Vsys, xp, fp)
+
+        Isys, Vsys = self.pvconst.calcParallel(self.Istring, self.Vstring)
         Psys = Isys * Vsys
         return (Isys, Vsys, Psys)
 
