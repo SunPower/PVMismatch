@@ -9,8 +9,7 @@ import numpy as np
 from copy import deepcopy
 from matplotlib import pyplot as plt
 # use absolute imports instead of relative, so modules are portable
-from pvmismatch.pvmismatch_lib.pvconstants import PVconstants, npinterpx, \
-    NUMBERMODS, NUMBERCELLS
+from pvmismatch.pvmismatch_lib.pvconstants import PVconstants, NUMBERMODS
 from pvmismatch.pvmismatch_lib.pvmodule import PVmodule
 
 
@@ -28,14 +27,16 @@ class PVstring(object):
         self.numberMods = numberMods
         if pvmods is None:
             # use deepcopy instead of making each object in for-loop, 2x faster
-            pvmod = PVmodule(pvconst=self.pvconst)
-            pvmods = [deepcopy(pvmod) for _ in xrange(self.numberMods)]
+            pvmods = PVmodule(pvconst=self.pvconst)
+        if isinstance(pvmods, PVmodule):
+            pvmods = [deepcopy(pvmods) for _ in xrange(self.numberMods)]
             # reset pvconsts in all pvcells and pvmodules
             for p in pvmods:
                 for c in p.pvcells:
                     c.pvconst = self.pvconst
                 p.pvconst = self.pvconst
-        elif len(pvmods) != self.numberMods:
+
+        if len(pvmods) != self.numberMods:
             # TODO: use pvmismatch exceptions
             raise Exception("Number of modules doesn't match.")
         self.numberMods = len(pvmods)
@@ -102,7 +103,7 @@ class PVstring(object):
         plt.plot(self.Vstring, self.Istring)
         plt.title('String I-V Characteristics')
         plt.ylabel('String Current, I [A]')
-        plt.ylim(ymax=self.pvconst.Isc0 + 1)
+        plt.ylim(ymin=0)
         plt.grid()
         plt.subplot(2, 1, 2)
         plt.plot(self.Vstring, self.Pstring)
