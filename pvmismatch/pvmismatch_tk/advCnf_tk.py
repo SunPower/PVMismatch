@@ -6,7 +6,7 @@ Created on Aug 18, 2012
 """
 
 from Tkconstants import W, E, RIGHT
-from Tkinter import Frame, Label, Button, DoubleVar, Entry
+from Tkinter import Frame, Label, Button, DoubleVar, Entry, IntVar
 import tkFont
 
 PVAPP_TXT = 'PVmismatch'
@@ -34,30 +34,31 @@ class AdvCnf_tk(Frame):
         CAPTION_FONT = tkFont.nametofont('TkCaptionFont')  # font for titles
 
         # variables
+        cellnum = self.cellnum = IntVar(self, name='cellnum')
         Rs = self.Rs = DoubleVar(self, name='Rs')
         Rsh = self.Rsh = DoubleVar(self, name='Rsh')
         Isat1_T0 = self.Isat1_T0 = DoubleVar(self, name='Isat1_T0')
         Isat2 = self.Isat2 = DoubleVar(self, name='Isat2')
-        Rs.set("{:10.4e}".format(pvapp.pvSys.pvconst.Rs))
-        Rsh.set("{:10.4f}".format(pvapp.pvSys.pvconst.Rsh))
-        Isat1_T0.set("{:10.4e}".format(pvapp.pvSys.pvconst.Isat1_T0))
-        Isat2.set("{:10.4e}".format(pvapp.pvSys.pvconst.Isat2))
+        Rs.set("{:10.4e}".format(pvapp.pvSys.pvmods[cellnum.get() / (pvapp.numCells.get() * pvapp.numMods.get())][(cellnum.get() / pvapp.numCells.get()) % pvapp.numMods.get()].pvcells[cellnum.get() % pvapp.numCells.get()].Rs))
+        Rsh.set("{:10.4f}".format(pvapp.pvSys.pvmods[cellnum.get() / (pvapp.numCells.get() * pvapp.numMods.get())][(cellnum.get() / pvapp.numCells.get()) % pvapp.numMods.get()].pvcells[cellnum.get() % pvapp.numCells.get()].Rsh))
+        Isat1_T0.set("{:10.4e}".format(pvapp.pvSys.pvmods[cellnum.get() / (pvapp.numCells.get() * pvapp.numMods.get())][(cellnum.get() / pvapp.numCells.get()) % pvapp.numMods.get()].pvcells[cellnum.get() % pvapp.numCells.get()].Isat1_T0))
+        Isat2.set("{:10.4e}".format(pvapp.pvSys.pvmods[cellnum.get() / (pvapp.numCells.get() * pvapp.numMods.get())][(cellnum.get() / pvapp.numCells.get()) % pvapp.numMods.get()].pvcells[cellnum.get() % pvapp.numCells.get()].Isat2))
         Aph = self.Aph = DoubleVar(self, name='Aph')
         Isc0_T0 = self.Isc0_T0 = DoubleVar(self, name='Isc0_T0')
         Tcell = self.Tcell = DoubleVar(self, name='Tcell')
         Vbypass = self.Vbypass = DoubleVar(self, name='Vbypasss')
-        Aph.set("{:10.4f}".format(pvapp.pvSys.pvconst.Aph))
-        Isc0_T0.set("{:10.4f}".format(pvapp.pvSys.pvconst.Isc0_T0))
-        Tcell.set("{:10.4f}".format(pvapp.pvSys.pvconst.Tcell))
-        Vbypass.set("{:10.4f}".format(pvapp.pvSys.pvconst.Vbypass))
+        Aph.set("{:10.4f}".format(pvapp.pvSys.pvmods[cellnum.get() / (pvapp.numCells.get() * pvapp.numMods.get())][(cellnum.get() / pvapp.numCells.get()) % pvapp.numMods.get()].pvcells[cellnum.get() % pvapp.numCells.get()].Aph))
+        Isc0_T0.set("{:10.4f}".format(pvapp.pvSys.pvmods[cellnum.get() / (pvapp.numCells.get() * pvapp.numMods.get())][(cellnum.get() / pvapp.numCells.get()) % pvapp.numMods.get()].pvcells[cellnum.get() % pvapp.numCells.get()].Isc0_T0))
+        Tcell.set("{:10.4f}".format(pvapp.pvSys.pvmods[cellnum.get() / (pvapp.numCells.get() * pvapp.numMods.get())][(cellnum.get() / pvapp.numCells.get()) % pvapp.numMods.get()].pvcells[cellnum.get() % pvapp.numCells.get()].Tcell))
+        Vbypass.set("{:10.4f}".format(pvapp.pvSys.pvmods[cellnum.get() / (pvapp.numCells.get() * pvapp.numMods.get())][(cellnum.get() / pvapp.numCells.get()) % pvapp.numMods.get()].Vbypass))
         aRBD = self.aRBD = DoubleVar(self, name='aRBD')
         VRBD = self.VRBD = DoubleVar(self, name='VRBD')
         nRBD = self.nRBD = DoubleVar(self, name='nRBD')
         cellArea = self.cellArea = DoubleVar(self, name='cellArea')
-        aRBD.set("{:10.4e}".format(pvapp.pvSys.pvconst.aRBD))
-        VRBD.set("{:10.4f}".format(pvapp.pvSys.pvconst.VRBD))
-        nRBD.set("{:10.4f}".format(pvapp.pvSys.pvconst.nRBD))
-        cellArea.set("{:10.4f}".format(pvapp.pvSys.pvconst.cellArea))
+        aRBD.set("{:10.4e}".format(pvapp.pvSys.pvmods[cellnum.get() / (pvapp.numCells.get() * pvapp.numMods.get())][(cellnum.get() / pvapp.numCells.get()) % pvapp.numMods.get()].pvcells[cellnum.get() % pvapp.numCells.get()].aRBD))
+        VRBD.set("{:10.4f}".format(pvapp.pvSys.pvmods[cellnum.get() / (pvapp.numCells.get() * pvapp.numMods.get())][(cellnum.get() / pvapp.numCells.get()) % pvapp.numMods.get()].pvcells[cellnum.get() % pvapp.numCells.get()].VRBD))
+        nRBD.set("{:10.4f}".format(pvapp.pvSys.pvmods[cellnum.get() / (pvapp.numCells.get() * pvapp.numMods.get())][(cellnum.get() / pvapp.numCells.get()) % pvapp.numMods.get()].pvcells[cellnum.get() % pvapp.numCells.get()].nRBD))
+        cellArea.set("{:10.4f}".format(pvapp.pvSys.pvmods[cellnum.get() / (pvapp.numCells.get() * pvapp.numMods.get())][(cellnum.get() / pvapp.numCells.get()) % pvapp.numMods.get()].cellArea))
 
         # must register vcmd and invcmd as Tcl functions
         vcmd = (self.register(self.validateWidget),
@@ -71,38 +72,38 @@ class AdvCnf_tk(Frame):
               text='Advanced Configuration',
               font=CAPTION_FONT).grid(row=_row, columnspan=3, sticky=W)
         _row += 1
-        # Rs, Rsh, Isat1_T0, Isat2
-        Label(self, text='Rs [Ohms]').grid(row=_row, sticky=W)
-        Label(self, text='Rsh [Ohms]').grid(row=(_row + 1), sticky=W)
-        Label(self, text='Isat1_T0 [A]').grid(row=(_row + 2), sticky=W)
-        Label(self, text='Isat2 [A]').grid(row=(_row + 3), sticky=W)
+        # cellnum, Rs, Rsh, Isat1_T0
+        Label(self, text='cell #').grid(row=_row, sticky=W)
+        Label(self, text='Rs [Ohms]').grid(row=_row + 1, sticky=W)
+        Label(self, text='Rsh [Ohms]').grid(row=(_row + 2), sticky=W)
+        Label(self, text='Isat1_T0 [A]').grid(row=(_row + 3), sticky=W)
+        cellnumEntry = Entry(self, textvariable=cellnum, width=12, justify=RIGHT,
+                             name='cellnumEntry', validatecommand=vcmd,
+                             invalidcommand=invcmd, validate='all')
+        cellnumEntry.grid(row=_row, column=1)
         RsEntry = Entry(self, textvariable=Rs, width=12, justify=RIGHT,
                         name='rsEntry', validatecommand=vcmd,
                         invalidcommand=invcmd, validate='all')
-        RsEntry.grid(row=_row, column=1)
+        RsEntry.grid(row=_row + 1, column=1)
         RshEntry = Entry(self, textvariable=Rsh, width=12, justify=RIGHT,
                          name='rshEntry', validatecommand=vcmd,
                          invalidcommand=invcmd, validate='all')
-        RshEntry.grid(row=(_row + 1), column=1)
+        RshEntry.grid(row=(_row + 2), column=1)
         Isat1_T0Entry = Entry(self, textvariable=Isat1_T0, width=12,
                               justify=RIGHT, name='isat1_T0Entry',
                               validatecommand=vcmd, invalidcommand=invcmd,
                               validate='all')
-        Isat1_T0Entry.grid(row=(_row + 2), column=1)
-        Isat2Entry = Entry(self, textvariable=Isat2, width=12, justify=RIGHT,
-                           name='isat2Entry', validatecommand=vcmd,
-                           invalidcommand=invcmd, validate='all')
-        Isat2Entry.grid(row=(_row + 3), column=1)
+        Isat1_T0Entry.grid(row=(_row + 3), column=1)
         _row += 4  # row 2, 3, 4, 5
-        # Aph, Isc0_T0, Tcell, Vbypasss
-        Label(self, text='Aph').grid(row=_row, sticky=W)
+        # Isat2, Isc0_T0, Tcell, Vbypasss
+        Label(self, text='Isat2 [A]').grid(row=(_row), sticky=W)
         Label(self, text='Isc0_T0 [A]').grid(row=(_row + 1), sticky=W)
         Label(self, text='Tcell [K]').grid(row=(_row + 2), sticky=W)
         Label(self, text='Vbypass [V]').grid(row=(_row + 3), sticky=W)
-        AphEntry = Entry(self, textvariable=Aph, width=12, justify=RIGHT,
-                         name='aphEntry', validatecommand=vcmd,
-                         invalidcommand=invcmd, validate='all')
-        AphEntry.grid(row=_row, column=1)
+        Isat2Entry = Entry(self, textvariable=Isat2, width=12, justify=RIGHT,
+                           name='isat2Entry', validatecommand=vcmd,
+                           invalidcommand=invcmd, validate='all')
+        Isat2Entry.grid(row=(_row), column=1)
         Isc01_T0Entry = Entry(self, textvariable=Isc0_T0, width=12,
                              justify=RIGHT, name='isc01_T0Entry',
                              validatecommand=vcmd, invalidcommand=invcmd,
@@ -218,10 +219,12 @@ class AdvCnf_tk(Frame):
         # update PVconstants
         self.pvapp.msgtext.set(messagetext["pvapplication"]["Ready"])
         pvapp = self.pvapp
-        pvapp.pvSys.pvconst.update(Rs, Rsh, Isat1_T0, Isat2, Aph, Isc0_T0,
-                                   Tcell, cellArea, Vbypass, aRBD, VRBD, nRBD)
+        kwargs = {'Rs': Rs, 'Rsh': Rsh, 'Isat1_T0': Isat1_T0, 'Isat2': Isat2, 'Isc0_T0': Isc0_T0, 'Tcell': Tcell, 'aRBD': aRBD, 'VRBD': VRBD, 'nRBD': nRBD}
+        pvapp.pvSys.pvmods[self.cellnum.get() / (pvapp.numCells.get() * pvapp.numMods.get())][(self.cellnum.get() / pvapp.numCells.get()) % pvapp.numMods.get()].pvcells[self.cellnum.get() % pvapp.numCells.get()].update(
+            **kwargs
+        )  # cellArea, Vbypass updated by module
         # update PVapplication_tk
-        self.pvapp.updatePVsys()
+        self.pvapp.updatePVsys(pvapp.pvSys)
         self.pvapp.updateIVstats()
         self.quit()
 
@@ -283,6 +286,9 @@ class AdvCnf_tk(Frame):
         elif W_ == '.advCnfTop.advCnf.cellAreaEntry':
             valType = FLOATS
             valTest = lambda val: float(val)  # IGNORE:W0108
+        elif W_ == '.advCnfTop.advCnf.cellnumEntry':
+            valType = INTEGERS
+            valTest = lambda val: int(val)  # IGNORE:W0108
         else:
             return False
         w = self.nametowidget(W_)
@@ -324,6 +330,8 @@ class AdvCnf_tk(Frame):
             errText = 'Invalid reverse bias breakdown exponent (nRBD)!'
         elif W_ == ".advCnfTop.advCnf.cellAreaEntry":
             errText = 'Invalid cell area!'
+        elif W_ == ".advCnfTop.advCnf.cellnumEntry":
+            errText = 'Invalid cell number!'
         else:
             errText = 'Unknown widget!'
         w = self.nametowidget(W_)

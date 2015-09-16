@@ -19,12 +19,14 @@ import numpy as np
 import os
 from pvmismatch.pvmismatch_lib.pvconstants import MODSIZES, NUMBERCELLS, \
     NUMBERMODS, NUMBERSTRS
-from pvmismatch import PVsystem
+from pvmismatch.pvmismatch_lib.pvmodule import STD128, STD72, STD96, STD24
+from pvmismatch import PVsystem as PVsystem_cls, PVmodule, PVcell
 # use absolute imports instead of relative, so modules are portable
 from pvmismatch import __name__ as __pkg_name__, __file__ as __pkg_file__
 from pvmismatch.pvmismatch_tk.advCnf_tk import AdvCnf_tk
 from pvmismatch.pvmismatch_tk.pvexceptions import PVValidationError
 from pvmismatch.pvmismatch_tk.pvstring_tk import PVstring_tk
+import webbrowser
 
 INTEGERS = '0123456789'
 FLOATS = '.' + INTEGERS
@@ -34,6 +36,7 @@ LANGUAGE = 'English'
 PKG_BASEDIR = os.path.dirname(__pkg_file__)
 JSONDIR = os.path.join(PKG_BASEDIR, 'pvmismatch_json')
 SPLOGO = os.path.join(PKG_BASEDIR, 'res', 'logo_bg.png')
+DOCS = os.path.join(PKG_BASEDIR, 'docs', '_build', 'html', 'index.html')
 
 logging.basicConfig(level=logging.DEBUG,
                     format='[%(levelname)s] (%(threadName)-10s) %(message)s')
@@ -66,7 +69,7 @@ class waitWidget(Frame):  # pylint: disable=R0924,R0904
         wait = self.wait.get() + 1
         if not self.queue.empty():
             # when queue is filled, quit loop and print elapsed time
-            print 'elapsed time = %2.1f [s]' % (wait * 0.10)
+            logging.debug('elapsed time = %2.1f [s]', wait * 0.10)
             self.quit()
         self.wait.set(wait)
         # loop over this callback every 100[ms] until queue is filled
@@ -127,7 +130,7 @@ def waitbox(original_function):
 
     return new_function
 
-PVsystem = waitbox(PVsystem)  # wrap PVsystem with a waitbox waitWidget
+PVsystem = waitbox(PVsystem_cls)  # wrap PVsystem with a waitbox waitWidget
 
 
 class PVapplicaton(Frame):
@@ -382,6 +385,8 @@ class PVapplicaton(Frame):
         self.RESET.pack(side=RIGHT)
         self.UPDATE = Button(toolbar, text='Update', command=self._update)
         self.UPDATE.pack(side=RIGHT)
+        self.HELP = Button(toolbar, text='Help', command=self._help)
+        self.HELP.pack(side=RIGHT)
         self.MESSAGE = Message(toolbar, textvariable=self.msgtext,
                                width=500, fg='red')
         self.MESSAGE.pack(side=LEFT)
@@ -406,8 +411,7 @@ class PVapplicaton(Frame):
     def validateWidget(self, *args):
         # W = Tkinter.W = 'w' is already used, so use W_ instead
         (d, i, P, s, S, v, V, W_) = args  # @UnusedVariable # IGNORE:W0612
-        print "OnValidate:",
-        print("d={}, i={}, P={}, s={}, S={}, v={}, V={}, W={}".format(*args))
+        logging.debug("OnValidate: d={}, i={}, P={}, s={}, S={}, v={}, V={}, W={}".format(*args))
         if W_ == ".pvSysFrame.pvSysDataFrame.numStrSpinbox":
             valType = INTEGERS
             valTest = lambda val: int(val)  # IGNORE:W0108
@@ -432,8 +436,7 @@ class PVapplicaton(Frame):
 
     def invalidWidget(self, *args):
         (d, i, P, s, S, v, V, W_) = args  # @UnusedVariable # IGNORE:W0612
-        print "OnInvalid: ",
-        print("d={}, i={}, P={}, s={}, S={}, v={}, V={}, W={}".format(*args))
+        logging.debug("OnInvalid: d={}, i={}, P={}, s={}, S={}, v={}, V={}, W={}".format(*args))
         if W_ == ".pvSysFrame.pvSysDataFrame.numStrSpinbox":
             errText = 'Invalid number of strings!'
         elif W_ == ".pvSysFrame.pvSysDataFrame.numModSpinbox":
@@ -448,11 +451,12 @@ class PVapplicaton(Frame):
         self.bell()
 
     def getIV(self, *args):
-        print args
-        x = float(args[0]) / self.pvSys.pvconst.npts
-        xp = np.squeeze(self.pvSys.pvconst.pts)
-        Vsys = np.interp(x, xp, self.pvSys.Vsys.squeeze())
-        Isys = np.interp(x, xp, self.pvSys.Isys.squeeze())
+        logging.debug('args:\n\t%r', args)
+        x = np.float64(float(args[0]) / self.pvSys.pvconst.npts / 2.)
+        xp = np.concatenate((self.pvSys.pvconst.negpts, self.pvSys.pvconst.pts),
+                            axis=0).flatten()
+        Vsys = np.interp(x, xp, self.pvSys.Vsys)
+        Isys = np.interp(x, xp, self.pvSys.Isys)
         Psys = Vsys * Isys / 1000
         self.txtVsys.set("{:7.3f}".format(Vsys))
         self.txtIsys.set("{:7.3f}".format(Isys))
@@ -476,13 +480,21 @@ class PVapplicaton(Frame):
         top.destroy()
 
     def keyBinding(self, event):
-        print event.widget
-        print event.widget.get()
+        logging.debug('event widget:\n\t%r', event.widget)
+        logging.debug('event widget get:\n\t%r', event.widget.get())
         self.updatePVsys()
 
     def updatePVsys(self, *args, **kwargs):
-        print args
-        print kwargs
+        logging.debug('args:\n\t%r', args)
+        logging.debug('kwargs:\n\t%r', kwargs)
+        if args and isinstance(args[0], PVsystem_cls):
+            pvsys = args[0]
+            for n, pvstr in enumerate(pvsys.pvstrs):
+                for pvmod in pvstr.pvmods:
+                    pvmod.calcMod()
+                pvstr.calcString()
+                logging.debug('updating pvstring #%d: Pmp = %g[W]', n, pvstr.Pstring.max())
+            return
         PVAPP = "pvapplication"
         try:
             numStrs = self.numStrs.get()
@@ -495,7 +507,7 @@ class PVapplicaton(Frame):
             if not (0 < sysEe <= self.validationConstants[PVAPP]["sysEe"]):
                 raise PVValidationError('sysEe', sysEe)
         except PVValidationError as err:
-            print err
+            logging.debug('err:\n\t%r', err)
             errtext = self.messagetext[PVAPP][err.argname]
             self.msgtext.set(errtext)
             self.bell()
@@ -503,9 +515,20 @@ class PVapplicaton(Frame):
         numCells = self.numCells.get()
         self.msgtext.set(self.messagetext[PVAPP]["Ready"])
         pvconst = self.pvSys.pvconst
+        pvcell = PVcell(Ee=sysEe)
+        if numCells == 24:
+            numCells = STD24
+        elif numCells == 72:
+            numCells = STD72
+        elif numCells == 96:
+            numCells = STD96
+        elif numCells == 128:
+            numCells = STD128
+        pvmods = PVmodule(cell_pos=numCells, pvcells=pvcell)
         self.pvSys = PVsystem(pvconst, numStrs, numberMods=numMods,
-                              numberCells=numCells, Ee=sysEe)
+                              pvmods=pvmods)
         self.updateIVstats()
+
 
     def updateIVstats(self):
         # reuse sysPlot figure and update pvSysFigCanvas
@@ -518,6 +541,10 @@ class PVapplicaton(Frame):
         self.txtVoc.set("{:7.3f}".format(self.pvSys.Voc))  # [V]
         self.txtFF.set("{:7.3f}".format(self.pvSys.FF * 100))  # [%]
         self.txtEff.set("{:7.3f}".format(self.pvSys.eff * 100))  # [%]
+
+    def _help(self):
+        logging.debug('show docs in browser')
+        webbrowser.open(DOCS)
 
     def _update(self):
         self.msgtext.set(READY_MSG)
@@ -532,13 +559,13 @@ class PVapplicaton(Frame):
         self.numCells.set(NUMBERCELLS)  # default value is 96
         self.msgtext.set(READY_MSG)
         # TODO: need to reset advCnf too
-        print 'reset'
+        logging.debug('reset')
 
     def _load(self):
-        print 'load *.pv file'
+        logging.debug('load *.pv file')
 
     def _save(self):
-        print 'save *.pv file'
+        logging.debug('save *.pv file')
 
     def _quit(self):
         # this is necessary on Windows to prevent

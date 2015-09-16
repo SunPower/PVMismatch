@@ -34,6 +34,7 @@ def standard_cellpos_pat(nrows, ncols_per_substr):
     return cellpos
 
 # standard cell positions presets
+STD24 = standard_cellpos_pat(1, [1] * 24)
 STD72 = standard_cellpos_pat(12, [2, 2, 2])
 STD96 = standard_cellpos_pat(12, [2, 4, 2])
 STD128 = standard_cellpos_pat(16, [2, 4, 2])

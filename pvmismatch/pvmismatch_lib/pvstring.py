@@ -62,7 +62,7 @@ class PVstring(object):
         Istring, Vstring = self.pvconst.calcSeries(self.Imod, self.Vmod,
                                                    meanIsc, self.Imod.max())
         Pstring = Istring * Vstring
-        return (Istring, Vstring, Pstring)
+        return Istring, Vstring, Pstring
 
     def setSuns(self, Ee):
         """
