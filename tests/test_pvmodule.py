@@ -14,25 +14,25 @@ def test_calc_mod():
     return pvmod
 
 
-def test_calc_TCT_mod():
+def test_calc_tct_mod():
     pvmod = PVmodule(cell_pos=TCT96)
-    Isc = np.interp(0., pvmod.Vmod, pvmod.Imod)
-    Voc = np.interp(0., np.flipud(pvmod.Imod), np.flipud(pvmod.Vmod))
-    ok_(np.isclose(Isc, 50.444797602637614))
-    ok_(np.isclose(Voc, 8.089732058317182))
+    isc = np.interp(np.float64(0), pvmod.Vmod, pvmod.Imod)
+    voc = np.interp(np.float64(0), np.flipud(pvmod.Imod), np.flipud(pvmod.Vmod))
+    ok_(np.isclose(isc, 50.444797602637614))
+    ok_(np.isclose(voc, 8.089732058317182))
     return pvmod
 
 
-def test_calc_PCT_mod():
+def test_calc_pct_mod():
     pvmod = PVmodule(cell_pos=PCT96)
-    Isc = np.interp(0., pvmod.Vmod, pvmod.Imod)
-    Voc = np.interp(0., np.flipud(pvmod.Imod), np.flipud(pvmod.Vmod))
-    ok_(np.isclose(Isc, 50.444797602637614))
-    ok_(np.isclose(Voc, 8.089732058317182))
+    isc = np.interp(np.float64(0), pvmod.Vmod, pvmod.Imod)
+    voc = np.interp(np.float64(0), np.flipud(pvmod.Imod), np.flipud(pvmod.Vmod))
+    ok_(np.isclose(isc, 50.444797602637614))
+    ok_(np.isclose(voc, 8.089732058317182))
     return pvmod
 
 
-def test_calc_PCT_bridges():
+def test_calc_pct_bridges():
     pct96_bridges = copy(PCT96)
     pct96_bridges[0][0][2]['circuit'] = 'parallel'
     pct96_bridges[0][2][2]['circuit'] = 'parallel'
@@ -43,6 +43,6 @@ def test_calc_PCT_bridges():
 
 if __name__ == "__main__":
     test_calc_mod()
-    test_calc_TCT_mod()
-    test_calc_PCT_mod()
-    test_calc_PCT_bridges()
+    test_calc_tct_mod()
+    test_calc_pct_mod()
+    test_calc_pct_bridges()

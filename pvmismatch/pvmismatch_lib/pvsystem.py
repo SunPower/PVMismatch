@@ -34,7 +34,7 @@ class PVsystem(object):
                               pvconst=self.pvconst)
         # use deep copy instead of making each object in a for-loop
         if isinstance(pvstrs, PVstring):
-            pvstrs = [deepcopy(pvstrs) for _ in self.numberStrs]
+            pvstrs = [deepcopy(pvstrs) for _ in xrange(self.numberStrs)]
         if len(pvstrs) != self.numberStrs:
             # TODO: use pvmismatch excecptions
             raise Exception("Number of strings don't match.")
@@ -70,14 +70,15 @@ class PVsystem(object):
 
     def calcMPP_IscVocFFeff(self):
         mpp = np.argmax(self.Psys)
-        Pmp = self.Psys[mpp, 0]
-        Vmp = self.Vsys[mpp, 0]
-        Imp = self.Isys[mpp, 0]
+        Pmp = self.Psys[mpp]
+        Vmp = self.Vsys[mpp]
+        Imp = self.Isys[mpp]
         Isys = self.Isys.flatten()
         Vsys = self.Vsys.flatten()
         # calculate Voc, current must be increasing so flipup()
-        Voc = np.interp(np.float64(0), np.flipud(Isys), np.flipud(Vsys))
-        Isc = np.interp(np.float64(0), Vsys, Isys)  # calculate Isc
+        Voc = np.interp(np.float64(0), np.flipud(self.Isys),
+                        np.flipud(self.Vsys))
+        Isc = np.interp(np.float64(0), self.Vsys, self.Isys)  # calculate Isc
         FF = Pmp / Isc / Voc
         totalSuns = sum(
             [pvmod.Ee.sum() * pvmod.cellArea for pvstr in self.pvmods

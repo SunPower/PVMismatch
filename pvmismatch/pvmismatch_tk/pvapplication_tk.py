@@ -33,7 +33,7 @@ READY_MSG = 'Ready'
 LANGUAGE = 'English'
 PKG_BASEDIR = os.path.dirname(__pkg_file__)
 JSONDIR = os.path.join(PKG_BASEDIR, 'pvmismatch_json')
-SPLOGO = os.path.join(PKG_BASEDIR, 'res', 'logo_bg.png')
+SPLOGO = os.path.join(PKG_BASEDIR, '..', 'res', 'logo_bg.png')
 
 logging.basicConfig(level=logging.DEBUG,
                     format='[%(levelname)s] (%(threadName)-10s) %(message)s')

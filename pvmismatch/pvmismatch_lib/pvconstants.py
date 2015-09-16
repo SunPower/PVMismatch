@@ -14,7 +14,6 @@ import scipy.constants
 # Constants
 NPTS = 101  # number of I-V points to calculate
 MODSIZES = [24, 72, 96, 128]  # list of possible number of cells per module
-SUBSTRSIZES = [[2] * 12, [24] * 3, [24, 48, 24], [32, 64, 32]]
 NUMBERCELLS = MODSIZES[2]  # default is 96-cell module
 NUMBERMODS = 10  # default number of modules
 NUMBERSTRS = 10  # default number of strings
