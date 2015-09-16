@@ -12,13 +12,17 @@ from matplotlib import pyplot as plt
 from pvmismatch.pvmismatch_lib.pvconstants import PVconstants, NUMBERMODS, \
     NUMBERSTRS
 from pvmismatch.pvmismatch_lib.pvstring import PVstring
-from pvmismatch.pvmismatch_lib.pvmodule import PVmodule
-from pvmismatch.pvmismatch_lib.parallel_calcs import parallel_calcSystem
 
 
 class PVsystem(object):
     """
     A class for PV systems.
+    :param pvconst: configuration constants object
+    :type pvconst: :class:`pvmismatch.pvmismatch_lib.pvconstants.PVconstants`
+    :param numberStrs: number of strings
+    :param pvstrs: list of parallel strings, a ``PVstring`` object or None
+    :param numberMods: number of modules per string
+    :param pvmods: list of modules, a ``PVmodule`` object or None
     """
     def __init__(self, pvconst=PVconstants(), numberStrs=NUMBERSTRS,
                  pvstrs=None, numberMods=NUMBERMODS, pvmods=None):
@@ -35,56 +39,52 @@ class PVsystem(object):
             # TODO: use pvmismatch excecptions
             raise Exception("Number of strings don't match.")
         self.pvstrs = pvstrs
-        (self.Isys, self.Vsys, self.Psys) = self.calcSystem()
+        self.Isys, self.Vsys, self.Psys = self.calcSystem()
         (self.Imp, self.Vmp, self.Pmp,
          self.Isc, self.Voc, self.FF, self.eff) = self.calcMPP_IscVocFFeff()
 
+    # TODO: use __getattr__ to check for updates to pvcells
+
     @property
     def pvmods(self):
-        return  [pvstr.pvmods for pvstr in self.pvstrs]
+        return [pvstr.pvmods for pvstr in self.pvstrs]
 
     @property
     def Istring(self):
-        return [pvstr.Istring.flatten() for pvstr in self.pvstrs]
+        return np.asarray([pvstr.Istring.flatten() for pvstr in self.pvstrs])
 
     @property
     def Vstring(self):
-        return [pvstr.Vstring.flatten() for pvstr in self.pvstrs]
+        return np.asarray([pvstr.Vstring.flatten() for pvstr in self.pvstrs])
 
     def calcSystem(self):
         """
         Calculate system I-V curves.
         Returns (Isys, Vsys, Psys) : tuple of numpy.ndarray of float
         """
-        Isys = np.zeros((self.pvconst.npts, 1))
-        Vmax = np.max([pvstr.Vstring for pvstr in self.pvstrs])
-        Vsys = Vmax * self.pvconst.pts
-
-        Isys, Vsys = self.pvconst.calcParallel(self.Istring, self.Vstring)
+        Isys, Vsys = self.pvconst.calcParallel(
+            self.Istring, self.Vstring, self.Vstring.max(), self.Vstring.min()
+        )
         Psys = Isys * Vsys
-        return (Isys, Vsys, Psys)
+        return Isys, Vsys, Psys
 
     def calcMPP_IscVocFFeff(self):
         mpp = np.argmax(self.Psys)
-        Pmp = self.Psys[mpp,0]
-        Vmp = self.Vsys[mpp,0]
-        Imp = self.Isys[mpp,0]
-        # xp must be increasing
-        Isys = self.Isys.reshape(self.pvconst.npts)  # IGNORE:E1103
-        Vsys = self.Vsys.reshape(self.pvconst.npts)  # IGNORE:E1103
-        xp = np.flipud(Isys)
-        fp = np.flipud(Vsys)
-        Voc = np.interp(0, xp, fp)  # calculate Voc
-        xp = Vsys
-        fp = Isys
-        Isc = np.interp(0, xp, fp)
+        Pmp = self.Psys[mpp, 0]
+        Vmp = self.Vsys[mpp, 0]
+        Imp = self.Isys[mpp, 0]
+        Isys = self.Isys.flatten()
+        Vsys = self.Vsys.flatten()
+        # calculate Voc, current must be increasing so flipup()
+        Voc = np.interp(np.float64(0), np.flipud(Isys), np.flipud(Vsys))
+        Isc = np.interp(np.float64(0), Vsys, Isys)  # calculate Isc
         FF = Pmp / Isc / Voc
-        totalSuns = 0
-        for pvstr in self.pvstrs:
-            for pvmod in pvstr.pvmods:
-                totalSuns += np.sum(pvmod.Ee)
+        totalSuns = sum(
+            [pvmod.Ee.sum() * pvmod.cellArea for pvstr in self.pvmods
+             for pvmod in pvstr]
+        )
         # convert cellArea from cm^2 to m^2
-        Psun = self.pvconst.E0 * totalSuns * self.pvconst.cellArea / 100 / 100
+        Psun = self.pvconst.E0 * totalSuns / 100 / 100
         eff = Pmp / Psun
         return Imp, Vmp, Pmp, Isc, Voc, FF, eff
 
@@ -117,7 +117,7 @@ class PVsystem(object):
         else:
             for pvstr, pvmod_Ee in Ee.iteritems():
                 self.pvstrs[pvstr].setSuns(pvmod_Ee)
-        (self.Isys, self.Vsys, self.Psys) = self.calcSystem()
+        self.Isys, self.Vsys, self.Psys = self.calcSystem()
         (self.Imp, self.Vmp, self.Pmp,
          self.Isc, self.Voc, self.FF, self.eff) = self.calcMPP_IscVocFFeff()
 
@@ -131,7 +131,7 @@ class PVsystem(object):
         # or make the specified sysPlot current and clear it
         if not sysPlot:
             sysPlot = plt.figure()
-        elif type(sysPlot) in [int, str]:
+        elif isinstance(sysPlot, (int, basestring)):
             sysPlot = plt.figure(sysPlot)
         else:
             try:

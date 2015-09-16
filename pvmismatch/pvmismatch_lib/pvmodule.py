@@ -11,6 +11,7 @@ from pvmismatch.pvmismatch_lib.pvconstants import PVconstants, get_series_cells
 from pvmismatch.pvmismatch_lib.pvcell import PVcell
 
 VBYPASS = np.float64(-0.5)  # [V] trigger voltage of bypass diode
+CELLAREA = np.float64(153.33)  # [cm^2] cell area
 
 
 def standard_cellpos_pat(nrows, ncols_per_substr):
@@ -100,16 +101,17 @@ class PVmodule(object):
     :param pvconst: An object with common parameters and constants.
     :type pvconst: :class:`~pvmismatch.pvmismatch_lib.pvconstants.PVconstants`
     :param Vbypass: bypass diode trigger voltage [V]
-    :type Vbypass: float
+    :param cellArea: cell area [cm^2]
     """
     def __init__(self, cell_pos=STD96, pvcells=None, pvconst=PVconstants(),
-                 Vbypass=VBYPASS):
+                 Vbypass=VBYPASS, cellArea=CELLAREA):
         # TODO: check cell position pattern
         self.cell_pos = cell_pos  #: cell position pattern dictionary
         self.numberCells = sum([len(c) for s in self.cell_pos for c in s])
         """number of cells in the module"""
         self.pvconst = pvconst  #: configuration constants
         self.Vbypass = Vbypass  #: [V] trigger voltage of bypass diode
+        self.cellArea = cellArea  #: [cm^2] cell area
         if pvcells is None:
             # faster to use copy instead of making each object in a for-loop
             # use copy instead of deepcopy to keey same pvconst for all objects
@@ -127,7 +129,8 @@ class PVmodule(object):
         self.subStrCells = [len(_) for _ in self.cell_pos]  #: cells per substr
         # initialize members so PyLint doesn't get upset
         self.Imod, self.Vmod, self.Pmod, self.Vsubstr = self.calcMod()
-        # self.setSuns(Ee)
+
+    # TODO: use __getattr__ to check for updates to pvcells
 
     # copy some values from cells to modules
     @property

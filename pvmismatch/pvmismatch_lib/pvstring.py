@@ -43,6 +43,8 @@ class PVstring(object):
         self.pvmods = pvmods
         self.Istring, self.Vstring, self.Pstring = self.calcString()
 
+    # TODO: use __getattr__ to check for updates to pvcells
+
     @property
     def Imod(self):
         return np.array([mod.Imod.flatten() for mod in self.pvmods])
@@ -70,13 +72,15 @@ class PVstring(object):
         ... scalar, then sets the entire string to that irradiance.
         ... a dictionary, then each key refers to a module in the string,
         and the corresponding value are passed to
-        :meth:`~pvmodules.PVmodules.setSuns()`
+        :meth:`~pvmismatch.pvmismatch_lib.pvmodule.PVmodule.setSuns()`
 
         Example::
         Ee={0: {'cells': (1,2,3), 'Ee': (0.9, 0.3, 0.5)}}  # set module 0
         Ee=0.91  # set all modules to 0.91 suns
         Ee={12: 0.77}  # set module with index 12 to 0.77 suns
-        Ee={8: [0.23 (0, 1, 2)], 7: [(0.45, 0.35), (71, 72)]}
+        Ee={8: [0.23, (0, 1, 2)], 7: [(0.45, 0.35), (71, 72)]}
+        # set module 8, cells 0, 1 and 2 to 0.23 suns, then set module 7, cell
+        #   71 to 0.45 suns and module 72 to 0.35 suns.
 
         :param Ee: irradiance [W/m^2]
         :type Ee: dict or float

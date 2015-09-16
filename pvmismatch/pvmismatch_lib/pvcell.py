@@ -21,7 +21,6 @@ TCELL = 298.15  # [K] cell temperature
 ARBD = 1.036748445065697E-4  # reverse breakdown coefficient
 VRBD_ = -5.527260068445654  # [V] reverse breakdown voltage
 NRBD = 3.284628553041425  # reverse breakdown exponent
-CELLAREA = 153.33  # [cm^2] cell area
 EG = 1.1  # [eV] band gap of cSi
 ALPHA_ISC = 0.0003551  # [1/K] short circuit current temperature coefficient
 
@@ -34,7 +33,6 @@ class PVcell(object):
     :param Isat1_T0: first saturation diode current at ref temp [A]
     :param Isat2: second saturation diode current [A]
     :param Isc0_T0: short circuit current at ref temp [A]
-    :param cellArea: cell area [cm^2]
     :param aRBD: reverse breakdown coefficient
     :param VRBD: reverse breakdown voltage [V]
     :param nRBD: reverse breakdown exponent
@@ -46,7 +44,7 @@ class PVcell(object):
     :type pvconst: :class:`pvmismatch.pvmismatch_lib.pvconstants.PVconstants`
     """
     def __init__(self, Rs=RS, Rsh=RSH, Isat1_T0=ISAT1_T0, Isat2=ISAT2,
-                 Isc0_T0=ISC0_T0, cellArea=CELLAREA, aRBD=ARBD, VRBD=VRBD_,
+                 Isc0_T0=ISC0_T0, aRBD=ARBD, VRBD=VRBD_,
                  nRBD=NRBD, Eg=EG, alpha_Isc=ALPHA_ISC,
                  Tcell=TCELL, Ee=1., pvconst=PVconstants()):
         # user inputs
@@ -55,7 +53,6 @@ class PVcell(object):
         self.Isat1_T0 = Isat1_T0  #: [A] diode one sat. current at T0
         self.Isat2 = Isat2  #: [A] diode two saturation current
         self.Isc0_T0 = Isc0_T0  #: [A] short circuit current at T0
-        self.cellArea = cellArea  #: [cm^2] cell area
         self.aRBD = aRBD  #: reverse breakdown coefficient
         self.VRBD = VRBD  #: [V] reverse breakdown voltage
         self.nRBD = nRBD  #: reverse breakdown exponent

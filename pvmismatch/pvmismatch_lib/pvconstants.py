@@ -19,12 +19,6 @@ NUMBERCELLS = MODSIZES[2]  # default is 96-cell module
 NUMBERMODS = 10  # default number of modules
 NUMBERSTRS = 10  # default number of strings
 
-# Multiprocessing
-PARALLEL = False  # <boolean> use multiprocessing
-PROCS = None  # number of processes in pool, defaults to cpu_count()
-MAXTASKSPERCHILD = 10  # number of tasks before worker exits to free memory
-CHUNKSIZE = None  # size of each task sent to process and assign to workers
-
 
 def npinterpx(x, xp, fp):
     """
@@ -71,14 +65,6 @@ class PVconstants(object):
 
     :param npts: number of points in IV curve
     :type npts: int
-    :param parallel: use parallel processing flag
-    :type parallel: bool
-    :param procs: number of processes for parallel
-    :type procs: int
-    :param maxtaskperchild: number of task before worker dies
-    :type maxtaskperchild: int
-    :param chunksize: amount of data per task
-    :type chunksize: int
     """
     # hard constants
     k = scipy.constants.k  #: [kJ/mole/K] Boltzmann constant
@@ -86,20 +72,19 @@ class PVconstants(object):
     E0 = 1000.  #: [W/m^2] irradiance of 1 sun
     T0 = 298.15  #: [K] reference temperature
 
-    def __init__(self, npts=NPTS, parallel=PARALLEL, procs=PROCS,
-                 maxtasksperchild=MAXTASKSPERCHILD, chunksize=CHUNKSIZE):
+    def __init__(self, npts=NPTS):
         # set number of points in IV curve(s)
         self.npts = npts  #: number of points in IV curves
         # point spacing from 0 to 1, used for Vcell, Vmod, Vsys and Istring
         # decrease point spacing as voltage approaches Voc by using logspace
         pts = (11. - np.logspace(np.log10(11.), 0., self.npts)) / 10.
         pts[0] = 0.  # first point must be exactly zero
-        self.pts = pts.reshape(self.npts, 1)
+        self.pts = pts.reshape((self.npts, 1))
         """array of points with decreasing spacing from 0 to 1"""
-        negpts = (11. - np.logspace(np.log10(11. - 1. / np.float64(self.npts)),
+        negpts = (11. - np.logspace(np.log10(11. - 1. / float(self.npts)),
                                     0., self.npts)) / 10.
-        negpts = negpts.reshape(self.npts, 1)
-        self.Imod_negpts = 1 + 1. / np.float64(self.npts) / 10. - negpts
+        negpts = negpts.reshape((self.npts, 1))
+        self.Imod_negpts = 1 + 1. / float(self.npts) / 10. - negpts
         """array of points with decreasing spacing from 1 to just less than but
         not including zero"""
         self.negpts = np.flipud(negpts)  # reverse the order
@@ -109,14 +94,9 @@ class PVconstants(object):
         # so that tight spacing is around MPP and RBD
         self.Imod_pts = 1 - np.flipud(self.pts)
         """array of points with increasing spacing from 0 to 1"""
-        # multiprocessing
-        self.parallel = parallel  #: use multiprocessing if True
-        self.procs = procs  #: number of processes in pool
-        self.maxtasksperchild = maxtasksperchild  #: number of tasks per worker
-        self.chunksize = chunksize  #: size of tasks
 
     def __str__(self):
-        return '<PVconstants(npts=%d, parallel=%s)>' % (self.npts, self.parallel)
+        return '<PVconstants(npts=%d)>' % self.npts
 
     def __repr__(self):
         return str(self)
@@ -193,15 +173,13 @@ def get_series_cells(cell_pos_column, prev_col=None):
     # current column that correspond to cells between parallel crossties in the
     # previous column
     if prev_col:
-        # cell_pos_column, next_col = prev_col, cell_pos_column
         cell_pos_column = zip(prev_col, cell_pos_column)
-    # else:
-    #     next_col = None
     for cell in cell_pos_column:
         if prev_col:
             cell, next_col = cell
         else:
             next_col = None
+        # noinspection PyTypeChecker
         if cell['circuit'] == 'parallel':
             yield series_cells
             series_cells = []
@@ -210,6 +188,7 @@ def get_series_cells(cell_pos_column, prev_col=None):
         if next_col:
             cell_idx = next_col['idx']
         else:
+            # noinspection PyTypeChecker
             cell_idx = cell['idx']
         series_cells.append(cell_idx)
     yield series_cells
