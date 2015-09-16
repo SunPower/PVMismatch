@@ -28,6 +28,7 @@ ALPHA_ISC = 0.0003551  # [1/K] short circuit current temperature coefficient
 class PVcell(object):
     """
     Class for PV cells.
+
     :param Rs: series resistance [ohms]
     :param Rsh: shunt resistance [ohms]
     :param Isat1_T0: first saturation diode current at ref temp [A]

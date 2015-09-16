@@ -65,6 +65,7 @@ PCT96 = crosstied_cellpos_pat([4, 4, 4], 8, partial=True)
 def combine_parallel_circuits(IVprev_cols, pvconst):
     """
     Combine parallel circuits in a substring
+
     :param IVprev_cols: lists of IV curves of parallel and series circuits
     :return:
     """
@@ -171,10 +172,12 @@ class PVmodule(object):
         Recalculates cell current (Icell [A]), voltage (Vcell [V]) and power
         (Pcell [W]) as well as module current (Imod [A]), voltage (Vmod [V])
         and power (Pmod [W]).
+
         Arguments
-            Ee : <float> or <np.array of floats> Effective Irradiance
-        Optional
-            cells : <np.array of int> Cells to change
+            Ee : float or ``np.array`` of floats`
+                Effective Irradiance
+            cells : ``np.array`` of int
+                Cells to change [Optional]
         """
         if cells is None:
             if np.isscalar(Ee):
@@ -200,6 +203,7 @@ class PVmodule(object):
     def calcMod(self):
         """
         Calculate module I-V curves.
+
         Returns (Imod, Vmod, Pmod) : tuple of numpy.ndarray of float
         """
         # iterate over substrings
