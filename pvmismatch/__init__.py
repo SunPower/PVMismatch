@@ -17,6 +17,6 @@ PVstring = pvstring.PVstring
 PVsystem = pvsystem.PVsystem
 
 __author__ = 'mmikofski'
-__version__ = '1.6.1'
-__release__ = 'German Granola'
+__version__ = '2.0'
+__release__ = 'Himalayan Honey'
 __all__ = ['pvconstants', 'pvmodule', 'pvstring', 'pvsystem']

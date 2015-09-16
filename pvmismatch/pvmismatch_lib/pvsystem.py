@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-Created on Jul 16, 2012
-
-@author: mmikofski
+This module contains the :class:`~pvmismatch.pvmismatch_lib.pvsystem.PVsystem`
+class.
 """
 
 import numpy as np
@@ -17,8 +16,9 @@ from pvmismatch.pvmismatch_lib.pvstring import PVstring
 class PVsystem(object):
     """
     A class for PV systems.
+
     :param pvconst: configuration constants object
-    :type pvconst: :class:`pvmismatch.pvmismatch_lib.pvconstants.PVconstants`
+    :type pvconst: :class:`~pvmismatch.pvmismatch_lib.pvconstants.PVconstants`
     :param numberStrs: number of strings
     :param pvstrs: list of parallel strings, a ``PVstring`` object or None
     :param numberMods: number of modules per string
@@ -100,17 +100,20 @@ class PVsystem(object):
         modules and its values are either cells and corresponding Ee, cells and
         a scalar Ee, a scalar Ee value for all cells or an array of Ee values
         for all cells in the module. The values of pv-modules are passed to
-        :meth:`~pvmodules.PVmodules.setSuns()`
-
-        Example::
-        Ee={0: {0: {'cells': (0, 1, 2), 'Ee': (0.9, 0.3, 0.5)}}}
-        Ee=0.91  # set all modules in all strings to 0.91 suns
-        Ee={12: 0.77}  # set all modules in string with index 12 to 0.77 suns
-        Ee={3: {8: 0.23, 7: 0.45}}  # set module with index 8 to 0.23 suns and
-            module with index 7 to 0.45 suns in string with index 3
+        :meth:`~pvmismatch.pvmismatch_lib.pvmodule.PVmodule.setSuns()`
 
         :param Ee: irradiance [W/m^2]
-        :type Ee: dict or float
+        :type Ee: dict, float
+
+        For Example::
+
+            Ee={0: {0: {'cells': (0, 1, 2), 'Ee': (0.9, 0.3, 0.5)}}}
+            Ee=0.91  # set all modules in all strings to 0.91 suns
+            Ee={12: 0.77}  # set all modules in string with index 12 to 0.77 suns
+            Ee={3: {8: 0.23, 7: 0.45}}
+            # set module with index 8 to 0.23 suns and module with index 7 to
+            # 0.45 suns in string with index 3
+
         """
         if np.isscalar(Ee):
             for pvstr in self.pvstrs:

@@ -42,7 +42,7 @@ class PVcell(object):
     :param Tcell: cell temperature [K]
     :param Ee: incident effective irradiance [suns]
     :param pvconst: configuration constants object
-    :type pvconst: :class:`pvmismatch.pvmismatch_lib.pvconstants.PVconstants`
+    :type pvconst: :class:`~pvmismatch.pvmismatch_lib.pvconstants.PVconstants`
     """
     def __init__(self, Rs=RS, Rsh=RSH, Isat1_T0=ISAT1_T0, Isat2=ISAT2,
                  Isc0_T0=ISC0_T0, aRBD=ARBD, VRBD=VRBD_,

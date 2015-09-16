@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-Created on Mon Jun 11 14:07:12 2012
-
-@author: mmikofski
+This module contains the :class:`~pvmismatch.pvmismatch_lib.pvstring.PVstring`
+class.
 """
 
 import numpy as np
@@ -19,8 +18,8 @@ class PVstring(object):
 
     :param numberMods: number of modules in string
     :param pvmods: either a list of modules, an instance of
-        :class:`pvmismatch.pvmismatch_lib.pvmodule.PVmodule` or None
-    :type pvmods: list or :class:`pvmismatch.pvmismatch_lib.pvmodule.PVmodule`
+        :class:`~pvmismatch.pvmismatch_lib.pvmodule.PVmodule` [Optional]
+    :type pvmods: list, :class:`~pvmismatch.pvmismatch_lib.pvmodule.PVmodule`
     :param pvconst: a configuration constants object
     """
     def __init__(self, numberMods=NUMBERMODS, pvmods=None,
@@ -74,16 +73,18 @@ class PVstring(object):
         and the corresponding value are passed to
         :meth:`~pvmismatch.pvmismatch_lib.pvmodule.PVmodule.setSuns()`
 
-        Example::
-        Ee={0: {'cells': (1,2,3), 'Ee': (0.9, 0.3, 0.5)}}  # set module 0
-        Ee=0.91  # set all modules to 0.91 suns
-        Ee={12: 0.77}  # set module with index 12 to 0.77 suns
-        Ee={8: [0.23, (0, 1, 2)], 7: [(0.45, 0.35), (71, 72)]}
-        # set module 8, cells 0, 1 and 2 to 0.23 suns, then set module 7, cell
-        #   71 to 0.45 suns and module 72 to 0.35 suns.
-
         :param Ee: irradiance [W/m^2]
         :type Ee: dict or float
+
+        For Example::
+
+            Ee={0: {'cells': (1,2,3), 'Ee': (0.9, 0.3, 0.5)}}  # set module 0
+            Ee=0.91  # set all modules to 0.91 suns
+            Ee={12: 0.77}  # set module with index 12 to 0.77 suns
+            Ee={8: [0.23, (0, 1, 2)], 7: [(0.45, 0.35), (71, 72)]}
+            # set module 8, cells 0, 1 and 2 to 0.23 suns, then set module 7, cell
+            #   71 to 0.45 suns and module 72 to 0.35 suns.
+
         """
         if np.isscalar(Ee):
             for pvmod in iter(self.pvmods):

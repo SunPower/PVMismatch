@@ -50,3 +50,27 @@ PVmodule
 ^^^^^^^^
 .. autoclass:: PVmodule
    :members:
+
+
+.. _pvstring:
+
+pvstring
+--------
+.. automodule:: pvmismatch.pvmismatch_lib.pvstring
+
+PVstring
+^^^^^^^^
+.. autoclass:: PVstring
+   :members:
+
+
+.. _pvsystem:
+
+pvsystem
+--------
+.. automodule:: pvmismatch.pvmismatch_lib.pvsystem
+
+PVsystem
+^^^^^^^^
+.. autoclass:: PVsystem
+   :members:
