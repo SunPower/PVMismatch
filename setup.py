@@ -20,5 +20,6 @@ setup(name=__name__,
       package_data={'pvmismatch':
                         ['pvmismatch_json/messagetext.English.json',
                          'pvmismatch_json/validationConstants.json',
-                         'res/logo.png', 'res/logo_bg.png', 'docs/conf.py',
-                         'docs/*.rst', 'docs/Makefile', 'docs/make.bat']})
+                         'res/logo.png', 'res/logo_invert.png',
+                         'res/logo_bg.png', 'docs/conf.py', 'docs/*.rst',
+                         'docs/Makefile', 'docs/make.bat']})
