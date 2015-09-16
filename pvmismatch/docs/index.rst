@@ -11,7 +11,12 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
-   api
+   api/api
+   api/pvconstants
+   api/pvcell
+   api/pvmodule
+   api/pvstring
+   api/pvsystem
 
 
 Indices and tables

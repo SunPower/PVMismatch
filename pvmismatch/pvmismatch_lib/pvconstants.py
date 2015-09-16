@@ -3,7 +3,9 @@
 This module contains configuration constants for PVMismatch, such as number of
 points in IV curve to calculate, flag to use parallel processing and parallel
 processing parameters. This module also contains some utility functions like
-:func:`~pvmismatch.pvmismatch_lib.pvconstants.npinterpx()` are defined here too.
+:func:`~pvmismatch.pvmismatch_lib.pvconstants.npinterpx()` and
+:func:`~pvmismatch.pvmismatch_lib.pvconstants.get_series_cells()` are defined
+here too.
 """
 
 # TODO: move this to pvmismatch_lib/__init__.py
@@ -131,12 +133,22 @@ class PVconstants(object):
             Vtot += npinterpx(Itot, np.flipud(i), np.flipud(v))
         return np.flipud(Itot), np.flipud(Vtot)
 
-    def calcParallel(self, I, V, meanVoc, Vmin):
+    def calcParallel(self, I, V, Vmax, Vmin):
+        """
+        Calculate IV curve for cells and substrings in parallel.
+
+        :param I: currents [A]
+        :type: I: list, :class:`numpy.ndarray`
+        :param V: voltages [V]
+        :type: V: list, :class:`numpy.ndarray`
+        :param Vmax: max voltage limit, should be max Voc [V]
+        :param Vmin: min voltage limit, could be zero or Vrbd [V]
+        """
         I, V = np.asarray(I), np.asarray(V)
-        meanVoc = np.asarray(meanVoc)
+        Vmax = np.asarray(Vmax)
         Vmin = np.asarray(Vmin)
         Vreverse = Vmin * self.negpts
-        Vforward = meanVoc * self.pts
+        Vforward = Vmax * self.pts
         Vtot = np.concatenate((Vreverse, Vforward), axis=0).flatten()
         Itot = np.zeros((2 * self.npts,))
         for i, v in zip(I, V):
@@ -145,11 +157,38 @@ class PVconstants(object):
 
 
 def Vdiode(Icell, Vcell, Rs):
+    """
+    Calculate Vdiode from current, voltage and series resistance.
+
+    :param Icell: cell current [A]
+    :param Vcell: cell voltage [V]
+    :param Rs: cell series resistance [:math:`\Omega`]
+    :return: diode voltage [V]
+    """
     return Vcell + Icell * Rs
 
 
 def Idiode(Isat, Vdiode, Vt, n):
-    return Isat * (np.exp(Vdiode / n / Vt) - 1)
+    """
+    Calculate diode current using `Shockley diode model`_.
+
+    :param Isat: diode saturation current [A]
+    :param Vdiode: diode voltage [V]
+    :param Vt: thermal voltage [V]
+    :param n: diode ideality factor
+    :return: diode current
+
+    .. LaTeX math directives need double backslashes in comments
+
+    .. note::
+       Thermal voltage is defined as ...
+
+       .. math::
+           V_t = \\frac {k_B * T} {q_e}
+
+    .. _Shockley diode model: https://en.wikipedia.org/wiki/Diode_modelling#Shockley_diode_model
+    """
+    return Isat * (np.exp(Vdiode / n / Vt) - 1.)
 
 
 def Ishunt(Vdiode, Rsh):
@@ -163,6 +202,7 @@ def Igen(Aph, Ee, Isc0):
 def get_series_cells(cell_pos_column, prev_col=None):
     """
     Get the sequence of series cells between parallel crossties.
+
     :param cell_pos_column: column in cell position pattern
     :param prev_col: previous column in cell position pattern
     :return: indices of series cells
