@@ -174,11 +174,9 @@ class PVmodule(object):
         (Pcell [W]) as well as module current (Imod [A]), voltage (Vmod [V])
         and power (Pmod [W]).
 
-        Arguments
-            Ee : float or ``np.array`` of floats`
-                Effective Irradiance
-            cells : ``np.array`` of int
-                Cells to change [Optional]
+        Args:
+            Ee (:class:`numpy.ndarray`): Effective Irradiance [suns]
+            cells (list): Cells to change [Optional]
         """
         if cells is None:
             if np.isscalar(Ee):

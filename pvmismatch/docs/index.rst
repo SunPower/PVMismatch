@@ -11,6 +11,7 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
+   tutorials/quickstart
    api/api
    api/pvconstants
    api/pvcell
