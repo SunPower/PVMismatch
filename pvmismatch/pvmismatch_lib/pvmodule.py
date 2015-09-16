@@ -10,7 +10,7 @@ from matplotlib import pyplot as plt
 from pvmismatch.pvmismatch_lib.pvconstants import PVconstants, get_series_cells
 from pvmismatch.pvmismatch_lib.pvcell import PVcell
 
-VBYPASS = -0.5  # [V] trigger voltage of bypass diode
+VBYPASS = np.float64(-0.5)  # [V] trigger voltage of bypass diode
 
 
 def standard_cellpos_pat(nrows, ncols_per_substr):
@@ -80,7 +80,7 @@ def combine_parallel_circuits(IVprev_cols, pvconst):
         )
         Irows.append(Irow)
         Vrows.append(Vrow)
-        Isc_rows.append(np.interp(0., Vrow, Irow))
+        Isc_rows.append(np.interp(np.float64(0), Vrow, Irow))
         Imax_rows.append(Irow.max())
     Irows, Vrows = np.asarray(Irows), np.asarray(Vrows)
     Isc_rows = np.asarray(Isc_rows)
@@ -224,7 +224,7 @@ class PVmodule(object):
                     )
                     Irows.append(Irow)
                     Vrows.append(Vrow)
-                    Isc_rows.append(np.interp(0., Vrow, Irow))
+                    Isc_rows.append(np.interp(np.float64(0), Vrow, Irow))
                     Imax_rows.append(Irow.max())
                 Irows, Vrows = np.asarray(Irows), np.asarray(Vrows)
                 Isc_rows = np.asarray(Isc_rows)
@@ -298,7 +298,7 @@ class PVmodule(object):
             Vsub[bypassed] = self.Vbypass
             Isubstr.append(Isub)
             Vsubstr.append(Vsub)
-            Isc_substr.append(np.interp(0., Vsub, Isub))
+            Isc_substr.append(np.interp(np.float64(0), Vsub, Isub))
             Imax_substr.append(Isub.max())
         Isubstr, Vsubstr = np.asarray(Isubstr), np.asarray(Vsubstr)
         Isc_substr = np.asarray(Isc_substr)

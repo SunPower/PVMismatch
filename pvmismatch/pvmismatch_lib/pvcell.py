@@ -28,7 +28,7 @@ ALPHA_ISC = 0.0003551  # [1/K] short circuit current temperature coefficient
 
 class PVcell(object):
     """
-    PVconstants - Class for PV constants
+    Class for PV cells.
     :param Rs: series resistance [ohms]
     :param Rsh: shunt resistance [ohms]
     :param Isat1_T0: first saturation diode current at ref temp [A]
@@ -42,6 +42,8 @@ class PVcell(object):
     :param alpha_Isc: short circuit current temp coeff [1/K]
     :param Tcell: cell temperature [K]
     :param Ee: incident effective irradiance [suns]
+    :param pvconst: configuration constants object
+    :type pvconst: :class:`pvmismatch.pvmismatch_lib.pvconstants.PVconstants`
     """
     def __init__(self, Rs=RS, Rsh=RSH, Isat1_T0=ISAT1_T0, Isat2=ISAT2,
                  Isc0_T0=ISC0_T0, cellArea=CELLAREA, aRBD=ARBD, VRBD=VRBD_,
@@ -164,7 +166,8 @@ class PVcell(object):
         Idiode1 = self.Isat1 * (np.exp(Vdiode / self.Vt) - 1.)
         Idiode2 = self.Isat2 * (np.exp(Vdiode / 2. / self.Vt) - 1.)
         Ishunt = Vdiode / self.Rsh
-        fRBD = np.asarray(1. - Vdiode / self.VRBD)
+        fRBD = 1. - Vdiode / self.VRBD
+        # use epsilon = 2.2204460492503131e-16 to avoid "divide by zero"
         fRBD[fRBD == 0] = np.finfo(np.float64).eps
         fRBD = self.aRBD * fRBD ** (-self.nRBD)
         Icell = Igen - Idiode1 - Idiode2 - Ishunt * (1. + fRBD)

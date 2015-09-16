@@ -9,8 +9,8 @@ import numpy as np
 from copy import deepcopy
 from matplotlib import pyplot as plt
 # use absolute imports instead of relative, so modules are portable
-from pvmismatch.pvmismatch_lib.pvconstants import PVconstants, npinterpx, \
-    NUMBERCELLS, NUMBERMODS, NUMBERSTRS
+from pvmismatch.pvmismatch_lib.pvconstants import PVconstants, NUMBERMODS, \
+    NUMBERSTRS
 from pvmismatch.pvmismatch_lib.pvstring import PVstring
 from pvmismatch.pvmismatch_lib.parallel_calcs import parallel_calcSystem
 
@@ -21,15 +21,13 @@ class PVsystem(object):
     """
 
     def __init__(self, pvconst=PVconstants(), numberStrs=NUMBERSTRS,
-                 pvstrs=None, numberMods=NUMBERMODS, pvmods=None,
-                 numberCells=NUMBERCELLS, Ee=1):
+                 pvstrs=None, numberMods=NUMBERMODS, pvmods=None):
         """
         Constructor
         """
         self.pvconst = pvconst
         self.numberStrs = numberStrs
         self.numberMods = numberMods
-        self.numberCells = numberCells
         if pvstrs is None:
             if pvmods is None:
                 # use deep copy instead of making each object in a for-loop
