@@ -203,7 +203,7 @@ class PVmodule(object):
         """
         Calculate module I-V curves.
 
-        Returns (Imod, Vmod, Pmod) : tuple of numpy.ndarray of float
+        Returns module currents [A], voltages [V] and powers [W]
         """
         # iterate over substrings
         # TODO: benchmark speed difference append() vs preallocate space

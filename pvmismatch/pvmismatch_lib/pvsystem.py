@@ -73,8 +73,6 @@ class PVsystem(object):
         Pmp = self.Psys[mpp]
         Vmp = self.Vsys[mpp]
         Imp = self.Isys[mpp]
-        Isys = self.Isys.flatten()
-        Vsys = self.Vsys.flatten()
         # calculate Voc, current must be increasing so flipup()
         Voc = np.interp(np.float64(0), np.flipud(self.Isys),
                         np.flipud(self.Vsys))
