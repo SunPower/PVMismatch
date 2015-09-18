@@ -15,7 +15,6 @@ RS = 0.004267236774264931  # [ohm] series resistance
 RSH = 10.01226369025448  # [ohm] shunt resistance
 ISAT1_T0 = 2.286188161253440E-11  # [A] diode one saturation current
 ISAT2 = 1.117455042372326E-6  # [A] diode two saturation current
-APH = 1.000426348582935  # photovoltaic current coefficient
 ISC0_T0 = 6.3056  # [A] reference short circuit current
 TCELL = 298.15  # [K] cell temperature
 ARBD = 1.036748445065697E-4  # reverse breakdown coefficient
