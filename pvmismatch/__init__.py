@@ -30,7 +30,6 @@ import pvmismatch.pvmismatch_lib.pvcell as pvcell
 import pvmismatch.pvmismatch_lib.pvmodule as pvmodule
 import pvmismatch.pvmismatch_lib.pvstring as pvstring
 import pvmismatch.pvmismatch_lib.pvsystem as pvsystem
-import pvmismatch.pvmismatch_lib.parallel_calcs as parallel_calcs
 import pvmismatch.pvmismatch_lib.pvexceptions as pvexceptions
 
 # expose constructors to package's top level
