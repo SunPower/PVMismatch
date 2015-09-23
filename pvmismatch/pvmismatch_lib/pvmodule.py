@@ -59,8 +59,8 @@ def crosstied_cellpos_pat(nrows_per_substrs, ncols, partial=False):
     return cellpos
 
 # crosstied cell positions presets
-TCT96 = crosstied_cellpos_pat([4, 4, 4], 8)
-PCT96 = crosstied_cellpos_pat([4, 4, 4], 8, partial=True)
+TCT492 = crosstied_cellpos_pat([27, 28, 27], 6)  # Tetris module with TCT
+PCT492 = crosstied_cellpos_pat([27, 28, 27], 6, partial=True)  # Tetris module without cross-ties
 
 
 def combine_parallel_circuits(IVprev_cols, pvconst):
