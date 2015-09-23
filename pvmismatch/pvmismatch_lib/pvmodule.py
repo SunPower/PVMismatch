@@ -15,6 +15,26 @@ CELLAREA = np.float64(153.33)  # [cm^2] cell area
 
 
 def standard_cellpos_pat(nrows, ncols_per_substr):
+    """
+    Standard module object builder.
+
+    Parameters
+    ----------
+    nrows : integer
+        Number of rows of cells in module.
+
+    ncols_per_substr : list of integers
+        Number of columns of cells in each substring (in parallel with a diode).
+
+    Returns
+    -------
+    cellpos : list of lists
+         Outermost list is a list of substrings in parallel with a bypass diode
+         and in series with each other.
+         The substring is a list of columns in that substring.
+         Inside the column are the actual cells in each row.
+         Each cell has a circuit key and an index.
+    """
     cellpos = []
     ncols = [0, 0]
     for substr_cols in ncols_per_substr:
@@ -37,10 +57,34 @@ def standard_cellpos_pat(nrows, ncols_per_substr):
 STD24 = standard_cellpos_pat(1, [1] * 24)
 STD72 = standard_cellpos_pat(12, [2, 2, 2])
 STD96 = standard_cellpos_pat(12, [2, 4, 2])
+"""
+Standard module: 12x8 cells
+Substrings have 2, 4 and 2 columns of cells per diode
+"""
 STD128 = standard_cellpos_pat(16, [2, 4, 2])
 
 
 def crosstied_cellpos_pat(nrows_per_substrs, ncols, partial=False):
+    """
+    Cross-tied module object builder.
+
+    Parameters
+    ----------
+    nrows_per_substr : list of integers
+        Number of rows of cells in each substring (in parallel with a diode).
+
+    ncols_per_substr : integer
+        Number of columns of cells.
+
+    Returns
+    -------
+    cellpos : list of lists
+         Outermost list is a list of substrings in parallel with a bypass diode
+         and in series with each other.
+         The substring is a list of columns in that substring.
+         Inside the column are the actual cells in each row.
+         Each cell has a circuit key and an index.
+    """
     trows = sum(nrows_per_substrs)
     cellpos = []
     nrows = [0, 0]
@@ -59,9 +103,16 @@ def crosstied_cellpos_pat(nrows_per_substrs, ncols, partial=False):
     return cellpos
 
 # crosstied cell positions presets
-TCT492 = crosstied_cellpos_pat([27, 28, 27], 6)  # Tetris module with TCT
-PCT492 = crosstied_cellpos_pat([27, 28, 27], 6, partial=True)  # Tetris module without cross-ties
-
+TCT492 = crosstied_cellpos_pat([27, 28, 27], 6)
+"""
+Standard Tetris module with TCT: 82x6 cells
+Substrings have 27, 28 and 27 rows of cells per diode
+"""
+PCT492 = crosstied_cellpos_pat([27, 28, 27], 6, partial=True)
+"""
+Standard Tetris module with no cross-ties: 82x6 cells
+Substrings have 27, 28 and 27 rows of cells per diode
+"""
 
 def combine_parallel_circuits(IVprev_cols, pvconst):
     """
