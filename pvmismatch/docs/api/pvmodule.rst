@@ -19,12 +19,15 @@ Cross-tied module object builder
 
 Standard module object
 ----------------------
-..autoattribute:: STD96
+.. autodata:: STD96
+   :annotation:
 
 Standard Tetris module with TCT
 -------------------------------
-..autoattribute:: TCT492
+.. autodata:: TCT492
+   :annotation:
 
 Standard Tetris module with no cross-ties
 -----------------------------------------
-..autoattribute:: PCT492
+.. autodata:: PCT492
+   :annotation:
