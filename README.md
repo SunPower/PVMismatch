@@ -15,7 +15,7 @@ at [Unofficial Windows Binaries for Python Extension Packages by Christoph Gohlk
 * [matplotlib](http://matplotlib.org/)
 
 Optional
-^^^^^^^^
+--------
 The following packages are optional.
 
 * [Sphinx](http://sphinx-doc.org/) - required to build documentation
