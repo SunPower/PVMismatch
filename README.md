@@ -25,7 +25,7 @@ The following packages are optional.
 
 Installation
 ------------
-After downloading PVMismatch from [releases](./releases), install it with
+After downloading PVMismatch from [releases](../../releases), install it with
 [pip](https://pip.pypa.io/en/stable/):
 
     $ pip install pvmismatch-X.Y.Zabc-py2-none-any.whl
