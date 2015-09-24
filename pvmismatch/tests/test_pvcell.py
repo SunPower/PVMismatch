@@ -63,5 +63,12 @@ def test_calc_series():
     return i, v
 
 
+def test_pvcell_calc_rbd():
+    pvc1 = PVcell(bRBD=0.)
+    ok_(isinstance(pvc1, PVcell))
+    pvc2 = PVcell(bRBD=-0.056)
+    ok_(isinstance(pvc2, PVcell))
+
+        
 if __name__ == "__main__":
-    test_calc_series()
+    test_pvcell_calc_rbd()
