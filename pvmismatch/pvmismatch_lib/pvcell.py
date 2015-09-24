@@ -17,7 +17,8 @@ ISAT1_T0 = 2.286188161253440E-11  # [A] diode one saturation current
 ISAT2 = 1.117455042372326E-6  # [A] diode two saturation current
 ISC0_T0 = 6.3056  # [A] reference short circuit current
 TCELL = 298.15  # [K] cell temperature
-ARBD = 1.036748445065697E-4  # reverse breakdown coefficient
+ARBD = 1.036748445065697E-4  # reverse breakdown coefficient 1
+BRBD = 0.  # reverse breakdown coefficient 2
 VRBD_ = -5.527260068445654  # [V] reverse breakdown voltage
 NRBD = 3.284628553041425  # reverse breakdown exponent
 EG = 1.1  # [eV] band gap of cSi
@@ -33,7 +34,8 @@ class PVcell(object):
     :param Isat1_T0: first saturation diode current at ref temp [A]
     :param Isat2: second saturation diode current [A]
     :param Isc0_T0: short circuit current at ref temp [A]
-    :param aRBD: reverse breakdown coefficient
+    :param aRBD: reverse breakdown coefficient 1
+    :param bRBD: reverse breakdown coefficient 2
     :param VRBD: reverse breakdown voltage [V]
     :param nRBD: reverse breakdown exponent
     :param Eg: band gap [eV]
@@ -44,7 +46,7 @@ class PVcell(object):
     :type pvconst: :class:`~pvmismatch.pvmismatch_lib.pvconstants.PVconstants`
     """
     def __init__(self, Rs=RS, Rsh=RSH, Isat1_T0=ISAT1_T0, Isat2=ISAT2,
-                 Isc0_T0=ISC0_T0, aRBD=ARBD, VRBD=VRBD_,
+                 Isc0_T0=ISC0_T0, aRBD=ARBD, bRBD=BRBD, VRBD=VRBD_,
                  nRBD=NRBD, Eg=EG, alpha_Isc=ALPHA_ISC,
                  Tcell=TCELL, Ee=1., pvconst=PVconstants()):
         # user inputs
@@ -53,7 +55,8 @@ class PVcell(object):
         self.Isat1_T0 = Isat1_T0  #: [A] diode one sat. current at T0
         self.Isat2 = Isat2  #: [A] diode two saturation current
         self.Isc0_T0 = Isc0_T0  #: [A] short circuit current at T0
-        self.aRBD = aRBD  #: reverse breakdown coefficient
+        self.aRBD = aRBD  #: reverse breakdown coefficient 1
+        self.bRBD = bRBD  #: reverse breakdown coefficient 2
         self.VRBD = VRBD  #: [V] reverse breakdown voltage
         self.nRBD = nRBD  #: reverse breakdown exponent
         self.Eg = Eg  #: [eV] band gap of cSi
@@ -166,8 +169,10 @@ class PVcell(object):
         fRBD = 1. - Vdiode / self.VRBD
         # use epsilon = 2.2204460492503131e-16 to avoid "divide by zero"
         fRBD[fRBD == 0] = np.finfo(np.float64).eps
-        fRBD = self.aRBD * fRBD ** (-self.nRBD)
-        Icell = Igen - Idiode1 - Idiode2 - Ishunt * (1. + fRBD)
+        Vdiode_norm = Vdiode / self.Rsh / self.Isc0_T0
+        fRBD = self.Isc0_T0 * fRBD ** (-self.nRBD)
+        IRBD = (self.aRBD * Vdiode_norm + self.bRBD * Vdiode_norm ** 2) * fRBD 
+        Icell = Igen - Idiode1 - Idiode2 - Ishunt - IRBD
         Vcell = Vdiode - Icell * self.Rs
         Pcell = Icell * Vcell
         return Icell, Vcell, Pcell
