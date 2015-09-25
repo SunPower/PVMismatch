@@ -33,7 +33,7 @@ def standard_cellpos_pat(nrows, ncols_per_substr):
          and in series with each other.
          The substring is a list of columns in that substring.
          Inside the column are the actual cells in each row.
-         Each cell has a circuit key and an index.
+         Each cell has a 'crosstie' key and an index.
     """
     cellpos = []
     ncols = [0, 0]
@@ -48,7 +48,7 @@ def standard_cellpos_pat(nrows, ncols_per_substr):
                     idx += row
                 else:
                     idx += (nrows - row - 1)
-                newrow.append({'circuit': 'series', 'idx': idx})
+                newrow.append({'crosstie': False, 'idx': idx})
             newsubstr.append(newrow)
         cellpos.append(newsubstr)
     return cellpos
@@ -73,8 +73,12 @@ def crosstied_cellpos_pat(nrows_per_substrs, ncols, partial=False):
     nrows_per_substr : list of integers
         Number of rows of cells in each substring (in parallel with a diode).
 
-    ncols_per_substr : integer
+    ncols : integer
         Number of columns of cells.
+        
+    partial : boolean
+        False (default) means TCT (all cells are cross-tied).
+        True means no cross-tiling.
 
     Returns
     -------
@@ -83,7 +87,7 @@ def crosstied_cellpos_pat(nrows_per_substrs, ncols, partial=False):
          and in series with each other.
          The substring is a list of columns in that substring.
          Inside the column are the actual cells in each row.
-         Each cell has a circuit key and an index.
+         Each cell has a 'crosstie' key and an index.
     """
     trows = sum(nrows_per_substrs)
     cellpos = []
@@ -94,10 +98,10 @@ def crosstied_cellpos_pat(nrows_per_substrs, ncols, partial=False):
         for col in xrange(ncols):
             newrow = []
             for row in xrange(*nrows):
-                circuit = 'parallel'
+                crosstie = True
                 if partial and newrow:
-                    circuit = 'series'
-                newrow.append({'circuit': circuit, 'idx': col * trows + row})
+                    crosstie = False
+                newrow.append({'crosstie': crosstie, 'idx': col * trows + row})
             newsubstr.append(newrow)
         cellpos.append(newsubstr)
     return cellpos
@@ -116,12 +120,12 @@ Substrings have 27, 28 and 27 rows of cells per diode
 
 def combine_parallel_circuits(IVprev_cols, pvconst):
     """
-    Combine parallel circuits in a substring
+    Combine crosstied circuits in a substring
 
-    :param IVprev_cols: lists of IV curves of parallel and series circuits
+    :param IVprev_cols: lists of IV curves of crosstied and series circuits
     :return:
     """
-    # combine parallel circuits
+    # combine crosstied circuits
     Irows, Vrows = [], []
     Isc_rows, Imax_rows = [], []
     for IVcols in zip(*IVprev_cols):
@@ -260,8 +264,8 @@ class PVmodule(object):
         # TODO: benchmark speed difference append() vs preallocate space
         Isubstr, Vsubstr, Isc_substr, Imax_substr = [], [], [], []
         for substr in self.cell_pos:
-            # check if cells are in series or any parallel circuits
-            if all(r['circuit'] == 'series' for c in substr for r in c):
+            # check if cells are in series or any crosstied circuits
+            if all(r['crosstie'] == False for c in substr for r in c):
                 idxs = [r['idx'] for c in substr for r in c]
                 IatVrbd = np.asarray(
                     [np.interp(vrbd, v, i) for vrbd, v, i in
@@ -271,7 +275,7 @@ class PVmodule(object):
                     self.Icell[idxs], self.Vcell[idxs], self.Isc[idxs].mean(),
                     IatVrbd.max()
                 )
-            elif all(r['circuit'] == 'parallel' for c in substr for r in c):
+            elif all(r['crosstie'] == True for c in substr for r in c):
                 Irows, Vrows = [], []
                 Isc_rows, Imax_rows = [], []
                 for row in zip(*substr):
@@ -326,9 +330,9 @@ class PVmodule(object):
                     IVprev_cols.append(IVcols)
                     if prev_col:
                         # if circuits are same in both columns then continue
-                        if not all(icol['circuit'] == jcol['circuit']
+                        if not all(icol['crosstie'] == jcol['crosstie']
                                    for icol, jcol in zip(prev_col, col)):
-                            # combine parallel circuits
+                            # combine crosstied circuits
                             Iparallel, Vparallel = combine_parallel_circuits(
                                 IVprev_cols, self.pvconst
                             )
@@ -339,9 +343,9 @@ class PVmodule(object):
                             continue
                     # set prev_col and continue
                     prev_col = col
-                # combine any remaining parallel circuits in substring
+                # combine any remaining crosstied circuits in substring
                 if not IVall_cols:
-                    # combine parallel circuits
+                    # combine crosstied circuits
                     Isub, Vsub = combine_parallel_circuits(
                         IVprev_cols, self.pvconst
                     )

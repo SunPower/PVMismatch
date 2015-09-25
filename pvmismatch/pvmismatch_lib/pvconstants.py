@@ -219,7 +219,7 @@ def get_series_cells(cell_pos_column, prev_col=None):
         else:
             next_col = None
         # noinspection PyTypeChecker
-        if cell['circuit'] == 'parallel':
+        if cell['crosstie'] == True:
             yield series_cells
             series_cells = []
         # if the next column is specified, return the cell indices that

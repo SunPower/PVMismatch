@@ -34,9 +34,9 @@ def test_calc_pct_mod():
 
 def test_calc_pct_bridges():
     pct492_bridges = copy(PCT492)
-    pct492_bridges[0][0][2]['circuit'] = 'parallel'
-    pct492_bridges[0][2][2]['circuit'] = 'parallel'
-    pct492_bridges[0][4][2]['circuit'] = 'parallel'
+    pct492_bridges[0][0][2]['crosstie'] = True
+    pct492_bridges[0][2][2]['crosstie'] = True
+    pct492_bridges[0][4][2]['crosstie'] = True
     pvmod = PVmodule(cell_pos=pct492_bridges)
     return pvmod
 
