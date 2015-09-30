@@ -185,7 +185,7 @@ class PVmodule(object):
         self.numSubStr = len(self.cell_pos)  #: number of substrings
         self.subStrCells = [len(_) for _ in self.cell_pos]  #: cells per substr
         # initialize members so PyLint doesn't get upset
-        self.Imod, self.Vmod, self.Pmod, self.Vsubstr = self.calcMod()
+        self.Imod, self.Vmod, self.Pmod, self.Isubstr, self.Vsubstr = self.calcMod()
 
     # TODO: use __getattr__ to check for updates to pvcells
 
@@ -252,7 +252,7 @@ class PVmodule(object):
                     self.pvcells[cell_idx].Ee = Ee_idx
             else:
                 raise Exception("Input irradiance value (Ee) for each cell!")
-        self.Imod, self.Vmod, self.Pmod, self.Vsubstr = self.calcMod()
+        self.Imod, self.Vmod, self.Pmod, self.Isubstr, self.Vsubstr = self.calcMod()
 
     def calcMod(self):
         """
@@ -369,7 +369,7 @@ class PVmodule(object):
             Isubstr, Vsubstr, Isc_substr.mean(), Imax_substr.max()
         )
         Pmod = Imod * Vmod
-        return Imod, Vmod, Pmod, Vsubstr
+        return Imod, Vmod, Pmod, Isubstr, Vsubstr
 
     def plotCell(self):
         """
