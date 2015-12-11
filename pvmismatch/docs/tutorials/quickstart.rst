@@ -136,7 +136,7 @@ Let's change their temperatures. In fact since the temperatures are still at
     ...             else:
     ...                 pvc.Tcell = 50. + 273.15  # [K] normal cells
     ...         (pvmod.Imod, pvmod.Vmod, pvmod.Pmod,
-    ...          pvmod.Vsubstr) = pvmod.calcMod()  # update the modules in each string
+    ...          pvmod.Isubstr, pvmod.Vsubstr) = pvmod.calcMod()  # update modules
     ...     (pvstr.Istring, pvstr.Vstring,
     ...      pvstr.Pstring) = pvstr.calcString()  # update each string in the system
     >>> pvsys.Isys, pvsys.Vsys, pvsys.Psys = pvsys.calcSystem()
