@@ -1,0 +1,29 @@
+# ide
+.spyderproject
+.project
+.pydevproject
+.settings/
+.idea/
+pvmismatch.sublime-project
+pvmismatch.sublime-workspace
+
+# files
+*.pyc
+*.orig
+
+# build
+dist/
+pvmismatch.egg-info/
+build/
+Makefile
+
+# docs
+!docs/_templates/
+_*/
+
+# test
+testPV/
+benchmark_*/
+
+# virtualenv
+venv/
