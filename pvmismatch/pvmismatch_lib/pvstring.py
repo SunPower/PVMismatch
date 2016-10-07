@@ -94,7 +94,10 @@ class PVstring(object):
                 if hasattr(cell_Ee, 'keys'):
                     self.pvmods[pvmod].setSuns(**cell_Ee)
                 else:
-                    self.pvmods[pvmod].setSuns(*cell_Ee)
+                    try:
+                        self.pvmods[pvmod].setSuns(*cell_Ee)
+                    except TypeError:
+                        self.pvmods[pvmod].setSuns(cell_Ee)
         # update modules
         self.Istring, self.Vstring, self.Pstring = self.calcString()
 
