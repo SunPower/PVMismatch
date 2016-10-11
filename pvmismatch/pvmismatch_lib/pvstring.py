@@ -90,11 +90,19 @@ class PVstring(object):
             for pvmod in iter(self.pvmods):
                 pvmod.setSuns(Ee)
         else:
-            for pvmod, cell_Ee in Ee.iteritems():
-                if hasattr(cell_Ee, 'keys'):
-                    self.pvmods[pvmod].setSuns(**cell_Ee)
-                else:
-                    self.pvmods[pvmod].setSuns(*cell_Ee)
+            try:
+                for pvmod, cell_Ee in Ee.iteritems():
+                    if hasattr(cell_Ee, 'keys'):
+                        self.pvmods[pvmod].setSuns(**cell_Ee)
+                    else:
+                        try:
+                            self.pvmods[pvmod].setSuns(*cell_Ee)
+                        except TypeError:
+                            self.pvmods[pvmod].setSuns(cell_Ee)
+            except AttributeError:
+                Ee = Ee[0]
+                for pvmod in iter(self.pvmods):
+                    pvmod.setSuns(Ee)
         # update modules
         self.Istring, self.Vstring, self.Pstring = self.calcString()
 
