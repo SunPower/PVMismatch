@@ -59,7 +59,7 @@ def test_calc_series():
     # noinspection PyTypeChecker
     ok_(np.allclose(i, iv[0]))
     # noinspection PyTypeChecker
-    ok_(np.allclose(v, iv[1]))
+    ok_(np.allclose(v, iv[1], rtol=1e-4))
     return i, v
 
 
