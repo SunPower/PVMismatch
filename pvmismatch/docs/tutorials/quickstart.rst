@@ -64,14 +64,14 @@ interpreter, run them from a script or simply paste them in
     >>> pvsys.Isc  # short circuit current [A]
     12.611199981080691
 
-.. image:: ../../res/pvsys_plot_2x8-std96.png
+.. image:: pvsys_plot_2x8-std96.png
 
 Now lets shade the last row of the 1st module in the 1st string::
 
     >>> pvsys.setSuns({0: {0: [(0.2, ) * 8, (11, 12, 35, 36, 59, 60, 83, 84)]}})
     >>> f_shade = pvsys.plotSys()
 
-.. image:: ../../res/pvsys_plot_2x8-std96_last_row.png
+.. image:: pvsys_plot_2x8-std96_last_row.png
 
 How is this system doing now? ::
 
@@ -120,8 +120,8 @@ actually going on with those cells in the last row of the 1st module in the
     >>> np.interp(pvsys.Vmp, pvsys.pvstrs[0].Vstring, pvsys.pvstrs[0].Istring)
     5.624635929989247
 
-.. image:: ../../res/pvmod00_plot_2x8-std96_last_row.png
-.. image:: ../../res/pvmod00cells_plot_2x8-std96_last_row.png
+.. image:: pvmod00_plot_2x8-std96_last_row.png
+.. image:: pvmod00cells_plot_2x8-std96_last_row.png
 
 Interpolation of string current from the system voltage yields 5.6[A]. Those
 shaded cells can only carry that current in reverse bias, so they must be hot!
@@ -179,7 +179,7 @@ Let's change their temperatures. In fact since the temperatures are still at
 
     >>> f_hot = pvsys.plotSys()
 
-.. image:: ../../res/pvsys_plot_2x8-std96_last_row_hot.png
+.. image:: pvsys_plot_2x8-std96_last_row_hot.png
 
 A couple of things to notices:
 
