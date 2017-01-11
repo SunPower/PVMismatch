@@ -2,7 +2,7 @@ language: python
 cache: pip
 sudo: required
 before_install:
-    - sudo apt-get install -qq update
+    - sudo apt-get -qq update
     - sudo apt-get install -y gfortran
     - sudo apt-get install -y libatlas-dev liblapack-dev libblas-dev
 script:
