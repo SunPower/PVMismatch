@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Quickstart &mdash; pvmismatch Indonesian Icecream documentation</title>
+    <title>Quickstart &#8212; pvmismatch Jamaica Jelly documentation</title>
     
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -14,25 +14,30 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     'Indonesian Icecream',
+        VERSION:     'Jamaica Jelly',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
       };
     </script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="top" title="pvmismatch Indonesian Icecream documentation" href="../index.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="API" href="../api/api.html" />
     <link rel="prev" title="Welcome to PVMismatch’s documentation!" href="../index.html" />
    
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
   </head>
-  <body role="document">  
+  <body role="document">
+  
 
     <div class="document">
       <div class="documentwrapper">
@@ -67,7 +72,7 @@ at <a class="reference external" href="http://www.lfd.uci.edu/~gohlke/pythonlibs
 <div class="section" id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
 <p>After downloading PVMismatch, install it with <a class="reference external" href="https://pip.pypa.io/en/stable/">pip</a>:</p>
-<div class="highlight-python"><div class="highlight"><pre>$ pip install pvmismatch-2.0-py2-none-any.whl
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ pip install pvmismatch-2.0-py2-none-any.whl
 </pre></div>
 </div>
 </div>
@@ -78,43 +83,43 @@ at <a class="reference external" href="http://www.lfd.uci.edu/~gohlke/pythonlibs
 standard 96 cell modules. You can enter these commands in the Python
 interpreter, run them from a script or simply paste them in
 <a class="reference external" href="http://ipython.org/">IPython</a> with <code class="docutils literal"><span class="pre">%paste</span></code>.</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pvmismatch</span> <span class="kn">import</span> <span class="o">*</span>  <span class="c"># this imports everything we need</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">pvsys</span> <span class="o">=</span> <span class="n">pvsystem</span><span class="o">.</span><span class="n">PVsystem</span><span class="p">(</span><span class="n">numberStrs</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">numberMods</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>  <span class="c"># makes the system</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>  <span class="c"># now lets make some plots</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">plt</span><span class="o">.</span><span class="n">ion</span><span class="p">()</span>  <span class="c"># this turns on interactive plotting</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="n">pvsys</span><span class="o">.</span><span class="n">plotSys</span><span class="p">()</span>  <span class="c"># creates a figure with the system IV &amp; PV curve</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pvmismatch</span> <span class="k">import</span> <span class="o">*</span>  <span class="c1"># this imports everything we need</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pvsys</span> <span class="o">=</span> <span class="n">pvsystem</span><span class="o">.</span><span class="n">PVsystem</span><span class="p">(</span><span class="n">numberStrs</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">numberMods</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>  <span class="c1"># makes the system</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">matplotlib</span> <span class="k">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>  <span class="c1"># now lets make some plots</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">plt</span><span class="o">.</span><span class="n">ion</span><span class="p">()</span>  <span class="c1"># this turns on interactive plotting</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="n">pvsys</span><span class="o">.</span><span class="n">plotSys</span><span class="p">()</span>  <span class="c1"># creates a figure with the system IV &amp; PV curve</span>
 
-<span class="gp">&gt;&gt;&gt; </span><span class="n">pvsys</span><span class="o">.</span><span class="n">Vmp</span>  <span class="c"># max voltage [V]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pvsys</span><span class="o">.</span><span class="n">Vmp</span>  <span class="c1"># max voltage [V]</span>
 <span class="go">434.78820171467481</span>
 
-<span class="gp">&gt;&gt;&gt; </span><span class="n">pvsys</span><span class="o">.</span><span class="n">Imp</span>  <span class="c"># max current [A]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pvsys</span><span class="o">.</span><span class="n">Imp</span>  <span class="c1"># max current [A]</span>
 <span class="go">11.821752935151656</span>
 
 <span class="go">&gt;&gt;&gt;pvsys.Pmp  # max power [W]</span>
 <span class="go">5139.9586997897668</span>
 
-<span class="gp">&gt;&gt;&gt; </span><span class="n">pvsys</span><span class="o">.</span><span class="n">FF</span>  <span class="c"># fill factor</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pvsys</span><span class="o">.</span><span class="n">FF</span>  <span class="c1"># fill factor</span>
 <span class="go">0.78720728660102768</span>
 
-<span class="gp">&gt;&gt;&gt; </span><span class="n">pvsys</span><span class="o">.</span><span class="n">eff</span>  <span class="c"># efficiency</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pvsys</span><span class="o">.</span><span class="n">eff</span>  <span class="c1"># efficiency</span>
 <span class="go">0.21824347997841023</span>
 
-<span class="gp">&gt;&gt;&gt; </span><span class="n">pvsys</span><span class="o">.</span><span class="n">Voc</span>  <span class="c"># open circuit voltage [V]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pvsys</span><span class="o">.</span><span class="n">Voc</span>  <span class="c1"># open circuit voltage [V]</span>
 <span class="go">517.7428517321761</span>
 
-<span class="gp">&gt;&gt;&gt; </span><span class="n">pvsys</span><span class="o">.</span><span class="n">Isc</span>  <span class="c"># short circuit current [A]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pvsys</span><span class="o">.</span><span class="n">Isc</span>  <span class="c1"># short circuit current [A]</span>
 <span class="go">12.611199981080691</span>
 </pre></div>
 </div>
 <img alt="../_images/pvsys_plot_2x8-std96.png" src="../_images/pvsys_plot_2x8-std96.png" />
 <p>Now lets shade the last row of the 1st module in the 1st string:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">pvsys</span><span class="o">.</span><span class="n">setSuns</span><span class="p">({</span><span class="mi">0</span><span class="p">:</span> <span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="p">[(</span><span class="mf">0.2</span><span class="p">,</span> <span class="p">)</span> <span class="o">*</span> <span class="mi">8</span><span class="p">,</span> <span class="p">(</span><span class="mi">11</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">35</span><span class="p">,</span> <span class="mi">36</span><span class="p">,</span> <span class="mi">59</span><span class="p">,</span> <span class="mi">60</span><span class="p">,</span> <span class="mi">83</span><span class="p">,</span> <span class="mi">84</span><span class="p">)]}})</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">pvsys</span><span class="o">.</span><span class="n">setSuns</span><span class="p">({</span><span class="mi">0</span><span class="p">:</span> <span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="p">[(</span><span class="mf">0.2</span><span class="p">,</span> <span class="p">)</span> <span class="o">*</span> <span class="mi">8</span><span class="p">,</span> <span class="p">(</span><span class="mi">11</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">35</span><span class="p">,</span> <span class="mi">36</span><span class="p">,</span> <span class="mi">59</span><span class="p">,</span> <span class="mi">60</span><span class="p">,</span> <span class="mi">83</span><span class="p">,</span> <span class="mi">84</span><span class="p">)]}})</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">f_shade</span> <span class="o">=</span> <span class="n">pvsys</span><span class="o">.</span><span class="n">plotSys</span><span class="p">()</span>
 </pre></div>
 </div>
 <img alt="../_images/pvsys_plot_2x8-std96_last_row.png" src="../_images/pvsys_plot_2x8-std96_last_row.png" />
 <p>How is this system doing now?</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">pvsys</span><span class="o">.</span><span class="n">Vmp</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">pvsys</span><span class="o">.</span><span class="n">Vmp</span>
 <span class="go">402.2176762133148</span>
 
 <span class="gp">&gt;&gt;&gt; </span><span class="n">pvsys</span><span class="o">.</span><span class="n">Imp</span>
@@ -139,7 +144,7 @@ interpreter, run them from a script or simply paste them in
 <p>That did a little damage - the system lost 400[W] about 8%. Let&#8217;s see what&#8217;s
 actually going on with those cells in the last row of the 1st module in the
 1st string.</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">pvsys</span><span class="o">.</span><span class="n">pvmods</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">pvcells</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="c"># let&#39;s see if they&#39;re actually shaded</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">pvsys</span><span class="o">.</span><span class="n">pvmods</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">pvcells</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># let&#39;s see if they&#39;re actually shaded</span>
 <span class="go">&lt;PVcell(Ee=1[suns], Tcell=298.15[K], Isc=6.3056[A], Voc=0.67444[V])&gt;</span>
 
 <span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="n">pvsys</span><span class="o">.</span><span class="n">pvmods</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">pvcells</span><span class="p">[</span><span class="n">_</span><span class="p">]</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">11</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">35</span><span class="p">,</span> <span class="mi">36</span><span class="p">,</span> <span class="mi">59</span><span class="p">,</span> <span class="mi">60</span><span class="p">,</span> <span class="mi">83</span><span class="p">,</span> <span class="mi">84</span><span class="p">)]</span>
@@ -152,10 +157,10 @@ actually going on with those cells in the last row of the 1st module in the
 <span class="go"> &lt;PVcell(Ee=0.2[suns], Tcell=298.15[K], Isc=1.26112[A], Voc=0.630143[V])&gt;,</span>
 <span class="go"> &lt;PVcell(Ee=0.2[suns], Tcell=298.15[K], Isc=1.26112[A], Voc=0.630143[V])&gt;]</span>
 
-<span class="gp">&gt;&gt;&gt; </span><span class="n">f_mod00</span> <span class="o">=</span> <span class="n">pvsys</span><span class="o">.</span><span class="n">pvmods</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plotMod</span><span class="p">()</span>  <span class="c"># plot that module</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">f_mod00cells</span> <span class="o">=</span> <span class="n">pvsys</span><span class="o">.</span><span class="n">pvmods</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plotCell</span><span class="p">()</span>  <span class="c"># plot all the cells</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f_mod00</span> <span class="o">=</span> <span class="n">pvsys</span><span class="o">.</span><span class="n">pvmods</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plotMod</span><span class="p">()</span>  <span class="c1"># plot that module</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f_mod00cells</span> <span class="o">=</span> <span class="n">pvsys</span><span class="o">.</span><span class="n">pvmods</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plotCell</span><span class="p">()</span>  <span class="c1"># plot all the cells</span>
 
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>  <span class="c"># let&#39;s find the string current by interpolatign</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>  <span class="c1"># let&#39;s find the string current by interpolatign</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">pvsys</span><span class="o">.</span><span class="n">Vmp</span><span class="p">,</span> <span class="n">pvsys</span><span class="o">.</span><span class="n">pvstrs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">Vstring</span><span class="p">,</span> <span class="n">pvsys</span><span class="o">.</span><span class="n">pvstrs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">Istring</span><span class="p">)</span>
 <span class="go">5.624635929989247</span>
 </pre></div>
@@ -166,22 +171,22 @@ actually going on with those cells in the last row of the 1st module in the
 shaded cells can only carry that current in reverse bias, so they must be hot!
 Let&#8217;s change their temperatures. In fact since the temperatures are still at
 25[C], let&#8217;s update the normal cells too:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">pvstr</span> <span class="ow">in</span> <span class="n">pvsys</span><span class="o">.</span><span class="n">pvstrs</span><span class="p">:</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">pvstr</span> <span class="ow">in</span> <span class="n">pvsys</span><span class="o">.</span><span class="n">pvstrs</span><span class="p">:</span>
 <span class="gp">... </span>    <span class="k">for</span> <span class="n">pvmod</span> <span class="ow">in</span> <span class="n">pvstr</span><span class="o">.</span><span class="n">pvmods</span><span class="p">:</span>
 <span class="gp">... </span>        <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">pvc</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">pvmod</span><span class="o">.</span><span class="n">pvcells</span><span class="p">):</span>
 <span class="gp">... </span>            <span class="k">if</span> <span class="n">n</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">11</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">35</span><span class="p">,</span> <span class="mi">36</span><span class="p">,</span> <span class="mi">59</span><span class="p">,</span> <span class="mi">60</span><span class="p">,</span> <span class="mi">83</span><span class="p">,</span> <span class="mi">84</span><span class="p">):</span>
-<span class="gp">... </span>                <span class="n">pvc</span><span class="o">.</span><span class="n">Tcell</span> <span class="o">=</span> <span class="mf">100.</span> <span class="o">+</span> <span class="mf">273.15</span>  <span class="c"># [K] hot cells in RBD</span>
+<span class="gp">... </span>                <span class="n">pvc</span><span class="o">.</span><span class="n">Tcell</span> <span class="o">=</span> <span class="mf">100.</span> <span class="o">+</span> <span class="mf">273.15</span>  <span class="c1"># [K] hot cells in RBD</span>
 <span class="gp">... </span>            <span class="k">else</span><span class="p">:</span>
-<span class="gp">... </span>                <span class="n">pvc</span><span class="o">.</span><span class="n">Tcell</span> <span class="o">=</span> <span class="mf">50.</span> <span class="o">+</span> <span class="mf">273.15</span>  <span class="c"># [K] normal cells</span>
+<span class="gp">... </span>                <span class="n">pvc</span><span class="o">.</span><span class="n">Tcell</span> <span class="o">=</span> <span class="mf">50.</span> <span class="o">+</span> <span class="mf">273.15</span>  <span class="c1"># [K] normal cells</span>
 <span class="gp">... </span>        <span class="p">(</span><span class="n">pvmod</span><span class="o">.</span><span class="n">Imod</span><span class="p">,</span> <span class="n">pvmod</span><span class="o">.</span><span class="n">Vmod</span><span class="p">,</span> <span class="n">pvmod</span><span class="o">.</span><span class="n">Pmod</span><span class="p">,</span>
-<span class="gp">... </span>         <span class="n">pvmod</span><span class="o">.</span><span class="n">Isubstr</span><span class="p">,</span> <span class="n">pvmod</span><span class="o">.</span><span class="n">Vsubstr</span><span class="p">)</span> <span class="o">=</span> <span class="n">pvmod</span><span class="o">.</span><span class="n">calcMod</span><span class="p">()</span>  <span class="c"># update modules</span>
+<span class="gp">... </span>         <span class="n">pvmod</span><span class="o">.</span><span class="n">Isubstr</span><span class="p">,</span> <span class="n">pvmod</span><span class="o">.</span><span class="n">Vsubstr</span><span class="p">)</span> <span class="o">=</span> <span class="n">pvmod</span><span class="o">.</span><span class="n">calcMod</span><span class="p">()</span>  <span class="c1"># update modules</span>
 <span class="gp">... </span>    <span class="p">(</span><span class="n">pvstr</span><span class="o">.</span><span class="n">Istring</span><span class="p">,</span> <span class="n">pvstr</span><span class="o">.</span><span class="n">Vstring</span><span class="p">,</span>
-<span class="gp">... </span>     <span class="n">pvstr</span><span class="o">.</span><span class="n">Pstring</span><span class="p">)</span> <span class="o">=</span> <span class="n">pvstr</span><span class="o">.</span><span class="n">calcString</span><span class="p">()</span>  <span class="c"># update each string in the system</span>
+<span class="gp">... </span>     <span class="n">pvstr</span><span class="o">.</span><span class="n">Pstring</span><span class="p">)</span> <span class="o">=</span> <span class="n">pvstr</span><span class="o">.</span><span class="n">calcString</span><span class="p">()</span>  <span class="c1"># update each string in the system</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">pvsys</span><span class="o">.</span><span class="n">Isys</span><span class="p">,</span> <span class="n">pvsys</span><span class="o">.</span><span class="n">Vsys</span><span class="p">,</span> <span class="n">pvsys</span><span class="o">.</span><span class="n">Psys</span> <span class="o">=</span> <span class="n">pvsys</span><span class="o">.</span><span class="n">calcSystem</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="p">(</span><span class="n">pvsys</span><span class="o">.</span><span class="n">Imp</span><span class="p">,</span> <span class="n">pvsys</span><span class="o">.</span><span class="n">Vmp</span><span class="p">,</span> <span class="n">pvsys</span><span class="o">.</span><span class="n">Pmp</span><span class="p">,</span>
 <span class="gp">... </span> <span class="n">pvsys</span><span class="o">.</span><span class="n">Isc</span><span class="p">,</span> <span class="n">pvsys</span><span class="o">.</span><span class="n">Voc</span><span class="p">,</span> <span class="n">pvsys</span><span class="o">.</span><span class="n">FF</span><span class="p">,</span> <span class="n">pvsys</span><span class="o">.</span><span class="n">eff</span><span class="p">)</span> <span class="o">=</span> <span class="n">pvsys</span><span class="o">.</span><span class="n">calcMPP_IscVocFFeff</span><span class="p">()</span>
 
-<span class="gp">&gt;&gt;&gt; </span><span class="n">pvsys</span><span class="o">.</span><span class="n">pvmods</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">pvcells</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="c"># let&#39;s see if they&#39;re actually hot</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pvsys</span><span class="o">.</span><span class="n">pvmods</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">pvcells</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># let&#39;s see if they&#39;re actually hot</span>
 <span class="go">&lt;PVcell(Ee=1[suns], Tcell=323.15[K], Isc=6.36158[A], Voc=0.63443[V])&gt;</span>
 
 <span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="n">pvsys</span><span class="o">.</span><span class="n">pvmods</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">pvcells</span><span class="p">[</span><span class="n">_</span><span class="p">]</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">11</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">35</span><span class="p">,</span> <span class="mi">36</span><span class="p">,</span> <span class="mi">59</span><span class="p">,</span> <span class="mi">60</span><span class="p">,</span> <span class="mi">83</span><span class="p">,</span> <span class="mi">84</span><span class="p">)]</span>
@@ -268,21 +273,18 @@ in the future. When updating the system, loop from the inside out.</li>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
-      <li><a href="../_sources/tutorials/quickstart.txt"
+      <li><a href="../_sources/tutorials/quickstart.rst.txt"
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
-    <p class="searchtip" style="font-size: 90%">
-    Enter search terms or a module, class or function name.
-    </p>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -290,14 +292,14 @@ in the future. When updating the system, loop from the inside out.</li>
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &copy;2015, mmikofski.
+      &copy;2017, mmikofski.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.1</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.6</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
       
       |
-      <a href="../_sources/tutorials/quickstart.txt"
+      <a href="../_sources/tutorials/quickstart.rst.txt"
           rel="nofollow">Page source</a>
     </div>
 

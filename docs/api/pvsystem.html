@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>pvsystem &mdash; pvmismatch Indonesian Icecream documentation</title>
+    <title>pvsystem &#8212; pvmismatch Jamaica Jelly documentation</title>
     
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -14,24 +14,29 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     'Indonesian Icecream',
+        VERSION:     'Jamaica Jelly',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
       };
     </script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="top" title="pvmismatch Indonesian Icecream documentation" href="../index.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
     <link rel="prev" title="pvstring" href="pvstring.html" />
    
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
   </head>
-  <body role="document">  
+  <body role="document">
+  
 
     <div class="document">
       <div class="documentwrapper">
@@ -95,17 +100,17 @@ for all cells in the module. The values of pv-modules are passed to
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>Ee</strong> (<em>dict, float</em>) &#8211; irradiance [W/m^2]</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>Ee</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a><em>, </em><a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; irradiance [W/m^2]</td>
 </tr>
 </tbody>
 </table>
 <p>For Example:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">Ee</span><span class="o">=</span><span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;cells&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="s">&#39;Ee&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.9</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)}}}</span>
-<span class="n">Ee</span><span class="o">=</span><span class="mf">0.91</span>  <span class="c"># set all modules in all strings to 0.91 suns</span>
-<span class="n">Ee</span><span class="o">=</span><span class="p">{</span><span class="mi">12</span><span class="p">:</span> <span class="mf">0.77</span><span class="p">}</span>  <span class="c"># set all modules in string with index 12 to 0.77 suns</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Ee</span><span class="o">=</span><span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;cells&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="s1">&#39;Ee&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.9</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)}}}</span>
+<span class="n">Ee</span><span class="o">=</span><span class="mf">0.91</span>  <span class="c1"># set all modules in all strings to 0.91 suns</span>
+<span class="n">Ee</span><span class="o">=</span><span class="p">{</span><span class="mi">12</span><span class="p">:</span> <span class="mf">0.77</span><span class="p">}</span>  <span class="c1"># set all modules in string with index 12 to 0.77 suns</span>
 <span class="n">Ee</span><span class="o">=</span><span class="p">{</span><span class="mi">3</span><span class="p">:</span> <span class="p">{</span><span class="mi">8</span><span class="p">:</span> <span class="mf">0.23</span><span class="p">,</span> <span class="mi">7</span><span class="p">:</span> <span class="mf">0.45</span><span class="p">}}</span>
-<span class="c"># set module with index 8 to 0.23 suns and module with index 7 to</span>
-<span class="c"># 0.45 suns in string with index 3</span>
+<span class="c1"># set module with index 8 to 0.23 suns and module with index 7 to</span>
+<span class="c1"># 0.45 suns in string with index 3</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -142,21 +147,18 @@ for all cells in the module. The values of pv-modules are passed to
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
-      <li><a href="../_sources/api/pvsystem.txt"
+      <li><a href="../_sources/api/pvsystem.rst.txt"
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
-    <p class="searchtip" style="font-size: 90%">
-    Enter search terms or a module, class or function name.
-    </p>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -164,14 +166,14 @@ for all cells in the module. The values of pv-modules are passed to
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &copy;2015, mmikofski.
+      &copy;2017, mmikofski.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.1</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.6</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
       
       |
-      <a href="../_sources/api/pvsystem.txt"
+      <a href="../_sources/api/pvsystem.rst.txt"
           rel="nofollow">Page source</a>
     </div>
 

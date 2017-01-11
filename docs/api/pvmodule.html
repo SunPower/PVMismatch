@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>pvmodule &mdash; pvmismatch Indonesian Icecream documentation</title>
+    <title>pvmodule &#8212; pvmismatch Jamaica Jelly documentation</title>
     
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -14,25 +14,30 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     'Indonesian Icecream',
+        VERSION:     'Jamaica Jelly',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
       };
     </script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="top" title="pvmismatch Indonesian Icecream documentation" href="../index.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="pvstring" href="pvstring.html" />
     <link rel="prev" title="pvcell" href="pvcell.html" />
    
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
   </head>
-  <body role="document">  
+  <body role="document">
+  
 
     <div class="document">
       <div class="documentwrapper">
@@ -53,8 +58,8 @@
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>cell_pos</strong> (<a class="reference external" href="http://docs.python.org/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) &#8211; cell position pattern</li>
-<li><strong>pvcells</strong> (<a class="reference external" href="http://docs.python.org/library/functions.html#list" title="(in Python v2.7)"><em>list</em></a>) &#8211; list of <a class="reference internal" href="pvcell.html#pvmismatch.pvmismatch_lib.pvcell.PVcell" title="pvmismatch.pvmismatch_lib.pvcell.PVcell"><code class="xref py py-class docutils literal"><span class="pre">PVcell</span></code></a></li>
+<li><strong>cell_pos</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) &#8211; cell position pattern</li>
+<li><strong>pvcells</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#list" title="(in Python v2.7)"><em>list</em></a>) &#8211; list of <a class="reference internal" href="pvcell.html#pvmismatch.pvmismatch_lib.pvcell.PVcell" title="pvmismatch.pvmismatch_lib.pvcell.PVcell"><code class="xref py py-class docutils literal"><span class="pre">PVcell</span></code></a></li>
 <li><strong>pvconst</strong> (<a class="reference internal" href="pvconstants.html#pvmismatch.pvmismatch_lib.pvconstants.PVconstants" title="pvmismatch.pvmismatch_lib.pvconstants.PVconstants"><code class="xref py py-class docutils literal"><span class="pre">PVconstants</span></code></a>) &#8211; An object with common parameters and constants.</li>
 <li><strong>Vbypass</strong> &#8211; bypass diode trigger voltage [V]</li>
 <li><strong>cellArea</strong> &#8211; cell area [cm^2]</li>
@@ -139,7 +144,7 @@ and power (Pmod [W]).</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>Ee</strong> (<code class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></code>) &#8211; Effective Irradiance [suns]</li>
-<li><strong>cells</strong> (<a class="reference external" href="http://docs.python.org/library/functions.html#list" title="(in Python v2.7)"><em>list</em></a>) &#8211; Cells to change [Optional]</li>
+<li><strong>cells</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#list" title="(in Python v2.7)"><em>list</em></a>) &#8211; Cells to change [Optional]</li>
 </ul>
 </td>
 </tr>
@@ -172,8 +177,7 @@ and power (Pmod [W]).</p>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>cellpos</strong> &#8211;
-Outermost list is a list of substrings in parallel with a bypass diode
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>cellpos</strong> &#8211; Outermost list is a list of substrings in parallel with a bypass diode
 and in series with each other.
 The substring is a list of columns in that substring.
 Inside the column are the actual cells in each row.
@@ -206,8 +210,7 @@ True means no cross-tiling.</li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>cellpos</strong> &#8211;
-Outermost list is a list of substrings in parallel with a bypass diode
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>cellpos</strong> &#8211; Outermost list is a list of substrings in parallel with a bypass diode
 and in series with each other.
 The substring is a list of columns in that substring.
 Inside the column are the actual cells in each row.
@@ -227,7 +230,7 @@ Each cell has a &#8216;crosstie&#8217; key and an index.</p>
 <dl class="data">
 <dt id="pvmismatch.pvmismatch_lib.pvmodule.STD96">
 <code class="descclassname">pvmismatch.pvmismatch_lib.pvmodule.</code><code class="descname">STD96</code><a class="headerlink" href="#pvmismatch.pvmismatch_lib.pvmodule.STD96" title="Permalink to this definition">¶</a></dt>
-<dd><p>Standard module: 12x8 cells
+<dd><p><em>Standard module</em> &#8211; 12x8 cells
 Substrings have 2, 4 and 2 columns of cells per diode</p>
 </dd></dl>
 
@@ -237,7 +240,7 @@ Substrings have 2, 4 and 2 columns of cells per diode</p>
 <dl class="data">
 <dt id="pvmismatch.pvmismatch_lib.pvmodule.TCT492">
 <code class="descclassname">pvmismatch.pvmismatch_lib.pvmodule.</code><code class="descname">TCT492</code><a class="headerlink" href="#pvmismatch.pvmismatch_lib.pvmodule.TCT492" title="Permalink to this definition">¶</a></dt>
-<dd><p>Standard Tetris module with TCT: 82x6 cells
+<dd><p><em>Standard Tetris module with TCT</em> &#8211; 82x6 cells
 Substrings have 27, 28 and 27 rows of cells per diode</p>
 </dd></dl>
 
@@ -247,7 +250,7 @@ Substrings have 27, 28 and 27 rows of cells per diode</p>
 <dl class="data">
 <dt id="pvmismatch.pvmismatch_lib.pvmodule.PCT492">
 <code class="descclassname">pvmismatch.pvmismatch_lib.pvmodule.</code><code class="descname">PCT492</code><a class="headerlink" href="#pvmismatch.pvmismatch_lib.pvmodule.PCT492" title="Permalink to this definition">¶</a></dt>
-<dd><p>Standard Tetris module with no cross-ties: 82x6 cells
+<dd><p><em>Standard Tetris module with no cross-ties</em> &#8211; 82x6 cells
 Substrings have 27, 28 and 27 rows of cells per diode</p>
 </dd></dl>
 
@@ -287,21 +290,18 @@ Substrings have 27, 28 and 27 rows of cells per diode</p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
-      <li><a href="../_sources/api/pvmodule.txt"
+      <li><a href="../_sources/api/pvmodule.rst.txt"
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
-    <p class="searchtip" style="font-size: 90%">
-    Enter search terms or a module, class or function name.
-    </p>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -309,14 +309,14 @@ Substrings have 27, 28 and 27 rows of cells per diode</p>
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &copy;2015, mmikofski.
+      &copy;2017, mmikofski.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.1</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.6</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
       
       |
-      <a href="../_sources/api/pvmodule.txt"
+      <a href="../_sources/api/pvmodule.rst.txt"
           rel="nofollow">Page source</a>
     </div>
 
