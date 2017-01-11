@@ -1,0 +1,383 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>pvconstants &mdash; pvmismatch Indonesian Icecream documentation</title>
+    
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     'Indonesian Icecream',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="pvmismatch Indonesian Icecream documentation" href="../index.html" />
+    <link rel="next" title="pvcell" href="pvcell.html" />
+    <link rel="prev" title="API" href="api.html" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
+
+  </head>
+  <body role="document">  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="pvconstants">
+<span id="id1"></span><h1>pvconstants<a class="headerlink" href="#pvconstants" title="Permalink to this headline">¶</a></h1>
+<span class="target" id="module-pvmismatch.pvmismatch_lib.pvconstants"></span><p>This module contains configuration constants for PVMismatch, such as number of
+points in IV curve to calculate, flag to use parallel processing and parallel
+processing parameters. This module also contains some utility functions like
+<a class="reference internal" href="#pvmismatch.pvmismatch_lib.pvconstants.npinterpx" title="pvmismatch.pvmismatch_lib.pvconstants.npinterpx"><code class="xref py py-func docutils literal"><span class="pre">npinterpx()</span></code></a> and
+<a class="reference internal" href="#pvmismatch.pvmismatch_lib.pvconstants.get_series_cells" title="pvmismatch.pvmismatch_lib.pvconstants.get_series_cells"><code class="xref py py-func docutils literal"><span class="pre">get_series_cells()</span></code></a> are defined
+here too.</p>
+<div class="section" id="id2">
+<h2>PVconstants<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pvmismatch.pvmismatch_lib.pvconstants.PVconstants">
+<em class="property">class </em><code class="descclassname">pvmismatch.pvmismatch_lib.pvconstants.</code><code class="descname">PVconstants</code><span class="sig-paren">(</span><em>npts=101</em><span class="sig-paren">)</span><a class="headerlink" href="#pvmismatch.pvmismatch_lib.pvconstants.PVconstants" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class for configuration constants</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>npts</strong> (<a class="reference external" href="http://docs.python.org/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; number of points in IV curve</td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="pvmismatch.pvmismatch_lib.pvconstants.PVconstants.E0">
+<code class="descname">E0</code><em class="property"> = 1000.0</em><a class="headerlink" href="#pvmismatch.pvmismatch_lib.pvconstants.PVconstants.E0" title="Permalink to this definition">¶</a></dt>
+<dd><p>[W/m^2] irradiance of 1 sun</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pvmismatch.pvmismatch_lib.pvconstants.PVconstants.Imod_negpts">
+<code class="descname">Imod_negpts</code><em class="property"> = None</em><a class="headerlink" href="#pvmismatch.pvmismatch_lib.pvconstants.PVconstants.Imod_negpts" title="Permalink to this definition">¶</a></dt>
+<dd><p>array of points with decreasing spacing from 1 to just less than but
+not including zero</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pvmismatch.pvmismatch_lib.pvconstants.PVconstants.Imod_pts">
+<code class="descname">Imod_pts</code><em class="property"> = None</em><a class="headerlink" href="#pvmismatch.pvmismatch_lib.pvconstants.PVconstants.Imod_pts" title="Permalink to this definition">¶</a></dt>
+<dd><p>array of points with increasing spacing from 0 to 1</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pvmismatch.pvmismatch_lib.pvconstants.PVconstants.T0">
+<code class="descname">T0</code><em class="property"> = 298.15</em><a class="headerlink" href="#pvmismatch.pvmismatch_lib.pvconstants.PVconstants.T0" title="Permalink to this definition">¶</a></dt>
+<dd><p>[K] reference temperature</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pvmismatch.pvmismatch_lib.pvconstants.PVconstants.calcParallel">
+<code class="descname">calcParallel</code><span class="sig-paren">(</span><em>I</em>, <em>V</em>, <em>Vmax</em>, <em>Vmin</em><span class="sig-paren">)</span><a class="headerlink" href="#pvmismatch.pvmismatch_lib.pvconstants.PVconstants.calcParallel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate IV curve for cells and substrings in parallel.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>I</strong> &#8211; currents [A]</li>
+<li><strong>V</strong> &#8211; voltages [V]</li>
+<li><strong>Vmax</strong> &#8211; max voltage limit, should be max Voc [V]</li>
+<li><strong>Vmin</strong> &#8211; min voltage limit, could be zero or Vrbd [V]</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Type:</th><td class="field-body"><p class="first">I: list, <code class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></code></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><p class="first last">V: list, <code class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></code></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pvmismatch.pvmismatch_lib.pvconstants.PVconstants.calcSeries">
+<code class="descname">calcSeries</code><span class="sig-paren">(</span><em>I</em>, <em>V</em>, <em>meanIsc</em>, <em>Imax</em><span class="sig-paren">)</span><a class="headerlink" href="#pvmismatch.pvmismatch_lib.pvconstants.PVconstants.calcSeries" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate IV curve for cells and substrings in series given current and
+voltage in increasing order by voltage, the average short circuit
+current and the max current at the breakdown voltage.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>I</strong> &#8211; cell or substring currents [A]</li>
+<li><strong>V</strong> &#8211; cell or substring voltages [V]</li>
+<li><strong>meanIsc</strong> &#8211; average short circuit current [A]</li>
+<li><strong>Imax</strong> &#8211; maximum current [A]</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">current [A] and voltage [V] of series</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pvmismatch.pvmismatch_lib.pvconstants.PVconstants.k">
+<code class="descname">k</code><em class="property"> = 1.3806488e-23</em><a class="headerlink" href="#pvmismatch.pvmismatch_lib.pvconstants.PVconstants.k" title="Permalink to this definition">¶</a></dt>
+<dd><p>[kJ/mole/K] Boltzmann constant</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pvmismatch.pvmismatch_lib.pvconstants.PVconstants.negpts">
+<code class="descname">negpts</code><em class="property"> = None</em><a class="headerlink" href="#pvmismatch.pvmismatch_lib.pvconstants.PVconstants.negpts" title="Permalink to this definition">¶</a></dt>
+<dd><p>array of points with increasing spacing from 1 to just less than but
+not including zero</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pvmismatch.pvmismatch_lib.pvconstants.PVconstants.npts">
+<code class="descname">npts</code><em class="property"> = None</em><a class="headerlink" href="#pvmismatch.pvmismatch_lib.pvconstants.PVconstants.npts" title="Permalink to this definition">¶</a></dt>
+<dd><p>number of points in IV curves</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pvmismatch.pvmismatch_lib.pvconstants.PVconstants.pts">
+<code class="descname">pts</code><em class="property"> = None</em><a class="headerlink" href="#pvmismatch.pvmismatch_lib.pvconstants.PVconstants.pts" title="Permalink to this definition">¶</a></dt>
+<dd><p>array of points with decreasing spacing from 0 to 1</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pvmismatch.pvmismatch_lib.pvconstants.PVconstants.q">
+<code class="descname">q</code><em class="property"> = 1.602176565e-19</em><a class="headerlink" href="#pvmismatch.pvmismatch_lib.pvconstants.PVconstants.q" title="Permalink to this definition">¶</a></dt>
+<dd><p>[Coloumbs] elementary charge</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="numpy-extrapolating-interpolant">
+<h2>NumPy Extrapolating Interpolant<a class="headerlink" href="#numpy-extrapolating-interpolant" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="pvmismatch.pvmismatch_lib.pvconstants.npinterpx">
+<code class="descclassname">pvmismatch.pvmismatch_lib.pvconstants.</code><code class="descname">npinterpx</code><span class="sig-paren">(</span><em>x</em>, <em>xp</em>, <em>fp</em><span class="sig-paren">)</span><a class="headerlink" href="#pvmismatch.pvmismatch_lib.pvconstants.npinterpx" title="Permalink to this definition">¶</a></dt>
+<dd><p>Numpy interpolation function with linear extrapolation.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>x</strong> (<em>array_like</em>) &#8211; The x-coordinates of the interpolated values.</li>
+<li><strong>xp</strong> (<em>1-D sequence of floats</em>) &#8211; The x-coordinates of the data points, must be increasing.</li>
+<li><strong>fp</strong> (<em>1-D sequence of floats</em>) &#8211; The y-coordinates of the data points, same length as <cite>xp</cite>.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>y</strong> &#8211;
+The interpolated values, same shape as <cite>x</cite>.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">{float, ndarray}</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><code class="xref py py-exc docutils literal"><span class="pre">ValueError</span></code> &#8211;
+If <cite>xp</cite> and <cite>fp</cite> have different length</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="get-series-cells">
+<h2>Get Series Cells<a class="headerlink" href="#get-series-cells" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="pvmismatch.pvmismatch_lib.pvconstants.get_series_cells">
+<code class="descclassname">pvmismatch.pvmismatch_lib.pvconstants.</code><code class="descname">get_series_cells</code><span class="sig-paren">(</span><em>cell_pos_column</em>, <em>prev_col=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pvmismatch.pvmismatch_lib.pvconstants.get_series_cells" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the sequence of series cells between parallel crossties.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>cell_pos_column</strong> &#8211; column in cell position pattern</li>
+<li><strong>prev_col</strong> &#8211; previous column in cell position pattern</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">indices of series cells</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="formulas">
+<h2>Formulas<a class="headerlink" href="#formulas" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="vdiode">
+<h3>Vdiode<a class="headerlink" href="#vdiode" title="Permalink to this headline">¶</a></h3>
+<dl class="function">
+<dt id="pvmismatch.pvmismatch_lib.pvconstants.Vdiode">
+<code class="descclassname">pvmismatch.pvmismatch_lib.pvconstants.</code><code class="descname">Vdiode</code><span class="sig-paren">(</span><em>Icell</em>, <em>Vcell</em>, <em>Rs</em><span class="sig-paren">)</span><a class="headerlink" href="#pvmismatch.pvmismatch_lib.pvconstants.Vdiode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate Vdiode from current, voltage and series resistance.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>Icell</strong> &#8211; cell current [A]</li>
+<li><strong>Vcell</strong> &#8211; cell voltage [V]</li>
+<li><strong>Rs</strong> &#8211; cell series resistance [<span class="math">\(\Omega\)</span>]</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">diode voltage [V]</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="idiode">
+<h3>Idiode<a class="headerlink" href="#idiode" title="Permalink to this headline">¶</a></h3>
+<dl class="function">
+<dt id="pvmismatch.pvmismatch_lib.pvconstants.Idiode">
+<code class="descclassname">pvmismatch.pvmismatch_lib.pvconstants.</code><code class="descname">Idiode</code><span class="sig-paren">(</span><em>Isat</em>, <em>Vdiode</em>, <em>Vt</em>, <em>n</em><span class="sig-paren">)</span><a class="headerlink" href="#pvmismatch.pvmismatch_lib.pvconstants.Idiode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate diode current using <a class="reference external" href="https://en.wikipedia.org/wiki/Diode_modelling#Shockley_diode_model">Shockley diode model</a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>Isat</strong> &#8211; diode saturation current [A]</li>
+<li><strong>Vdiode</strong> &#8211; diode voltage [V]</li>
+<li><strong>Vt</strong> &#8211; thermal voltage [V]</li>
+<li><strong>n</strong> &#8211; diode ideality factor</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">diode current</p>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>Thermal voltage is defined as ...</p>
+<div class="last math">
+\[V_t = \frac {k_B * T} {q_e}\]</div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="ishunt">
+<h3>Ishunt<a class="headerlink" href="#ishunt" title="Permalink to this headline">¶</a></h3>
+<dl class="function">
+<dt id="pvmismatch.pvmismatch_lib.pvconstants.Ishunt">
+<code class="descclassname">pvmismatch.pvmismatch_lib.pvconstants.</code><code class="descname">Ishunt</code><span class="sig-paren">(</span><em>Vdiode</em>, <em>Rsh</em><span class="sig-paren">)</span><a class="headerlink" href="#pvmismatch.pvmismatch_lib.pvconstants.Ishunt" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="igen">
+<h3>Igen<a class="headerlink" href="#igen" title="Permalink to this headline">¶</a></h3>
+<dl class="function">
+<dt id="pvmismatch.pvmismatch_lib.pvconstants.Igen">
+<code class="descclassname">pvmismatch.pvmismatch_lib.pvconstants.</code><code class="descname">Igen</code><span class="sig-paren">(</span><em>Aph</em>, <em>Ee</em>, <em>Isc0</em><span class="sig-paren">)</span><a class="headerlink" href="#pvmismatch.pvmismatch_lib.pvconstants.Igen" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/logo_invert.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">pvconstants</a><ul>
+<li><a class="reference internal" href="#id2">PVconstants</a></li>
+<li><a class="reference internal" href="#numpy-extrapolating-interpolant">NumPy Extrapolating Interpolant</a></li>
+<li><a class="reference internal" href="#get-series-cells">Get Series Cells</a></li>
+<li><a class="reference internal" href="#formulas">Formulas</a><ul>
+<li><a class="reference internal" href="#vdiode">Vdiode</a></li>
+<li><a class="reference internal" href="#idiode">Idiode</a></li>
+<li><a class="reference internal" href="#ishunt">Ishunt</a></li>
+<li><a class="reference internal" href="#igen">Igen</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="api.html" title="previous chapter">API</a></li>
+      <li>Next: <a href="pvcell.html" title="next chapter">pvcell</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/pvconstants.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2015, mmikofski.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.6</a>
+      
+      |
+      <a href="../_sources/api/pvconstants.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

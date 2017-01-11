@@ -1,0 +1,178 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>pvstring &mdash; pvmismatch Indonesian Icecream documentation</title>
+    
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     'Indonesian Icecream',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="pvmismatch Indonesian Icecream documentation" href="../index.html" />
+    <link rel="next" title="pvsystem" href="pvsystem.html" />
+    <link rel="prev" title="pvmodule" href="pvmodule.html" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
+
+  </head>
+  <body role="document">  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="pvstring">
+<span id="id1"></span><h1>pvstring<a class="headerlink" href="#pvstring" title="Permalink to this headline">¶</a></h1>
+<span class="target" id="module-pvmismatch.pvmismatch_lib.pvstring"></span><p>This module contains the <a class="reference internal" href="#pvmismatch.pvmismatch_lib.pvstring.PVstring" title="pvmismatch.pvmismatch_lib.pvstring.PVstring"><code class="xref py py-class docutils literal"><span class="pre">PVstring</span></code></a>
+class.</p>
+<div class="section" id="id2">
+<h2>PVstring<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pvmismatch.pvmismatch_lib.pvstring.PVstring">
+<em class="property">class </em><code class="descclassname">pvmismatch.pvmismatch_lib.pvstring.</code><code class="descname">PVstring</code><span class="sig-paren">(</span><em>numberMods=10</em>, <em>pvmods=None</em>, <em>pvconst=&lt;PVconstants(npts=101)&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#pvmismatch.pvmismatch_lib.pvstring.PVstring" title="Permalink to this definition">¶</a></dt>
+<dd><p>A class for PV strings.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>numberMods</strong> &#8211; number of modules in string</li>
+<li><strong>pvmods</strong> (list, <a class="reference internal" href="pvmodule.html#pvmismatch.pvmismatch_lib.pvmodule.PVmodule" title="pvmismatch.pvmismatch_lib.pvmodule.PVmodule"><code class="xref py py-class docutils literal"><span class="pre">PVmodule</span></code></a>) &#8211; either a list of modules, an instance of
+<a class="reference internal" href="pvmodule.html#pvmismatch.pvmismatch_lib.pvmodule.PVmodule" title="pvmismatch.pvmismatch_lib.pvmodule.PVmodule"><code class="xref py py-class docutils literal"><span class="pre">PVmodule</span></code></a> [Optional]</li>
+<li><strong>pvconst</strong> &#8211; a configuration constants object</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="pvmismatch.pvmismatch_lib.pvstring.PVstring.calcString">
+<code class="descname">calcString</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pvmismatch.pvmismatch_lib.pvstring.PVstring.calcString" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate string I-V curves.
+Returns (Istring, Vstring, Pstring) : tuple of numpy.ndarray of float</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pvmismatch.pvmismatch_lib.pvstring.PVstring.plotStr">
+<code class="descname">plotStr</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pvmismatch.pvmismatch_lib.pvstring.PVstring.plotStr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot string I-V curves.
+Returns strPlot : matplotlib.pyplot figure</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pvmismatch.pvmismatch_lib.pvstring.PVstring.setSuns">
+<code class="descname">setSuns</code><span class="sig-paren">(</span><em>Ee</em><span class="sig-paren">)</span><a class="headerlink" href="#pvmismatch.pvmismatch_lib.pvstring.PVstring.setSuns" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set irradiance on cells in modules of string in system.
+If Ee is ...
+... scalar, then sets the entire string to that irradiance.
+... a dictionary, then each key refers to a module in the string,
+and the corresponding value are passed to
+<a class="reference internal" href="pvmodule.html#pvmismatch.pvmismatch_lib.pvmodule.PVmodule.setSuns" title="pvmismatch.pvmismatch_lib.pvmodule.PVmodule.setSuns"><code class="xref py py-meth docutils literal"><span class="pre">setSuns()</span></code></a></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>Ee</strong> (<em>dict or float</em>) &#8211; irradiance [W/m^2]</td>
+</tr>
+</tbody>
+</table>
+<p>For Example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">Ee</span><span class="o">=</span><span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;cells&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span> <span class="s">&#39;Ee&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.9</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)}}</span>  <span class="c"># set module 0</span>
+<span class="n">Ee</span><span class="o">=</span><span class="mf">0.91</span>  <span class="c"># set all modules to 0.91 suns</span>
+<span class="n">Ee</span><span class="o">=</span><span class="p">{</span><span class="mi">12</span><span class="p">:</span> <span class="mf">0.77</span><span class="p">}</span>  <span class="c"># set module with index 12 to 0.77 suns</span>
+<span class="n">Ee</span><span class="o">=</span><span class="p">{</span><span class="mi">8</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.23</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)],</span> <span class="mi">7</span><span class="p">:</span> <span class="p">[(</span><span class="mf">0.45</span><span class="p">,</span> <span class="mf">0.35</span><span class="p">),</span> <span class="p">(</span><span class="mi">71</span><span class="p">,</span> <span class="mi">72</span><span class="p">)]}</span>
+<span class="c"># set module 8, cells 0, 1 and 2 to 0.23 suns, then set module 7, cell</span>
+<span class="c">#   71 to 0.45 suns and module 72 to 0.35 suns.</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/logo_invert.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">pvstring</a><ul>
+<li><a class="reference internal" href="#id2">PVstring</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="pvmodule.html" title="previous chapter">pvmodule</a></li>
+      <li>Next: <a href="pvsystem.html" title="next chapter">pvsystem</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/pvstring.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2015, mmikofski.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.6</a>
+      
+      |
+      <a href="../_sources/api/pvstring.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
