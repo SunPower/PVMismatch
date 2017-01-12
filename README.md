@@ -2,6 +2,8 @@ PVMismatch
 ==========
 An explicit Python PV system IV & PV curve trace calculator which can also calculate mismatch.
 
+[![Build Status](https://travis-ci.org/SunPower/PVMismatch.svg?branch=master)](https://travis-ci.org/SunPower/PVMismatch)
+
 Requirements
 ------------
 Most packages can be found at PyPI, but for Windows-x64 some are only available
