@@ -22,12 +22,12 @@ Standard module object
 .. autodata:: STD96
    :annotation:
 
-Standard Tetris module with TCT
--------------------------------
+Standard Tiled module with total cross-ties
+-------------------------------------------
 .. autodata:: TCT492
    :annotation:
 
-Standard Tetris module with no cross-ties
------------------------------------------
+Standard Tiled module with partial cross-ties
+---------------------------------------------
 .. autodata:: PCT492
    :annotation:
