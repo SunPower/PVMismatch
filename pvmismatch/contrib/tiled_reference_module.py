@@ -1,5 +1,5 @@
 """
-This script uses default Tetris module configuration and cell parameters to
+This script uses default Tiled module configuration and cell parameters to
 calculate performance and generate IV and PV curves.
 """
 
@@ -36,21 +36,21 @@ if __name__ == "__main__":
     NUMBERSTRS = 1  # number of strings in parallel
     
     # System definition
-    tetrisCell = pvcell.PVcell(Rs=RS, Rsh=RSH, Isat1_T0=ISAT1_T0, Isat2=ISAT2,
+    tiledCell = pvcell.PVcell(Rs=RS, Rsh=RSH, Isat1_T0=ISAT1_T0, Isat2=ISAT2,
                     Isc0_T0=ISC0_T0, aRBD=ARBD, VRBD=VRBD_, bRBD=BRBD, 
                     nRBD=NRBD, Eg=EG, alpha_Isc=ALPHA_ISC,
                     Tcell=TCELL)
-    tetrisModule = pvmodule.PVmodule(cell_pos=pvmodule.PCT492, pvcells=tetrisCell,
-                    Vbypass=VBYPASS, cellArea=CELLAREA)  # Tetris module with no cross-tiling
-    tetrisSystem = pvsystem.PVsystem(pvconst=pvconstants.PVconstants(npts=NPTS),
-                    pvmods=tetrisModule, numberStrs=NUMBERSTRS, numberMods=NUMBERMODS)
+    tiledModule = pvmodule.PVmodule(cell_pos=pvmodule.PCT492, pvcells=tiledCell,
+                    Vbypass=VBYPASS, cellArea=CELLAREA)  # Tiled module with partial cross-ties
+    tiledSystem = pvsystem.PVsystem(pvconst=pvconstants.PVconstants(npts=NPTS),
+                    pvmods=tiledModule, numberStrs=NUMBERSTRS, numberMods=NUMBERMODS)
     
-    print 'Imp = ' + str(tetrisSystem.Imp) + ' A'
-    print 'Vmp = ' + str(tetrisSystem.Vmp) + ' V'
-    print 'Pmp = ' + str(tetrisSystem.Pmp) + ' W'
-    print 'Isc = ' + str(tetrisSystem.Isc) + ' A'
-    print 'Voc = ' + str(tetrisSystem.Voc) + ' V'
-    print 'FF = ' + str(100*tetrisSystem.FF) + ' %'
-    print 'Efficiency = ' + str(100*tetrisSystem.eff) + ' %'
-    figure = tetrisSystem.plotSys()
+    print 'Imp = ' + str(tiledSystem.Imp) + ' A'
+    print 'Vmp = ' + str(tiledSystem.Vmp) + ' V'
+    print 'Pmp = ' + str(tiledSystem.Pmp) + ' W'
+    print 'Isc = ' + str(tiledSystem.Isc) + ' A'
+    print 'Voc = ' + str(tiledSystem.Voc) + ' V'
+    print 'FF = ' + str(100*tiledSystem.FF) + ' %'
+    print 'Efficiency = ' + str(100*tiledSystem.eff) + ' %'
+    figure = tiledSystem.plotSys()
     plt.show()

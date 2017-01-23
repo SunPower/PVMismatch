@@ -1,7 +1,9 @@
 include pvmismatch/pvmismatch_json/*.json
 include pvmismatch/res/*.png
-include CHANGES
-include README
+include AUTHORS.md
+include CHANGES.md
+include README.md
+include LICENSE
 recursive-include pvmismatch/res *.png
 recursive-include pvmismatch/docs *.rst
 include pvmismatch/docs/conf.py

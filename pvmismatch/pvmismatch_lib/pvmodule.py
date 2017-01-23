@@ -109,12 +109,12 @@ def crosstied_cellpos_pat(nrows_per_substrs, ncols, partial=False):
 # crosstied cell positions presets
 TCT492 = crosstied_cellpos_pat([27, 28, 27], 6)
 """
-Standard Tetris module with TCT: 82x6 cells
+Standard Tiled module with total cross-ties: 82x6 cells
 Substrings have 27, 28 and 27 rows of cells per diode
 """
 PCT492 = crosstied_cellpos_pat([27, 28, 27], 6, partial=True)
 """
-Standard Tetris module with no cross-ties: 82x6 cells
+Standard Tiled module with partial cross-ties: 82x6 cells
 Substrings have 27, 28 and 27 rows of cells per diode
 """
 

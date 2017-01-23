@@ -1,0 +1,224 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>pvsystem &#8212; PVMismatch Jamaica Jelly documentation</title>
+    
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     'Jamaica Jelly',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="pvstring" href="pvstring.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="pvsystem">
+<span id="id1"></span><h1>pvsystem<a class="headerlink" href="#pvsystem" title="Permalink to this headline">¶</a></h1>
+<span class="target" id="module-pvmismatch.pvmismatch_lib.pvsystem"></span><p>This module contains the <a class="reference internal" href="#pvmismatch.pvmismatch_lib.pvsystem.PVsystem" title="pvmismatch.pvmismatch_lib.pvsystem.PVsystem"><code class="xref py py-class docutils literal"><span class="pre">PVsystem</span></code></a>
+class.</p>
+<div class="section" id="id2">
+<h2>PVsystem<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pvmismatch.pvmismatch_lib.pvsystem.PVsystem">
+<em class="property">class </em><code class="descclassname">pvmismatch.pvmismatch_lib.pvsystem.</code><code class="descname">PVsystem</code><span class="sig-paren">(</span><em>pvconst=&lt;PVconstants(npts=101)&gt;</em>, <em>numberStrs=10</em>, <em>pvstrs=None</em>, <em>numberMods=10</em>, <em>pvmods=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pvmismatch.pvmismatch_lib.pvsystem.PVsystem" title="Permalink to this definition">¶</a></dt>
+<dd><p>A class for PV systems.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>pvconst</strong> (<a class="reference internal" href="pvconstants.html#pvmismatch.pvmismatch_lib.pvconstants.PVconstants" title="pvmismatch.pvmismatch_lib.pvconstants.PVconstants"><code class="xref py py-class docutils literal"><span class="pre">PVconstants</span></code></a>) &#8211; configuration constants object</li>
+<li><strong>numberStrs</strong> &#8211; number of strings</li>
+<li><strong>pvstrs</strong> &#8211; list of parallel strings, a <code class="docutils literal"><span class="pre">PVstring</span></code> object or None</li>
+<li><strong>numberMods</strong> &#8211; number of modules per string</li>
+<li><strong>pvmods</strong> &#8211; list of modules, a <code class="docutils literal"><span class="pre">PVmodule</span></code> object or None</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="pvmismatch.pvmismatch_lib.pvsystem.PVsystem.calcSystem">
+<code class="descname">calcSystem</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pvmismatch.pvmismatch_lib.pvsystem.PVsystem.calcSystem" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate system I-V curves.
+Returns (Isys, Vsys, Psys) : tuple of numpy.ndarray of float</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pvmismatch.pvmismatch_lib.pvsystem.PVsystem.plotSys">
+<code class="descname">plotSys</code><span class="sig-paren">(</span><em>sysPlot=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pvmismatch.pvmismatch_lib.pvsystem.PVsystem.plotSys" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot system I-V curves.
+Arguments sysPlot : matplotlib.figure.Figure
+Returns sysPlot : matplotlib.figure.Figure</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pvmismatch.pvmismatch_lib.pvsystem.PVsystem.setSuns">
+<code class="descname">setSuns</code><span class="sig-paren">(</span><em>Ee</em><span class="sig-paren">)</span><a class="headerlink" href="#pvmismatch.pvmismatch_lib.pvsystem.PVsystem.setSuns" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set irradiance on cells in modules of string in system.
+If Ee is ...
+... scalar, then sets the entire system to that irradiance.
+... a dictionary, then each key refers to a pv-string in the system,
+and the corresponding value is either a dictionary or a scalar.
+If the dictionary&#8217;s value is another dictionary, then its keys are pv-
+modules and its values are either cells and corresponding Ee, cells and
+a scalar Ee, a scalar Ee value for all cells or an array of Ee values
+for all cells in the module. The values of pv-modules are passed to
+<a class="reference internal" href="pvmodule.html#pvmismatch.pvmismatch_lib.pvmodule.PVmodule.setSuns" title="pvmismatch.pvmismatch_lib.pvmodule.PVmodule.setSuns"><code class="xref py py-meth docutils literal"><span class="pre">setSuns()</span></code></a></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>Ee</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a><em>, </em><a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; irradiance [W/m^2]</td>
+</tr>
+</tbody>
+</table>
+<p>For Example:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Ee</span><span class="o">=</span><span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;cells&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="s1">&#39;Ee&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.9</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)}}}</span>
+<span class="n">Ee</span><span class="o">=</span><span class="mf">0.91</span>  <span class="c1"># set all modules in all strings to 0.91 suns</span>
+<span class="n">Ee</span><span class="o">=</span><span class="p">{</span><span class="mi">12</span><span class="p">:</span> <span class="mf">0.77</span><span class="p">}</span>  <span class="c1"># set all modules in string with index 12 to 0.77 suns</span>
+<span class="n">Ee</span><span class="o">=</span><span class="p">{</span><span class="mi">3</span><span class="p">:</span> <span class="p">{</span><span class="mi">8</span><span class="p">:</span> <span class="mf">0.23</span><span class="p">,</span> <span class="mi">7</span><span class="p">:</span> <span class="mf">0.45</span><span class="p">}}</span>
+<span class="c1"># set module with index 8 to 0.23 suns and module with index 7 to</span>
+<span class="c1"># 0.45 suns in string with index 3</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../index.html">
+    <img class="logo" src="../_static/sp_2014_logo_black_orange_rgb.png" alt="Logo"/>
+    
+    <h1 class="logo logo-name">PVMismatch</h1>
+    
+  </a>
+</p>
+
+
+
+<p class="blurb">PV Mismatch Estimation Tool</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=SunPower&repo=PVMismatch&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+    
+
+<p>
+<a href="https://travis-ci.org/SunPower/PVMismatch">
+    <img
+        alt="https://secure.travis-ci.org/SunPower/PVMismatch.svg?branch=master"
+        src="https://secure.travis-ci.org/SunPower/PVMismatch.svg?branch=master"
+    />
+</a>
+</p>
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/quickstart.html#example">Example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pvconstants.html">pvconstants</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pvcell.html">pvcell</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pvmodule.html">pvmodule</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pvstring.html">pvstring</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">pvsystem</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#id2">PVsystem</a></li>
+</ul>
+</li>
+</ul>
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="pvstring.html" title="previous chapter">pvstring</a></li>
+  </ul></li>
+</ul>
+</div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, SunPower.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+      |
+      <a href="../_sources/api/pvsystem.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+    <a href="https://github.com/SunPower/PVMismatch" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+    
+
+    
+  </body>
+</html>

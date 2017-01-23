@@ -40,6 +40,6 @@ PVstring = pvstring.PVstring
 PVsystem = pvsystem.PVsystem
 
 __author__ = 'mmikofski'
-__version__ = '2.2'
-__release__ = 'Indonesian Icecream'
+__version__ = '2.3'
+__release__ = 'Jamaica Jelly'
 __all__ = ['pvconstants', 'pvcell', 'pvmodule', 'pvstring', 'pvsystem']
