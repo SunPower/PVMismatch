@@ -103,6 +103,7 @@ class PVstring(object):
             try:
                 for pvmod, cell_Ee in Ee.iteritems():
                     # gh34: make new objects as needed from copies
+                    self.pvmods = copy(self.pvmods)  # copy list first
                     self.pvmods[pvmod] = copy(self.pvmods[pvmod])
                     if hasattr(cell_Ee, 'keys'):
                         self.pvmods[pvmod].setSuns(**cell_Ee)
