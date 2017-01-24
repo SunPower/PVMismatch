@@ -237,6 +237,15 @@ class PVmodule(object):
         """
         if cells is None:
             if np.isscalar(Ee):
+                new_pvcells = range(self.numberCells)  # new list of cells
+                old_pvcells = dict.fromkeys(self.pvcells)  # same as set(pvcells)
+                for cell_id, pvcell in enumerate(self.pvcells):
+                    if old_pvcells[pvcell] is None:
+                        new_pvcells[cell_id] = copy(pvcell)
+                        old_pvcells[pvcell] = new_pvcells[cell_id]
+                    else:
+                        new_pvcells[cell_id] = old_pvcells[pvcell]
+                self.pvcells = new_pvcells
                 for pvc in self.pvcells:
                     pvc.Ee = Ee
             elif np.size(Ee) == self.numberCells:
