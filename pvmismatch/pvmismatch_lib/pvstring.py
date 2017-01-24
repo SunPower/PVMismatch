@@ -66,7 +66,7 @@ class PVstring(object):
         Pstring = Istring * Vstring
         return Istring, Vstring, Pstring
 
-    def setSuns(self, Ee):
+    def setSuns(self, Ee, make_new=False):
         """
         Set irradiance on cells in modules of string in system.
         If Ee is ...
@@ -76,6 +76,8 @@ class PVstring(object):
         :meth:`~pvmismatch.pvmismatch_lib.pvmodule.PVmodule.setSuns()`
 
         :param Ee: irradiance [W/m^2]
+        :param make_new: make a new module
+        :type make_new: boolean
         :type Ee: dict or float
 
         For Example::
@@ -89,6 +91,16 @@ class PVstring(object):
 
         """
         if np.isscalar(Ee):
+            if make_new:
+                new_pvmods = range(self.numberMods)  # new list of modules
+                old_pvmods = dict.fromkeys(self.pvmods)  # same as set(pvmods)
+                for mod_id, pvmod in enumerate(self.pvmods):
+                    if old_pvmods[pvmod] is None:
+                        new_pvmods[mod_id] = copy(pvmod)
+                        old_pvmods[pvmod] = new_pvmods[mod_id]
+                    else:
+                        new_pvmods[mod_id] = old_pvmods[pvmod]
+                self.pvmods = new_pvmods
             for pvmod in iter(self.pvmods):
                 pvmod.setSuns(Ee)
         else:

@@ -122,7 +122,7 @@ class PVsystem(object):
             for pvstr, pvmod_Ee in Ee.iteritems():
                 # gh34: make new objects as needed from copies
                 self.pvstrs[pvstr] = copy(self.pvstrs[pvstr])
-                self.pvstrs[pvstr].setSuns(pvmod_Ee)
+                self.pvstrs[pvstr].setSuns(pvmod_Ee, make_new=True)
         self.Isys, self.Vsys, self.Psys = self.calcSystem()
         (self.Imp, self.Vmp, self.Pmp,
          self.Isc, self.Voc, self.FF, self.eff) = self.calcMPP_IscVocFFeff()

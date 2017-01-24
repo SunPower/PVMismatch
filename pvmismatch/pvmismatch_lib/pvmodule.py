@@ -240,10 +240,10 @@ class PVmodule(object):
                 for pvc in self.pvcells:
                     pvc.Ee = Ee
             elif np.size(Ee) == self.numberCells:
-                for pvc, Ee_idx in zip(self.pvcells, Ee):
+                for cell_idx, Ee_idx in enumerate(Ee):
                     # gh34: make new objects as needed from copies
-                    pvc = copy(pvc)
-                    pvc.Ee = Ee_idx
+                    self.pvcells[cell_idx] = copy(self.pvcells[cell_idx])
+                    self.pvcells[cell_idx].Ee = Ee_idx
             else:
                 raise Exception("Input irradiance value (Ee) for each cell!")
         else:
