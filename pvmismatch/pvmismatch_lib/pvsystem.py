@@ -5,7 +5,7 @@ class.
 """
 
 import numpy as np
-from copy import deepcopy
+from copy import copy
 from matplotlib import pyplot as plt
 # use absolute imports instead of relative, so modules are portable
 from pvmismatch.pvmismatch_lib.pvconstants import PVconstants, NUMBERMODS, \
@@ -120,6 +120,8 @@ class PVsystem(object):
                 pvstr.setSuns(Ee)
         else:
             for pvstr, pvmod_Ee in Ee.iteritems():
+                # gh34: make new objects as needed from copies
+                self.pvstrs[pvstr] = copy(self.pvstrs[pvstr])
                 self.pvstrs[pvstr].setSuns(pvmod_Ee)
         self.Isys, self.Vsys, self.Psys = self.calcSystem()
         (self.Imp, self.Vmp, self.Pmp,

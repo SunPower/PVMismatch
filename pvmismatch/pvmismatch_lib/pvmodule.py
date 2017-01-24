@@ -170,13 +170,13 @@ class PVmodule(object):
         self.Vbypass = Vbypass  #: [V] trigger voltage of bypass diode
         self.cellArea = cellArea  #: [cm^2] cell area
         if pvcells is None:
-            # faster to use copy instead of making each object in a for-loop
-            # use copy instead of deepcopy to keey same pvconst for all objects
-            # PVcell.calcCell() creates new np.ndarray if attributes change
             pvcells = PVcell(pvconst=self.pvconst)
         if isinstance(pvcells, PVcell):
             # GH35: don't make copies, use same reference for all objects
             #pvcells = [copy(pvcells) for _ in xrange(self.numberCells)]
+            # faster to use copy instead of making each object in a for-loop
+            # use copy instead of deepcopy to keep same pvconst for all objects
+            # PVcell.calcCell() creates new np.ndarray if attributes change
             pvcells = [pvcells] * self.numberCells
         if len(pvcells) != self.numberCells:
             # TODO: use pvexception
@@ -241,6 +241,8 @@ class PVmodule(object):
                     pvc.Ee = Ee
             elif np.size(Ee) == self.numberCells:
                 for pvc, Ee_idx in zip(self.pvcells, Ee):
+                    # gh34: make new objects as needed from copies
+                    pvc = copy(pvc)
                     pvc.Ee = Ee_idx
             else:
                 raise Exception("Input irradiance value (Ee) for each cell!")
@@ -248,9 +250,13 @@ class PVmodule(object):
             Ncells = np.size(cells)
             if np.isscalar(Ee):
                 for cell_idx in cells:
+                    # gh34: make new objects as needed from copies
+                    self.pvcells[cell_idx] = copy(self.pvcells[cell_idx])
                     self.pvcells[cell_idx].Ee = Ee
             elif np.size(Ee) == Ncells:
                 for cell_idx, Ee_idx in zip(cells, Ee):
+                    # gh34: make new objects as needed from copies
+                    self.pvcells[cell_idx] = copy(self.pvcells[cell_idx])
                     self.pvcells[cell_idx].Ee = Ee_idx
             else:
                 raise Exception("Input irradiance value (Ee) for each cell!")

@@ -5,7 +5,7 @@ class.
 """
 
 import numpy as np
-from copy import deepcopy
+from copy import copy
 from matplotlib import pyplot as plt
 # use absolute imports instead of relative, so modules are portable
 from pvmismatch.pvmismatch_lib.pvconstants import PVconstants, NUMBERMODS
@@ -94,6 +94,8 @@ class PVstring(object):
         else:
             try:
                 for pvmod, cell_Ee in Ee.iteritems():
+                    # gh34: make new objects as needed from copies
+                    self.pvmods[pvmod] = copy(self.pvmods[pvmod])
                     if hasattr(cell_Ee, 'keys'):
                         self.pvmods[pvmod].setSuns(**cell_Ee)
                     else:
