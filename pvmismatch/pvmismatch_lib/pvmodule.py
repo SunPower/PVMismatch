@@ -248,6 +248,7 @@ class PVmodule(object):
                 for pvc in self.pvcells:
                     pvc.Ee = Ee
             elif np.size(Ee) == self.numberCells:
+                self.pvcells = copy(self.pvcells)  # copy list first
                 for cell_idx, Ee_idx in enumerate(Ee):
                     # gh34: make new objects as needed from copies
                     self.pvcells[cell_idx] = copy(self.pvcells[cell_idx])
