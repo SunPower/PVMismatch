@@ -99,6 +99,13 @@ class PVcell(object):
             setattr(self, k, v)
 
     @property
+    def dictionary(self):
+        d = {'Rs': self.Rs, 'Rsh': self.Rsh, 'Isat1_T0': self.Isat1_T0, 'Isat2': self.Isat2, 'Isc0_T0': self.Isc0_T0,
+             'aRBD': self.aRBD, 'bRBD': self.bRBD, 'VRBD': self.VRBD, 'nRBD': self.nRBD, 'Eg': self.Eg,
+             'alpha_Isc': self.alpha_Isc, 'Tcell': self.Tcell, 'Ee': self.Ee, 'pvconst': self.pvconst}
+        return d
+
+    @property
     def Vt(self):
         """
         Thermal voltage in volts.
