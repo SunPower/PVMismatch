@@ -175,13 +175,28 @@ class PVmodule(object):
             # PVcell.calcCell() creates new np.ndarray if attributes change
             pvcells = PVcell(pvconst=self.pvconst)
         if isinstance(pvcells, PVcell):
-            pvcells = [copy(pvcells) for _ in xrange(self.numberCells)]
+            cashed_cells = [pvcells]
+            pvcells = [pvcells] * self.numberCells
+        else:
+            cashed_cells = [pvcells[0]]
+            cashed_dicts = [pvcells[0].dictionary]
+            append_cells = cashed_cells.append
+            append_dicts = cashed_dicts.append
+            for ind, acell in enumerate(pvcells):
+                if ind > 0:     # skip first entry, as we just used it
+                    if acell.dictionary in cashed_dicts:    # check if this cell is identical to a previous one
+                        idx = cashed_dicts.index(acell.dictionary)
+                        pvcells[ind] = cashed_cells[idx]    # if so, overwrite entry with pointer to cashed cell
+                    else:   # otherwise, add the unique cell to cashed lists
+                        append_cells(acell)
+                        append_dicts(acell.dictionary)
         if len(pvcells) != self.numberCells:
             # TODO: use pvexception
             raise Exception(
                 "Number of cells doesn't match cell position pattern."
             )
         self.pvcells = pvcells  #: list of `PVcell` objects in this `PVmodule`
+        self.cashed_cells = cashed_cells
         self.numSubStr = len(self.cell_pos)  #: number of substrings
         self.subStrCells = [len(_) for _ in self.cell_pos]  #: cells per substr
         # initialize members so PyLint doesn't get upset
@@ -235,21 +250,60 @@ class PVmodule(object):
         """
         if cells is None:
             if np.isscalar(Ee):
-                for pvc in self.pvcells:
+                # Set all cells to the same irradiance. This can be achieved by only setting the irradiance on the
+                # cashed cells. No regard needs to be taken for keeping track of unique cells
+                for pvc in self.cashed_cells:
                     pvc.Ee = Ee
             elif np.size(Ee) == self.numberCells:
-                for pvc, Ee_idx in zip(self.pvcells, Ee):
-                    pvc.Ee = Ee_idx
+                cashed_dicts = [acell.dictionary for acell in self.cashed_cells]
+                append_cells = self.cashed_cells.append
+                append_dicts = cashed_dicts.append
+                for ind, val in zip(self.pvcells, Ee):
+                    pvc, Ee_idx = val
+                    pvcell_dict = pvc.dictionary
+                    pvcell_dict['Ee'] = Ee_idx
+                    if pvcell_dict in cashed_dicts:     # Check if this cell has already been made
+                        idx = cashed_dicts.index(pvcell_dict)
+                        self.pvcells[ind] = self.cashed_cells[idx]      # If so set pointer to existing cell
+                    else:       # Otherwise, make a new copy of the cell and set the new Ee value
+                        new_cell = copy(pvc)
+                        new_cell.Ee = Ee_idx
+                        self.pvcells[ind] = new_cell
+                        append_cells(new_cell)
+                        append_dicts(new_cell.dictionary)
             else:
                 raise Exception("Input irradiance value (Ee) for each cell!")
         else:
+            cashed_dicts = [acell.dictionary for acell in self.cashed_cells]
+            append_cells = self.cashed_cells.append
+            append_dicts = cashed_dicts.append
             Ncells = np.size(cells)
             if np.isscalar(Ee):
                 for cell_idx in cells:
-                    self.pvcells[cell_idx].Ee = Ee
+                    pvcell_dict = self.pvcells[cell_idx].dictionary
+                    pvcell_dict['Ee'] = Ee
+                    if pvcell_dict in cashed_dicts:
+                        idx = cashed_dicts.index(pvcell_dict)
+                        self.pvcells[cell_idx] = self.cashed_cells[idx]
+                    else:
+                        new_cell = copy(self.pvcells[cell_idx])
+                        new_cell.Ee = Ee
+                        self.pvcells[cell_idx] = new_cell
+                        append_cells(new_cell)
+                        append_dicts(new_cell.dictionary)
             elif np.size(Ee) == Ncells:
                 for cell_idx, Ee_idx in zip(cells, Ee):
-                    self.pvcells[cell_idx].Ee = Ee_idx
+                    pvcell_dict = self.pvcells[cell_idx].dictionary
+                    pvcell_dict['Ee'] = Ee_idx
+                    if pvcell_dict in cashed_dicts:
+                        idx = cashed_dicts.index(pvcell_dict)
+                        self.pvcells[cell_idx] = self.cashed_cells[idx]
+                    else:
+                        new_cell = copy(self.pvcells[cell_idx])
+                        new_cell.Ee = Ee_idx
+                        self.pvcells[cell_idx] = new_cell
+                        append_cells(new_cell)
+                        append_dicts(new_cell.dictionary)
             else:
                 raise Exception("Input irradiance value (Ee) for each cell!")
         self.Imod, self.Vmod, self.Pmod, self.Isubstr, self.Vsubstr = self.calcMod()
