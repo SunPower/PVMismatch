@@ -100,10 +100,10 @@ class PVstring(object):
             for pvmod in iter(self.pvmods):
                 pvmod.setSuns(Ee)
         else:
+            self.pvmods = copy(self.pvmods)  # copy list first
             try:
                 for pvmod, cell_Ee in Ee.iteritems():
                     # gh34: make new objects as needed from copies
-                    self.pvmods = copy(self.pvmods)  # copy list first
                     self.pvmods[pvmod] = copy(self.pvmods[pvmod])
                     if hasattr(cell_Ee, 'keys'):
                         self.pvmods[pvmod].setSuns(**cell_Ee)
@@ -113,9 +113,12 @@ class PVstring(object):
                         except TypeError:
                             self.pvmods[pvmod].setSuns(cell_Ee)
             except AttributeError:
-                Ee = Ee[0]
-                for pvmod in iter(self.pvmods):
-                    pvmod.setSuns(Ee)
+                # Ee was a list? just take first item in list
+                if len(Ee) > 1:
+                    raise TypeError('Irradiance, Ee, should be scalar or dict')
+                for mod_id, pvmod in enumerate(self.pvmods):
+                    self.pvmods[mod_id] = copy(pvmod)
+                    self.pvmods[mod_id].setSuns(Ee[0])
         # update modules
         self.Istring, self.Vstring, self.Pstring = self.calcString()
 
