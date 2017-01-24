@@ -34,7 +34,9 @@ class PVsystem(object):
                               pvconst=self.pvconst)
         # use deep copy instead of making each object in a for-loop
         if isinstance(pvstrs, PVstring):
-            pvstrs = [deepcopy(pvstrs) for _ in xrange(self.numberStrs)]
+            # GH35: don't make copies, use same reference for all objects
+            #pvstrs = [deepcopy(pvstrs) for _ in xrange(self.numberStrs)]
+            pvstrs = [pvstrs] * self.numberStrs
         if len(pvstrs) != self.numberStrs:
             # TODO: use pvmismatch excecptions
             raise Exception("Number of strings don't match.")

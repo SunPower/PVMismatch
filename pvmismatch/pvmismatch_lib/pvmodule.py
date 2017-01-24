@@ -175,7 +175,9 @@ class PVmodule(object):
             # PVcell.calcCell() creates new np.ndarray if attributes change
             pvcells = PVcell(pvconst=self.pvconst)
         if isinstance(pvcells, PVcell):
-            pvcells = [copy(pvcells) for _ in xrange(self.numberCells)]
+            # GH35: don't make copies, use same reference for all objects
+            #pvcells = [copy(pvcells) for _ in xrange(self.numberCells)]
+            pvcells = [pvcells] * self.numberCells
         if len(pvcells) != self.numberCells:
             # TODO: use pvexception
             raise Exception(

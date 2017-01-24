@@ -30,7 +30,9 @@ class PVstring(object):
             # use deepcopy instead of making each object in for-loop, 2x faster
             pvmods = PVmodule(pvconst=self.pvconst)
         if isinstance(pvmods, PVmodule):
-            pvmods = [deepcopy(pvmods) for _ in xrange(self.numberMods)]
+            # GH35: don't make copies, use same reference for all objects
+            #pvmods = [deepcopy(pvmods) for _ in xrange(self.numberMods)]
+            pvmods = [pvmods] * self.numberMods
             # reset pvconsts in all pvcells and pvmodules
             for p in pvmods:
                 for c in p.pvcells:
