@@ -170,13 +170,12 @@ class PVmodule(object):
         self.Vbypass = Vbypass  #: [V] trigger voltage of bypass diode
         self.cellArea = cellArea  #: [cm^2] cell area
         if pvcells is None:
-            pvcells = PVcell(pvconst=self.pvconst)
-        if isinstance(pvcells, PVcell):
-            # GH35: don't make copies, use same reference for all objects
-            #pvcells = [copy(pvcells) for _ in xrange(self.numberCells)]
             # faster to use copy instead of making each object in a for-loop
             # use copy instead of deepcopy to keep same pvconst for all objects
             # PVcell.calcCell() creates new np.ndarray if attributes change
+            pvcells = PVcell(pvconst=self.pvconst)
+        if isinstance(pvcells, PVcell):
+            # GH35: don't make copies, use same reference for all objects
             pvcells = [pvcells] * self.numberCells
         if len(pvcells) != self.numberCells:
             # TODO: use pvexception

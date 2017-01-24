@@ -31,7 +31,6 @@ class PVstring(object):
             pvmods = PVmodule(pvconst=self.pvconst)
         if isinstance(pvmods, PVmodule):
             # GH35: don't make copies, use same reference for all objects
-            #pvmods = [deepcopy(pvmods) for _ in xrange(self.numberMods)]
             pvmods = [pvmods] * self.numberMods
             # reset pvconsts in all pvcells and pvmodules
             for p in pvmods:
