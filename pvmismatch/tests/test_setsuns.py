@@ -7,6 +7,10 @@ Bennet Meyers 10/10/16
 import numpy as np
 from nose.tools import ok_
 from pvmismatch.pvmismatch_lib.pvsystem import PVsystem
+import logging
+
+logging.basicConfig(level=logging.DEBUG)
+LOGGER = logging.getLogger(__name__)
 
 
 def test_basic():
@@ -52,30 +56,75 @@ def test_set_str_2():
 
 def test_gh34_35():
     pvsys = PVsystem()
+    # display unique id numbers
+    LOGGER.debug('\n*** unique id numbers ***')
+    LOGGER.debug('pvstrs:\n%r', set(pvsys.pvstrs))
+    LOGGER.debug('pvmods:\n%r', set([x for y in pvsys.pvmods for x in y]))
+    LOGGER.debug(
+        'pvcells:\n%r',
+        {hex(int(id(z))): z for y in pvsys.pvmods for x in y for z in x.pvcells}
+    )
+    # test strings references same object
     assert pvsys.pvstrs[0] == pvsys.pvstrs[1]
+    # modules references same object
     assert pvsys.pvmods[0][0] == pvsys.pvmods[1][1]
+    # cells reference same object
     assert pvsys.pvmods[0][0].pvcells[0] == pvsys.pvmods[1][1].pvcells[1]
+
+    # test set suns on just string #2 
     pvsys.setSuns({2: 0.88})
+    # display unique id numbers
+    LOGGER.debug('pvstrs:\n%r', set(pvsys.pvstrs))
+    LOGGER.debug('pvmods:\n%r', set([x for y in pvsys.pvmods for x in y]))
+    LOGGER.debug(
+        'pvcells:\n%r',
+        {hex(int(id(z))): z for y in pvsys.pvmods for x in y for z in x.pvcells}
+    )
+    # test other string not changed
     assert (pvsys.pvstrs[0].pvmods[0].Ee == 1.0).all()
     assert (pvsys.pvstrs[1].pvmods[1].Ee == 1.0).all()
+    # test all modules in string #2 changed
     assert (pvsys.pvstrs[2].pvmods[0].Ee == 0.88).all()
     assert (pvsys.pvstrs[2].pvmods[2].Ee == 0.88).all()
+    # test strings references same object
     assert pvsys.pvstrs[0] == pvsys.pvstrs[1]
+    # modules references same object
     assert pvsys.pvmods[0][0] == pvsys.pvmods[1][1]
+    # cells reference same object
     assert pvsys.pvmods[0][0].pvcells[0] == pvsys.pvmods[1][1].pvcells[1]
     assert pvsys.pvmods[2][0].pvcells[0] == pvsys.pvmods[2][2].pvcells[2]
+
+    # test set suns on just module #4 in string #2
     pvsys.setSuns({2: {4: 0.75}})
+    # display unique id numbers
+    LOGGER.debug('pvstrs:\n%r', set(pvsys.pvstrs))
+    LOGGER.debug('pvmods:\n%r', set([x for y in pvsys.pvmods for x in y]))
+    LOGGER.debug(
+        'pvcells:\n%r',
+        {hex(int(id(z))): z for y in pvsys.pvmods for x in y for z in x.pvcells}
+    )
     assert (pvsys.pvstrs[0].pvmods[0].Ee == 1.0).all()
     assert (pvsys.pvstrs[1].pvmods[1].Ee == 1.0).all()
+    assert (pvsys.pvstrs[1].pvmods[4].Ee == 1.0).all()
     assert (pvsys.pvstrs[2].pvmods[0].Ee == 0.88).all()
     assert (pvsys.pvstrs[2].pvmods[2].Ee == 0.88).all()
     assert (pvsys.pvstrs[2].pvmods[4].Ee == 0.75).all()
     assert pvsys.pvstrs[0] == pvsys.pvstrs[1]
     assert pvsys.pvmods[0][0] == pvsys.pvmods[1][1]
     assert pvsys.pvmods[0][0].pvcells[0] == pvsys.pvmods[1][1].pvcells[1]
+
+    # set just cells #0 and #2 in module #4 in string #2
     pvsys.setSuns({2: {4: {'Ee': 0.66, 'cells': [0, 2]}}})
+    # display unique id numbers
+    LOGGER.debug('pvstrs:\n%r', set(pvsys.pvstrs))
+    LOGGER.debug('pvmods:\n%r', set([x for y in pvsys.pvmods for x in y]))
+    LOGGER.debug(
+        'pvcells:\n%r',
+        {hex(int(id(z))): z for y in pvsys.pvmods for x in y for z in x.pvcells}
+    )
     assert (pvsys.pvstrs[0].pvmods[0].Ee == 1.0).all()
     assert (pvsys.pvstrs[1].pvmods[1].Ee == 1.0).all()
+    assert (pvsys.pvstrs[1].pvmods[4].Ee == 1.0).all()
     assert (pvsys.pvstrs[2].pvmods[0].Ee == 0.88).all()
     assert (pvsys.pvstrs[2].pvmods[2].Ee == 0.88).all()
     assert pvsys.pvstrs[2].pvmods[4].pvcells[0].Ee == 0.66

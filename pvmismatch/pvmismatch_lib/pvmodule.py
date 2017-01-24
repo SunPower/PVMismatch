@@ -256,6 +256,7 @@ class PVmodule(object):
                 raise Exception("Input irradiance value (Ee) for each cell!")
         else:
             Ncells = np.size(cells)
+            self.pvcells = copy(self.pvcells)  # copy list first
             if np.isscalar(Ee):
                 for cell_idx in cells:
                     # gh34: make new objects as needed from copies
