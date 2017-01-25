@@ -245,7 +245,7 @@ class PVmodule(object):
                     else:
                         new_pvcells[cell_id] = old_pvcells[pvcell]
                 self.pvcells = new_pvcells
-                for pvc in self.pvcells:
+                for pvc in np.unique(self.pvcells):
                     pvc.Ee = Ee
             elif np.size(Ee) == self.numberCells:
                 self.pvcells = copy(self.pvcells)  # copy list first
