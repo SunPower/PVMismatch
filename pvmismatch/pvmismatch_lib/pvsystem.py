@@ -120,6 +120,7 @@ class PVsystem(object):
         else:
             for pvstr, pvmod_Ee in Ee.iteritems():
                 # gh34: make new objects as needed from copies
+                pvstr = int(pvstr)
                 self.pvstrs[pvstr] = copy(self.pvstrs[pvstr])
                 self.pvstrs[pvstr].setSuns(pvmod_Ee)
         self.Isys, self.Vsys, self.Psys = self.calcSystem()

@@ -103,6 +103,7 @@ class PVstring(object):
             self.pvmods = copy(self.pvmods)  # copy list first
             try:
                 for pvmod, cell_Ee in Ee.iteritems():
+                    pvmod = int(pvmod)
                     # gh34: make new objects as needed from copies
                     self.pvmods[pvmod] = copy(self.pvmods[pvmod])
                     if hasattr(cell_Ee, 'keys'):
