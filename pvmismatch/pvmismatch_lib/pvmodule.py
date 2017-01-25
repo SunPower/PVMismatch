@@ -259,10 +259,15 @@ class PVmodule(object):
             Ncells = np.size(cells)
             self.pvcells = copy(self.pvcells)  # copy list first
             if np.isscalar(Ee):
-                for cell_idx in cells:
-                    # gh34: make new objects as needed from copies
-                    self.pvcells[cell_idx] = copy(self.pvcells[cell_idx])
-                    self.pvcells[cell_idx].Ee = Ee
+                cells_to_update = [self.pvcells[i] for i in cells]
+                old_pvcells = dict.fromkeys(cells_to_update)
+                for cell_id, pvcell in zip(cells, cells_to_update):
+                    if old_pvcells[pvcell] is None:
+                        self.pvcells[cell_id] = copy(pvcell)
+                        self.pvcells[cell_id].Ee = Ee
+                        old_pvcells[pvcell] = self.pvcells[cell_id]
+                    else:
+                        self.pvcells[cell_id] = old_pvcells[pvcell]
             elif np.size(Ee) == Ncells:
                 for cell_idx, Ee_idx in zip(cells, Ee):
                     # gh34: make new objects as needed from copies
