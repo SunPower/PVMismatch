@@ -133,4 +133,5 @@ def test_gh34_35():
     assert pvsys.pvstrs[0] == pvsys.pvstrs[1]
     assert pvsys.pvmods[0][0] == pvsys.pvmods[1][1]
     assert pvsys.pvmods[0][0].pvcells[0] == pvsys.pvmods[1][1].pvcells[1]
+    assert pvsys.pvstrs[2].pvmods[4].pvcells[0] == pvsys.pvstrs[2].pvmods[4].pvcells[2]
 

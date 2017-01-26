@@ -269,10 +269,21 @@ class PVmodule(object):
                     else:
                         self.pvcells[cell_id] = old_pvcells[pvcell]
             elif np.size(Ee) == Ncells:
-                for cell_idx, Ee_idx in zip(cells, Ee):
-                    # gh34: make new objects as needed from copies
-                    self.pvcells[cell_idx] = copy(self.pvcells[cell_idx])
-                    self.pvcells[cell_idx].Ee = Ee_idx
+                # Find unique irradiance values
+                cells = np.array(cells)
+                Ee = np.array(Ee)
+                unique_ee = np.unique(Ee)
+                for a_Ee in unique_ee:
+                    cells_subset = cells[np.where(Ee == a_Ee)]
+                    cells_to_update = [self.pvcells[i] for i in cells_subset]
+                    old_pvcells = dict.fromkeys(cells_to_update)
+                    for cell_id, pvcell in zip(cells_subset, cells_to_update):
+                        if old_pvcells[pvcell] is None:
+                            self.pvcells[cell_id] = copy(pvcell)
+                            self.pvcells[cell_id].Ee = a_Ee
+                            old_pvcells[pvcell] = self.pvcells[cell_id]
+                        else:
+                            self.pvcells[cell_id] = old_pvcells[pvcell]
             else:
                 raise Exception("Input irradiance value (Ee) for each cell!")
         self.Imod, self.Vmod, self.Pmod, self.Isubstr, self.Vsubstr = self.calcMod()
