@@ -34,7 +34,6 @@ class PVsystem(object):
                               pvconst=self.pvconst)
         # use deep copy instead of making each object in a for-loop
         if isinstance(pvstrs, PVstring):
-            # GH35: don't make copies, use same reference for all objects
             pvstrs = [pvstrs] * self.numberStrs
         if len(pvstrs) != self.numberStrs:
             # TODO: use pvmismatch excecptions
@@ -119,7 +118,6 @@ class PVsystem(object):
                 pvstr.setSuns(Ee)
         else:
             for pvstr, pvmod_Ee in Ee.iteritems():
-                # gh34: make new objects as needed from copies
                 pvstr = int(pvstr)
                 self.pvstrs[pvstr] = copy(self.pvstrs[pvstr])
                 self.pvstrs[pvstr].setSuns(pvmod_Ee)

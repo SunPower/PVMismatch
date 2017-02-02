@@ -175,7 +175,6 @@ class PVmodule(object):
             # PVcell.calcCell() creates new np.ndarray if attributes change
             pvcells = PVcell(pvconst=self.pvconst)
         if isinstance(pvcells, PVcell):
-            # GH35: don't make copies, use same reference for all objects
             pvcells = [pvcells] * self.numberCells
         if len(pvcells) != self.numberCells:
             # TODO: use pvexception
@@ -250,7 +249,6 @@ class PVmodule(object):
             elif np.size(Ee) == self.numberCells:
                 self.pvcells = copy(self.pvcells)  # copy list first
                 for cell_idx, Ee_idx in enumerate(Ee):
-                    # gh34: make new objects as needed from copies
                     self.pvcells[cell_idx] = copy(self.pvcells[cell_idx])
                     self.pvcells[cell_idx].Ee = Ee_idx
             else:

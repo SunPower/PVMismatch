@@ -30,7 +30,6 @@ class PVstring(object):
             # use deepcopy instead of making each object in for-loop, 2x faster
             pvmods = PVmodule(pvconst=self.pvconst)
         if isinstance(pvmods, PVmodule):
-            # GH35: don't make copies, use same reference for all objects
             pvmods = [pvmods] * self.numberMods
             # reset pvconsts in all pvcells and pvmodules
             for p in pvmods:
@@ -104,7 +103,6 @@ class PVstring(object):
             try:
                 for pvmod, cell_Ee in Ee.iteritems():
                     pvmod = int(pvmod)
-                    # gh34: make new objects as needed from copies
                     self.pvmods[pvmod] = copy(self.pvmods[pvmod])
                     if hasattr(cell_Ee, 'keys'):
                         self.pvmods[pvmod].setSuns(**cell_Ee)
