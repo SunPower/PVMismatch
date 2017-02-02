@@ -171,11 +171,11 @@ class PVmodule(object):
         self.cellArea = cellArea  #: [cm^2] cell area
         if pvcells is None:
             # faster to use copy instead of making each object in a for-loop
-            # use copy instead of deepcopy to keey same pvconst for all objects
+            # use copy instead of deepcopy to keep same pvconst for all objects
             # PVcell.calcCell() creates new np.ndarray if attributes change
             pvcells = PVcell(pvconst=self.pvconst)
         if isinstance(pvcells, PVcell):
-            pvcells = [copy(pvcells) for _ in xrange(self.numberCells)]
+            pvcells = [pvcells] * self.numberCells
         if len(pvcells) != self.numberCells:
             # TODO: use pvexception
             raise Exception(
@@ -235,21 +235,56 @@ class PVmodule(object):
         """
         if cells is None:
             if np.isscalar(Ee):
-                for pvc in self.pvcells:
+                new_pvcells = range(self.numberCells)  # new list of cells
+                old_pvcells = dict.fromkeys(self.pvcells)  # same as set(pvcells)
+                for cell_id, pvcell in enumerate(self.pvcells):
+                    if old_pvcells[pvcell] is None:
+                        new_pvcells[cell_id] = copy(pvcell)
+                        old_pvcells[pvcell] = new_pvcells[cell_id]
+                    else:
+                        new_pvcells[cell_id] = old_pvcells[pvcell]
+                self.pvcells = new_pvcells
+                pvcell_set = old_pvcells.itervalues()
+                for pvc in pvcell_set:
                     pvc.Ee = Ee
             elif np.size(Ee) == self.numberCells:
-                for pvc, Ee_idx in zip(self.pvcells, Ee):
-                    pvc.Ee = Ee_idx
+                self.pvcells = copy(self.pvcells)  # copy list first
+                for cell_idx, Ee_idx in enumerate(Ee):
+                    self.pvcells[cell_idx] = copy(self.pvcells[cell_idx])
+                    self.pvcells[cell_idx].Ee = Ee_idx
             else:
                 raise Exception("Input irradiance value (Ee) for each cell!")
         else:
             Ncells = np.size(cells)
+            self.pvcells = copy(self.pvcells)  # copy list first
             if np.isscalar(Ee):
-                for cell_idx in cells:
-                    self.pvcells[cell_idx].Ee = Ee
+                cells_to_update = [self.pvcells[i] for i in cells]
+                old_pvcells = dict.fromkeys(cells_to_update)
+                for cell_id, pvcell in zip(cells, cells_to_update):
+                    if old_pvcells[pvcell] is None:
+                        self.pvcells[cell_id] = copy(pvcell)
+                        self.pvcells[cell_id].Ee = Ee
+                        old_pvcells[pvcell] = self.pvcells[cell_id]
+                    else:
+                        self.pvcells[cell_id] = old_pvcells[pvcell]
             elif np.size(Ee) == Ncells:
-                for cell_idx, Ee_idx in zip(cells, Ee):
-                    self.pvcells[cell_idx].Ee = Ee_idx
+                # Find unique irradiance values
+                # TODO possible "cleaner" alternative by grouping cells into tuples that match the set irradiance
+                # E.g: pvsys.setSuns({X: {Y: {'Ee': (0.33, 0.99), 'cells': [(2, 3), 17]}}})
+                cells = np.array(cells)
+                Ee = np.array(Ee)
+                unique_ee = np.unique(Ee)
+                for a_Ee in unique_ee:
+                    cells_subset = cells[np.where(Ee == a_Ee)]
+                    cells_to_update = [self.pvcells[i] for i in cells_subset]
+                    old_pvcells = dict.fromkeys(cells_to_update)
+                    for cell_id, pvcell in zip(cells_subset, cells_to_update):
+                        if old_pvcells[pvcell] is None:
+                            self.pvcells[cell_id] = copy(pvcell)
+                            self.pvcells[cell_id].Ee = a_Ee
+                            old_pvcells[pvcell] = self.pvcells[cell_id]
+                        else:
+                            self.pvcells[cell_id] = old_pvcells[pvcell]
             else:
                 raise Exception("Input irradiance value (Ee) for each cell!")
         self.Imod, self.Vmod, self.Pmod, self.Isubstr, self.Vsubstr = self.calcMod()
