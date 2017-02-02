@@ -135,3 +135,22 @@ def test_gh34_35():
     assert pvsys.pvmods[0][0].pvcells[0] == pvsys.pvmods[1][1].pvcells[1]
     assert pvsys.pvstrs[2].pvmods[4].pvcells[0] == pvsys.pvstrs[2].pvmods[4].pvcells[2]
 
+    # set cells 3 and 4 to one irradiance and 5 to another. should only make two new cell objects
+    pvsys.setSuns({2: {4: {'Ee': (0.33, 0.99, 0.33), 'cells': (3, 4, 5)}}})
+    assert (pvsys.pvstrs[0].pvmods[0].Ee == 1.0).all()
+    assert (pvsys.pvstrs[1].pvmods[1].Ee == 1.0).all()
+    assert (pvsys.pvstrs[1].pvmods[4].Ee == 1.0).all()
+    assert (pvsys.pvstrs[2].pvmods[0].Ee == 0.88).all()
+    assert (pvsys.pvstrs[2].pvmods[2].Ee == 0.88).all()
+    assert pvsys.pvstrs[2].pvmods[4].pvcells[0].Ee == 0.66
+    assert pvsys.pvstrs[2].pvmods[4].pvcells[1].Ee == 0.75
+    assert pvsys.pvstrs[2].pvmods[4].pvcells[2].Ee == 0.66
+    assert pvsys.pvstrs[0] == pvsys.pvstrs[1]
+    assert pvsys.pvmods[0][0] == pvsys.pvmods[1][1]
+    assert pvsys.pvmods[0][0].pvcells[0] == pvsys.pvmods[1][1].pvcells[1]
+    assert pvsys.pvstrs[2].pvmods[4].pvcells[0] == pvsys.pvstrs[2].pvmods[4].pvcells[2]
+    assert pvsys.pvstrs[2].pvmods[4].pvcells[3].Ee == 0.33
+    assert pvsys.pvstrs[2].pvmods[4].pvcells[4].Ee == 0.99
+    assert pvsys.pvstrs[2].pvmods[4].pvcells[5].Ee == 0.33
+    assert pvsys.pvstrs[2].pvmods[4].pvcells[3] == pvsys.pvstrs[2].pvmods[4].pvcells[5]
+
