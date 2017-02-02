@@ -269,6 +269,8 @@ class PVmodule(object):
                         self.pvcells[cell_id] = old_pvcells[pvcell]
             elif np.size(Ee) == Ncells:
                 # Find unique irradiance values
+                # TODO possible "cleaner" alternative by grouping cells into tuples that match the set irradiance
+                # E.g: pvsys.setSuns({X: {Y: {'Ee': (0.33, 0.99), 'cells': [(2, 3), 17]}}})
                 cells = np.array(cells)
                 Ee = np.array(Ee)
                 unique_ee = np.unique(Ee)
