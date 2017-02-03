@@ -23,7 +23,7 @@ from functools import partial
 from copy import deepcopy
 
 # ==============================================================================
-# Import PVmismatch and MismatchTools classes
+# Import PVmismatch items
 # ==============================================================================
 
 try:
