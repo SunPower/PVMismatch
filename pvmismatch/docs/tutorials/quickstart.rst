@@ -145,25 +145,25 @@ Let's change their temperatures. In fact since the temperatures are still at
      <PVcell(Ee=0.2[suns], Tcell=373.15[K], Isc=1.29471[A], Voc=0.497765[V])>]
 
     >>> pvsys.Vmp
-    402.74609543732771
+    370.60261850573403
 
     >>> pvsys.Imp
-    11.960907101557869
+    11.924151410534137
 
     >>> pvsys.Pmp
-    4817.2086330410357
+    4419.1217362027928
 
     >>> pvsys.FF
-    0.77742383473636478
+    0.71233263744268427
 
     >>> pvsys.eff
-    0.20453945980147997
+    0.1884217160847011
 
     >>> pvsys.Voc
-    486.6824703005233
+    486.4780520368573
 
     >>> pvsys.Isc
-    12.731861360061366
+    12.752339637569314
 
     >>> f_hot = pvsys.plotSys()
 
