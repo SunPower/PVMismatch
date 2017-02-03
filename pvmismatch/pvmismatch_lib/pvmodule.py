@@ -297,7 +297,7 @@ class PVmodule(object):
         and power (Pmod [W]).
 
         Args:
-            Ee (:class:`numpy.ndarray`): Cell Temperature [K]
+            Tc (:class:`numpy.ndarray`): Cell Temperature [K]
             cells (list): Cells to change [Optional]
         """
         if cells is None:
