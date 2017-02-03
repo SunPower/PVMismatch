@@ -289,6 +289,9 @@ class PVmodule(object):
                 raise Exception("Input irradiance value (Ee) for each cell!")
         self.Imod, self.Vmod, self.Pmod, self.Isubstr, self.Vsubstr = self.calcMod()
 
+# TODO setTemps is a nearly identical copy of setSuns. The DRY principle says that we should not be copying code.
+# TODO Replace both setSuns() and setTemps() with a single method for updating cell parameters that works for all params
+
     def setTemps(self, Tc, cells=None):
         """
         Set the temperature in Kelvin, Tc, on the solar cells in the module.
@@ -337,7 +340,7 @@ class PVmodule(object):
             elif np.size(Tc) == Ncells:
                 # Find unique irradiance values
                 # TODO possible "cleaner" alternative by grouping cells into tuples that match the set temp
-                # E.g: pvsys.setTemps({X: {Y: {'Tc': (0.33, 0.99), 'cells': [(2, 3), 17]}}})
+                # E.g: pvsys.setTemps({X: {Y: {'Tc': (280, 290), 'cells': [(2, 3), 17]}}})
                 cells = np.array(cells)
                 Tc = np.array(Tc)
                 unique_tc = np.unique(Tc)
