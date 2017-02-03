@@ -11,6 +11,7 @@ the shade location, any reverse biased cells, and any active diodes.
 # ==============================================================================
 # Importing standard libraries
 # ==============================================================================
+
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 import numpy as np
@@ -24,6 +25,7 @@ from copy import deepcopy
 # ==============================================================================
 # Import PVmismatch and MismatchTools classes
 # ==============================================================================
+
 try:
     from pvmismatch import PVsystem, PVmodule, PVcell, PVconstants
     from pvmismatch.pvmismatch_lib.pvmodule import STD72, STD96, STD128
@@ -32,8 +34,6 @@ except ImportError:
     sys.path.append('../../')
     from pvmismatch import PVsystem, PVmodule, PVcell, PVconstants
     from pvmismatch.pvmismatch_lib.pvmodule import STD72, STD96, STD128
-
-NUMPTS = 1001
 
 # ==============================================================================
 # Define Classes and Functions
