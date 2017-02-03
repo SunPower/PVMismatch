@@ -71,7 +71,7 @@ def test_gh34_35():
     # cells reference same object
     assert pvsys.pvmods[0][0].pvcells[0] == pvsys.pvmods[1][1].pvcells[1]
 
-    # test set suns on just string #2 
+    # test set suns on just string #2
     pvsys.setSuns({2: 0.88})
     # display unique id numbers
     LOGGER.debug('pvstrs:\n%r', set(pvsys.pvstrs))
@@ -154,3 +154,41 @@ def test_gh34_35():
     assert pvsys.pvstrs[2].pvmods[4].pvcells[5].Ee == 0.33
     assert pvsys.pvstrs[2].pvmods[4].pvcells[3] == pvsys.pvstrs[2].pvmods[4].pvcells[5]
 
+    # set all of a string with a single value, two ways. make sure no unnecessary modules are created
+    pvsys.setSuns({1: 0.5})
+    assert (pvsys.pvstrs[0].pvmods[0].Ee == 1.0).all()
+    assert (pvsys.pvstrs[1].pvmods[1].Ee == 0.5).all()
+    assert (pvsys.pvstrs[1].pvmods[4].Ee == 0.5).all()
+    assert (pvsys.pvstrs[2].pvmods[0].Ee == 0.88).all()
+    assert (pvsys.pvstrs[2].pvmods[2].Ee == 0.88).all()
+    assert pvsys.pvstrs[2].pvmods[4].pvcells[0].Ee == 0.66
+    assert pvsys.pvstrs[2].pvmods[4].pvcells[1].Ee == 0.75
+    assert pvsys.pvstrs[2].pvmods[4].pvcells[2].Ee == 0.66
+    assert pvsys.pvstrs[0] != pvsys.pvstrs[1]
+    assert pvsys.pvmods[0][0] != pvsys.pvmods[1][1]
+    assert pvsys.pvmods[1][2].pvcells[0] == pvsys.pvmods[1][1].pvcells[1]
+    assert pvsys.pvstrs[2].pvmods[4].pvcells[0] == pvsys.pvstrs[2].pvmods[4].pvcells[2]
+    assert pvsys.pvstrs[2].pvmods[4].pvcells[3].Ee == 0.33
+    assert pvsys.pvstrs[2].pvmods[4].pvcells[4].Ee == 0.99
+    assert pvsys.pvstrs[2].pvmods[4].pvcells[5].Ee == 0.33
+    assert pvsys.pvstrs[2].pvmods[4].pvcells[3] == pvsys.pvstrs[2].pvmods[4].pvcells[5]
+    assert pvsys.pvstrs[1].pvmods[0] == pvsys.pvstrs[1].pvmods[2]
+
+    pvsys.setSuns({1: [0.6]})
+    assert (pvsys.pvstrs[0].pvmods[0].Ee == 1.0).all()
+    assert (pvsys.pvstrs[1].pvmods[1].Ee == 0.6).all()
+    assert (pvsys.pvstrs[1].pvmods[4].Ee == 0.6).all()
+    assert (pvsys.pvstrs[2].pvmods[0].Ee == 0.88).all()
+    assert (pvsys.pvstrs[2].pvmods[2].Ee == 0.88).all()
+    assert pvsys.pvstrs[2].pvmods[4].pvcells[0].Ee == 0.66
+    assert pvsys.pvstrs[2].pvmods[4].pvcells[1].Ee == 0.75
+    assert pvsys.pvstrs[2].pvmods[4].pvcells[2].Ee == 0.66
+    assert pvsys.pvstrs[0] != pvsys.pvstrs[1]
+    assert pvsys.pvmods[0][0] != pvsys.pvmods[1][1]
+    assert pvsys.pvmods[1][2].pvcells[0] == pvsys.pvmods[1][1].pvcells[1]
+    assert pvsys.pvstrs[2].pvmods[4].pvcells[0] == pvsys.pvstrs[2].pvmods[4].pvcells[2]
+    assert pvsys.pvstrs[2].pvmods[4].pvcells[3].Ee == 0.33
+    assert pvsys.pvstrs[2].pvmods[4].pvcells[4].Ee == 0.99
+    assert pvsys.pvstrs[2].pvmods[4].pvcells[5].Ee == 0.33
+    assert pvsys.pvstrs[2].pvmods[4].pvcells[3] == pvsys.pvstrs[2].pvmods[4].pvcells[5]
+    assert pvsys.pvstrs[1].pvmods[0] == pvsys.pvstrs[1].pvmods[2]

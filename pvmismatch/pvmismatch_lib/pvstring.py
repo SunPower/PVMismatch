@@ -115,9 +115,18 @@ class PVstring(object):
                 # Ee was a list? just take first item in list
                 if len(Ee) > 1:
                     raise TypeError('Irradiance, Ee, should be scalar or dict')
+                Ee = Ee[0]
+                new_pvmods = range(self.numberMods)  # new list of modules
+                old_pvmods = dict.fromkeys(self.pvmods)  # same as set(pvmods)
                 for mod_id, pvmod in enumerate(self.pvmods):
-                    self.pvmods[mod_id] = copy(pvmod)
-                    self.pvmods[mod_id].setSuns(Ee[0])
+                    if old_pvmods[pvmod] is None:
+                        new_pvmods[mod_id] = copy(pvmod)
+                        old_pvmods[pvmod] = new_pvmods[mod_id]
+                    else:
+                        new_pvmods[mod_id] = old_pvmods[pvmod]
+                self.pvmods = new_pvmods
+                for pvmod in iter(self.pvmods):
+                    pvmod.setSuns(Ee)
         # update modules
         self.Istring, self.Vstring, self.Pstring = self.calcString()
 
