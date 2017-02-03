@@ -493,7 +493,7 @@ if __name__ == "__main__":
     s_sh = Slider(ax_sh, 'Height', 1, modHeight, valinit=sh0, valfmt='%0.0f')
     s_sy = Slider(ax_sy, 'Row Start', 1, modHeight, valinit=sw0,
                   valfmt='%0.0f')
-    s_sx = Slider(ax_sx, 'Column Start', 1, numcells / modHeight, valinit=sh0,
+    s_sx = Slider(ax_sx, 'Col Start', 1, numcells / modHeight, valinit=sh0,
                   valfmt='%0.0f')
     b_setshade = Button(ax_button_setshade, "Set Shade")
     b_saveshade = Button(ax_button_saveshade, "Save Shade")
