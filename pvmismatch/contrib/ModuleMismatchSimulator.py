@@ -285,7 +285,7 @@ def pvsys_defs_user_input(npts=101, user_set_temp=False, tcell=298.15):
         numCells = 128
     tcell = int(raw_input("Cell temperature (deg C)? "))
     tcell = tcell + 273.15
-    pvcelldict = {'Tcell': tcell + 273.15, 'pvconst': PVconstants(npts=npts)}
+    pvcelldict = {'Tcell': tcell, 'pvconst': PVconstants(npts=npts)}
     pvmoddict = {'cell_pos': cellpos, 'Vbypass': -0.5, 'pvconst': PVconstants(npts=npts)}
     pvcell = PVcell(**pvcelldict)
     pvmod = PVmodule(pvcells=pvcell, **pvmoddict)
