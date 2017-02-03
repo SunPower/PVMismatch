@@ -5,7 +5,7 @@ class.
 """
 
 import numpy as np
-from copy import deepcopy
+from copy import copy
 from matplotlib import pyplot as plt
 # use absolute imports instead of relative, so modules are portable
 from pvmismatch.pvmismatch_lib.pvconstants import PVconstants, NUMBERMODS, \
@@ -34,7 +34,7 @@ class PVsystem(object):
                               pvconst=self.pvconst)
         # use deep copy instead of making each object in a for-loop
         if isinstance(pvstrs, PVstring):
-            pvstrs = [deepcopy(pvstrs) for _ in xrange(self.numberStrs)]
+            pvstrs = [pvstrs] * self.numberStrs
         if len(pvstrs) != self.numberStrs:
             # TODO: use pvmismatch excecptions
             raise Exception("Number of strings don't match.")
@@ -118,6 +118,8 @@ class PVsystem(object):
                 pvstr.setSuns(Ee)
         else:
             for pvstr, pvmod_Ee in Ee.iteritems():
+                pvstr = int(pvstr)
+                self.pvstrs[pvstr] = copy(self.pvstrs[pvstr])
                 self.pvstrs[pvstr].setSuns(pvmod_Ee)
         self.Isys, self.Vsys, self.Psys = self.calcSystem()
         (self.Imp, self.Vmp, self.Pmp,

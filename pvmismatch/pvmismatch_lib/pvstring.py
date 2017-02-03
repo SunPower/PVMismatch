@@ -5,7 +5,7 @@ class.
 """
 
 import numpy as np
-from copy import deepcopy
+from copy import copy
 from matplotlib import pyplot as plt
 # use absolute imports instead of relative, so modules are portable
 from pvmismatch.pvmismatch_lib.pvconstants import PVconstants, NUMBERMODS
@@ -30,7 +30,7 @@ class PVstring(object):
             # use deepcopy instead of making each object in for-loop, 2x faster
             pvmods = PVmodule(pvconst=self.pvconst)
         if isinstance(pvmods, PVmodule):
-            pvmods = [deepcopy(pvmods) for _ in xrange(self.numberMods)]
+            pvmods = [pvmods] * self.numberMods
             # reset pvconsts in all pvcells and pvmodules
             for p in pvmods:
                 for c in p.pvcells:
@@ -87,11 +87,23 @@ class PVstring(object):
 
         """
         if np.isscalar(Ee):
+            new_pvmods = range(self.numberMods)  # new list of modules
+            old_pvmods = dict.fromkeys(self.pvmods)  # same as set(pvmods)
+            for mod_id, pvmod in enumerate(self.pvmods):
+                if old_pvmods[pvmod] is None:
+                    new_pvmods[mod_id] = copy(pvmod)
+                    old_pvmods[pvmod] = new_pvmods[mod_id]
+                else:
+                    new_pvmods[mod_id] = old_pvmods[pvmod]
+            self.pvmods = new_pvmods
             for pvmod in iter(self.pvmods):
                 pvmod.setSuns(Ee)
         else:
+            self.pvmods = copy(self.pvmods)  # copy list first
             try:
                 for pvmod, cell_Ee in Ee.iteritems():
+                    pvmod = int(pvmod)
+                    self.pvmods[pvmod] = copy(self.pvmods[pvmod])
                     if hasattr(cell_Ee, 'keys'):
                         self.pvmods[pvmod].setSuns(**cell_Ee)
                     else:
@@ -100,9 +112,12 @@ class PVstring(object):
                         except TypeError:
                             self.pvmods[pvmod].setSuns(cell_Ee)
             except AttributeError:
-                Ee = Ee[0]
-                for pvmod in iter(self.pvmods):
-                    pvmod.setSuns(Ee)
+                # Ee was a list? just take first item in list
+                if len(Ee) > 1:
+                    raise TypeError('Irradiance, Ee, should be scalar or dict')
+                for mod_id, pvmod in enumerate(self.pvmods):
+                    self.pvmods[mod_id] = copy(pvmod)
+                    self.pvmods[mod_id].setSuns(Ee[0])
         # update modules
         self.Istring, self.Vstring, self.Pstring = self.calcString()
 
