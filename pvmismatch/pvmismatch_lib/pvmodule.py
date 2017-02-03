@@ -334,14 +334,14 @@ class PVmodule(object):
                         old_pvcells[pvcell] = self.pvcells[cell_id]
                     else:
                         self.pvcells[cell_id] = old_pvcells[pvcell]
-            elif np.size(Ee) == Ncells:
+            elif np.size(Tc) == Ncells:
                 # Find unique irradiance values
                 # TODO possible "cleaner" alternative by grouping cells into tuples that match the set temp
                 # E.g: pvsys.setTemps({X: {Y: {'Tc': (0.33, 0.99), 'cells': [(2, 3), 17]}}})
                 cells = np.array(cells)
                 Tc = np.array(Tc)
                 unique_tc = np.unique(Tc)
-                for a_Tc in unique_Tc:
+                for a_Tc in unique_tc:
                     cells_subset = cells[np.where(Tc == a_Tc)]
                     cells_to_update = [self.pvcells[i] for i in cells_subset]
                     old_pvcells = dict.fromkeys(cells_to_update)
