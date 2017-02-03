@@ -100,7 +100,7 @@ class PVsystem(object):
         for all cells in the module. The values of pv-modules are passed to
         :meth:`~pvmismatch.pvmismatch_lib.pvmodule.PVmodule.setSuns()`
 
-        :param Ee: irradiance [W/m^2]
+        :param Ee: irradiance [suns]
         :type Ee: dict, float
 
         For Example::
@@ -121,6 +121,44 @@ class PVsystem(object):
                 pvstr = int(pvstr)
                 self.pvstrs[pvstr] = copy(self.pvstrs[pvstr])
                 self.pvstrs[pvstr].setSuns(pvmod_Ee)
+        self.Isys, self.Vsys, self.Psys = self.calcSystem()
+        (self.Imp, self.Vmp, self.Pmp,
+         self.Isc, self.Voc, self.FF, self.eff) = self.calcMPP_IscVocFFeff()
+
+    def setTemps(self, Tc):
+        """
+        Set temperature on cells in modules of string in system.
+        If Tc is ...
+        ... scalar, then sets the entire system to that cell temperature.
+        ... a dictionary, then each key refers to a pv-string in the system,
+        and the corresponding value is either a dictionary or a scalar.
+        If the dictionary's value is another dictionary, then its keys are pv-
+        modules and its values are either cells and corresponding Tc, cells and
+        a scalar Tc, a scalar Tc value for all cells or an array of Tc values
+        for all cells in the module. The values of pv-modules are passed to
+        :meth:`~pvmismatch.pvmismatch_lib.pvmodule.PVmodule.setTemps()`
+
+        :param Tc: temperature [K]
+        :type Tc: dict, float
+
+        For Example::
+
+            Tc={0: {0: {'cells': (1,2,3), 'Tc': (323.15, 348.15, 373.15)}}}
+            Tc=323.15  # set all modules in all strings to 323.15K (50°C)
+            Tc={12: 348.15}  # set all modules in string with index 12 to 348.15K (75°C)
+            Tc={3: {8: 333.15, 7: 373.15}}
+            # set module with index 8 to 333.15K (60°C) and module with index 7 to
+            # 373.15K (100°C) in string with index 3
+
+        """
+        if np.isscalar(Tc):
+            for pvstr in self.pvstrs:
+                pvstr.setTemps(Tc)
+        else:
+            for pvstr, pvmod_Tc in Tc.iteritems():
+                pvstr = int(pvstr)
+                self.pvstrs[pvstr] = copy(self.pvstrs[pvstr])
+                self.pvstrs[pvstr].setTemps(pvmod_Tc)
         self.Isys, self.Vsys, self.Psys = self.calcSystem()
         (self.Imp, self.Vmp, self.Pmp,
          self.Isc, self.Voc, self.FF, self.eff) = self.calcMPP_IscVocFFeff()
