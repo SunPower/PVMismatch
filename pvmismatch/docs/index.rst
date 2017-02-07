@@ -6,7 +6,20 @@
 Welcome to PVMismatch's documentation!
 ======================================
 
+Version: |version| (|release|)
+
+
+Announcements
+-------------
+Thanks to Bennet Meyers you should see huge memory and speed improvements since
+new cell, module and string objects are only created when they are needed to
+differentiate cells by irradiance or temperature. However this can lead to
+unexpected behavior when changing other cell properties without first making a
+copy of the original cell.
+
+
 Contents:
+---------
 
 .. toctree::
    :maxdepth: 2

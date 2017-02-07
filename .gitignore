@@ -27,3 +27,4 @@ benchmark_*/
 
 # virtualenv
 venv/
+.coverage

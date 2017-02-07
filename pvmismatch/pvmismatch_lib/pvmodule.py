@@ -275,7 +275,7 @@ class PVmodule(object):
                 Ee = np.array(Ee)
                 unique_ee = np.unique(Ee)
                 for a_Ee in unique_ee:
-                    cells_subset = cells[np.where(Ee == a_Ee)]
+                    cells_subset = cells[Ee == a_Ee]
                     cells_to_update = [self.pvcells[i] for i in cells_subset]
                     old_pvcells = dict.fromkeys(cells_to_update)
                     for cell_id, pvcell in zip(cells_subset, cells_to_update):
@@ -345,7 +345,7 @@ class PVmodule(object):
                 Tc = np.array(Tc)
                 unique_tc = np.unique(Tc)
                 for a_Tc in unique_tc:
-                    cells_subset = cells[np.where(Tc == a_Tc)]
+                    cells_subset = cells[Tc == a_Tc]
                     cells_to_update = [self.pvcells[i] for i in cells_subset]
                     old_pvcells = dict.fromkeys(cells_to_update)
                     for cell_id, pvcell in zip(cells_subset, cells_to_update):
