@@ -1,6 +1,5 @@
 Authors
 =======
-* Nicolas Zweibaum <Nicolas.Zweibaum@sunpowercorp.com>
-* Mark Mikofski <Mark.Mikofski@sunpowercorp.com>
 * Bennet Emil Meyers <bennetm@stanford.edu>
-
+* Mark Mikofski <Mark.Mikofski@sunpowercorp.com>
+* Nicolas Zweibaum <Nicolas.Zweibaum@sunpowercorp.com>
