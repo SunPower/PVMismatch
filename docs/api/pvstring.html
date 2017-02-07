@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>pvstring &#8212; PVMismatch Jamaica Jelly documentation</title>
+    <title>pvstring &#8212; PVMismatch Kenya Ketchup documentation</title>
     
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     'Jamaica Jelly',
+        VERSION:     'Kenya Ketchup',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -96,7 +96,7 @@ and the corresponding value are passed to
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>Ee</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a><em> or </em><a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; irradiance [W/m^2]</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>Ee</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a><em> or </em><a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; irradiance [suns]</td>
 </tr>
 </tbody>
 </table>
@@ -107,6 +107,31 @@ and the corresponding value are passed to
 <span class="n">Ee</span><span class="o">=</span><span class="p">{</span><span class="mi">8</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.23</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)],</span> <span class="mi">7</span><span class="p">:</span> <span class="p">[(</span><span class="mf">0.45</span><span class="p">,</span> <span class="mf">0.35</span><span class="p">),</span> <span class="p">(</span><span class="mi">71</span><span class="p">,</span> <span class="mi">72</span><span class="p">)]}</span>
 <span class="c1"># set module 8, cells 0, 1 and 2 to 0.23 suns, then set module 7, cell</span>
 <span class="c1">#   71 to 0.45 suns and module 72 to 0.35 suns.</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="pvmismatch.pvmismatch_lib.pvstring.PVstring.setTemps">
+<code class="descname">setTemps</code><span class="sig-paren">(</span><em>Tc</em><span class="sig-paren">)</span><a class="headerlink" href="#pvmismatch.pvmismatch_lib.pvstring.PVstring.setTemps" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set temperature on cells in modules of string in system.
+If Tc is ...
+... scalar, then sets the entire string to that temperature.
+... a dictionary, then each key refers to a module in the string,
+and the corresponding value are passed to
+<a class="reference internal" href="pvmodule.html#pvmismatch.pvmismatch_lib.pvmodule.PVmodule.setTemps" title="pvmismatch.pvmismatch_lib.pvmodule.PVmodule.setTemps"><code class="xref py py-meth docutils literal"><span class="pre">setTemps()</span></code></a></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>Tc</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a><em> or </em><a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; temperature [K]</td>
+</tr>
+</tbody>
+</table>
+<p>For Example:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Tc</span><span class="o">=</span><span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;cells&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span> <span class="s1">&#39;Tc&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">323.15</span><span class="p">,</span> <span class="mf">348.15</span><span class="p">,</span> <span class="mf">373.15</span><span class="p">)}}</span>  <span class="c1"># set module 0</span>
+<span class="n">Tc</span><span class="o">=</span><span class="mf">323.15</span>  <span class="c1"># set all modules to 323.15K (50°C)</span>
+<span class="n">Tc</span><span class="o">=</span><span class="p">{</span><span class="mi">12</span><span class="p">:</span> <span class="mf">348.15</span><span class="p">}</span>  <span class="c1"># set module with index 12 to 348.15K (75°C)</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -162,6 +187,7 @@ and the corresponding value are passed to
 <h3>Navigation</h3>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../tutorials/quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/quickstart.html#pvmismatch">PVMismatch</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tutorials/quickstart.html#example">Example</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pvconstants.html">pvconstants</a></li>

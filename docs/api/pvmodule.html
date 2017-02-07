@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>pvmodule &#8212; PVMismatch Jamaica Jelly documentation</title>
+    <title>pvmodule &#8212; PVMismatch Kenya Ketchup documentation</title>
     
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     'Jamaica Jelly',
+        VERSION:     'Kenya Ketchup',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -144,7 +144,28 @@ and power (Pmod [W]).</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>Ee</strong> (<a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.11)"><code class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></code></a>) &#8211; Effective Irradiance [suns]</li>
+<li><strong>Ee</strong> (<a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.12)"><code class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></code></a>) &#8211; Effective Irradiance [suns]</li>
+<li><strong>cells</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#list" title="(in Python v2.7)"><em>list</em></a>) &#8211; Cells to change [Optional]</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pvmismatch.pvmismatch_lib.pvmodule.PVmodule.setTemps">
+<code class="descname">setTemps</code><span class="sig-paren">(</span><em>Tc</em>, <em>cells=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pvmismatch.pvmismatch_lib.pvmodule.PVmodule.setTemps" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the temperature in Kelvin, Tc, on the solar cells in the module.
+Recalculates cell current (Icell [A]), voltage (Vcell [V]) and power
+(Pcell [W]) as well as module current (Imod [A]), voltage (Vmod [V])
+and power (Pmod [W]).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>Tc</strong> (<a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.12)"><code class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></code></a>) &#8211; Cell Temperature [K]</li>
 <li><strong>cells</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#list" title="(in Python v2.7)"><em>list</em></a>) &#8211; Cells to change [Optional]</li>
 </ul>
 </td>
@@ -304,6 +325,7 @@ Substrings have 27, 28 and 27 rows of cells per diode</p>
 <h3>Navigation</h3>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../tutorials/quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/quickstart.html#pvmismatch">PVMismatch</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tutorials/quickstart.html#example">Example</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pvconstants.html">pvconstants</a></li>
