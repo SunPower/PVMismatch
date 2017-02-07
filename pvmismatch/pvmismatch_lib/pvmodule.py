@@ -289,6 +289,76 @@ class PVmodule(object):
                 raise Exception("Input irradiance value (Ee) for each cell!")
         self.Imod, self.Vmod, self.Pmod, self.Isubstr, self.Vsubstr = self.calcMod()
 
+# TODO setTemps is a nearly identical copy of setSuns. The DRY principle says that we should not be copying code.
+# TODO Replace both setSuns() and setTemps() with a single method for updating cell parameters that works for all params
+
+    def setTemps(self, Tc, cells=None):
+        """
+        Set the temperature in Kelvin, Tc, on the solar cells in the module.
+        Recalculates cell current (Icell [A]), voltage (Vcell [V]) and power
+        (Pcell [W]) as well as module current (Imod [A]), voltage (Vmod [V])
+        and power (Pmod [W]).
+
+        Args:
+            Tc (:class:`numpy.ndarray`): Cell Temperature [K]
+            cells (list): Cells to change [Optional]
+        """
+        if cells is None:
+            if np.isscalar(Tc):
+                new_pvcells = range(self.numberCells)  # new list of cells
+                old_pvcells = dict.fromkeys(self.pvcells)  # same as set(pvcells)
+                for cell_id, pvcell in enumerate(self.pvcells):
+                    if old_pvcells[pvcell] is None:
+                        new_pvcells[cell_id] = copy(pvcell)
+                        old_pvcells[pvcell] = new_pvcells[cell_id]
+                    else:
+                        new_pvcells[cell_id] = old_pvcells[pvcell]
+                self.pvcells = new_pvcells
+                pvcell_set = old_pvcells.itervalues()
+                for pvc in pvcell_set:
+                    pvc.Tcell = Tc
+            elif np.size(Tc) == self.numberCells:
+                self.pvcells = copy(self.pvcells)  # copy list first
+                for cell_idx, Tc_idx in enumerate(Tc):
+                    self.pvcells[cell_idx] = copy(self.pvcells[cell_idx])
+                    self.pvcells[cell_idx].Tcell = Tc_idx
+            else:
+                raise Exception("Input temperature value (Tc) for each cell!")
+        else:
+            Ncells = np.size(cells)
+            self.pvcells = copy(self.pvcells)  # copy list first
+            if np.isscalar(Tc):
+                cells_to_update = [self.pvcells[i] for i in cells]
+                old_pvcells = dict.fromkeys(cells_to_update)
+                for cell_id, pvcell in zip(cells, cells_to_update):
+                    if old_pvcells[pvcell] is None:
+                        self.pvcells[cell_id] = copy(pvcell)
+                        self.pvcells[cell_id].Tcell = Tc
+                        old_pvcells[pvcell] = self.pvcells[cell_id]
+                    else:
+                        self.pvcells[cell_id] = old_pvcells[pvcell]
+            elif np.size(Tc) == Ncells:
+                # Find unique irradiance values
+                # TODO possible "cleaner" alternative by grouping cells into tuples that match the set temp
+                # E.g: pvsys.setTemps({X: {Y: {'Tc': (280, 290), 'cells': [(2, 3), 17]}}})
+                cells = np.array(cells)
+                Tc = np.array(Tc)
+                unique_tc = np.unique(Tc)
+                for a_Tc in unique_tc:
+                    cells_subset = cells[np.where(Tc == a_Tc)]
+                    cells_to_update = [self.pvcells[i] for i in cells_subset]
+                    old_pvcells = dict.fromkeys(cells_to_update)
+                    for cell_id, pvcell in zip(cells_subset, cells_to_update):
+                        if old_pvcells[pvcell] is None:
+                            self.pvcells[cell_id] = copy(pvcell)
+                            self.pvcells[cell_id].Tcell = a_Tc
+                            old_pvcells[pvcell] = self.pvcells[cell_id]
+                        else:
+                            self.pvcells[cell_id] = old_pvcells[pvcell]
+            else:
+                raise Exception("Input temperature value (Tc) for each cell!")
+        self.Imod, self.Vmod, self.Pmod, self.Isubstr, self.Vsubstr = self.calcMod()
+
     def calcMod(self):
         """
         Calculate module I-V curves.

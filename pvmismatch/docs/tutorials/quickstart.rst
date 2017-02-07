@@ -128,20 +128,8 @@ shaded cells can only carry that current in reverse bias, so they must be hot!
 Let's change their temperatures. In fact since the temperatures are still at
 25[C], let's update the normal cells too::
 
-    >>> for pvstr in pvsys.pvstrs:
-    ...     for pvmod in pvstr.pvmods:
-    ...         for n, pvc in enumerate(pvmod.pvcells):
-    ...             if n in (11, 12, 35, 36, 59, 60, 83, 84):
-    ...                 pvc.Tcell = 100. + 273.15  # [K] hot cells in RBD
-    ...             else:
-    ...                 pvc.Tcell = 50. + 273.15  # [K] normal cells
-    ...         (pvmod.Imod, pvmod.Vmod, pvmod.Pmod,
-    ...          pvmod.Isubstr, pvmod.Vsubstr) = pvmod.calcMod()  # update modules
-    ...     (pvstr.Istring, pvstr.Vstring,
-    ...      pvstr.Pstring) = pvstr.calcString()  # update each string in the system
-    >>> pvsys.Isys, pvsys.Vsys, pvsys.Psys = pvsys.calcSystem()
-    >>> (pvsys.Imp, pvsys.Vmp, pvsys.Pmp,
-    ...  pvsys.Isc, pvsys.Voc, pvsys.FF, pvsys.eff) = pvsys.calcMPP_IscVocFFeff()
+    >>> pvsys.setTemps(50. + 273.15)  # [K] normal cells
+    >>> pvsys.setTemps({0: {0: [(100. + 273.15, ) * 8, (11, 12, 35, 36, 59, 60, 83, 84)]}})  # [K] hot cells in RBD
 
     >>> pvsys.pvmods[0][0].pvcells[0]  # let's see if they're actually hot
     <PVcell(Ee=1[suns], Tcell=323.15[K], Isc=6.36158[A], Voc=0.63443[V])>
@@ -157,41 +145,33 @@ Let's change their temperatures. In fact since the temperatures are still at
      <PVcell(Ee=0.2[suns], Tcell=373.15[K], Isc=1.29471[A], Voc=0.497765[V])>]
 
     >>> pvsys.Vmp
-    366.47478232230725
+    370.60261850573403
 
     >>> pvsys.Imp
-    11.899172822831037
+    11.924151410534137
 
     >>> pvsys.Pmp
-    4360.7467700625184
+    4419.1217362027928
 
     >>> pvsys.FF
-    0.7112590373271831
+    0.71233263744268427
 
     >>> pvsys.eff
-    0.18593273479992933
+    0.1884217160847011
 
     >>> pvsys.Voc
-    481.38161747925454
+    486.4780520368573
 
     >>> pvsys.Isc
-    12.73630844925832
+    12.752339637569314
 
     >>> f_hot = pvsys.plotSys()
 
 .. image:: pvsys_plot_2x8-std96_last_row_hot.png
 
-A couple of things to notices:
+Take note:
 
 * For normal cells Voc decreases as expected when temperature is increased from
   25[C] to 50[C] under the same 1[sun] conditions from 0.67444[V] to 0.63443[V].
   The equivalent :math:`\beta V_oc = 0.15 \left[ V / C \right ]` for 96-cells.
-* Only PV cells update themselves automatically. PV modules, PV strings and the
-  PV system must be updated manually and in addition the output must be
-  reassigned to the objects. These methods,
-  :meth:`~pvmismatch.pvmismatch_lib.pvmodule.PVmodule.calcMod()`,
-  :meth:`~pvmismatch.pvmismatch_lib.pvmodule.PVstring.calcString()` and
-  :meth:`~pvmismatch.pvmismatch_lib.pvmodule.PVsystem.calcSystem()`, don't
-  actually update the objects their associated with, although this may change
-  in the future. When updating the system, loop from the inside out.
 
