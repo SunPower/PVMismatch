@@ -73,7 +73,7 @@ class PVstring(object):
         and the corresponding value are passed to
         :meth:`~pvmismatch.pvmismatch_lib.pvmodule.PVmodule.setSuns()`
 
-        :param Ee: irradiance [W/m^2]
+        :param Ee: irradiance [suns]
         :type Ee: dict or float
 
         For Example::
@@ -115,9 +115,81 @@ class PVstring(object):
                 # Ee was a list? just take first item in list
                 if len(Ee) > 1:
                     raise TypeError('Irradiance, Ee, should be scalar or dict')
+                Ee = Ee[0]
+                new_pvmods = range(self.numberMods)  # new list of modules
+                old_pvmods = dict.fromkeys(self.pvmods)  # same as set(pvmods)
                 for mod_id, pvmod in enumerate(self.pvmods):
-                    self.pvmods[mod_id] = copy(pvmod)
-                    self.pvmods[mod_id].setSuns(Ee[0])
+                    if old_pvmods[pvmod] is None:
+                        new_pvmods[mod_id] = copy(pvmod)
+                        old_pvmods[pvmod] = new_pvmods[mod_id]
+                    else:
+                        new_pvmods[mod_id] = old_pvmods[pvmod]
+                self.pvmods = new_pvmods
+                for pvmod in iter(self.pvmods):
+                    pvmod.setSuns(Ee)
+        # update modules
+        self.Istring, self.Vstring, self.Pstring = self.calcString()
+
+    def setTemps(self, Tc):
+        """
+        Set temperature on cells in modules of string in system.
+        If Tc is ...
+        ... scalar, then sets the entire string to that temperature.
+        ... a dictionary, then each key refers to a module in the string,
+        and the corresponding value are passed to
+        :meth:`~pvmismatch.pvmismatch_lib.pvmodule.PVmodule.setTemps()`
+
+        :param Tc: temperature [K]
+        :type Tc: dict or float
+
+        For Example::
+
+            Tc={0: {'cells': (1,2,3), 'Tc': (323.15, 348.15, 373.15)}}  # set module 0
+            Tc=323.15  # set all modules to 323.15K (50°C)
+            Tc={12: 348.15}  # set module with index 12 to 348.15K (75°C)
+
+        """
+        if np.isscalar(Tc):
+            new_pvmods = range(self.numberMods)  # new list of modules
+            old_pvmods = dict.fromkeys(self.pvmods)  # same as set(pvmods)
+            for mod_id, pvmod in enumerate(self.pvmods):
+                if old_pvmods[pvmod] is None:
+                    new_pvmods[mod_id] = copy(pvmod)
+                    old_pvmods[pvmod] = new_pvmods[mod_id]
+                else:
+                    new_pvmods[mod_id] = old_pvmods[pvmod]
+            self.pvmods = new_pvmods
+            for pvmod in iter(self.pvmods):
+                pvmod.setTemps(Tc)
+        else:
+            self.pvmods = copy(self.pvmods)  # copy list first
+            try:
+                for pvmod, cell_Tc in Tc.iteritems():
+                    pvmod = int(pvmod)
+                    self.pvmods[pvmod] = copy(self.pvmods[pvmod])
+                    if hasattr(cell_Tc, 'keys'):
+                        self.pvmods[pvmod].setTemps(**cell_Tc)
+                    else:
+                        try:
+                            self.pvmods[pvmod].setTemps(*cell_Tc)
+                        except TypeError:
+                            self.pvmods[pvmod].setTemps(cell_Tc)
+            except AttributeError:
+                # Tc was a list? just take first item in list
+                if len(Tc) > 1:
+                    raise TypeError('Irradiance, Ee, should be scalar or dict')
+                Tc = Tc[0]
+                new_pvmods = range(self.numberMods)  # new list of modules
+                old_pvmods = dict.fromkeys(self.pvmods)  # same as set(pvmods)
+                for mod_id, pvmod in enumerate(self.pvmods):
+                    if old_pvmods[pvmod] is None:
+                        new_pvmods[mod_id] = copy(pvmod)
+                        old_pvmods[pvmod] = new_pvmods[mod_id]
+                    else:
+                        new_pvmods[mod_id] = old_pvmods[pvmod]
+                self.pvmods = new_pvmods
+                for pvmod in iter(self.pvmods):
+                    pvmod.setTemps(Tc)
         # update modules
         self.Istring, self.Vstring, self.Pstring = self.calcString()
 
