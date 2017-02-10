@@ -16,6 +16,7 @@ dist/
 pvmismatch.egg-info/
 build/
 Makefile
+version.py
 
 # docs
 !docs/_templates/
@@ -24,6 +25,7 @@ _*/
 # test
 testPV/
 benchmark_*/
+.coverage
 
 # virtualenv
 venv/

@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Quickstart &#8212; PVMismatch Jamaica Jelly documentation</title>
+    <title>Quickstart &#8212; PVMismatch Kenya Ketchup documentation</title>
     
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     'Jamaica Jelly',
+        VERSION:     'Kenya Ketchup',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -48,34 +48,32 @@
   <div class="section" id="quickstart">
 <span id="id1"></span><h1>Quickstart<a class="headerlink" href="#quickstart" title="Permalink to this headline">¶</a></h1>
 <p>Hopefully this tutorial can get you up and running fast.</p>
-<div class="section" id="requirements">
-<h2>Requirements<a class="headerlink" href="#requirements" title="Permalink to this headline">¶</a></h2>
-<p>Most packages can be found at PyPI, but for Windows-x64 some are only available
-at <a class="reference external" href="http://www.lfd.uci.edu/~gohlke/pythonlibs/">Unofficial Windows Binaries for Python Extension Packages by Christoph Gohlke</a>.</p>
-<ul class="simple">
-<li><a class="reference external" href="http://www.numpy.org/">NumPy</a> - for 64-bit get
-<a class="reference external" href="http://www.lfd.uci.edu/~gohlke/pythonlibs/#numpy">NumPy-MKL by Christoph Gohlke</a></li>
-<li><a class="reference external" href="http://www.scipy.org/">SciPy</a> - for 64-bit get
-<a class="reference external" href="http://www.lfd.uci.edu/~gohlke/pythonlibs/#scipy">SciPy for NumPy-MKL by Christoph Gohlke</a></li>
-<li><a class="reference external" href="http://matplotlib.org/">matplotlib</a></li>
-</ul>
-<div class="section" id="optional">
-<h3>Optional<a class="headerlink" href="#optional" title="Permalink to this headline">¶</a></h3>
-<p>The following packages are optional.</p>
-<ul class="simple">
-<li><a class="reference external" href="http://sphinx-doc.org/">Sphinx</a> - required to build documentation</li>
-<li><a class="reference external" href="http://graphviz.org/">graphvix</a> - required for diagrams in docs</li>
-<li><a class="reference external" href="https://python-pillow.github.io/">pillow</a> - required to run tk application</li>
-<li><a class="reference external" href="https://nose.readthedocs.org/en/latest/#">nose</a> - required to run tests</li>
-</ul>
 </div>
-</div>
+<div class="section" id="pvmismatch">
+<h1>PVMismatch<a class="headerlink" href="#pvmismatch" title="Permalink to this headline">¶</a></h1>
+<p>An explicit Python PV system IV &amp; PV curve trace calculator which can
+also calculate mismatch.</p>
+<p><a class="reference external" href="https://travis-ci.org/SunPower/PVMismatch"><img alt="Build Status" src="https://travis-ci.org/SunPower/PVMismatch.svg?branch=master" /></a></p>
 <div class="section" id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
-<p>After downloading PVMismatch, install it with <a class="reference external" href="https://pip.pypa.io/en/stable/">pip</a>:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>$ pip install pvmismatch-2.0-py2-none-any.whl
+<p>PVMismatch is on <a class="reference external" href="https://pypi.python.org/pypi/pvmismatch">PyPI</a>. Install it
+with <a class="reference external" href="https://pip.pypa.io/en/stable/">pip</a>:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ pip install pvmismatch
 </pre></div>
 </div>
+</div>
+<div class="section" id="requirements">
+<h2>Requirements<a class="headerlink" href="#requirements" title="Permalink to this headline">¶</a></h2>
+<p>PVMismatch requires NumPy, SciPy and matplotlib. These packages are available
+from PyPI, <a class="reference external" href="http://www.lfd.uci.edu/~gohlke/pythonlibs/">Christoph Gohlke</a>
+and Anaconda. You must install them prior to using PVMismatch.</p>
+</div>
+<div class="section" id="usage">
+<h2>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
+<p>Please see the <a class="reference external" href="http://sunpower.github.io/PVMismatch/">documenation</a> for
+tutorials and API. Bugs and feature requests can be reported on
+<a class="reference external" href="https://github.com/SunPower/PVMismatch/issues">GitHub</a>. The change
+history is also on <a class="reference external" href="https://github.com/SunPower/releases/">GitHub</a>.</p>
 </div>
 </div>
 <div class="section" id="example">
@@ -172,20 +170,8 @@ actually going on with those cells in the last row of the 1st module in the
 shaded cells can only carry that current in reverse bias, so they must be hot!
 Let&#8217;s change their temperatures. In fact since the temperatures are still at
 25[C], let&#8217;s update the normal cells too:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">pvstr</span> <span class="ow">in</span> <span class="n">pvsys</span><span class="o">.</span><span class="n">pvstrs</span><span class="p">:</span>
-<span class="gp">... </span>    <span class="k">for</span> <span class="n">pvmod</span> <span class="ow">in</span> <span class="n">pvstr</span><span class="o">.</span><span class="n">pvmods</span><span class="p">:</span>
-<span class="gp">... </span>        <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">pvc</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">pvmod</span><span class="o">.</span><span class="n">pvcells</span><span class="p">):</span>
-<span class="gp">... </span>            <span class="k">if</span> <span class="n">n</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">11</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">35</span><span class="p">,</span> <span class="mi">36</span><span class="p">,</span> <span class="mi">59</span><span class="p">,</span> <span class="mi">60</span><span class="p">,</span> <span class="mi">83</span><span class="p">,</span> <span class="mi">84</span><span class="p">):</span>
-<span class="gp">... </span>                <span class="n">pvc</span><span class="o">.</span><span class="n">Tcell</span> <span class="o">=</span> <span class="mf">100.</span> <span class="o">+</span> <span class="mf">273.15</span>  <span class="c1"># [K] hot cells in RBD</span>
-<span class="gp">... </span>            <span class="k">else</span><span class="p">:</span>
-<span class="gp">... </span>                <span class="n">pvc</span><span class="o">.</span><span class="n">Tcell</span> <span class="o">=</span> <span class="mf">50.</span> <span class="o">+</span> <span class="mf">273.15</span>  <span class="c1"># [K] normal cells</span>
-<span class="gp">... </span>        <span class="p">(</span><span class="n">pvmod</span><span class="o">.</span><span class="n">Imod</span><span class="p">,</span> <span class="n">pvmod</span><span class="o">.</span><span class="n">Vmod</span><span class="p">,</span> <span class="n">pvmod</span><span class="o">.</span><span class="n">Pmod</span><span class="p">,</span>
-<span class="gp">... </span>         <span class="n">pvmod</span><span class="o">.</span><span class="n">Isubstr</span><span class="p">,</span> <span class="n">pvmod</span><span class="o">.</span><span class="n">Vsubstr</span><span class="p">)</span> <span class="o">=</span> <span class="n">pvmod</span><span class="o">.</span><span class="n">calcMod</span><span class="p">()</span>  <span class="c1"># update modules</span>
-<span class="gp">... </span>    <span class="p">(</span><span class="n">pvstr</span><span class="o">.</span><span class="n">Istring</span><span class="p">,</span> <span class="n">pvstr</span><span class="o">.</span><span class="n">Vstring</span><span class="p">,</span>
-<span class="gp">... </span>     <span class="n">pvstr</span><span class="o">.</span><span class="n">Pstring</span><span class="p">)</span> <span class="o">=</span> <span class="n">pvstr</span><span class="o">.</span><span class="n">calcString</span><span class="p">()</span>  <span class="c1"># update each string in the system</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">pvsys</span><span class="o">.</span><span class="n">Isys</span><span class="p">,</span> <span class="n">pvsys</span><span class="o">.</span><span class="n">Vsys</span><span class="p">,</span> <span class="n">pvsys</span><span class="o">.</span><span class="n">Psys</span> <span class="o">=</span> <span class="n">pvsys</span><span class="o">.</span><span class="n">calcSystem</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="p">(</span><span class="n">pvsys</span><span class="o">.</span><span class="n">Imp</span><span class="p">,</span> <span class="n">pvsys</span><span class="o">.</span><span class="n">Vmp</span><span class="p">,</span> <span class="n">pvsys</span><span class="o">.</span><span class="n">Pmp</span><span class="p">,</span>
-<span class="gp">... </span> <span class="n">pvsys</span><span class="o">.</span><span class="n">Isc</span><span class="p">,</span> <span class="n">pvsys</span><span class="o">.</span><span class="n">Voc</span><span class="p">,</span> <span class="n">pvsys</span><span class="o">.</span><span class="n">FF</span><span class="p">,</span> <span class="n">pvsys</span><span class="o">.</span><span class="n">eff</span><span class="p">)</span> <span class="o">=</span> <span class="n">pvsys</span><span class="o">.</span><span class="n">calcMPP_IscVocFFeff</span><span class="p">()</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">pvsys</span><span class="o">.</span><span class="n">setTemps</span><span class="p">(</span><span class="mf">50.</span> <span class="o">+</span> <span class="mf">273.15</span><span class="p">)</span>  <span class="c1"># [K] normal cells</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pvsys</span><span class="o">.</span><span class="n">setTemps</span><span class="p">({</span><span class="mi">0</span><span class="p">:</span> <span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="p">[(</span><span class="mf">100.</span> <span class="o">+</span> <span class="mf">273.15</span><span class="p">,</span> <span class="p">)</span> <span class="o">*</span> <span class="mi">8</span><span class="p">,</span> <span class="p">(</span><span class="mi">11</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">35</span><span class="p">,</span> <span class="mi">36</span><span class="p">,</span> <span class="mi">59</span><span class="p">,</span> <span class="mi">60</span><span class="p">,</span> <span class="mi">83</span><span class="p">,</span> <span class="mi">84</span><span class="p">)]}})</span>  <span class="c1"># [K] hot cells in RBD</span>
 
 <span class="gp">&gt;&gt;&gt; </span><span class="n">pvsys</span><span class="o">.</span><span class="n">pvmods</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">pvcells</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># let&#39;s see if they&#39;re actually hot</span>
 <span class="go">&lt;PVcell(Ee=1[suns], Tcell=323.15[K], Isc=6.36158[A], Voc=0.63443[V])&gt;</span>
@@ -201,43 +187,35 @@ Let&#8217;s change their temperatures. In fact since the temperatures are still 
 <span class="go"> &lt;PVcell(Ee=0.2[suns], Tcell=373.15[K], Isc=1.29471[A], Voc=0.497765[V])&gt;]</span>
 
 <span class="gp">&gt;&gt;&gt; </span><span class="n">pvsys</span><span class="o">.</span><span class="n">Vmp</span>
-<span class="go">366.47478232230725</span>
+<span class="go">370.60261850573403</span>
 
 <span class="gp">&gt;&gt;&gt; </span><span class="n">pvsys</span><span class="o">.</span><span class="n">Imp</span>
-<span class="go">11.899172822831037</span>
+<span class="go">11.924151410534137</span>
 
 <span class="gp">&gt;&gt;&gt; </span><span class="n">pvsys</span><span class="o">.</span><span class="n">Pmp</span>
-<span class="go">4360.7467700625184</span>
+<span class="go">4419.1217362027928</span>
 
 <span class="gp">&gt;&gt;&gt; </span><span class="n">pvsys</span><span class="o">.</span><span class="n">FF</span>
-<span class="go">0.7112590373271831</span>
+<span class="go">0.71233263744268427</span>
 
 <span class="gp">&gt;&gt;&gt; </span><span class="n">pvsys</span><span class="o">.</span><span class="n">eff</span>
-<span class="go">0.18593273479992933</span>
+<span class="go">0.1884217160847011</span>
 
 <span class="gp">&gt;&gt;&gt; </span><span class="n">pvsys</span><span class="o">.</span><span class="n">Voc</span>
-<span class="go">481.38161747925454</span>
+<span class="go">486.4780520368573</span>
 
 <span class="gp">&gt;&gt;&gt; </span><span class="n">pvsys</span><span class="o">.</span><span class="n">Isc</span>
-<span class="go">12.73630844925832</span>
+<span class="go">12.752339637569314</span>
 
 <span class="gp">&gt;&gt;&gt; </span><span class="n">f_hot</span> <span class="o">=</span> <span class="n">pvsys</span><span class="o">.</span><span class="n">plotSys</span><span class="p">()</span>
 </pre></div>
 </div>
 <img alt="../_images/pvsys_plot_2x8-std96_last_row_hot.png" src="../_images/pvsys_plot_2x8-std96_last_row_hot.png" />
-<p>A couple of things to notices:</p>
+<p>Take note:</p>
 <ul class="simple">
 <li>For normal cells Voc decreases as expected when temperature is increased from
 25[C] to 50[C] under the same 1[sun] conditions from 0.67444[V] to 0.63443[V].
 The equivalent <span class="math">\(\beta V_oc = 0.15 \left[ V / C \right ]\)</span> for 96-cells.</li>
-<li>Only PV cells update themselves automatically. PV modules, PV strings and the
-PV system must be updated manually and in addition the output must be
-reassigned to the objects. These methods,
-<a class="reference internal" href="../api/pvmodule.html#pvmismatch.pvmismatch_lib.pvmodule.PVmodule.calcMod" title="pvmismatch.pvmismatch_lib.pvmodule.PVmodule.calcMod"><code class="xref py py-meth docutils literal"><span class="pre">calcMod()</span></code></a>,
-<code class="xref py py-meth docutils literal"><span class="pre">calcString()</span></code> and
-<code class="xref py py-meth docutils literal"><span class="pre">calcSystem()</span></code>, don&#8217;t
-actually update the objects their associated with, although this may change
-in the future. When updating the system, loop from the inside out.</li>
 </ul>
 </div>
 
@@ -286,9 +264,11 @@ in the future. When updating the system, loop from the inside out.</li>
 
 <h3>Navigation</h3>
 <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Quickstart</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#requirements">Requirements</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#pvmismatch">PVMismatch</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#requirements">Requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#usage">Usage</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="#example">Example</a></li>

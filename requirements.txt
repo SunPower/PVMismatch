@@ -2,3 +2,5 @@ nose
 numpy
 scipy
 matplotlib
+sphinx
+dulwich

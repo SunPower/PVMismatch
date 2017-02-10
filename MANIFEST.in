@@ -2,7 +2,7 @@ include pvmismatch/pvmismatch_json/*.json
 include pvmismatch/res/*.png
 include AUTHORS.md
 include CHANGES.md
-include README.md
+include README.rst
 include LICENSE
 recursive-include pvmismatch/res *.png
 recursive-include pvmismatch/docs *.rst
