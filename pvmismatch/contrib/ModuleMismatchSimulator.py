@@ -30,10 +30,10 @@ try:
     from pvmismatch import PVsystem, PVmodule, PVcell, PVconstants
     from pvmismatch.pvmismatch_lib.pvmodule import STD72, STD96, STD128
 except ImportError:
+    print "PVMismatch not found on path! Please use 'pip install -e path/to/pvmismatch'"
+    print "or export 'PYTHONPATH=path/to/pvmismatch:$PYTHONPATH' first."
     import sys
-    sys.path.append('../../')
-    from pvmismatch import PVsystem, PVmodule, PVcell, PVconstants
-    from pvmismatch.pvmismatch_lib.pvmodule import STD72, STD96, STD128
+    sys.exit()
 
 # ==============================================================================
 # Define Classes and Functions
@@ -94,7 +94,7 @@ class ShadeObj(object):
         self.shadecells = []
         for i in self.nx[0]:
             for j in self.ny.T[0]:
-                self.shadecells.append(module[j - 1, i - 1])
+                self.shadecells.append(module[int(j - 1), int(i - 1)])
 
     def plot(self):
         x1 = self.numberCells / self.modHeight + 1
@@ -103,8 +103,8 @@ class ShadeObj(object):
         y = np.arange(1, y1, 1)
         x, y = np.meshgrid(x, y)
         plt.Figure()
-        plt.scatter(x, y, s=1000, c='w', marker='s')
-        plt.scatter(self.nx, self.ny, s=1000, c='k', marker='s', alpha=self.pershade / 100.)
+        plt.scatter(x, y, s=.5*1000, c='w', marker='s')
+        plt.scatter(self.nx, self.ny, s=.5*1000, c='k', marker='s', alpha=self.pershade / 100.)
         plt.show()
 
 
@@ -330,16 +330,16 @@ def plotInit(ivp, plotobjs, ax00, ax01, ax10, ax11, ax02, ax12, ax03, ax_4, x, y
     plotobjs.lines[5] = ax03.axhline(y=ivp.Imp, color='r')
     # Create objects for diagram
     if ivp.rb_x:
-        plotobjs.scatter[0] = ax_4.scatter(ivp.rb_x, ivp.rb_y, s=800, c='r',
+        plotobjs.scatter[0] = ax_4.scatter(ivp.rb_x, ivp.rb_y, s=.5*800, c='r',
                                            marker='s')
     plotobjs.scatter[1] = []
     for ad in ivp.activediode:
-        plotobjs.scatter[1].append(ax_4.scatter(ad.nx, ad.ny, s=850, c='b',
+        plotobjs.scatter[1].append(ax_4.scatter(ad.nx, ad.ny, s=.5*850, c='b',
                                                 marker='s'))
-    plotobjs.scatter[2] = ax_4.scatter(x, y, s=500, c='w', marker='s')
+    plotobjs.scatter[2] = ax_4.scatter(x, y, s=.5*500, c='w', marker='s', edgecolor='black')
     plotobjs.text1 = []
     for shd in ivp.shade:
-        plotobjs.scatter[3] = ax_4.scatter(shd.nx, shd.ny, s=500, c='k',
+        plotobjs.scatter[3] = ax_4.scatter(shd.nx, shd.ny, s=.5*500, c='k',
                                            marker='s',
                                            alpha=shd.pershade / 100.)
         for a in shd.nx[0]:
@@ -394,18 +394,18 @@ def plotUpdate(ivp, plotobjs, ax00, ax01, ax10, ax11, ax02, ax12, ax03, ax_4, x,
     for text in plotobjs.text1:
         text.remove()
     if ivp.rb_x:
-        plotobjs.scatter[0] = ax_4.scatter(ivp.rb_x, ivp.rb_y, s=800, c='r',
+        plotobjs.scatter[0] = ax_4.scatter(ivp.rb_x, ivp.rb_y, s=.5*800, c='r',
                                            marker='s')
     else:
         plotobjs.scatter[0] = None
     plotobjs.scatter[1] = []
     for ad in ivp.activediode:
-        plotobjs.scatter[1].append(ax_4.scatter(ad.nx, ad.ny, s=850, c='b',
+        plotobjs.scatter[1].append(ax_4.scatter(ad.nx, ad.ny, s=.5*850, c='b',
                                                 marker='s'))
-    plotobjs.scatter[2] = ax_4.scatter(x, y, s=500, c='w', marker='s')
+    plotobjs.scatter[2] = ax_4.scatter(x, y, s=.5*500, c='w', marker='s', edgecolor='black')
     plotobjs.text1 = []
     for shd in ivp.shade:
-        plotobjs.scatter[3] = ax_4.scatter(shd.nx, shd.ny, s=500, c='k',
+        plotobjs.scatter[3] = ax_4.scatter(shd.nx, shd.ny, s=.5*500, c='k',
                                            marker='s',
                                            alpha=shd.pershade / 100.)
         for a in shd.nx[0]:
