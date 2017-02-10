@@ -35,7 +35,7 @@ except ImportError:
     print "PVMismatch not found on path! Please use 'pip install -e path/to/pvmismatch'"
     print "or 'export PYTHONPATH=path/to/pvmismatch:$PYTHONPATH' first."
     import sys
-    sys.exit()
+    sys.exit(-1)
 
 # ==============================================================================
 # Define Classes and Functions
