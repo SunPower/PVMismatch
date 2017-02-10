@@ -33,7 +33,7 @@ try:
     from pvmismatch.pvmismatch_lib.pvmodule import STD72, STD96, STD128
 except ImportError:
     print "PVMismatch not found on path! Please use 'pip install -e path/to/pvmismatch'"
-    print "or export 'PYTHONPATH=path/to/pvmismatch:$PYTHONPATH' first."
+    print "or 'export PYTHONPATH=path/to/pvmismatch:$PYTHONPATH' first."
     import sys
     sys.exit()
 
