@@ -108,7 +108,7 @@ class ShadeObj(object):
         plt.show()
 
 
-def PlottingCalcs(pvmod, ivp=None):
+def plotting_calcs(pvmod, ivp=None):
     if ivp is None:
         ivp = IVP()
     numberCells = pvmod.numberCells
@@ -294,7 +294,7 @@ def pvsys_defs_user_input(npts=101, user_set_temp=False, tcell=298.15):
 
 
 
-def allCalc(ivp, i_ps, i_sw, i_sh, i_sx, i_sy):
+def all_calc(ivp, i_ps, i_sw, i_sh, i_sx, i_sy):
     """Calculate cell and module parameters"""
     if i_sx + i_sw > (numcells / 12 + 1):
         i_sw = (numcells / modHeight + 1) - i_sx
@@ -308,10 +308,10 @@ def allCalc(ivp, i_ps, i_sw, i_sh, i_sx, i_sy):
     pvmod1.setSuns(1.0)
     for shd in ivp.shade:
         pvmod1.setSuns(1 - (shd.pershade / 100.), shd.shadecells)
-    _ = PlottingCalcs(pvmod1, ivp=ivp)
+    _ = plotting_calcs(pvmod1, ivp=ivp)
 
 
-def plotInit(ivp, plotobjs, ax00, ax01, ax10, ax11, ax02, ax12, ax03, ax_4, x, y):
+def plot_init(ivp, plotobjs, ax00, ax01, ax10, ax11, ax02, ax12, ax03, ax_4, x, y):
     # Create plot objects
     plotobjs.lcellIVR = list(ax00.plot(ivp.Vcell, ivp.Icell))
     plotobjs.lcellIVF = list(ax01.plot(ivp.Vcell, ivp.Icell))
@@ -363,7 +363,7 @@ def plotInit(ivp, plotobjs, ax00, ax01, ax10, ax11, ax02, ax12, ax03, ax_4, x, y
     ax03.set_xlim(0, np.max(ivp.Vsubstr) * 1.0)
 
 
-def plotUpdate(ivp, plotobjs, ax00, ax01, ax10, ax11, ax02, ax12, ax03, ax_4, x, y):
+def plot_update(ivp, plotobjs, ax00, ax01, ax10, ax11, ax02, ax12, ax03, ax_4, x, y):
     # Update plot objects
     for i in range(len(plotobjs.lcellIVR)):
         plotobjs.lcellIVR[i].set_data(ivp.Vcell.T[i], ivp.Icell.T[i])
@@ -420,19 +420,19 @@ def full_update(val, output=None, ivp0=None, plotobjs=None):
     sh = round(s_sh.val)
     sy = round(s_sy.val)
     sx = round(s_sx.val)
-    allCalc(ivp0, ps, sw, sh, sx, sy)
-    plotUpdate(ivp0, plotobjs, output['ax00'], output['ax01'], output['ax10'], output['ax11'], output['ax02'],
-             output['ax12'], output['ax03'], output['ax_4'], output['x'], output['y'])
+    all_calc(ivp0, ps, sw, sh, sx, sy)
+    plot_update(ivp0, plotobjs, output['ax00'], output['ax01'], output['ax10'], output['ax11'], output['ax02'],
+                output['ax12'], output['ax03'], output['ax_4'], output['x'], output['y'])
     plt.draw()
     t1 = (sw * sh, s_ps.val, ivp0.Pmp, 100 * ivp0.Pmp / Pmp0)
     print '{0:^6} {1:^6,.2f} {2:^6,.2f} {3:^7,.2f}'.format(*t1)
 
 
-def SetTheShade(val):
+def set_the_shade(val):
     ivp0.shade.insert(0, ivp0.shade[-1])
 
 
-def SaveTheShade(val):
+def save_the_shade(val):
     dicts = []
     for shd in ivp0.shade:
         dicts.append({'ps': shd.pershade, 'sw': shd.sw, 'sh': shd.sh,
@@ -445,7 +445,7 @@ def SaveTheShade(val):
     fo.close()
 
 
-def ClearLast_full(val, update=None):
+def clear_last_full(val, update=None):
     if len(ivp0.shade) != 1:
         ivp0.shade.pop(-2)
     update(val)
@@ -462,7 +462,7 @@ if __name__ == "__main__":
     ivp0 = IVP()
     plotobjs = PlotObjs()
     update = partial(full_update, output=output, ivp0=ivp0, plotobjs=plotobjs)
-    ClearLast = partial(ClearLast_full, update=update)
+    ClearLast = partial(clear_last_full, update=update)
     print "Pmp0: {}".format(Pmp0)
     print ""
     print '{0:6} {1:^6} {2:^6} {3:^7}'.format('#Cells', '%Shade', 'Pmp', '%ofPmp0')
@@ -473,9 +473,9 @@ if __name__ == "__main__":
     sy0 = 1
     sx0 = 1
     ivp0.shade = []
-    allCalc(ivp0, ps0, sw0, sh0, sx0, sy0)
-    plotInit(ivp0, plotobjs, output['ax00'], output['ax01'], output['ax10'], output['ax11'], output['ax02'],
-             output['ax12'], output['ax03'], output['ax_4'], output['x'], output['y'])
+    all_calc(ivp0, ps0, sw0, sh0, sx0, sy0)
+    plot_init(ivp0, plotobjs, output['ax00'], output['ax01'], output['ax10'], output['ax11'], output['ax02'],
+              output['ax12'], output['ax03'], output['ax_4'], output['x'], output['y'])
     plt.draw()
 
     cellPlot = output['cellPlot']
@@ -503,8 +503,8 @@ if __name__ == "__main__":
     s_sh.on_changed(update)
     s_sy.on_changed(update)
     s_sx.on_changed(update)
-    b_setshade.on_clicked(SetTheShade)
-    b_saveshade.on_clicked(SaveTheShade)
+    b_setshade.on_clicked(set_the_shade)
+    b_saveshade.on_clicked(save_the_shade)
     b_clearlast.on_clicked(ClearLast)
 
 plt.show()
