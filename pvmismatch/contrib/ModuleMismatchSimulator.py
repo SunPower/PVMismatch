@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 '''
 Created on Mar 29, 2013
 This script allows the user to dynamically investigate the IV and PV
