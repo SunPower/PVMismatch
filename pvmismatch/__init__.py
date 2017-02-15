@@ -35,7 +35,7 @@ except ImportError:
     NotGitRepository = NotImplementedError
 
     def get_current_version():
-        return NotGitRepository
+        raise NotGitRepository
 
 # import pvmismatch_lib modules so to match old API
 import pvmismatch.pvmismatch_lib.pvconstants as pvconstants
