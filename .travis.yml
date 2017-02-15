@@ -7,7 +7,7 @@ before_install:
     - sudo apt-get install -y libatlas-dev liblapack-dev libblas-dev
 before_script:
     - pip uninstall -y dulwich
-    - pip install -e git@github.com:jelmer/dulwich.git
+    - pip install -e git+https://github.com/jelmer/dulwich.git
 script:
     - pytest
     - python setup.py bdist_wheel
@@ -17,6 +17,7 @@ deploy:
     file: dist/*.whl
     file_glob: true
     skip_cleanup: true
+    skip_upload_docs: true
     on:
       tags: true
   - provider: pypi
