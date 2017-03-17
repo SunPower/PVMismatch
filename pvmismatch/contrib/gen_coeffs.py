@@ -5,22 +5,50 @@ Methods to generate diode coefficients.
 from pvlib.pvsystem import sapm
 import numpy as np
 import pandas as pd
+from scipy.optimize import root
 
 # IEC 61853 test matrix
 TC_C = [15.0, 25.0, 50.0, 75.0]
 IRR_W_M2 = [100.0, 200.0, 400.0, 600.0, 800.0, 1000.0, 1100.0]
+TEST_MAT = np.meshgrid(TC_C, IRR_W_M2)
 
-def gen_iec_61853_from_sapm(pvmodule=PVMODULES['SunPower_SPR_E20_435']):
+def gen_iec_61853_from_sapm(pvmodule):
     """
     Generate an IEC 61853 test from Sandia Array Performance Model (sapm).
 
     :param pvmodule: PV module to be tested
     :type pvmodule: dict
 
-    Module is a dictionary according to `pvlib.pvsystem.sapm`.
+    Module is a dictionary according to :def:`pvlib.pvsystem.sapm`.
     """
-    tc, irr = np.meshgrid(TC_C, IRR_W_M2)
+    tc, irr = TEST_MAT
     return sapm(irr / 1000.0, tc, pvmodule)
+
+
+def gen_two_diode(p_mp, v_mp, v_oc, i_sc, nparallel, nseries,
+                  irr=IRR_W_M2, tc=TC_C, *args, **kwargs):
+    """
+    Generate two-diode model parameters for ``pvcell`` given 
+    """
+    
+
+
+def gen_sapm(iec_61853):
+    # calculate Isc0 and alpha-Isc
+    # given Isc = Ee * Isc0 * (1 + alpha-Isc * (Tc - T0))
+    # as Ee * Isc0 + Ee * Isc0 * alpha-Isc * (Tc - T0) = Isc
+    # so Ax = B
+    # where x0 = Isc0 and x1 = Isc0 * alpha-Isc
+    # and A = [Ee, Ee * (Tc - T0)] and B = Isc
+    tc, irr = TEST_MAT
+    ee = (irr / 1000.0).flatten()
+    delta_t = (tc - 25.0).flatten()
+    a = np.array([ee, ee * delta_t])
+    b = i_sc.flatten()
+    x, res, rank, s = np.linalg.lstsq(a.T, b.T)
+    isc0, alpha_isc = x[0], x[1] / x[0]
+    return isc0, alpha_isc
+
 
 
 PVMODULES = {
