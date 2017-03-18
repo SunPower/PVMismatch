@@ -38,47 +38,42 @@ def fid(i_sat, v_d, m, v_t):
     term = np.exp(v_d / denom)
     factor = (term - 1.0)
     # diode current
-    i_d = i_sat * factor
+    i_d = np.atleast_1d(i_sat * factor)
     # derivatives
-    d__i_sat = factor  # df w.r.t. i_sat
-    d__v_d = i_sat * term / denom  # df w.r.t. v_d
-    d__m = -i_sat * v_d * term / (m ** 2 * v_t)  # df w.r.t. m
-    d__v_t = -i_sat * v_d * term / (m * v_t ** 2)  # df w.r.t. v_t
+    d__i_sat = np.atleast_1d(factor)  # df w.r.t. i_sat
+    d__v_d = np.atleast_1d(i_sat * term / denom)  # df w.r.t. v_d
+    d__m = np.atleast_1d(-i_sat * v_d * term / (m ** 2 * v_t))  # df w.r.t. m
+    d__v_t = np.atleast_1d(-i_sat * v_d * term / (m * v_t ** 2))  # df w.r.t. v_t
     jac = np.array([d__i_sat, d__v_d, d__m, d__v_t])  # jacobian
     return i_d, jac
 
 
 def fish(v_d, r_sh):
     """
-    Shunt current, I_sh, and its derivatives w.r.t. v_d and r_sh
+    Shunt current, I_sh, and its derivatives w.r.t. V_d and R_sh.
 
     :param v_d: diode voltage [V]
     :param r_sh: shunt resistance [Ohms]
-    :return: shunt current
+    :return: shunt current [A]
     """
-    i_sh = v_d / r_sh
-    d__v_d = 1.0 / r_sh
-    d__r_sh = -i_sh * d__v_d
+    i_sh = np.atleast_1d(v_d / r_sh)
+    d__v_d = np.atleast_1d(1.0 / r_sh)
+    d__r_sh = np.atleast_1d(-i_sh * d__v_d)
     jac = np.array([d__v_d, d__r_sh])
     return i_sh, jac
 
 
-def fvd(vc, ic, rs):
+def fvd(v_c, i_c, r_s):
     """
-    Calculates Vd and JVd based on the input parameters
-    :param vc: can be an int or a numpy array
-    :param ic: can be an int or a numpy array
-    :param rs: can be an int or a numpy array
-    :return: v_d and jvd both of which are numpy arrays
-    Note: If input parameters are numpy arrays, they need to have the same dimensions
+    Diode voltage, V_d, and its derivatives w.r.t. V_c, I_c, R_s.
+
+    :param v_c: cell voltage [V]
+    :param i_c: cell current [A]
+    :param r_s: series resistance [Ohms]
+    :return: diode voltage [V]
     """
-    v_d = vc + rs * ic
-    if type(v_d) != np.ndarray:
-        z = 1
-    else:
-        z = len(v_d)
-    jvd1 = np.ones(z)  # d/dVc
-    jvd = np.array([jvd1,
-                    rs,  # d/dIc
-                    ic])  # d/dRs
-    return v_d, jvd
+    v_d = np.atleast_1d(v_c + r_s * i_c)
+    jac = np.array([np.ones(v_d.shape),
+                    np.atleast_1d(r_s),  # d/dIc
+                    np.atleast_1d(i_c)])  # d/dRs
+    return v_d, jac
