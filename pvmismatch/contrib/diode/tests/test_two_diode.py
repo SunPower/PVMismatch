@@ -3,6 +3,11 @@ Two diode model tests.
 """
 
 import sympy
+from pvmismatch.contrib.diode.two_diode import fdidv
+from pvmismatch.contrib.diode.tests.test_diode import (
+    ISAT1_2, ISAT2_2, RS_2, RSH_2, V_D, ISC0, V_T
+)
+I_C = 
 
 
 def test_didv():
@@ -10,18 +15,6 @@ def test_didv():
     Test derivative of current vs. voltage.
     """
     
-    # NOTES: dI/dV = d(Iph - Id - Ish)/dV
-    # d(Iph)/dV = 0
-    # d(Id1)/dV = i_sat1*exp(v_d/VT)*(1/VT+dI/dV*r_s/VT)
-    # d(Id2)/dV = i_sat2*exp(v_d/2/VT)*(1/2/VT+dI/dV*r_s/2/VT)
-    # d(Ish)/dV = 1/r_sh+dI/dV*r_s/r_sh
-    # combining dI/dV terms from LHS and RHS yields:
-    # dI/dV = 0 - dId1/dV - dId2/dV - dIsh/dV
-    # = - i_sat1*exp(v_d/VT)*(1/VT+dI/dV*r_s/VT) ...
-    #   - i_sat2*exp(v_d/2/VT)*(1/2/VT+dI/dV*r_s/2/VT) ...
-    #   - (1/r_sh+dI/dV*r_s/r_sh)
-    # (1+i_sat1*exp(v_d/VT)*r_s/VT+i_sat2*exp(v_d/2/VT)*r_s/2/VT+r_s/r_sh)*dI/dV ...
-    #   = -i_sat1*exp(v_d/VT)*1/VT-i_sat2*exp(v_d/2/VT)*1/2/VT-1/r_sh
     i_sat1, i_sat2, r_s, r_sh, v_t, v_c = sympy.symbols([
         'i_sat1', 'i_sat2', 'r_s', 'r_sh', 'v_t', 'v_c'
     ])
@@ -44,10 +37,50 @@ def test_didv():
     i_sh = v_d / r_sh
     # derivatives of i_c = i_ph - i_d1 - i_d2 - i_sh
     d__i_ph__v = sympy.diff(i_ph, v_c)
+    # d(Iph)/dV = 0
     d__i_d1__v = sympy.diff(i_d1, v_c)
+    # d(Id1)/dV = i_sat1*exp(v_d/v_t)*(1/v_t+dI/dV*r_s/v_t)
     d__i_d2__v = sympy.diff(i_d2, v_c)
+    # d(Id2)/dV = i_sat2*exp(v_d/2/v_t)*(1/2/v_t+dI/dV*r_s/2/v_t)
     d__i_sh__v = sympy.diff(i_sh, v_c)
-    # dIdV = -(i_sat1/v_t*exp(v_d/v_t)+i_sat2/2/v_t*exp(v_d/2/v_t)+1/r_sh)/ ...
-    #     (1+i_sat1*r_s/v_t*exp(v_d/v_t)+i_sat2*r_s/2/v_t*exp(v_d/2/v_t)+r_s/r_sh);
-    # JdIdV = jacobian(dIdV,[i_sat1,i_sat2,r_s,r_sh,i_c,v_c]);
-    # f = matlabFunction(dIdV,JdIdV,'file','FdIdV','vars',[i_sat1,i_sat2,r_s,r_sh,v_t,i_c,v_c]);
+    # d(Ish)/dV = 1/r_sh+dI/dV*r_s/r_sh
+    di_dv = sympy.Derivative(i_c, v_c)
+    # 0 = dI/dV - d(Iph - Id1 - Id2 - Ish)/dV
+    # 0 = dI/dV - 0 + dId1/dV + dId2/dV + dIsh/dV
+    f = di_dv - d__i_ph__v + d__i_d1__v + d__i_d2__v + d__i_sh__v
+    # expand the derivative expressions:
+    # dI/dV = - i_sat1 * exp(v_d / v_t) * (1 / v_t + dI/dV * r_s / v_t)
+    #         - i_sat2 * exp(v_d / 2 / v_t) * (1 / 2 / v_t + dI/dV * r_s / 2 / v_t)
+    #         - (1 / r_sh + dI/dV * r_s / r_sh)
+    # combine dI/dV terms from LHS and RHS:
+    # dI/dV * (1 + i_sat1 * exp(v_d / v_t) * r_s / v_t
+    #          + i_sat2 * exp(v_d / 2 / v_t) * r_s / 2 / v_t
+    #          + r_s /r_sh)
+    #   = - i_sat1 * exp(v_d / v_t) * 1 / v_t
+    #     - i_sat2 * exp(v_d / 2 / v_t) * 1 / 2 / v_t
+    #     - 1 / r_sh
+    g = sympy.solve(f, di_dv)
+    if len(g) != 1:
+        raise Exception('No solution!')
+    di_dv_sol = g[0].subs('v_c + i_c(v_c) * r_s', 'v_d')
+    # test fdidv
+    test_data = {'i_sat1': ISAT1_2, 'i_sat2': ISAT2_2, 'r_s': RS_2, 'r_sh': RSH_2, 'i_c', 'v_c', 'v_t'}
+    fdidv_test = fdidv(i_sat1, i_sat2, r_s, r_sh, i_c, v_c, v_t)
+    fdidv_expected = di_dv.evalf(subs=)
+    # dIdV = -(i_sat1 / v_t * exp(v_d / v_t)
+    #          + i_sat2 / 2 / v_t * exp(v_d / 2 / v_t)
+    #          + 1 / r_sh)
+    #   / (1 + i_sat1 * r_s / v_t * exp(v_d / v_t)
+    #      + i_sat2 * r_s / 2 / v_t * exp(v_d / 2 / v_t)
+    #      + r_s / r_sh)
+    # simplify and multiply by 2 * v_t * r_sh:
+    # dIdV = -(2 * i_sat1 * r_sh * exp(v_d / v_t)
+    #          + i_sat2 * r_sh * exp(v_d / 2 / v_t)
+    #          + 2 * v_t)
+    #   / (2 * r_sh * v_t
+    #      + 2 * i_sat1 * r_s * r_sh * exp(v_d / v_t)
+    #      + i_sat2 * r_s * r_sh * exp(v_d / 2 / v_t)
+    #      + 2 * r_s * v_t)
+    # jacobian
+    d__di_dv__i_sat1 = g[0].diff(i_sat1).subs('v_c + i_c(v_c) * r_s', 'v_d')
+
