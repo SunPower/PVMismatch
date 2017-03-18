@@ -56,8 +56,11 @@ def fish(v_d, r_sh):
     :param r_sh: shunt resistance [Ohms]
     :return: shunt current
     """
-    pass
-    # return ish, jish
+    i_sh = v_d / r_sh
+    d__v_d = 1.0 / r_sh
+    d__r_sh = -i_sh * d__v_d
+    jac = np.array([d__v_d, d__r_sh])
+    return i_sh, jac
 
 
 def fvd(vc, ic, rs):

@@ -39,3 +39,25 @@ def test_fid():
     assert np.isclose(fid_test, fid_expected)
     assert np.allclose(jid_test, jid_expected)
     return fid_test, fid_expected
+
+
+def test_fish():
+    """
+    test shunt current
+    """
+    # make sympy symbols
+    i_sh, v_d, r_sh = sympy.symbols(['i_sh', 'v_d', 'r_sh'])
+    # shunt current
+    i_sh = v_d / r_sh
+    d__v_d = sympy.diff(i_sh, v_d)
+    d__r_sh = sympy.diff(i_sh, r_sh)
+    # evaluate
+    test_data = {'v_d': V_D, 'r_sh': RSH_1}
+    fish_test, jish_test = diode.fish(**test_data)
+    fish_expected = np.float(i_sh.evalf(subs=test_data))
+    jish_expected = np.array([
+        d__v_d.evalf(subs=test_data), d__r_sh.evalf(subs=test_data)
+    ], dtype=np.float)
+    assert np.isclose(fish_test, fish_expected)
+    assert np.allclose(jish_test, jish_expected)
+    return fish_test, fish_expected
