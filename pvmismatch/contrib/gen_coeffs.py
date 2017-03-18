@@ -30,15 +30,15 @@ def gen_two_diode(p_mp, v_mp, v_oc, i_sc, nparallel, nseries,
     """
     Generate two-diode model parameters for ``pvcell`` given 
     """
-    
+    pass
 
 
 def gen_sapm(iec_61853):
-    # calculate Isc0 and alpha-Isc
-    # given Isc = Ee * Isc0 * (1 + alpha-Isc * (Tc - T0))
-    # as Ee * Isc0 + Ee * Isc0 * alpha-Isc * (Tc - T0) = Isc
+    # calculate Isc0 and alpha_Isc
+    # given Isc = Ee * Isc0 * (1 + alpha_Isc * (Tc - T0))
+    # as Ee * Isc0 + Ee * Isc0 * alpha_Isc * (Tc - T0) = Isc
     # so Ax = B
-    # where x0 = Isc0 and x1 = Isc0 * alpha-Isc
+    # where x0 = Isc0 and x1 = Isc0 * alpha_Isc
     # and A = [Ee, Ee * (Tc - T0)] and B = Isc
     tc, irr = TEST_MAT
     ee = (irr / 1000.0).flatten()
