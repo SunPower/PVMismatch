@@ -16,7 +16,6 @@ RS_1 = 0.0017692138011355  # [OHMS]
 RSH_1 = 22.58334768734093  # [OHMS]
 ISAT_1 = 1.964978757168584e-008  # [A]
 M_1 = 1.339986040349784
-V_D = 0.4  # [V]
 V_T = 0.026  # [V]
 ISC0 = PVMODULES['SunPower_SPR_E20_435']['Isco']  # 6.4293 [A]
 I_C = PVMODULES['SunPower_SPR_E20_435']['Impo']  # 6.0102 [A]
@@ -24,10 +23,12 @@ V_C = (
     PVMODULES['SunPower_SPR_E20_435']['Vmpo']
     / PVMODULES['SunPower_SPR_E20_435']['Cells_in_Series']
 )  # 0.56545 = 72.3771/128 [V]
+V_D = V_C + I_C * RS_1  # [V]
 
 LOGGER.debug('I_sc0 = %g', ISC0)
 LOGGER.debug('I_mp0 = %g', I_C)
 LOGGER.debug('V_mp0 = %g', V_C)
+LOGGER.debug('V_diode = %g', V_D)
 
 
 def test_fid():

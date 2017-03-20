@@ -3,12 +3,17 @@ Two diode model tests.
 """
 
 import sympy
+import numpy as np
 from pvmismatch.contrib.diode.two_diode import fdidv
 from pvmismatch.contrib.diode.tests.test_diode import (
-    ISAT1_2, ISAT2_2, RS_2, RSH_2, V_D, ISC0, V_T
+    ISAT1_2, ISAT2_2, RS_2, RSH_2, V_T, ISC0, I_C, V_C
 )
-I_C = 
+from pvmismatch.contrib.diode.tests import logging
 
+LOGGER = logging.getLogger(__name__)
+LOGGER.setLevel(logging.DEBUG)
+
+V_D = V_C + I_C * RS_2
 
 def test_didv():
     """
@@ -64,9 +69,13 @@ def test_didv():
         raise Exception('No solution!')
     di_dv_sol = g[0].subs('v_c + i_c(v_c) * r_s', 'v_d')
     # test fdidv
-    test_data = {'i_sat1': ISAT1_2, 'i_sat2': ISAT2_2, 'r_s': RS_2, 'r_sh': RSH_2, 'i_c', 'v_c', 'v_t'}
-    fdidv_test = fdidv(i_sat1, i_sat2, r_s, r_sh, i_c, v_c, v_t)
-    fdidv_expected = di_dv.evalf(subs=)
+    test_data = {'i_sat1': ISAT1_2, 'i_sat2': ISAT2_2, 'r_s': RS_2,
+                 'r_sh': RSH_2, 'i_c': I_C, 'v_c': V_C, 'v_t': V_T}
+    fdidv_test, jdidv_test = fdidv(**test_data)
+    expected_data = {'i_sat1': ISAT1_2, 'i_sat2': ISAT2_2, 'r_s': RS_2,
+                 'r_sh': RSH_2, 'v_d': V_D, 'v_t': V_T}
+    fdidv_expected = np.float(di_dv_sol.evalf(subs=expected_data))
+    LOGGER.debug('fdvdi test: %g, expected: %g', fdidv_test, fdidv_expected)
     # dIdV = -(i_sat1 / v_t * exp(v_d / v_t)
     #          + i_sat2 / 2 / v_t * exp(v_d / 2 / v_t)
     #          + 1 / r_sh)
@@ -83,4 +92,8 @@ def test_didv():
     #      + 2 * r_s * v_t)
     # jacobian
     d__di_dv__i_sat1 = g[0].diff(i_sat1).subs('v_c + i_c(v_c) * r_s', 'v_d')
+    jdidv_expected = np.array([
+        d__di_dv__i_sat1.evalf(subs=dict(test_data, v_d=V_D))
+    ], dtype=np.float)
+    LOGGER.debug('jdvdi test: %g, expected: %g', jdidv_test, jdidv_expected)
 

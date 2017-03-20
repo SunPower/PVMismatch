@@ -30,13 +30,15 @@ def fdidv(i_sat1, i_sat2, r_s, r_sh, i_c, v_c, v_t):
         r_s * r_sh * (
             v_sat1_sh * np.exp(quotient)
             + 0.5 * v_sat2_sh * np.exp(0.5 * quotient) + v_t
-        ) * np.exp(quotient)
-        / (v_sat1_sh * r_s * np.exp(quotient)
-           + 0.5 * v_sat2_sh * r_s * np.exp(0.5 * quotient)
-           + r_s * v_t + r_sh * v_t)**2.0 - 2.0 * r_sh * np.exp(quotient)
-        / (v_sat1_sh * r_s * np.exp(quotient)
-           + 0.5 * v_sat2_sh * r_s * np.exp(0.5 * quotient)
-           + r_s * v_t + r_sh * v_t)
+        ) * np.exp(quotient) / (
+            v_sat1_sh * r_s * np.exp(quotient)
+            + 0.5 * v_sat2_sh * r_s * np.exp(0.5 * quotient) + r_s * v_t
+            + r_sh * v_t
+        )**2.0 - r_sh * np.exp(quotient) / (
+            v_sat1_sh * r_s * np.exp(quotient)
+            + 0.5 * v_sat2_sh * r_s * np.exp(0.5 * quotient) + r_s * v_t
+            + r_sh * v_t
+        )
     )
     jac = np.array([didv__i_sat1])
     return didv, jac
