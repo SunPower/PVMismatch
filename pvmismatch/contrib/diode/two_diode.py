@@ -7,16 +7,17 @@ import numpy as np
 
 def fdidv(isat1, isat2, rs, rsh, ic, vc, vt):
     """
-    Calculates JdIdV and dIdV from the given input parameters.
-    :param isat1: type can be int or numpy array
-    :param isat2: type can be int or numpy array
-    :param rs: type can be int or numpy array
-    :param rsh: type can be int or numpy array
-    :param ic: type can be int or numpy array
-    :param vc: type can be int or numpy array
-    :param vt: type can be int or numpy array
-    :return: didv which is type int or numpy array and jdidv which is type numpy array
-    Note: If input parameters are numpy arrays, they need to have the same dimensions
+    Derivative of IV curve and its derivatives w.r.t. Isat1, Isat2, Rs, Rsh, Ic,
+    Vc and Vt.
+
+    :param isat1: diode 1 saturation current [A]
+    :param isat2: diode 2 saturation current [A]
+    :param rs: series resistance [ohms]
+    :param rsh: shunt resistance [ohms]
+    :param ic: cell current [A]
+    :param vc: cell voltage [V]
+    :param vt: thermal voltage (kB * Tc / qe = 26[mV] at Tc=298K) [V]
+    :return: derivative of IV curve and its derivatives
     """
     v_d = vc + ic * rs
     vstar = v_d / vt
@@ -25,99 +26,29 @@ def fdidv(isat1, isat2, rs, rsh, ic, vc, vt):
     v_sat1_sh, v_sat2_sh = isat1 * rsh, isat2 * rsh
     v_sat1_sh_exp_vstar = v_sat1_sh * exp_vstar
     v_sat2_sh_exp_vstar_2 = 0.5 * v_sat2_sh * exp_vstar_2
-    didv = (
-        -1.0 / rs * (v_sat1_sh_exp_vstar + v_sat2_sh_exp_vstar_2 + vt)
-        / (v_sat1_sh_exp_vstar + v_sat2_sh_exp_vstar_2 + vt * (1.0 + rstar))
+    vsum = v_sat1_sh_exp_vstar + v_sat2_sh_exp_vstar_2 + vt
+    vsum_rstar = vsum + vt * rstar
+    combiterm1 = v_sat1_sh_exp_vstar + 0.5*v_sat2_sh_exp_vstar_2
+    combiterm2 = isat1*exp_vstar + 0.5*isat2*exp_vstar_2
+    combiterm3 = vsum / vsum_rstar - 1.0
+    combiterm4 = vsum_rstar * rs
+    combiterm5 = rstar * combiterm3 / vsum_rstar
+    # dI/dV = derivative of IV curve
+    didv = -vsum / combiterm4
+    # jacobian
+    didv_isat1 = exp_vstar * combiterm5
+    didv_isat2 = 0.5 * exp_vstar_2 * combiterm5
+    didv__r_s = 1.0 / combiterm4 * (
+        combiterm1 * combiterm3 * ic / vt + vsum**2.0 / combiterm4
     )
-    didv__i_sat1 = (
-        rstar * exp_vstar * (
-            v_sat1_sh_exp_vstar + v_sat2_sh_exp_vstar_2 + vt
-        ) / (
-            v_sat1_sh_exp_vstar + v_sat2_sh_exp_vstar_2 + vt * (1.0 + rstar)
-        )**2.0 - rstar * exp_vstar / (
-            v_sat1_sh_exp_vstar + v_sat2_sh_exp_vstar_2 + vt * (1.0 + rstar)
-        )
+    didv_rsh = 1.0 / rs * (
+        combiterm2 * combiterm3 / vsum_rstar
+        + vt * vsum / (vsum_rstar * combiterm4)
     )
-    didv__i_sat2 = (
-        0.5*rstar*exp_vstar_2*(
-            v_sat1_sh_exp_vstar + v_sat2_sh_exp_vstar_2 + vt
-        )/(
-            v_sat1_sh_exp_vstar + v_sat2_sh_exp_vstar_2 + vt*(1.0 + rstar)
-        )**2.0 - 0.5*rstar*exp_vstar_2/(
-            v_sat1_sh_exp_vstar + v_sat2_sh_exp_vstar_2 + vt*(1.0 + rstar)
-        )
-    )
-    didv__r_s = (
-        -(
-            v_sat1_sh*ic*exp_vstar/vt + 0.25*v_sat2_sh*ic*exp_vstar_2/vt
-        )/(
-            v_sat1_sh*rs*exp_vstar + 0.5*v_sat2_sh*rs*exp_vstar_2
-            + rs*vt + rsh*vt
-        ) - (
-            v_sat1_sh_exp_vstar + v_sat2_sh_exp_vstar_2 + vt
-        )*(
-            -v_sat1_sh*rs*ic*exp_vstar/vt
-            - v_sat1_sh_exp_vstar
-            - 0.25*v_sat2_sh*rs*ic*exp_vstar_2/vt
-            - v_sat2_sh_exp_vstar_2 - vt
-        )/(
-            v_sat1_sh*rs*exp_vstar + 0.5*v_sat2_sh*rs*exp_vstar_2
-            + rs*vt + rsh*vt
-        )**2.0
-    )
-
-    didv__r_sh = (
-        -(
-            2.0*isat1*exp_vstar + isat2*exp_vstar_2
-        )/(
-            2.0*v_sat1_sh*rs*exp_vstar + v_sat2_sh*rs*exp_vstar_2
-            + 2.0*rs*vt + 2.0*rsh*vt
-        ) - (
-            -2.0*isat1*rs*exp_vstar - isat2*rs*exp_vstar_2
-            - 2.0*vt
-        )*(
-            2.0*v_sat1_sh_exp_vstar + v_sat2_sh*exp_vstar_2 + 2.0*vt
-        )/(
-            2.0*v_sat1_sh*rs*exp_vstar + v_sat2_sh*rs*exp_vstar_2
-            + 2.0*rs*vt + 2.0*rsh*vt
-        )**2
-    )
-    didv__i_c = (
-        -(
-            2.0*v_sat1_sh*rs*exp_vstar/vt
-            + 0.5*v_sat2_sh*rs*exp_vstar_2/vt
-        )/(
-            2.0*v_sat1_sh*rs*exp_vstar + v_sat2_sh*rs*exp_vstar_2
-            + 2.0*rs*vt + 2.0*rsh*vt
-        ) - (
-            -2.0*isat1*rs**2*rsh*exp_vstar/vt
-            - 0.5*isat2*rs**2*rsh*exp_vstar_2/vt
-        )*(
-            2.0*v_sat1_sh_exp_vstar + v_sat2_sh*exp_vstar_2 + 2.0*vt
-        )/(
-            2.0*v_sat1_sh*rs*exp_vstar + v_sat2_sh*rs*exp_vstar_2
-            + 2.0*rs*vt + 2.0*rsh*vt
-        )**2
-    )
-    didv__v_c = (
-        -(
-            2.0*v_sat1_sh*(rs*didv + 1)*exp_vstar/vt
-            + 0.5*v_sat2_sh*(rs*didv + 1)*exp_vstar_2/vt
-        )/(
-            2.0*v_sat1_sh*rs*exp_vstar + v_sat2_sh*rs*exp_vstar_2
-            + 2.0*rs*vt + 2.0*rsh*vt
-        ) - (
-            -2.0*v_sat1_sh*rs*(rs*didv + 1)*exp_vstar/vt
-            - 0.5*v_sat2_sh*rs*(rs*didv + 1)*exp_vstar_2/vt
-        )*(
-            2.0*v_sat1_sh_exp_vstar + v_sat2_sh*exp_vstar_2 + 2.0*vt
-        )/(
-            2.0*v_sat1_sh*rs*exp_vstar + v_sat2_sh*rs*exp_vstar_2
-            + 2.0*rs*vt + 2.0*rsh*vt
-        )**2
-    )
+    didv_ic = combiterm1 * combiterm3 / (vt * vsum_rstar)
+    didv_vc = (didv + 1.0 / rs) * didv_ic
     jac = np.array([
-        didv__i_sat1, didv__i_sat2, didv__r_s, didv__r_sh, didv__i_c, didv__v_c
+        didv_isat1, didv_isat2, didv__r_s, didv_rsh, didv_ic, didv_vc
     ])
     return didv, jac
 
