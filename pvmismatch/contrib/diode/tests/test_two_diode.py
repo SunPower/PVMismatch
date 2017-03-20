@@ -13,7 +13,8 @@ from pvmismatch.contrib.diode.tests import logging
 LOGGER = logging.getLogger(__name__)
 LOGGER.setLevel(logging.DEBUG)
 
-V_D = V_C + I_C * RS_2
+V_D_2 = V_C + I_C * RS_2
+LOGGER.debug('V_diode_2 = %g', V_D_2)
 
 def test_didv():
     """
@@ -40,60 +41,45 @@ def test_didv():
     i_d1 = i_sat1 * (sympy.exp(v_d / v_t) - 1.0)
     i_d2 = i_sat2 * (sympy.exp(v_d / 2.0 / v_t) - 1.0)
     i_sh = v_d / r_sh
-    # derivatives of i_c = i_ph - i_d1 - i_d2 - i_sh
+    # derivatives
     d__i_ph__v = sympy.diff(i_ph, v_c)
-    # d(Iph)/dV = 0
     d__i_d1__v = sympy.diff(i_d1, v_c)
-    # d(Id1)/dV = i_sat1*exp(v_d/v_t)*(1/v_t+dI/dV*r_s/v_t)
     d__i_d2__v = sympy.diff(i_d2, v_c)
-    # d(Id2)/dV = i_sat2*exp(v_d/2/v_t)*(1/2/v_t+dI/dV*r_s/2/v_t)
     d__i_sh__v = sympy.diff(i_sh, v_c)
-    # d(Ish)/dV = 1/r_sh+dI/dV*r_s/r_sh
     di_dv = sympy.Derivative(i_c, v_c)
+    # 0 = i_c - (i_ph - i_d1 - i_d2 - i_sh)
     # 0 = dI/dV - d(Iph - Id1 - Id2 - Ish)/dV
-    # 0 = dI/dV - 0 + dId1/dV + dId2/dV + dIsh/dV
     f = di_dv - d__i_ph__v + d__i_d1__v + d__i_d2__v + d__i_sh__v
-    # expand the derivative expressions:
-    # dI/dV = - i_sat1 * exp(v_d / v_t) * (1 / v_t + dI/dV * r_s / v_t)
-    #         - i_sat2 * exp(v_d / 2 / v_t) * (1 / 2 / v_t + dI/dV * r_s / 2 / v_t)
-    #         - (1 / r_sh + dI/dV * r_s / r_sh)
-    # combine dI/dV terms from LHS and RHS:
-    # dI/dV * (1 + i_sat1 * exp(v_d / v_t) * r_s / v_t
-    #          + i_sat2 * exp(v_d / 2 / v_t) * r_s / 2 / v_t
-    #          + r_s /r_sh)
-    #   = - i_sat1 * exp(v_d / v_t) * 1 / v_t
-    #     - i_sat2 * exp(v_d / 2 / v_t) * 1 / 2 / v_t
-    #     - 1 / r_sh
-    g = sympy.solve(f, di_dv)
-    if len(g) != 1:
-        raise Exception('No solution!')
-    di_dv_sol = g[0].subs('v_c + i_c(v_c) * r_s', 'v_d')
+    solution_set = sympy.solve(f, di_dv)
+    sol = solution_set[0]
+    di_dv_sol = sol.subs('v_c + i_c(v_c) * r_s', 'v_d')
     # test fdidv
     test_data = {'i_sat1': ISAT1_2, 'i_sat2': ISAT2_2, 'r_s': RS_2,
                  'r_sh': RSH_2, 'i_c': I_C, 'v_c': V_C, 'v_t': V_T}
     fdidv_test, jdidv_test = fdidv(**test_data)
-    expected_data = {'i_sat1': ISAT1_2, 'i_sat2': ISAT2_2, 'r_s': RS_2,
-                 'r_sh': RSH_2, 'v_d': V_D, 'v_t': V_T}
+    expected_data = {
+        'i_sat1': ISAT1_2, 'i_sat2': ISAT2_2, 'r_s': RS_2, 'r_sh': RSH_2,
+        'i_c(v_c)': I_C, 'v_c': V_C, 'v_d': V_D_2, 'v_t': V_T
+    }
     fdidv_expected = np.float(di_dv_sol.evalf(subs=expected_data))
     LOGGER.debug('fdvdi test: %g, expected: %g', fdidv_test, fdidv_expected)
-    # dIdV = -(i_sat1 / v_t * exp(v_d / v_t)
-    #          + i_sat2 / 2 / v_t * exp(v_d / 2 / v_t)
-    #          + 1 / r_sh)
-    #   / (1 + i_sat1 * r_s / v_t * exp(v_d / v_t)
-    #      + i_sat2 * r_s / 2 / v_t * exp(v_d / 2 / v_t)
-    #      + r_s / r_sh)
-    # simplify and multiply by 2 * v_t * r_sh:
-    # dIdV = -(2 * i_sat1 * r_sh * exp(v_d / v_t)
-    #          + i_sat2 * r_sh * exp(v_d / 2 / v_t)
-    #          + 2 * v_t)
-    #   / (2 * r_sh * v_t
-    #      + 2 * i_sat1 * r_s * r_sh * exp(v_d / v_t)
-    #      + i_sat2 * r_s * r_sh * exp(v_d / 2 / v_t)
-    #      + 2 * r_s * v_t)
+    assert np.isclose(fdidv_test, fdidv_expected)
     # jacobian
-    d__di_dv__i_sat1 = g[0].diff(i_sat1).subs('v_c + i_c(v_c) * r_s', 'v_d')
+    d__di_dv__i_sat1 = sol.diff(i_sat1).subs('v_c + i_c(v_c) * r_s', 'v_d')
+    d__di_dv__i_sat2 = sol.diff(i_sat2).subs('v_c + i_c(v_c) * r_s', 'v_d')
+    d__di_dv__r_s = sol.diff(r_s).subs('v_c + i_c(v_c) * r_s', 'v_d')
+    d__di_dv__r_sh = sol.diff(r_sh).subs('v_c + i_c(v_c) * r_s', 'v_d')
+    d__di_dv__i_c = sol.diff(i_c).subs('v_c + i_c(v_c) * r_s', 'v_d')
+    d__di_dv__v_c = sol.diff(v_c).subs('v_c + i_c(v_c) * r_s', 'v_d')
+    expected_data['Derivative(i_c(v_c), v_c)'] = fdidv_expected
     jdidv_expected = np.array([
-        d__di_dv__i_sat1.evalf(subs=dict(test_data, v_d=V_D))
+        d__di_dv__i_sat1.evalf(subs=expected_data),
+        d__di_dv__i_sat2.evalf(subs=expected_data),
+        d__di_dv__r_s.evalf(subs=expected_data),
+        d__di_dv__r_sh.evalf(subs=expected_data),
+        d__di_dv__i_c.evalf(subs=expected_data),
+        d__di_dv__v_c.evalf(subs=expected_data)
     ], dtype=np.float)
-    LOGGER.debug('jdvdi test: %g, expected: %g', jdidv_test, jdidv_expected)
-
+    LOGGER.debug('jdvdi test: %r, expected: %r', jdidv_test, jdidv_expected)
+    assert np.allclose(jdidv_test, jdidv_expected)
+    return d__di_dv__i_c,d__di_dv__v_c

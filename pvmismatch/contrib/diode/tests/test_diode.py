@@ -23,12 +23,12 @@ V_C = (
     PVMODULES['SunPower_SPR_E20_435']['Vmpo']
     / PVMODULES['SunPower_SPR_E20_435']['Cells_in_Series']
 )  # 0.56545 = 72.3771/128 [V]
-V_D = V_C + I_C * RS_1  # [V]
+V_D_1 = V_C + I_C * RS_1  # [V]
 
 LOGGER.debug('I_sc0 = %g', ISC0)
 LOGGER.debug('I_mp0 = %g', I_C)
 LOGGER.debug('V_mp0 = %g', V_C)
-LOGGER.debug('V_diode = %g', V_D)
+LOGGER.debug('V_diode_1 = %g', V_D_1)
 
 
 def test_fid():
@@ -45,7 +45,7 @@ def test_fid():
     d__m = sympy.diff(i_d, m)
     d__v_t = sympy.diff(i_d, v_t)
     # evaluate scalars
-    test_data1 = {'i_sat': ISAT_1, 'v_d': V_D, 'm': M_1, 'v_t': V_T}
+    test_data1 = {'i_sat': ISAT_1, 'v_d': V_D_1, 'm': M_1, 'v_t': V_T}
     fid_test, jid_test = diode.fid(**test_data1)
     fid_expected = np.float(i_d.evalf(subs=test_data1))
     jid_expected = np.array([
@@ -56,7 +56,7 @@ def test_fid():
     assert np.isclose(fid_test, fid_expected)
     assert np.allclose(jid_test, jid_expected.reshape(-1, 1))
     # evaluate arrays
-    test_data2 = (np.array([ISAT1_2, ISAT2_2]), np.array([V_D, V_D]),
+    test_data2 = (np.array([ISAT1_2, ISAT2_2]), np.array([V_D_1, V_D_1]),
                   np.array([1.0, 2.0]), np.array([V_T, V_T]))
     fid_test, jid_test = diode.fid(*test_data2)
     args, math_mod = (i_sat, v_d, m, v_t), ("numpy",)
@@ -85,7 +85,7 @@ def test_fish():
     d__v_d = sympy.diff(i_sh, v_d)
     d__r_sh = sympy.diff(i_sh, r_sh)
     # evaluate
-    test_data = {'v_d': V_D, 'r_sh': RSH_1}
+    test_data = {'v_d': V_D_1, 'r_sh': RSH_1}
     fish_test, jish_test = diode.fish(**test_data)
     fish_expected = np.float(i_sh.evalf(subs=test_data))
     jish_expected = np.array([
