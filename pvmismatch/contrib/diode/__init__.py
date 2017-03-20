@@ -1,18 +1,18 @@
 import numpy as np
 
 
-def fid(i_sat, v_d, m, v_t):
+def fid(isat, vd, m, vt):
     """
     Diode current, I_d, and its derivatives w.r.t. I_sat, V_d, m and V_t.
 
-    :param i_sat: diode saturation current [A]
-    :type i_sat: float
-    :param v_d: diode voltage [V]
-    :type v_d: float
+    :param isat: diode saturation current [A]
+    :type isat: float
+    :param vd: diode voltage [V]
+    :type vd: float
     :param m: diode ideality factor
     :type m: float
-    :param v_t: thermal voltage [V]
-    :type v_t: float
+    :param vt: thermal voltage [V]
+    :type vt: float
     :return: diode current [A] and its derivatives
     :rtype: float
 
@@ -34,46 +34,48 @@ def fid(i_sat, v_d, m, v_t):
     https://en.wikipedia.org/wiki/Shockley_diode_equation
 
     """
-    denom = m * v_t
-    term = np.exp(v_d / denom)
-    factor = (term - 1.0)
+    vact = m * vt  # activation voltage [V]
+    growth = np.exp(vd / vact)  # growth term
+    expfact = (growth - 1.0)  # exponential factor
+    isat_growth = isat * growth  # combination parameter
+    vd_isat_growth = -vd * isat_growth  # combination parameter
     # diode current
-    i_d = np.atleast_1d(i_sat * factor)
+    id_ = np.atleast_1d(isat * expfact)
     # derivatives
-    d__i_sat = np.atleast_1d(factor)  # df w.r.t. i_sat
-    d__v_d = np.atleast_1d(i_sat * term / denom)  # df w.r.t. v_d
-    d__m = np.atleast_1d(-i_sat * v_d * term / (m ** 2 * v_t))  # df w.r.t. m
-    d__v_t = np.atleast_1d(-i_sat * v_d * term / (m * v_t ** 2))  # df w.r.t. v_t
-    jac = np.array([d__i_sat, d__v_d, d__m, d__v_t])  # jacobian
-    return i_d, jac
+    d_isat = np.atleast_1d(expfact)  # df w.r.t. isat
+    d_vd = np.atleast_1d(isat_growth / vact)  # df w.r.t. vd
+    d_m = np.atleast_1d(vd_isat_growth / (m ** 2.0 * vt))  # df w.r.t. m
+    d_vt = np.atleast_1d(vd_isat_growth / (m * vt ** 2.0))  # df w.r.t. vt
+    jac = np.array([d_isat, d_vd, d_m, d_vt])  # jacobian
+    return id_, jac
 
 
-def fish(v_d, r_sh):
+def fish(vd, rsh):
     """
     Shunt current, I_sh, and its derivatives w.r.t. V_d and R_sh.
 
-    :param v_d: diode voltage [V]
-    :param r_sh: shunt resistance [Ohms]
+    :param vd: diode voltage [V]
+    :param rsh: shunt resistance [Ohms]
     :return: shunt current [A]
     """
-    i_sh = np.atleast_1d(v_d / r_sh)
-    d__v_d = np.atleast_1d(1.0 / r_sh)
-    d__r_sh = np.atleast_1d(-i_sh * d__v_d)
-    jac = np.array([d__v_d, d__r_sh])
-    return i_sh, jac
+    ish = np.atleast_1d(vd / rsh)
+    d_vd = np.atleast_1d(1.0 / rsh)
+    d_rsh = np.atleast_1d(-ish * d_vd)
+    jac = np.array([d_vd, d_rsh])
+    return ish, jac
 
 
-def fvd(v_c, i_c, r_s):
+def fvd(vc, ic, rs):
     """
     Diode voltage, V_d, and its derivatives w.r.t. V_c, I_c, R_s.
 
-    :param v_c: cell voltage [V]
-    :param i_c: cell current [A]
-    :param r_s: series resistance [Ohms]
+    :param vc: cell voltage [V]
+    :param ic: cell current [A]
+    :param rs: series resistance [Ohms]
     :return: diode voltage [V]
     """
-    v_d = np.atleast_1d(v_c + r_s * i_c)
-    jac = np.array([np.ones(v_d.shape),
-                    np.atleast_1d(r_s),  # d/dIc
-                    np.atleast_1d(i_c)])  # d/dRs
-    return v_d, jac
+    vd = np.atleast_1d(vc + rs * ic)
+    jac = np.array([np.ones(vd.shape),
+                    np.atleast_1d(rs),  # d/dIc
+                    np.atleast_1d(ic)])  # d/dRs
+    return vd, jac
