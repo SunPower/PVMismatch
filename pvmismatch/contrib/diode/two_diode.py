@@ -1,5 +1,5 @@
 """
-Two diode model methods.
+Two diode model equations.
 """
 
 import numpy as np
@@ -19,8 +19,8 @@ def fdidv(isat1, isat2, rs, rsh, ic, vc, vt):
     :param vt: thermal voltage (kB * Tc / qe = 26[mV] at Tc=298K) [V]
     :return: derivative of IV curve and its derivatives
     """
-    v_d = vc + ic * rs
-    vstar = v_d / vt
+    vd = vc + ic * rs
+    vstar = vd / vt
     rstar = rsh / rs
     exp_vstar, exp_vstar_2 = np.exp(vstar), np.exp(0.5 * vstar)
     v_sat1_sh, v_sat2_sh = isat1 * rsh, isat2 * rsh
@@ -52,70 +52,51 @@ def fdidv(isat1, isat2, rs, rsh, ic, vc, vt):
 
 def fdpdv(isat1, isat2, rs, rsh, ic, vc, vt):
     """
-    Calculates JdPdV and dPdV from the given input parameters.
-    :param isat1: type can be int or numpy array
-    :param isat2: type can be int or numpy array
-    :param rs: type can be int or numpy array
-    :param rsh: type can be int or numpy array
-    :param ic: type can be int or numpy array
-    :param vc: type can be int or numpy array
-    :param vt: type can be int or numpy array
-    :return: dpdv which is type int or numpy array and jdpdv which is type numpy array
-    Note: If input parameters are numpy arrays, they need to have the same dimensions
+    Derivative of PV curve and its derivatives w.r.t. Isat1, Isat2, Rs, Rsh, Ic,
+    Vc and Vt.
+
+    :param isat1: diode 1 saturation current [A]
+    :param isat2: diode 2 saturation current [A]
+    :param rs: series resistance [ohms]
+    :param rsh: shunt resistance [ohms]
+    :param ic: cell current [A]
+    :param vc: cell voltage [V]
+    :param vt: thermal voltage (kB * Tc / qe = 26[mV] at Tc=298K) [V]
+    :return: derivative of PV curve and its derivatives
     """
-    if type(vt) == int:
-        if vt == 0:
-            t2 = float("inf")
-            t22 = float("inf")
-        else:
-            t2 = 1. / vt
-            t22 = 1. / vt ** 2
-    else:
-        t2 = 1. / vt
-        t22 = 1. / vt ** 2
-    if type(rsh) == int:
-        if rsh == 0:
-            t3 = float("inf")
-            t23 = float("inf")
-        else:
-            t3 = 1. / rsh
-            t23 = 1. / rsh ** 2
-    else:
-        t3 = 1. / rsh
-        t23 = 1. / rsh ** 2
-    t4 = vc * .5
-    t5 = ic * rs * .5
-    t6 = t4 + t5
-    t7 = t2 * t6
-    t8 = np.exp(t7)
-    t9 = ic * rs
-    t10 = vc + t9
-    t11 = t2 * t10
-    t12 = np.exp(t11)
-    t13 = rs * t3
-    t14 = isat2 * rs * t2 * t8 * .5
-    t15 = isat1 * rs * t2 * t12
-    t16 = t13 + t14 + t15 + 1.
-    t17 = 1. / t16
-    t18 = isat1 * t2 * t12
-    t19 = isat2 * t2 * t8 * .5
-    t20 = t3 + t18 + t19
-    dpdv = ic - vc * t17 * t20
-    t21 = 1. / t16 ** 2
-    t24 = rs ** 2
-    t25 = isat2 * rs * t8 * t22 * .25
-    t26 = isat1 * rs * t12 * t22
-    t27 = t25 + t26
-    jdpdv = np.array([-vc * t2 * t12 * t17 + rs * vc * t2 * t12 * t20 * t21,  # d/di_sat1
-                      vc * t2 * t8 * t17 * -.5 + rs * vc * t2 * t8 * t20 * t21 * .5,  # d/disat2
-                      -vc * t17 * (ic * isat2 * t8 * t22 * .25 + ic * isat1 * t12 * t22) + vc * t20 * t21 *
-                      (t3 + t18 + t19 + ic * isat2 * rs * t8 * t22 * .25 + ic * isat1 * rs * t12 * t22),  # d/drs
-                      vc * t17 * t23 - rs * vc * t20 * t21 * t23,  # d/drsh
-                      -vc * t17 * t27 + vc * t20 * t21 * (isat2 * t8 * t22 * t24 *
-                                                          .25 + isat1 * t12 * t22 * t24) + 1.,  # d/dic
-                      -t17 * t20 - vc * t17 * (isat2 * t8 * t22 * .25 + isat1 * t12 * t22) + vc * t20 *
-                      t21 * t27])  # d/dvc
-    return dpdv, jdpdv
+    didv, _ = fdidv(isat1, isat2, rs, rsh, ic, vc, vt)
+    vd = vc + ic * rs
+    dpdv = didv * vc + ic
+    dpdv_isat1 = 2.0*rs*rsh*vc*(
+        2.0*isat1*rsh*np.exp(vd/vt) + isat2*rsh*np.exp(0.5*vd/vt) + 2.0*vt
+    )*np.exp(vd/vt)/(
+        2.0*isat1*rs*rsh*np.exp(vd/vt) + isat2*rs*rsh*np.exp(0.5*vd/vt) + 2.0*rs*vt + 2.0*rsh*vt
+    )**2 - 2.0*rsh*vc*np.exp(vd/vt)/(
+        2.0*isat1*rs*rsh*np.exp(vd/vt) + isat2*rs*rsh*np.exp(0.5*vd/vt) + 2.0*rs*vt + 2.0*rsh*vt
+    )
+    dpdv_isat2 = rs*rsh*vc*(2.0*isat1*rsh*np.exp(vd/vt) + isat2*rsh*np.exp(0.5*vd/vt) + 2.0*vt)*np.exp(0.5*vd/vt)/(2.0*isat1*rs*rsh*np.exp(vd/vt) + isat2*rs*rsh*np.exp(0.5*vd/vt) + 2.0*rs*vt + 2.0*rsh*vt)**2 - rsh*vc*np.exp(0.5*vd/vt)/(2.0*isat1*rs*rsh*np.exp(vd/vt) + isat2*rs*rsh*np.exp(0.5*vd/vt) + 2.0*rs*vt + 2.0*rsh*vt)
+    dpdv_rs = -vc*(2.0*isat1*rsh*ic*np.exp(vd/vt)/vt + 0.5*isat2*rsh*ic*np.exp(0.5*vd/vt)/vt)/(2.0*isat1*rs*rsh*np.exp(vd/vt) + isat2*rs*rsh*np.exp(0.5*vd/vt) + 2.0*rs*vt + 2.0*rsh*vt) - vc*(2.0*isat1*rsh*np.exp(vd/vt) + isat2*rsh*np.exp(0.5*vd/vt) + 2.0*vt)*(-2.0*isat1*rs*rsh*ic*np.exp(vd/vt)/vt - 2.0*isat1*rsh*np.exp(vd/vt) - 0.5*isat2*rs*rsh*ic*np.exp(0.5*vd/vt)/vt - isat2*rsh*np.exp(0.5*vd/vt) - 2.0*vt)/(2.0*isat1*rs*rsh*np.exp(vd/vt) + isat2*rs*rsh*np.exp(0.5*vd/vt) + 2.0*rs*vt + 2.0*rsh*vt)**2
+    dpdv_rsh = -vc*(2.0*isat1*np.exp(vd/vt) + isat2*np.exp(0.5*vd/vt))/(2.0*isat1*rs*rsh*np.exp(vd/vt) + isat2*rs*rsh*np.exp(0.5*vd/vt) + 2.0*rs*vt + 2.0*rsh*vt) - vc*(-2.0*isat1*rs*np.exp(vd/vt) - isat2*rs*np.exp(0.5*vd/vt) - 2.0*vt)*(2.0*isat1*rsh*np.exp(vd/vt) + isat2*rsh*np.exp(0.5*vd/vt) + 2.0*vt)/(2.0*isat1*rs*rsh*np.exp(vd/vt) + isat2*rs*rsh*np.exp(0.5*vd/vt) + 2.0*rs*vt + 2.0*rsh*vt)**2
+    dpdv_ic = -vc*(2.0*isat1*rs*rsh*np.exp(vd/vt)/vt + 0.5*isat2*rs*rsh*np.exp(0.5*vd/vt)/vt)/(2.0*isat1*rs*rsh*np.exp(vd/vt) + isat2*rs*rsh*np.exp(0.5*vd/vt) + 2.0*rs*vt + 2.0*rsh*vt) - vc*(-2.0*isat1*rs**2*rsh*np.exp(vd/vt)/vt - 0.5*isat2*rs**2*rsh*np.exp(0.5*vd/vt)/vt)*(2.0*isat1*rsh*np.exp(vd/vt) + isat2*rsh*np.exp(0.5*vd/vt) + 2.0*vt)/(2.0*isat1*rs*rsh*np.exp(vd/vt) + isat2*rs*rsh*np.exp(0.5*vd/vt) + 2.0*rs*vt + 2.0*rsh*vt)**2 + 1
+    dpdv_vc = -vc*(
+        2.0*isat1*rsh*(rs*didv + 1)*np.exp(vd/vt)/vt + 0.5*isat2*rsh*(rs*didv + 1)*np.exp(0.5*vd/vt)/vt
+    )/(
+        2.0*isat1*rs*rsh*np.exp(vd/vt) + isat2*rs*rsh*np.exp(0.5*vd/vt) + 2.0*rs*vt + 2.0*rsh*vt
+    ) - vc*(
+        -2.0*isat1*rs*rsh*(rs*didv + 1)*np.exp(vd/vt)/vt - 0.5*isat2*rs*rsh*(rs*didv + 1)*np.exp(0.5*vd/vt)/vt
+    )*(
+        2.0*isat1*rsh*np.exp(vd/vt) + isat2*rsh*np.exp(0.5*vd/vt) + 2.0*vt
+    )/(
+        2.0*isat1*rs*rsh*np.exp(vd/vt) + isat2*rs*rsh*np.exp(0.5*vd/vt) + 2.0*rs*vt + 2.0*rsh*vt
+    )**2 - (
+        2.0*isat1*rsh*np.exp(vd/vt) + isat2*rsh*np.exp(0.5*vd/vt) + 2.0*vt
+    )/(
+        2.0*isat1*rs*rsh*np.exp(vd/vt) + isat2*rs*rsh*np.exp(0.5*vd/vt) + 2.0*rs*vt + 2.0*rsh*vt
+    ) + didv
+    jac = np.array([
+        dpdv_isat1, dpdv_isat2, dpdv_rs, dpdv_rsh, dpdv_ic, dpdv_vc
+        ])
+    return dpdv, jac
 
 
 def fjrsh(isat1, isat2, rs, rsh, vt, isco):

@@ -1,3 +1,7 @@
+"""
+Common diode model equations.
+"""
+
 import numpy as np
 
 
