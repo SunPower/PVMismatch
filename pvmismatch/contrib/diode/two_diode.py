@@ -19,97 +19,116 @@ def fdidv(i_sat1, i_sat2, r_s, r_sh, i_c, v_c, v_t):
     Note: If input parameters are numpy arrays, they need to have the same dimensions
     """
     v_d = v_c + i_c * r_s
-    quotient = v_d / v_t
+    vstar = v_d / v_t
     v_sat1_sh, v_sat2_sh = i_sat1 * r_sh, i_sat2 * r_sh
     didv = (
-        -(v_sat1_sh * np.exp(quotient)
-          + 0.5 * v_sat2_sh * np.exp(0.5 * quotient) + v_t)
-        / (v_sat1_sh * r_s * np.exp(quotient)
-           + 0.5 * v_sat2_sh * r_s * np.exp(0.5 * quotient)
+        -(v_sat1_sh * np.exp(vstar)
+          + 0.5 * v_sat2_sh * np.exp(0.5 * vstar) + v_t)
+        / (v_sat1_sh * r_s * np.exp(vstar)
+           + 0.5 * v_sat2_sh * r_s * np.exp(0.5 * vstar)
            + r_s * v_t + r_sh * v_t)
     )
     didv__i_sat1 = (
-        r_s * r_sh * np.exp(quotient) * (
-            v_sat1_sh * np.exp(quotient)
-            + 0.5 * v_sat2_sh * np.exp(0.5 * quotient) + v_t
+        r_s * r_sh * np.exp(vstar) * (
+            v_sat1_sh * np.exp(vstar)
+            + 0.5 * v_sat2_sh * np.exp(0.5 * vstar) + v_t
         ) / (
-            v_sat1_sh * r_s * np.exp(quotient)
-            + 0.5 * v_sat2_sh * r_s * np.exp(0.5 * quotient)
+            v_sat1_sh * r_s * np.exp(vstar)
+            + 0.5 * v_sat2_sh * r_s * np.exp(0.5 * vstar)
             + r_s * v_t + r_sh * v_t
-        )**2.0 - r_sh * np.exp(quotient) / (
-            v_sat1_sh * r_s * np.exp(quotient)
-            + 0.5 * v_sat2_sh * r_s * np.exp(0.5 * quotient)
+        )**2.0 - r_sh * np.exp(vstar) / (
+            v_sat1_sh * r_s * np.exp(vstar)
+            + 0.5 * v_sat2_sh * r_s * np.exp(0.5 * vstar)
             + r_s * v_t + r_sh * v_t
         )
     )
     didv__i_sat2 = (
-        r_s*r_sh*np.exp(0.5*quotient)*(
-            2.0*i_sat1*r_sh*np.exp(quotient)
-            + i_sat2*r_sh*np.exp(0.5*quotient) + 2.0*v_t
+        r_s*r_sh*np.exp(0.5*vstar)*(
+            2.0*v_sat1_sh*np.exp(vstar)
+            + v_sat2_sh*np.exp(0.5*vstar) + 2.0*v_t
         )/(
-            2.0*i_sat1*r_s*r_sh*np.exp(quotient)
-            + i_sat2*r_s*r_sh*np.exp(0.5*quotient)
+            2.0*v_sat1_sh*r_s*np.exp(vstar)
+            + v_sat2_sh*r_s*np.exp(0.5*vstar)
             + 2.0*r_s*v_t + 2.0*r_sh*v_t
-        )**2 - r_sh*np.exp(0.5*quotient)/(
-            2.0*i_sat1*r_s*r_sh*np.exp(quotient)
-            + i_sat2*r_s*r_sh*np.exp(0.5*quotient)
+        )**2 - r_sh*np.exp(0.5*vstar)/(
+            2.0*v_sat1_sh*r_s*np.exp(vstar)
+            + v_sat2_sh*r_s*np.exp(0.5*vstar)
             + 2.0*r_s*v_t + 2.0*r_sh*v_t
         )
     )
     didv__r_s = (
         -(
-            2.0*i_sat1*r_sh*i_c*np.exp(v_d/v_t)/v_t + 0.5*i_sat2*r_sh*i_c*np.exp(0.5*v_d/v_t)/v_t
+            2.0*v_sat1_sh*i_c*np.exp(vstar)/v_t
+            + 0.5*v_sat2_sh*i_c*np.exp(0.5*vstar)/v_t
         )/(
-            2.0*i_sat1*r_s*r_sh*np.exp(v_d/v_t) + i_sat2*r_s*r_sh*np.exp(0.5*v_d/v_t) + 2.0*r_s*v_t + 2.0*r_sh*v_t
+            2.0*v_sat1_sh*r_s*np.exp(vstar) + v_sat2_sh*r_s*np.exp(0.5*vstar)
+            + 2.0*r_s*v_t + 2.0*r_sh*v_t
         ) - (
-            2.0*i_sat1*r_sh*np.exp(v_d/v_t) + i_sat2*r_sh*np.exp(0.5*v_d/v_t) + 2.0*v_t
+            2.0*v_sat1_sh*np.exp(vstar) + v_sat2_sh*np.exp(0.5*vstar) + 2.0*v_t
         )*(
-            -2.0*i_sat1*r_s*r_sh*i_c*np.exp(v_d/v_t)/v_t - 2.0*i_sat1*r_sh*np.exp(v_d/v_t) - 0.5*i_sat2*r_s*r_sh*i_c*np.exp(0.5*v_d/v_t)/v_t - i_sat2*r_sh*np.exp(0.5*v_d/v_t) - 2.0*v_t
+            -2.0*v_sat1_sh*r_s*i_c*np.exp(vstar)/v_t
+            - 2.0*v_sat1_sh*np.exp(vstar)
+            - 0.5*v_sat2_sh*r_s*i_c*np.exp(0.5*vstar)/v_t
+            - v_sat2_sh*np.exp(0.5*vstar) - 2.0*v_t
         )/(
-            2.0*i_sat1*r_s*r_sh*np.exp(v_d/v_t) + i_sat2*r_s*r_sh*np.exp(0.5*v_d/v_t) + 2.0*r_s*v_t + 2.0*r_sh*v_t
+            2.0*v_sat1_sh*r_s*np.exp(vstar) + v_sat2_sh*r_s*np.exp(0.5*vstar)
+            + 2.0*r_s*v_t + 2.0*r_sh*v_t
         )**2
     )
 
     didv__r_sh = (
         -(
-            2.0*i_sat1*np.exp(v_d/v_t) + i_sat2*np.exp(0.5*v_d/v_t)
+            2.0*i_sat1*np.exp(vstar) + i_sat2*np.exp(0.5*vstar)
         )/(
-            2.0*i_sat1*r_s*r_sh*np.exp(v_d/v_t) + i_sat2*r_s*r_sh*np.exp(0.5*v_d/v_t) + 2.0*r_s*v_t + 2.0*r_sh*v_t
+            2.0*v_sat1_sh*r_s*np.exp(vstar) + v_sat2_sh*r_s*np.exp(0.5*vstar)
+            + 2.0*r_s*v_t + 2.0*r_sh*v_t
         ) - (
-            -2.0*i_sat1*r_s*np.exp(v_d/v_t) - i_sat2*r_s*np.exp(0.5*v_d/v_t) - 2.0*v_t
+            -2.0*i_sat1*r_s*np.exp(vstar) - i_sat2*r_s*np.exp(0.5*vstar)
+            - 2.0*v_t
         )*(
-            2.0*i_sat1*r_sh*np.exp(v_d/v_t) + i_sat2*r_sh*np.exp(0.5*v_d/v_t) + 2.0*v_t
+            2.0*v_sat1_sh*np.exp(vstar) + v_sat2_sh*np.exp(0.5*vstar) + 2.0*v_t
         )/(
-            2.0*i_sat1*r_s*r_sh*np.exp(v_d/v_t) + i_sat2*r_s*r_sh*np.exp(0.5*v_d/v_t) + 2.0*r_s*v_t + 2.0*r_sh*v_t
+            2.0*v_sat1_sh*r_s*np.exp(vstar) + v_sat2_sh*r_s*np.exp(0.5*vstar)
+            + 2.0*r_s*v_t + 2.0*r_sh*v_t
         )**2
     )
     didv__i_c = (
         -(
-            2.0*i_sat1*r_s*r_sh*np.exp(v_d/v_t)/v_t + 0.5*i_sat2*r_s*r_sh*np.exp(0.5*v_d/v_t)/v_t
+            2.0*v_sat1_sh*r_s*np.exp(vstar)/v_t
+            + 0.5*v_sat2_sh*r_s*np.exp(0.5*vstar)/v_t
         )/(
-            2.0*i_sat1*r_s*r_sh*np.exp(v_d/v_t) + i_sat2*r_s*r_sh*np.exp(0.5*v_d/v_t) + 2.0*r_s*v_t + 2.0*r_sh*v_t
+            2.0*v_sat1_sh*r_s*np.exp(vstar) + v_sat2_sh*r_s*np.exp(0.5*vstar)
+            + 2.0*r_s*v_t + 2.0*r_sh*v_t
         ) - (
-            -2.0*i_sat1*r_s**2*r_sh*np.exp(v_d/v_t)/v_t - 0.5*i_sat2*r_s**2*r_sh*np.exp(0.5*v_d/v_t)/v_t
+            -2.0*i_sat1*r_s**2*r_sh*np.exp(vstar)/v_t
+            - 0.5*i_sat2*r_s**2*r_sh*np.exp(0.5*vstar)/v_t
         )*(
-            2.0*i_sat1*r_sh*np.exp(v_d/v_t) + i_sat2*r_sh*np.exp(0.5*v_d/v_t) + 2.0*v_t
+            2.0*v_sat1_sh*np.exp(vstar) + v_sat2_sh*np.exp(0.5*vstar) + 2.0*v_t
         )/(
-            2.0*i_sat1*r_s*r_sh*np.exp(v_d/v_t) + i_sat2*r_s*r_sh*np.exp(0.5*v_d/v_t) + 2.0*r_s*v_t + 2.0*r_sh*v_t
+            2.0*v_sat1_sh*r_s*np.exp(vstar) + v_sat2_sh*r_s*np.exp(0.5*vstar)
+            + 2.0*r_s*v_t + 2.0*r_sh*v_t
         )**2
     )
     didv__v_c = (
         -(
-            2.0*i_sat1*r_sh*(r_s*didv + 1)*np.exp(v_d/v_t)/v_t + 0.5*i_sat2*r_sh*(r_s*didv + 1)*np.exp(0.5*v_d/v_t)/v_t
+            2.0*v_sat1_sh*(r_s*didv + 1)*np.exp(vstar)/v_t
+            + 0.5*v_sat2_sh*(r_s*didv + 1)*np.exp(0.5*vstar)/v_t
         )/(
-            2.0*i_sat1*r_s*r_sh*np.exp(v_d/v_t) + i_sat2*r_s*r_sh*np.exp(0.5*v_d/v_t) + 2.0*r_s*v_t + 2.0*r_sh*v_t
+            2.0*v_sat1_sh*r_s*np.exp(vstar) + v_sat2_sh*r_s*np.exp(0.5*vstar)
+            + 2.0*r_s*v_t + 2.0*r_sh*v_t
         ) - (
-            -2.0*i_sat1*r_s*r_sh*(r_s*didv + 1)*np.exp(v_d/v_t)/v_t - 0.5*i_sat2*r_s*r_sh*(r_s*didv + 1)*np.exp(0.5*v_d/v_t)/v_t
+            -2.0*v_sat1_sh*r_s*(r_s*didv + 1)*np.exp(vstar)/v_t
+            - 0.5*v_sat2_sh*r_s*(r_s*didv + 1)*np.exp(0.5*vstar)/v_t
         )*(
-            2.0*i_sat1*r_sh*np.exp(v_d/v_t) + i_sat2*r_sh*np.exp(0.5*v_d/v_t) + 2.0*v_t
+            2.0*v_sat1_sh*np.exp(vstar) + v_sat2_sh*np.exp(0.5*vstar) + 2.0*v_t
         )/(
-            2.0*i_sat1*r_s*r_sh*np.exp(v_d/v_t) + i_sat2*r_s*r_sh*np.exp(0.5*v_d/v_t) + 2.0*r_s*v_t + 2.0*r_sh*v_t
+            2.0*v_sat1_sh*r_s*np.exp(vstar) + v_sat2_sh*r_s*np.exp(0.5*vstar)
+            + 2.0*r_s*v_t + 2.0*r_sh*v_t
         )**2
     )
-    jac = np.array([didv__i_sat1, didv__i_sat2, didv__r_s, didv__r_sh, didv__i_c, didv__v_c])
+    jac = np.array([
+        didv__i_sat1, didv__i_sat2, didv__r_s, didv__r_sh, didv__i_c, didv__v_c
+    ])
     return didv, jac
 
 
