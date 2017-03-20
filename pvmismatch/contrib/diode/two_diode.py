@@ -70,28 +70,85 @@ def fdpdv(isat1, isat2, rs, rsh, ic, vc, vt):
     dpdv_isat1 = 2.0*rs*rsh*vc*(
         2.0*isat1*rsh*np.exp(vd/vt) + isat2*rsh*np.exp(0.5*vd/vt) + 2.0*vt
     )*np.exp(vd/vt)/(
-        2.0*isat1*rs*rsh*np.exp(vd/vt) + isat2*rs*rsh*np.exp(0.5*vd/vt) + 2.0*rs*vt + 2.0*rsh*vt
+        2.0*isat1*rs*rsh*np.exp(vd/vt)
+        + isat2*rs*rsh*np.exp(0.5*vd/vt) + 2.0*rs*vt + 2.0*rsh*vt
     )**2 - 2.0*rsh*vc*np.exp(vd/vt)/(
-        2.0*isat1*rs*rsh*np.exp(vd/vt) + isat2*rs*rsh*np.exp(0.5*vd/vt) + 2.0*rs*vt + 2.0*rsh*vt
+        2.0*isat1*rs*rsh*np.exp(vd/vt)
+        + isat2*rs*rsh*np.exp(0.5*vd/vt) + 2.0*rs*vt + 2.0*rsh*vt
     )
-    dpdv_isat2 = rs*rsh*vc*(2.0*isat1*rsh*np.exp(vd/vt) + isat2*rsh*np.exp(0.5*vd/vt) + 2.0*vt)*np.exp(0.5*vd/vt)/(2.0*isat1*rs*rsh*np.exp(vd/vt) + isat2*rs*rsh*np.exp(0.5*vd/vt) + 2.0*rs*vt + 2.0*rsh*vt)**2 - rsh*vc*np.exp(0.5*vd/vt)/(2.0*isat1*rs*rsh*np.exp(vd/vt) + isat2*rs*rsh*np.exp(0.5*vd/vt) + 2.0*rs*vt + 2.0*rsh*vt)
-    dpdv_rs = -vc*(2.0*isat1*rsh*ic*np.exp(vd/vt)/vt + 0.5*isat2*rsh*ic*np.exp(0.5*vd/vt)/vt)/(2.0*isat1*rs*rsh*np.exp(vd/vt) + isat2*rs*rsh*np.exp(0.5*vd/vt) + 2.0*rs*vt + 2.0*rsh*vt) - vc*(2.0*isat1*rsh*np.exp(vd/vt) + isat2*rsh*np.exp(0.5*vd/vt) + 2.0*vt)*(-2.0*isat1*rs*rsh*ic*np.exp(vd/vt)/vt - 2.0*isat1*rsh*np.exp(vd/vt) - 0.5*isat2*rs*rsh*ic*np.exp(0.5*vd/vt)/vt - isat2*rsh*np.exp(0.5*vd/vt) - 2.0*vt)/(2.0*isat1*rs*rsh*np.exp(vd/vt) + isat2*rs*rsh*np.exp(0.5*vd/vt) + 2.0*rs*vt + 2.0*rsh*vt)**2
-    dpdv_rsh = -vc*(2.0*isat1*np.exp(vd/vt) + isat2*np.exp(0.5*vd/vt))/(2.0*isat1*rs*rsh*np.exp(vd/vt) + isat2*rs*rsh*np.exp(0.5*vd/vt) + 2.0*rs*vt + 2.0*rsh*vt) - vc*(-2.0*isat1*rs*np.exp(vd/vt) - isat2*rs*np.exp(0.5*vd/vt) - 2.0*vt)*(2.0*isat1*rsh*np.exp(vd/vt) + isat2*rsh*np.exp(0.5*vd/vt) + 2.0*vt)/(2.0*isat1*rs*rsh*np.exp(vd/vt) + isat2*rs*rsh*np.exp(0.5*vd/vt) + 2.0*rs*vt + 2.0*rsh*vt)**2
-    dpdv_ic = -vc*(2.0*isat1*rs*rsh*np.exp(vd/vt)/vt + 0.5*isat2*rs*rsh*np.exp(0.5*vd/vt)/vt)/(2.0*isat1*rs*rsh*np.exp(vd/vt) + isat2*rs*rsh*np.exp(0.5*vd/vt) + 2.0*rs*vt + 2.0*rsh*vt) - vc*(-2.0*isat1*rs**2*rsh*np.exp(vd/vt)/vt - 0.5*isat2*rs**2*rsh*np.exp(0.5*vd/vt)/vt)*(2.0*isat1*rsh*np.exp(vd/vt) + isat2*rsh*np.exp(0.5*vd/vt) + 2.0*vt)/(2.0*isat1*rs*rsh*np.exp(vd/vt) + isat2*rs*rsh*np.exp(0.5*vd/vt) + 2.0*rs*vt + 2.0*rsh*vt)**2 + 1
-    dpdv_vc = -vc*(
-        2.0*isat1*rsh*(rs*didv + 1)*np.exp(vd/vt)/vt + 0.5*isat2*rsh*(rs*didv + 1)*np.exp(0.5*vd/vt)/vt
+    dpdv_isat2 = rs*rsh*vc*(
+        2.0*isat1*rsh*np.exp(vd/vt) + isat2*rsh*np.exp(0.5*vd/vt) + 2.0*vt
+    )*np.exp(0.5*vd/vt)/(
+        2.0*isat1*rs*rsh*np.exp(vd/vt)
+        + isat2*rs*rsh*np.exp(0.5*vd/vt) + 2.0*rs*vt + 2.0*rsh*vt
+    )**2 - rsh*vc*np.exp(0.5*vd/vt)/(
+        2.0*isat1*rs*rsh*np.exp(vd/vt)
+        + isat2*rs*rsh*np.exp(0.5*vd/vt) + 2.0*rs*vt + 2.0*rsh*vt
+    )
+    dpdv_rs = -vc*(
+        2.0*isat1*rsh*ic*np.exp(vd/vt)/vt
+        + 0.5*isat2*rsh*ic*np.exp(0.5*vd/vt)/vt
     )/(
-        2.0*isat1*rs*rsh*np.exp(vd/vt) + isat2*rs*rsh*np.exp(0.5*vd/vt) + 2.0*rs*vt + 2.0*rsh*vt
+        2.0*isat1*rs*rsh*np.exp(vd/vt)
+        + isat2*rs*rsh*np.exp(0.5*vd/vt) + 2.0*rs*vt + 2.0*rsh*vt
     ) - vc*(
-        -2.0*isat1*rs*rsh*(rs*didv + 1)*np.exp(vd/vt)/vt - 0.5*isat2*rs*rsh*(rs*didv + 1)*np.exp(0.5*vd/vt)/vt
+        2.0*isat1*rsh*np.exp(vd/vt) + isat2*rsh*np.exp(0.5*vd/vt) + 2.0*vt
+    )*(
+        -2.0*isat1*rs*rsh*ic*np.exp(vd/vt)/vt
+        - 2.0*isat1*rsh*np.exp(vd/vt)
+        - 0.5*isat2*rs*rsh*ic*np.exp(0.5*vd/vt)/vt
+        - isat2*rsh*np.exp(0.5*vd/vt) - 2.0*vt
+    )/(
+        2.0*isat1*rs*rsh*np.exp(vd/vt)
+        + isat2*rs*rsh*np.exp(0.5*vd/vt) + 2.0*rs*vt + 2.0*rsh*vt
+    )**2
+    dpdv_rsh = -vc*(
+        2.0*isat1*np.exp(vd/vt) + isat2*np.exp(0.5*vd/vt)
+    )/(
+        2.0*isat1*rs*rsh*np.exp(vd/vt)
+        + isat2*rs*rsh*np.exp(0.5*vd/vt) + 2.0*rs*vt + 2.0*rsh*vt
+    ) - vc*(
+        -2.0*isat1*rs*np.exp(vd/vt) - isat2*rs*np.exp(0.5*vd/vt) - 2.0*vt
     )*(
         2.0*isat1*rsh*np.exp(vd/vt) + isat2*rsh*np.exp(0.5*vd/vt) + 2.0*vt
     )/(
-        2.0*isat1*rs*rsh*np.exp(vd/vt) + isat2*rs*rsh*np.exp(0.5*vd/vt) + 2.0*rs*vt + 2.0*rsh*vt
+        2.0*isat1*rs*rsh*np.exp(vd/vt)
+        + isat2*rs*rsh*np.exp(0.5*vd/vt) + 2.0*rs*vt + 2.0*rsh*vt
+    )**2
+    dpdv_ic = -vc*(
+        2.0*isat1*rs*rsh*np.exp(vd/vt)/vt
+        + 0.5*isat2*rs*rsh*np.exp(0.5*vd/vt)/vt
+    )/(
+        2.0*isat1*rs*rsh*np.exp(vd/vt)
+        + isat2*rs*rsh*np.exp(0.5*vd/vt) + 2.0*rs*vt + 2.0*rsh*vt
+    ) - vc*(
+        -2.0*isat1*rs**2*rsh*np.exp(vd/vt)/vt
+        - 0.5*isat2*rs**2*rsh*np.exp(0.5*vd/vt)/vt
+    )*(
+        2.0*isat1*rsh*np.exp(vd/vt) + isat2*rsh*np.exp(0.5*vd/vt) + 2.0*vt
+    )/(
+        2.0*isat1*rs*rsh*np.exp(vd/vt)
+        + isat2*rs*rsh*np.exp(0.5*vd/vt) + 2.0*rs*vt + 2.0*rsh*vt
+    )**2 + 1.0
+    dpdv_vc = -vc*(
+        2.0*isat1*rsh*(rs*didv + 1)*np.exp(vd/vt)/vt
+        + 0.5*isat2*rsh*(rs*didv + 1)*np.exp(0.5*vd/vt)/vt
+    )/(
+        2.0*isat1*rs*rsh*np.exp(vd/vt)
+        + isat2*rs*rsh*np.exp(0.5*vd/vt) + 2.0*rs*vt + 2.0*rsh*vt
+    ) - vc*(
+        -2.0*isat1*rs*rsh*(rs*didv + 1)*np.exp(vd/vt)/vt
+        - 0.5*isat2*rs*rsh*(rs*didv + 1)*np.exp(0.5*vd/vt)/vt
+    )*(
+        2.0*isat1*rsh*np.exp(vd/vt) + isat2*rsh*np.exp(0.5*vd/vt) + 2.0*vt
+    )/(
+        2.0*isat1*rs*rsh*np.exp(vd/vt)
+        + isat2*rs*rsh*np.exp(0.5*vd/vt) + 2.0*rs*vt + 2.0*rsh*vt
     )**2 - (
         2.0*isat1*rsh*np.exp(vd/vt) + isat2*rsh*np.exp(0.5*vd/vt) + 2.0*vt
     )/(
-        2.0*isat1*rs*rsh*np.exp(vd/vt) + isat2*rs*rsh*np.exp(0.5*vd/vt) + 2.0*rs*vt + 2.0*rsh*vt
+        2.0*isat1*rs*rsh*np.exp(vd/vt)
+        + isat2*rs*rsh*np.exp(0.5*vd/vt) + 2.0*rs*vt + 2.0*rsh*vt
     ) + didv
     jac = np.array([
         dpdv_isat1, dpdv_isat2, dpdv_rs, dpdv_rsh, dpdv_ic, dpdv_vc
