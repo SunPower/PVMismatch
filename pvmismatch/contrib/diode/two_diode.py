@@ -33,19 +33,16 @@ def fdidv(isat1, isat2, rs, rsh, ic, vc, vt):
     combiterm3 = vsum / vsum_rstar - 1.0
     combiterm4 = vsum_rstar * rs
     combiterm5 = rstar * combiterm3 / vsum_rstar
+    combiterm6 = combiterm1 * combiterm3 / vt
+    combiterm7 = 1.0 / combiterm4
     # dI/dV = derivative of IV curve
     didv = -vsum / combiterm4
     # jacobian
     didv_isat1 = exp_vstar * combiterm5
     didv_isat2 = 0.5 * exp_vstar_2 * combiterm5
-    didv__r_s = 1.0 / combiterm4 * (
-        combiterm1 * combiterm3 * ic / vt + vsum**2.0 / combiterm4
-    )
-    didv_rsh = 1.0 / rs * (
-        combiterm2 * combiterm3 / vsum_rstar
-        + vt * vsum / (vsum_rstar * combiterm4)
-    )
-    didv_ic = combiterm1 * combiterm3 / (vt * vsum_rstar)
+    didv__r_s = combiterm7 * (combiterm6 * ic + vsum**2.0 / combiterm4)
+    didv_rsh = combiterm7 * (combiterm2 * combiterm3 + vt * vsum / combiterm4)
+    didv_ic = combiterm6 / vsum_rstar
     didv_vc = (didv + 1.0 / rs) * didv_ic
     jac = np.array([
         didv_isat1, didv_isat2, didv__r_s, didv_rsh, didv_ic, didv_vc
