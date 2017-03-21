@@ -3,6 +3,11 @@ Common diode model equations.
 """
 
 import numpy as np
+from scipy.constants import elementary_charge as QE, Boltzmann as KB
+
+T0 = 25.0  # [C]
+E0 = 1000.0  # [W/m^2]
+EG = 1.1  # [eV]]
 
 
 def fid(isat, vd, m, vt):
@@ -83,3 +88,30 @@ def fvd(vc, ic, rs):
                     np.atleast_1d(rs),  # d/dIc
                     np.atleast_1d(ic)])  # d/dRs
     return vd, jac
+
+
+def isat_t(tc, isat0):
+    tck = tc + 273.15
+    t0k = T0 + 273.15
+    tstar = tck ** 3.0 / t0k ** 3.0
+    inv_delta_t = 1.0 / t0k - 1.0 / tck  # [1/K]
+    exp_tstar = np.exp(EG * QE / KB * inv_delta_t)
+    isat_t = isat0 * tstar * exp_tstar
+    return isat_t
+
+
+def isc_t(tc, isc0, alpha_isc):
+    delta_t = tc - T0
+    isc_t = isc0 * (1.0 + alpha_isc * delta_t)
+    return isc_t
+
+
+def aph(tc, isc0, alpha_isc, isat1, isat2, vt, rs, rsh):
+    isc = isc_t(tc, isc0, alpha_isc)
+    vd_sc, _ = fvd(0, isc, rs)
+    isat1_t = isat_t(tc, isat0=isat1)
+    id1_sc, _ = fid(isat1_t, vd_sc, 1.0, vt)
+    id2_sc, _ = fid(isat2, vd_sc, 2.0, vt)
+    ish_sc, _ = fish(vd_sc, rsh)
+    aph = 1.0 + (id1_sc + id2_sc + ish_sc) / isc
+    return aph

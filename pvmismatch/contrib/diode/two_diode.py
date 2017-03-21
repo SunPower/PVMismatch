@@ -3,6 +3,7 @@ Two diode model equations.
 """
 
 import numpy as np
+from pvmismatch.contrib import diode
 
 
 def fdidv(isat1, isat2, rs, rsh, ic, vc, vt):
@@ -19,7 +20,7 @@ def fdidv(isat1, isat2, rs, rsh, ic, vc, vt):
     :param vt: thermal voltage (kB * Tc / qe = 26[mV] at Tc=298K) [V]
     :return: derivative of IV curve and its derivatives
     """
-    vd = vc + ic * rs
+    vd, _ = diode.fvd(vc, ic, rs)  # vd = vc + ic * rs
     vstar = vd / vt
     rstar = rsh / rs
     exp_vstar, exp_vstar_2 = np.exp(vstar), np.exp(0.5 * vstar)
@@ -65,7 +66,7 @@ def fdpdv(isat1, isat2, rs, rsh, ic, vc, vt):
     :return: derivative of PV curve and its derivatives
     """
     didv, _ = fdidv(isat1, isat2, rs, rsh, ic, vc, vt)
-    vd = vc + ic * rs
+    vd, _ = diode.fvd(vc, ic, rs)  # vd = vc + ic * rs
     dpdv = didv * vc + ic
     dpdv_isat1 = 2.0*rs*rsh*vc*(
         2.0*isat1*rsh*np.exp(vd/vt) + isat2*rsh*np.exp(0.5*vd/vt) + 2.0*vt
@@ -156,55 +157,33 @@ def fdpdv(isat1, isat2, rs, rsh, ic, vc, vt):
     return dpdv, jac
 
 
-def fjrsh(isat1, isat2, rs, rsh, vt, isco):
+def fjrsh(isat1, isat2, rs, rsh, vt, isc):
     """
-    Calculates FRsh and JRsh from the given input parameters.
-    :param isat1: type can be int or numpy array
-    :param isat2: type can be int or numpy array
-    :param rs: type can be int or numpy array
-    :param rsh: type can be int or numpy array
-    :param vt: type can be int or numpy array
-    :param isco: type can be int or numpy array
-    :return: frsh which is type int or numpy array and jrsh which is type numpy array
-    Note: If input parameters are numpy arrays, they need to have the same dimensions
+    Shunt resistance residual and its derivatives w.r.t. Isat1, Isat2, Rs and
+    Rsh.
+
+    :param isat1: diode 1 saturation current [A]
+    :param isat2: diode 2 saturation current [A]
+    :param rs: series resistance [ohms]
+    :param rsh: shunt resistance [ohms]
+    :param vt: thermal voltage (kB * Tc / qe = 26[mV] at Tc=298K) [V]
+    :param isc: short circuit current [A]
+    :return: Rsh residual and its derivatives
+
+    Shunt resistance is assumed to be equal to the inverse of the slope of the
+    IV curve at short circuit.
+
+    .. math::
+        Rsh = \\frac{ -1 }{ \\left. \\frac{dI}{dV} \\right|_{V=0} }
+
+    This assumption is valid when [put condition here].
     """
-    if type(vt) == int:
-        if vt == 0:
-            t2 = float("inf")
-            t17 = float("inf")
-        else:
-            t2 = 1. / vt
-            t17 = 1. / vt ** 2
-    else:
-        t2 = 1. / vt
-        t17 = 1. / vt ** 2
-    if type(rsh) == int:
-        if rsh == 0:
-            t3 = float("inf")
-            t18 = float("inf")
-        else:
-            t3 = 1. / rsh
-            t18 = 1. / rsh ** 2
-    else:
-        t3 = 1. / rsh
-        t18 = 1. / rsh ** 2
-    t4 = isco * rs * t2
-    t5 = np.exp(t4)
-    t6 = isco * rs * t2 * .5
-    t7 = np.exp(t6)
-    t8 = isat1 * t2 * t5
-    t9 = isat2 * t2 * t7 * .5
-    t10 = t3 + t8 + t9
-    t11 = 1. / t10
-    t12 = rs * t3
-    t13 = isat1 * rs * t2 * t5
-    t14 = isat2 * rs * t2 * t7 * .5
-    t15 = t12 + t13 + t14 + 1.
-    frsh = rsh - t11 * t15
-    t16 = 1. / t10 ** 2
-    jrsh = np.array([-rs * t2 * t5 * t11 + t2 * t5 * t15 * t16,  # d/di_sat1
-                     rs * t2 * t7 * t11 * -.5 + t2 * t7 * t15 * t16 * .5,  # d/disat2
-                     -t11 * (t3 + t8 + t9 + isat1 * isco * rs * t5 * t17 + isat2 * isco * rs * t7 * t17 * .25) + t15 *
-                     t16 * (isat1 * isco * t5 * t17 + isat2 * isco * t7 * t17 * .25),  # d/drs
-                     rs * t11 * t18 - t15 * t16 * t18 + 1.])  # d/drsh
-    return frsh, jrsh
+    didv, _ = fdidv(isat1, isat2, rs, rsh, ic=isc, vc=0, vt=vt)
+    vd, _ = diode.fvd(0.0, isc, rs)  # vd = vc + ic * rs = 0.0 + isc * rs
+    frsh = rsh + 1/didv
+    dfrsh_isat1 = NotImplemented
+    dfrsh_isat2 = NotImplemented
+    dfrsh_rs = NotImplemented
+    dfrsh_rsh = NotImplemented
+    jac = np.array([dfrsh_isat1, dfrsh_isat2, dfrsh_rs, dfrsh_rsh])
+    return frsh, jac
