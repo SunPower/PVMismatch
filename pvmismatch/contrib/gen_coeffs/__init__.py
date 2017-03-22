@@ -5,8 +5,7 @@ Methods to generate diode coefficients.
 from pvlib.pvsystem import sapm
 import numpy as np
 from scipy import optimize
-from pvmismatch.contrib import diode
-from pvmismatch.contrib.diode import two_diode
+from pvmismatch.contrib.gen_coeffs import diode, two_diode
 
 # IEC 61853 test matrix
 TC_C = [15.0, 25.0, 50.0, 75.0]
@@ -50,8 +49,7 @@ def gen_two_diode(p_mp, v_mp, v_oc, i_sc, nparallel, nseries,
     sol = optimize.root(
         fun=residual_two_diode,
         x0=x,
-        args=(isc_cell, voc_cell, imp_cell, vmp_cell, tc, ee),
-        method='lm'
+        args=(isc_cell, voc_cell, imp_cell, vmp_cell, tc, ee)
     )
     if sol.success:
         isat1 = np.exp(sol.x[0])
@@ -80,7 +78,7 @@ def gen_sapm(iec_61853):
 
 
 
-def residual_two_diode(x, isc, voc, imp, vmp, tc, ee):
+def residual_two_diode(x, isc, voc, imp, vmp, tc, ee, w=None):
     """
     Objective function to solve 2-diode model.
     :param x: parameters isat1, isat2, rs and rsh
@@ -91,6 +89,8 @@ def residual_two_diode(x, isc, voc, imp, vmp, tc, ee):
     :param tc: cell temperature [C]
     :return: norm of the residuals its sensitivity
     """
+    if w is None:
+        w = np.ones((1, 4))
     # Constants
     q = diode.QE  # [C/electron] elementary electric charge
     # (n.b. 1 Coulomb = 1 A * s)
@@ -146,7 +146,7 @@ def residual_two_diode(x, isc, voc, imp, vmp, tc, ee):
         iph - id1_mpp - id2_mpp - ish_mpp - imp,  # Max Power Point
         dpdv,  # Slope at Max Power Point
         frsh  # Shunt Resistance
-    ])
+    ]) * w
     return f2.flatten()
 
     # # Jacobian

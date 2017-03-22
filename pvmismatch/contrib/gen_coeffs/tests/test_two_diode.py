@@ -4,11 +4,11 @@ Test two diode model equations.
 
 import sympy
 import numpy as np
-from pvmismatch.contrib.diode.two_diode import fdidv, fdpdv, fjrsh
-from pvmismatch.contrib.diode.tests.test_diode import (
+from pvmismatch.contrib.gen_coeffs.two_diode import fdidv, fdpdv, fjrsh
+from pvmismatch.contrib.gen_coeffs.tests.test_diode import (
     ISAT1_2, ISAT2_2, RS_2, RSH_2, VT, ISC0, IC, VC
 )
-from pvmismatch.contrib.diode.tests import logging
+from pvmismatch.contrib.gen_coeffs.tests import logging
 
 LOGGER = logging.getLogger(__name__)
 LOGGER.setLevel(logging.DEBUG)
@@ -80,8 +80,10 @@ def test_didv_dpdv_frsh():
         d_didv_ic.evalf(subs=expected_data),
         d_didv_vc.evalf(subs=expected_data)
     ], dtype=np.float)
-    LOGGER.debug('jdidv test: %r, expected: %r', jdidv_test, jdidv_expected)
-    assert np.allclose(jdidv_test, jdidv_expected)
+    LOGGER.debug(
+        '\njdidv test:\n%r\nexpected:\n%r\n', jdidv_test,
+        jdidv_expected.reshape(-1, 1))
+    assert np.allclose(jdidv_test.flatten(), jdidv_expected)
     # power
     dpdv = didv * vc + ic
     # test fdpdv
@@ -105,8 +107,10 @@ def test_didv_dpdv_frsh():
         d_dpdv_ic.evalf(subs=expected_data),
         d_dpdv_vc.evalf(subs=expected_data)
     ], dtype=np.float)
-    LOGGER.debug('jdidv test: %r, expected: %r', jdpdv_test, jdpdv_expected)
-    assert np.allclose(jdpdv_test, jdpdv_expected)
+    LOGGER.debug(
+        '\njdidv test:\n%r\nexpected:\n%r\n', jdpdv_test,
+        jdpdv_expected.reshape(-1, 1))
+    assert np.allclose(jdpdv_test.flatten(), jdpdv_expected)
     # shunt resistance
     frsh = rsh + 1.0 / didv
     # update test data

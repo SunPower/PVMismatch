@@ -5,9 +5,9 @@ Test common diode model equations.
 from pvmismatch.pvmismatch_lib.pvcell import (
     RS as RS_2, RSH as RSH_2, ISAT1_T0 as ISAT1_2, ISAT2 as ISAT2_2
 )
-from pvmismatch.contrib import diode
+from pvmismatch.contrib.gen_coeffs import diode
 from pvmismatch.contrib.gen_coeffs import PVMODULES
-from pvmismatch.contrib.diode.tests import logging
+from pvmismatch.contrib.gen_coeffs.tests import logging
 import sympy
 import numpy as np
 

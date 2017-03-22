@@ -3,7 +3,7 @@ Two diode model equations.
 """
 
 import numpy as np
-from pvmismatch.contrib import diode
+from pvmismatch.contrib.gen_coeffs import diode
 
 
 def fdidv(isat1, isat2, rs, rsh, ic, vc, vt):
@@ -180,7 +180,8 @@ def fjrsh(isat1, isat2, rs, rsh, vt, isc):
     """
     didv, _ = fdidv(isat1, isat2, rs, rsh, ic=isc, vc=0, vt=vt)
     vd, _ = diode.fvd(0.0, isc, rs)  # vd = vc + ic * rs = 0.0 + isc * rs
-    frsh = rsh + 1/didv
+    # frsh = rsh + 1/didv
+    frsh = vd * (1.0/rsh + didv)
     dfrsh_isat1 = NotImplemented
     dfrsh_isat2 = NotImplemented
     dfrsh_rs = NotImplemented
