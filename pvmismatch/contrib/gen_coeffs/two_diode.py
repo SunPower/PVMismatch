@@ -182,9 +182,98 @@ def fjrsh(isat1, isat2, rs, rsh, vt, isc):
     vd, _ = diode.fvd(0.0, isc, rs)  # vd = vc + ic * rs = 0.0 + isc * rs
     # frsh = rsh + 1/didv
     frsh = vd * (1.0/rsh + didv)
-    dfrsh_isat1 = NotImplemented
-    dfrsh_isat2 = NotImplemented
-    dfrsh_rs = NotImplemented
-    dfrsh_rsh = NotImplemented
-    jac = np.array([dfrsh_isat1, dfrsh_isat2, dfrsh_rs, dfrsh_rsh])
+    dfrsh_isat1 = vd*(
+        2.0*rs*rsh*(
+            2.0*isat1*rsh*np.exp(vd/vt) + isat2*rsh*np.exp(0.5*vd/vt) + 2.0*vt
+        )*np.exp(vd/vt)/(
+            2.0*isat1*rs*rsh*np.exp(vd/vt) + isat2*rs*rsh*np.exp(0.5*vd/vt)
+            + 2.0*rs*vt + 2.0*rsh*vt
+        )**2 - 2.0*rsh*np.exp(vd/vt)/(
+            2.0*isat1*rs*rsh*np.exp(vd/vt) + isat2*rs*rsh*np.exp(0.5*vd/vt)
+            + 2.0*rs*vt + 2.0*rsh*vt
+        )
+    )
+    dfrsh_isat2 = vd*(
+        rs*rsh*(
+            2.0*isat1*rsh*np.exp(vd/vt) + isat2*rsh*np.exp(0.5*vd/vt) + 2.0*vt
+        )*np.exp(0.5*vd/vt)/(
+            2.0*isat1*rs*rsh*np.exp(vd/vt) + isat2*rs*rsh*np.exp(0.5*vd/vt)
+            + 2.0*rs*vt + 2.0*rsh*vt
+        )**2 - rsh*np.exp(0.5*vd/vt)/(
+            2.0*isat1*rs*rsh*np.exp(vd/vt) + isat2*rs*rsh*np.exp(0.5*vd/vt)
+            + 2.0*rs*vt + 2.0*rsh*vt
+        )
+    )
+    dfrsh_rs = (
+        vd*(
+            -(
+                2.0*isat1*rsh*isc*np.exp(vd/vt)/vt + 0.5*isat2*rsh*isc*np.exp(0.5*vd/vt)/vt
+            )/(
+                2.0*isat1*rs*rsh*np.exp(vd/vt) + isat2*rs*rsh*np.exp(0.5*vd/vt) + 2.0*rs*vt + 2.0*rsh*vt
+            ) - (
+                2.0*isat1*rsh*np.exp(vd/vt) + isat2*rsh*np.exp(0.5*vd/vt) + 2.0*vt
+            )*(
+                -2.0*isat1*rs*rsh*isc*np.exp(vd/vt)/vt
+                - 2.0*isat1*rsh*np.exp(vd/vt)
+                - 0.5*isat2*rs*rsh*isc*np.exp(0.5*vd/vt)/vt
+                - isat2*rsh*np.exp(0.5*vd/vt) - 2.0*vt
+            )/(
+                2.0*isat1*rs*rsh*np.exp(vd/vt) + isat2*rs*rsh*np.exp(0.5*vd/vt) + 2.0*rs*vt + 2.0*rsh*vt
+            )**2
+        ) + (
+            -(2.0*isat1*rsh*np.exp(vd/vt) + isat2*rsh*np.exp(0.5*vd/vt) + 2.0*vt)/(
+                2.0*isat1*rs*rsh*np.exp(vd/vt) + isat2*rs*rsh*np.exp(0.5*vd/vt) + 2.0*rs*vt + 2.0*rsh*vt
+            ) + 1.0/rsh
+        )*isc
+    )
+    dfrsh_rsh = (
+        vd*(
+            -(2.0*isat1*np.exp(vd/vt) + isat2*np.exp(0.5*vd/vt))/(
+                2.0*isat1*rs*rsh*np.exp(vd/vt) + isat2*rs*rsh*np.exp(0.5*vd/vt) + 2.0*rs*vt + 2.0*rsh*vt
+            ) - (
+                -2.0*isat1*rs*np.exp(vd/vt) - isat2*rs*np.exp(0.5*vd/vt) - 2.0*vt
+            )*(2.0*isat1*rsh*np.exp(vd/vt) + isat2*rsh*np.exp(0.5*vd/vt) + 2.0*vt)/(
+                2.0*isat1*rs*rsh*np.exp(vd/vt) + isat2*rs*rsh*np.exp(0.5*vd/vt) + 2.0*rs*vt + 2.0*rsh*vt
+            )**2 - 1.0/rsh**2
+        )
+    )
+    dfrsh_ic = (
+        rs*(
+            -(2.0*isat1*rsh*np.exp(vd/vt) + isat2*rsh*np.exp(0.5*vd/vt) + 2.0*vt)/(
+                2.0*isat1*rs*rsh*np.exp(vd/vt) + isat2*rs*rsh*np.exp(0.5*vd/vt) + 2.0*rs*vt + 2.0*rsh*vt
+            ) + 1.0/rsh
+        ) + vd*(
+            -(
+                2.0*isat1*rs*rsh*np.exp(vd/vt)/vt + 0.5*isat2*rs*rsh*np.exp(0.5*vd/vt)/vt
+            )/(
+                2.0*isat1*rs*rsh*np.exp(vd/vt) + isat2*rs*rsh*np.exp(0.5*vd/vt) + 2.0*rs*vt + 2.0*rsh*vt
+            ) - (
+                -2.0*isat1*rs**2*rsh*np.exp(vd/vt)/vt - 0.5*isat2*rs**2*rsh*np.exp(0.5*vd/vt)/vt
+            )*(
+                2.0*isat1*rsh*np.exp(vd/vt) + isat2*rsh*np.exp(0.5*vd/vt) + 2.0*vt
+            )/(
+                2.0*isat1*rs*rsh*np.exp(vd/vt) + isat2*rs*rsh*np.exp(0.5*vd/vt) + 2.0*rs*vt + 2.0*rsh*vt
+            )**2
+        )
+    )
+    dfrsh_vc = (
+        vd*(-(
+            2.0*isat1*rsh*(rs*didv + 1)*np.exp(vd/vt)/vt
+            + 0.5*isat2*rsh*(rs*didv + 1)*np.exp(0.5*vd/vt)/vt
+        )/(
+            2.0*isat1*rs*rsh*np.exp(vd/vt) + isat2*rs*rsh*np.exp(0.5*vd/vt) + 2.0*rs*vt + 2.0*rsh*vt
+        ) - (
+            -2.0*isat1*rs*rsh*(rs*didv + 1)*np.exp(vd/vt)/vt
+            - 0.5*isat2*rs*rsh*(rs*didv + 1)*np.exp(0.5*vd/vt)/vt
+        )*(2.0*isat1*rsh*np.exp(vd/vt) + isat2*rsh*np.exp(0.5*vd/vt) + 2.0*vt)/(
+            2.0*isat1*rs*rsh*np.exp(vd/vt) + isat2*rs*rsh*np.exp(0.5*vd/vt) + 2.0*rs*vt + 2.0*rsh*vt
+        )**2) + (rs*didv + 1)*(
+            -(2.0*isat1*rsh*np.exp(vd/vt) + isat2*rsh*np.exp(0.5*vd/vt) + 2.0*vt)/(
+                2.0*isat1*rs*rsh*np.exp(vd/vt) + isat2*rs*rsh*np.exp(0.5*vd/vt) + 2.0*rs*vt + 2.0*rsh*vt
+            ) + 1.0/rsh
+        )
+    )
+    jac = np.array([
+        dfrsh_isat1, dfrsh_isat2, dfrsh_rs, dfrsh_rsh, dfrsh_ic, dfrsh_vc
+    ])
     return frsh, jac

@@ -112,7 +112,7 @@ def test_didv_dpdv_frsh():
         jdpdv_expected.reshape(-1, 1))
     assert np.allclose(jdpdv_test.flatten(), jdpdv_expected)
     # shunt resistance
-    frsh = rsh + 1.0 / didv
+    frsh = vd * (1.0 / rsh + didv)
     # update test data
     del test_data['ic'], test_data['vc']  # remove Ic, Vc
     test_data['isc'] = ISC0  # add Isc
@@ -134,7 +134,7 @@ def test_didv_dpdv_frsh():
     dfrsh_rsh = frsh.diff(rsh).subs('vc + ic(vc) * rs', 'vd')
     dfrsh_ic = frsh.diff(ic).subs('vc + ic(vc) * rs', 'vd')
     dfrsh_vc = frsh.diff(vc).subs('vc + ic(vc) * rs', 'vd')
-    jfrsh = np.array([
+    jfrsh_expected = np.array([
         dfrsh_isat1.evalf(subs=expected_data),
         dfrsh_isat2.evalf(subs=expected_data),
         dfrsh_rs.evalf(subs=expected_data),
@@ -142,4 +142,8 @@ def test_didv_dpdv_frsh():
         dfrsh_ic.evalf(subs=expected_data),
         dfrsh_vc.evalf(subs=expected_data),
     ], dtype=np.float)
-    return jfrsh
+    LOGGER.debug(
+        '\njdidv test:\n%r\nexpected:\n%r\n', jfrsh_test,
+        jfrsh_expected.reshape(-1, 1))
+    assert np.allclose(jfrsh_test.flatten(), jfrsh_expected)
+    return dfrsh_isat1, dfrsh_isat2, dfrsh_rs, dfrsh_rsh, dfrsh_ic, dfrsh_vc
