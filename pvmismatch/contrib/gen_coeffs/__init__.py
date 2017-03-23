@@ -25,21 +25,20 @@ def gen_iec_61853_from_sapm(pvmodule):
     return sapm(irr / 1000.0, tc, pvmodule)
 
 
-def gen_two_diode(p_mp, v_mp, v_oc, i_sc, nparallel, nseries,
-                  irr, tc, x0 = None, *args, **kwargs):
+def gen_two_diode(isc, voc, imp, vmp, nseries, nparallel,
+                  tc, x0 = None, *args, **kwargs):
     """
     Generate two-diode model parameters for ``pvcell`` given 
     """
-    voc_cell = v_oc / nseries
-    vmp_cell = v_mp / nseries
-    isc_cell = i_sc / nparallel
-    imp_cell = p_mp / v_mp / nparallel
-    ee = irr / 1000.0
+    isc_cell = isc / nparallel
+    voc_cell = voc / nseries
+    imp_cell = imp / nparallel
+    vmp_cell = vmp / nseries
     if x0 is None:
-        isat1 = 2.252393147115816e-11  # [A]
-        isat2 = 1.514815984766432e-6
-        rs = 0.004008824377216  # [ohms]
-        rsh = 9.133152225153959  # [ohms]
+        isat1 = 2.25e-11  # [A]
+        isat2 = 1.5e-6
+        rs = 0.004  # [ohms]
+        rsh = 10.  # [ohms]
     else:
         isat1 = x0[0]
         isat2 = x0[1]
@@ -47,9 +46,10 @@ def gen_two_diode(p_mp, v_mp, v_oc, i_sc, nparallel, nseries,
         rsh = x0[3]
     x = np.array([np.log(isat1), np.log(isat2), np.sqrt(rs), np.sqrt(rsh)])
     sol = optimize.root(
-        fun=residual_two_diode,
-        x0=x,
-        args=(isc_cell, voc_cell, imp_cell, vmp_cell, tc, ee)
+        fun=residual_two_diode, x0=x,
+        args=(isc_cell, voc_cell, imp_cell, vmp_cell, tc),
+        jac=True,
+        *args, **kwargs
     )
     if sol.success:
         isat1 = np.exp(sol.x[0])
@@ -78,7 +78,7 @@ def gen_sapm(iec_61853):
 
 
 
-def residual_two_diode(x, isc, voc, imp, vmp, tc, ee, w=None):
+def residual_two_diode(x, isc, voc, imp, vmp, tc):
     """
     Objective function to solve 2-diode model.
     :param x: parameters isat1, isat2, rs and rsh
@@ -89,82 +89,76 @@ def residual_two_diode(x, isc, voc, imp, vmp, tc, ee, w=None):
     :param tc: cell temperature [C]
     :return: norm of the residuals its sensitivity
     """
-    if w is None:
-        w = np.ones((1, 4))
     # Constants
     q = diode.QE  # [C/electron] elementary electric charge
     # (n.b. 1 Coulomb = 1 A * s)
     kb = diode.KB  # [J/K/molecule] Boltzmann's constant
     tck = tc + 273.15  # [K] reference temperature
-
     # Governing Equation
     vt = kb * tck / q  # [V] thermal voltage
-
     # Rescale Variables
     isat1_t0 = np.exp(x[0])
     isat2 = np.exp(x[1])
     rs = x[2] ** 2.0
     rsh = x[3] ** 2.0
-
     # first diode saturation current
     isat1 = diode.isat_t(tc, isat1_t0)
-
     # Short Circuit
     vd_isc, _ = diode.fvd(vc=0.0, ic=isc, rs=rs)
     id1_isc, _ = diode.fid(isat=isat1, vd=vd_isc, m=1.0, vt=vt)
     id2_isc, _ = diode.fid(isat=isat2, vd=vd_isc, m=2.0, vt=vt)
     ish_isc, _ = diode.fish(vd=vd_isc, rsh=rsh)
-
     # Photo-generated Current
-    iph = ee * (isc + id1_isc + id2_isc + ish_isc)  # [A]
-
+    iph = isc + id1_isc + id2_isc + ish_isc  # [A]
     # Open Circuit
     vd_voc, jvd_voc = diode.fvd(vc=voc, ic=0.0, rs=rs)
     id1_voc, jid1_voc = diode.fid(isat=isat1, vd=vd_voc, m=1.0, vt=vt)
     id2_voc, jid2_voc = diode.fid(isat=isat2, vd=vd_voc, m=2.0, vt=vt)
     ish_voc, jish_voc = diode.fish(vd=vd_voc, rsh=rsh)
-
     # Max Power Point
     vd_mpp, jvd_mpp = diode.fvd(vc=vmp, ic=imp, rs=rs)
     id1_mpp, jid1_mpp = diode.fid(isat=isat1, vd=vd_mpp, m=1.0, vt=vt)
     id2_mpp, jid2_mpp = diode.fid(isat=isat2, vd=vd_mpp, m=2.0, vt=vt)
     ish_mpp, jish_mpp = diode.fish(vd=vd_mpp, rsh=rsh)
-
     # Slope at Max Power Point
     dpdv, jdpdv = two_diode.fdpdv(
         isat1=isat1, isat2=isat2, rs=rs, rsh=rsh, ic=imp, vc=vmp, vt=vt
     )
-
     # Shunt Resistance
     frsh, jrsh = two_diode.fjrsh(
         isat1=isat1, isat2=isat2, rs=rs, rsh=rsh, vt=vt, isc=isc
     )
-
     # Residual
-    f2 = np.concatenate([
-        iph - id1_voc - id2_voc - ish_voc,  # Open Circuit
-        iph - id1_mpp - id2_mpp - ish_mpp - imp,  # Max Power Point
-        dpdv,  # Slope at Max Power Point
-        frsh  # Shunt Resistance
-    ]) * w
-    return f2.flatten()
-
-    # # Jacobian
-    # jvoc = np.vstack((-jid1_voc[0],  # d/disat1
-    #                   -jid2_voc[0],  # d/disat2
-    #                   -(jid1_voc[1] + jid2_voc[1] + jish_voc[0]) * jvd_voc[2],  # d/drs
-    #                   -jish_voc[1]))  # d/drsh
-    # jvoc = jvoc.T
-    # jmpp = np.vstack((-jid1_mpp[0],  # d/disat1
-    #                   -jid2_mpp[0],  # d/disat2
-    #                   -(jid1_mpp[1] + jid2_mpp[1] + jish_mpp[0]) * jvd_mpp[2],  # d/drs
-    #                   -jish_mpp[1]))  # d.drsh
-    # jmpp = jmpp.T
-
-    # # Scaling Factors
-    # scale_fx = np.array([np.exp(x[0]), np.exp(x[1]), 2 * x[2], 2 * x[3]])
-    # j2 = np.vstack((jvoc, jmpp, jdpdv[0:4], jrsh[0:4])) * scale_fx  # scales each column by the corresponding element
-    # return f2, j2
+    # should be (M, ) array with M residual equations (constraints)
+    f2 = np.stack([
+        (iph - id1_voc - id2_voc - ish_voc).T,  # Open Circuit
+        (iph - id1_mpp - id2_mpp - ish_mpp - imp).T,  # Max Power Point
+        dpdv.T,  # Slope at Max Power Point
+        frsh.T  # Shunt Resistance
+    ], axis=0).flatten()
+    # Jacobian
+    # should be (M, N) array with M residuals and N variables
+    # [[df1/dx1, df1/dx2, ...], [df2/dx1, df2/dx2, ...]]
+    jvoc = np.stack((
+        -jid1_voc[0],  # d/disat1
+        -jid2_voc[0],  # d/disat2
+        -jvd_voc[2] * (jid1_voc[1] + jid2_voc[1] + jish_voc[0]),  # d/drs
+        -jish_voc[1]  # d/drsh
+    ), axis=0).T.reshape(-1, 4)
+    jmpp = np.stack((
+        -jid1_mpp[0],  # d/disat1
+        -jid2_mpp[0],  # d/disat2
+        -jvd_mpp[2] * (jid1_mpp[1] + jid2_mpp[1] + jish_mpp[0]),  # d/drs
+        -jish_mpp[1]  # d.drsh
+    ), axis=0).T.reshape(-1, 4) 
+    # Scaling Factors
+    scale_fx = np.array([np.exp(x[0]), np.exp(x[1]), 2 * x[2], 2 * x[3]])
+    # scales each column by the corresponding element
+    j2 = np.concatenate(
+        (jvoc, jmpp, jdpdv[:4].T.reshape(-1, 4), jrsh[:4].T.reshape(-1, 4)),
+        axis=0
+    ) * scale_fx
+    return f2, j2
 
 
 PVMODULES = {
