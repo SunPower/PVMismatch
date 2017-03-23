@@ -68,7 +68,8 @@ def fish(vd, rsh):
     :return: shunt current [A]
     """
     ish = np.atleast_1d(vd / rsh)
-    d_vd = np.atleast_1d(1.0 / rsh)*np.ones(vd.shape)
+    shaper = np.ones(ish.shape)  # make sure scalars are the right shape
+    d_vd = np.atleast_1d(1.0 / rsh) * shaper
     d_rsh = np.atleast_1d(-ish * d_vd)
     jac = np.array([d_vd, d_rsh])
     return ish, jac
@@ -84,9 +85,10 @@ def fvd(vc, ic, rs):
     :return: diode voltage [V]
     """
     vd = np.atleast_1d(vc + rs * ic)
+    shaper = np.ones(vd.shape)  # make sure scalars are the right shape
     jac = np.array([np.ones(vd.shape),
-                    np.atleast_1d(rs)*np.ones(vd.shape),  # d/dIc
-                    np.atleast_1d(ic)*np.ones(vd.shape)])  # d/dRs
+                    np.atleast_1d(rs) * shaper,  # d/dIc
+                    np.atleast_1d(ic) * shaper])  # d/dRs
     return vd, jac
 
 
