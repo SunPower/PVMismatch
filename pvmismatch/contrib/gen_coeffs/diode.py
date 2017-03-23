@@ -68,7 +68,7 @@ def fish(vd, rsh):
     :return: shunt current [A]
     """
     ish = np.atleast_1d(vd / rsh)
-    d_vd = np.atleast_1d(1.0 / rsh)
+    d_vd = np.atleast_1d(1.0 / rsh)*np.ones(vd.shape)
     d_rsh = np.atleast_1d(-ish * d_vd)
     jac = np.array([d_vd, d_rsh])
     return ish, jac
@@ -85,8 +85,8 @@ def fvd(vc, ic, rs):
     """
     vd = np.atleast_1d(vc + rs * ic)
     jac = np.array([np.ones(vd.shape),
-                    np.atleast_1d(rs),  # d/dIc
-                    np.atleast_1d(ic)])  # d/dRs
+                    np.atleast_1d(rs)*np.ones(vd.shape),  # d/dIc
+                    np.atleast_1d(ic)*np.ones(vd.shape)])  # d/dRs
     return vd, jac
 
 
