@@ -5,9 +5,6 @@ before_install:
     - sudo apt-get -qq update
     - sudo apt-get install -y gfortran
     - sudo apt-get install -y libatlas-dev liblapack-dev libblas-dev
-before_script:
-    - pip uninstall -y dulwich
-    - pip install -e git+https://github.com/mikofski/dulwich.git@versioneer#egg=dulwich
 script:
     - pytest
     - python setup.py bdist_wheel
