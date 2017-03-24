@@ -26,6 +26,8 @@ _*/
 testPV/
 benchmark_*/
 .coverage
+.cache/
+__pycache__/
 
 # virtualenv
 venv/

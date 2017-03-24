@@ -4,3 +4,6 @@ scipy
 matplotlib
 sphinx
 dulwich
+sympy
+pvlib
+pytest
