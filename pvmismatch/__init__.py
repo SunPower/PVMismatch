@@ -54,10 +54,11 @@ PVsystem = pvsystem.PVsystem
 
 # Dulwich Release Robot
 BASEDIR = os.path.dirname(__file__)  # this directory
+PROJDIR = os.path.dirname(BASEDIR)
 VER_FILE = 'version'  # name of file to store version
 # use release robot to try to get current Git tag
 try:
-    GIT_TAG = get_current_version()
+    GIT_TAG = get_current_version(PROJDIR)
 except NotGitRepository:
     GIT_TAG = None
 # check version file
