@@ -104,7 +104,7 @@ class PVstring(object):
         else:
             self.pvmods = copy(self.pvmods)  # copy list first
             try:
-                for pvmod, cell_Ee in Ee.iteritems():
+                for pvmod, cell_Ee in iteritems(Ee):
                     pvmod = int(pvmod)
                     self.pvmods[pvmod] = copy(self.pvmods[pvmod])
                     if hasattr(cell_Ee, 'keys'):
@@ -167,7 +167,7 @@ class PVstring(object):
         else:
             self.pvmods = copy(self.pvmods)  # copy list first
             try:
-                for pvmod, cell_Tc in Tc.iteritems():
+                for pvmod, cell_Tc in iteritems(Tc):
                     pvmod = int(pvmod)
                     self.pvmods[pvmod] = copy(self.pvmods[pvmod])
                     if hasattr(cell_Tc, 'keys'):

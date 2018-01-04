@@ -120,7 +120,7 @@ class PVsystem(object):
             for pvstr in self.pvstrs:
                 pvstr.setSuns(Ee)
         else:
-            for pvstr, pvmod_Ee in Ee.iteritems():
+            for pvstr, pvmod_Ee in iteritems(Ee):
                 pvstr = int(pvstr)
                 self.pvstrs[pvstr] = copy(self.pvstrs[pvstr])
                 self.pvstrs[pvstr].setSuns(pvmod_Ee)
@@ -158,7 +158,7 @@ class PVsystem(object):
             for pvstr in self.pvstrs:
                 pvstr.setTemps(Tc)
         else:
-            for pvstr, pvmod_Tc in Tc.iteritems():
+            for pvstr, pvmod_Tc in iteritems(Tc):
                 pvstr = int(pvstr)
                 self.pvstrs[pvstr] = copy(self.pvstrs[pvstr])
                 self.pvstrs[pvstr].setTemps(pvmod_Tc)

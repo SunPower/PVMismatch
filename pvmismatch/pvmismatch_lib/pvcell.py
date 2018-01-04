@@ -5,6 +5,8 @@ This module contains the :class:`~pvmismatch.pvmismatch_lib.pvcell.PVcell`
 object which is used by modules, strings and systems.
 """
 
+from __future__ import absolute_import
+from future.utils import iteritems
 from pvmismatch.pvmismatch_lib.pvconstants import PVconstants
 import numpy as np
 from matplotlib import pyplot as plt
@@ -95,7 +97,7 @@ class PVcell(object):
         """
         # TODO: use __dict__.update(), check for floats and update IV curve
         # self.__dict__.update(kwargs)
-        for k, v in kwargs.iteritems():
+        for k, v in iteritems(kwargs):
             setattr(self, k, v)
 
     @property
