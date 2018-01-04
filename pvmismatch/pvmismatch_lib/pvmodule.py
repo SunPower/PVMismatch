@@ -3,6 +3,9 @@
 This module defines the :class:`~pvmismatch.pvmismatch_lib.pvmodule.PVmodule`.
 """
 
+from __future__ import absolute_import
+from past.builtins import xrange, range
+from builtins import zip, itervalues
 import numpy as np
 from copy import copy
 from matplotlib import pyplot as plt

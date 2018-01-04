@@ -4,6 +4,9 @@ This module contains the :class:`~pvmismatch.pvmismatch_lib.pvsystem.PVsystem`
 class.
 """
 
+from __future__ import absolute_import
+from past.builtins import basestring
+from future.utils import iteritems
 import numpy as np
 from copy import copy
 from matplotlib import pyplot as plt
@@ -166,23 +169,16 @@ class PVsystem(object):
     def plotSys(self, sysPlot=None):
         """
         Plot system I-V curves.
-        Arguments sysPlot : matplotlib.figure.Figure
-        Returns sysPlot : matplotlib.figure.Figure
+
+        :param sysPlot: integer, string, or existing figure
+        :returns: new figure
         """
-        # create new figure if sysPlot is None
-        # or make the specified sysPlot current and clear it
-        if not sysPlot:
-            sysPlot = plt.figure()
-        elif isinstance(sysPlot, (int, basestring)):
+        # create new figure if sysPlot or make the specified sysPlot current
+        # and clear it
+        try:
+            sysPlot.clear()
+        except (AttributeError, SyntaxError):
             sysPlot = plt.figure(sysPlot)
-        else:
-            try:
-                sysPlot = plt.figure(sysPlot.number)
-            except TypeError as e:
-                print '%s is not a figure.' % sysPlot
-                print 'Sorry, "plotSys" takes a "int", "str" or "Figure".'
-                raise e
-        sysPlot.clear()
         plt.subplot(2, 1, 1)
         plt.plot(self.Vsys, self.Isys)
         plt.xlim(0, self.Voc * 1.1)

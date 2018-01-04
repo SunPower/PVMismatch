@@ -7,3 +7,5 @@ dulwich
 sympy
 pvlib
 pytest
+future
+six

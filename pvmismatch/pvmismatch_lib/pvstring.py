@@ -4,6 +4,9 @@ This module contains the :class:`~pvmismatch.pvmismatch_lib.pvstring.PVstring`
 class.
 """
 
+from __future__ import absolute_import
+from past.builtins import range
+from future.utils import iteritems
 import numpy as np
 from copy import copy
 from matplotlib import pyplot as plt
