@@ -30,18 +30,21 @@ class PVstring(object):
         self.pvconst = pvconst
         self.numberMods = numberMods
         if pvmods is None:
-            # use deepcopy instead of making each object in for-loop, 2x faster
             pvmods = PVmodule(pvconst=self.pvconst)
+        # expand pvmods to list
         if isinstance(pvmods, PVmodule):
             pvmods = [pvmods] * self.numberMods
-            # reset pvconsts in all pvcells and pvmodules
-            for p in pvmods:
-                for c in p.pvcells:
-                    c.pvconst = self.pvconst
-                p.pvconst = self.pvconst
         if len(pvmods) != self.numberMods:
             # TODO: use pvmismatch exceptions
             raise Exception("Number of modules doesn't match.")
+        # check that pvconst if given, is the same for all cells
+        # don't assign pvcell.pvconst here since it triggers a recalc
+        for p in pvmods:
+            for c in p.pvcells:
+                if c.pvconst is not self.pvconst:
+                    raise Exception('PVconstant must be the same for all cells')
+            if p.pvconst is not self.pvconst:
+                raise Exception('PVconstant must be the same for all cells')
         self.pvmods = pvmods
         self.Istring, self.Vstring, self.Pstring = self.calcString()
 
