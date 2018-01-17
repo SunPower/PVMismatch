@@ -92,9 +92,6 @@ class PVcell(object):
         # recalculate IV curve
         if self._calc_now:
             Icell, Vcell, Pcell = self.calcCell()
-            # super(PVcell, self).__setattr__('Icell', Icell)
-            # super(PVcell, self).__setattr__('Vcell', Vcell)
-            # super(PVcell, self).__setattr__('Pcell', Pcell)
             self.__dict__.update(Icell=Icell, Vcell=Vcell, Pcell=Pcell)
 
     def update(self, **kwargs):
@@ -103,6 +100,8 @@ class PVcell(object):
         """
         # turn off calculation flag until all attributes are updated
         self._calc_now = False
+        # don't use __dict__.update() instead use setattr() to go through
+        # custom __setattr__() so that numbers are cast to floats
         for k, v in iteritems(kwargs):
             setattr(self, k, v)
         self._calc_now = True  # recalculate
