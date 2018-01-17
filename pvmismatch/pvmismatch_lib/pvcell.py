@@ -105,7 +105,7 @@ class PVcell(object):
         self._calc_now = False
         for k, v in iteritems(kwargs):
             setattr(self, k, v)
-        self._calc_now = False  # recalculate
+        self._calc_now = True  # recalculate
 
     @property
     def Vt(self):
