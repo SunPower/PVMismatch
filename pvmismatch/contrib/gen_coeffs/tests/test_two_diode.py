@@ -56,22 +56,22 @@ def test_didv_dpdv_frsh():
                  'rsh': RSH_2, 'ic': IC, 'vc': VC, 'vt': VT}
     fdidv_test, jdidv_test = fdidv(**test_data)
     expected_data = {
-        'isat1': ISAT1_2, 'isat2': ISAT2_2, 'rs': RS_2, 'rsh': RSH_2,
-        'ic(vc)': IC, 'vc': VC, 'vd': VD_2, 'vt': VT
+        isat1: ISAT1_2, isat2: ISAT2_2, rs: RS_2, rsh: RSH_2,
+        ic: IC, vc: VC, 'vd': VD_2, vt: VT
     }
-    didv_simple = didv.subs('vc + ic(vc) * rs', 'vd')
+    didv_simple = didv.subs(vc + ic * rs, 'vd')
     fdidv_expected = np.float(didv_simple.evalf(subs=expected_data))
     LOGGER.debug('fdidv test: %g, expected: %g', fdidv_test, fdidv_expected)
     assert np.isclose(fdidv_test, fdidv_expected)
     # jacobian
-    d_didv_isat1 = didv.diff(isat1).subs('vc + ic(vc) * rs', 'vd')
-    d_didv_isat2 = didv.diff(isat2).subs('vc + ic(vc) * rs', 'vd')
-    d_didv_rs = didv.diff(rs).subs('vc + ic(vc) * rs', 'vd')
-    d_didv_rsh = didv.diff(rsh).subs('vc + ic(vc) * rs', 'vd')
-    d_didv_ic = didv.diff(ic).subs('vc + ic(vc) * rs', 'vd')
-    d_didv_vc = didv.diff(vc).subs('vc + ic(vc) * rs', 'vd')
+    d_didv_isat1 = didv.diff(isat1).subs(vc + ic * rs, 'vd')
+    d_didv_isat2 = didv.diff(isat2).subs(vc + ic * rs, 'vd')
+    d_didv_rs = didv.diff(rs).subs(vc + ic * rs, 'vd')
+    d_didv_rsh = didv.diff(rsh).subs(vc + ic * rs, 'vd')
+    d_didv_ic = didv.diff(ic).subs(vc + ic * rs, 'vd')
+    d_didv_vc = didv.diff(vc).subs(vc + ic * rs, 'vd')
     # update expected test data with calculated derivative
-    expected_data['Derivative(ic(vc), vc)'] = fdidv_expected
+    expected_data[di_dv] = fdidv_expected
     jdidv_expected = np.array([
         d_didv_isat1.evalf(subs=expected_data),
         d_didv_isat2.evalf(subs=expected_data),
@@ -88,17 +88,17 @@ def test_didv_dpdv_frsh():
     dpdv = didv * vc + ic
     # test fdpdv
     fdpdv_test, jdpdv_test = fdpdv(**test_data)
-    dpdv_simple = dpdv.subs('vc + ic(vc) * rs', 'vd')
+    dpdv_simple = dpdv.subs(vc + ic * rs, 'vd')
     fdpdv_expected = np.float(dpdv_simple.evalf(subs=expected_data))
     LOGGER.debug('fdpdv test: %g, expected: %g', fdpdv_test, fdpdv_expected)
     assert np.isclose(fdpdv_test, fdpdv_expected)
     # jacobian
-    d_dpdv_isat1 = dpdv.diff(isat1).subs('vc + ic(vc) * rs', 'vd')
-    d_dpdv_isat2 = dpdv.diff(isat2).subs('vc + ic(vc) * rs', 'vd')
-    d_dpdv_rs = dpdv.diff(rs).subs('vc + ic(vc) * rs', 'vd')
-    d_dpdv_rsh = dpdv.diff(rsh).subs('vc + ic(vc) * rs', 'vd')
-    d_dpdv_ic = dpdv.diff(ic).subs('vc + ic(vc) * rs', 'vd')
-    d_dpdv_vc = dpdv.diff(vc).subs('vc + ic(vc) * rs', 'vd')
+    d_dpdv_isat1 = dpdv.diff(isat1).subs(vc + ic * rs, 'vd')
+    d_dpdv_isat2 = dpdv.diff(isat2).subs(vc + ic * rs, 'vd')
+    d_dpdv_rs = dpdv.diff(rs).subs(vc + ic * rs, 'vd')
+    d_dpdv_rsh = dpdv.diff(rsh).subs(vc + ic * rs, 'vd')
+    d_dpdv_ic = dpdv.diff(ic).subs(vc + ic * rs, 'vd')
+    d_dpdv_vc = dpdv.diff(vc).subs(vc + ic * rs, 'vd')
     jdpdv_expected = np.array([
         d_dpdv_isat1.evalf(subs=expected_data),
         d_dpdv_isat2.evalf(subs=expected_data),
@@ -117,23 +117,23 @@ def test_didv_dpdv_frsh():
     del test_data['ic'], test_data['vc']  # remove Ic, Vc
     test_data['isc'] = ISC0  # add Isc
     frsh_test, jfrsh_test = fjrsh(**test_data)
-    frsh_simple = frsh.subs('vc + ic(vc) * rs', 'vd')
+    frsh_simple = frsh.subs(vc + ic * rs, 'vd')
     # update expected test data with calculated derivative
-    expected_data['ic(vc)'] = ISC0
-    expected_data['vc'] = 0
+    expected_data[ic] = ISC0
+    expected_data[vc] = 0
     expected_data['vd'] = ISC0 * RS_2
     didv_isc = np.float(didv_simple.evalf(subs=expected_data))
-    expected_data['Derivative(ic(vc), vc)'] = didv_isc
+    expected_data[di_dv] = didv_isc
     frsh_expected = np.float(frsh_simple.evalf(subs=expected_data))
     LOGGER.debug('frsh test: %r, expected: %r', frsh_test, frsh_expected)
     assert np.isclose(frsh_test, frsh_expected)
     # jacobian
-    dfrsh_isat1 = frsh.diff(isat1).subs('vc + ic(vc) * rs', 'vd')
-    dfrsh_isat2 = frsh.diff(isat2).subs('vc + ic(vc) * rs', 'vd')
-    dfrsh_rs = frsh.diff(rs).subs('vc + ic(vc) * rs', 'vd')
-    dfrsh_rsh = frsh.diff(rsh).subs('vc + ic(vc) * rs', 'vd')
-    dfrsh_ic = frsh.diff(ic).subs('vc + ic(vc) * rs', 'vd')
-    dfrsh_vc = frsh.diff(vc).subs('vc + ic(vc) * rs', 'vd')
+    dfrsh_isat1 = frsh.diff(isat1).subs(vc + ic * rs, 'vd')
+    dfrsh_isat2 = frsh.diff(isat2).subs(vc + ic * rs, 'vd')
+    dfrsh_rs = frsh.diff(rs).subs(vc + ic * rs, 'vd')
+    dfrsh_rsh = frsh.diff(rsh).subs(vc + ic * rs, 'vd')
+    dfrsh_ic = frsh.diff(ic).subs(vc + ic * rs, 'vd')
+    dfrsh_vc = frsh.diff(vc).subs(vc + ic * rs, 'vd')
     jfrsh_expected = np.array([
         dfrsh_isat1.evalf(subs=expected_data),
         dfrsh_isat2.evalf(subs=expected_data),

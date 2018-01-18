@@ -3,6 +3,10 @@
 This module defines the :class:`~pvmismatch.pvmismatch_lib.pvmodule.PVmodule`.
 """
 
+from __future__ import absolute_import
+from past.builtins import xrange, range
+from builtins import zip
+from six import itervalues
 import numpy as np
 from copy import copy
 from matplotlib import pyplot as plt
@@ -244,7 +248,7 @@ class PVmodule(object):
                     else:
                         new_pvcells[cell_id] = old_pvcells[pvcell]
                 self.pvcells = new_pvcells
-                pvcell_set = old_pvcells.itervalues()
+                pvcell_set = itervalues(old_pvcells)
                 for pvc in pvcell_set:
                     pvc.Ee = Ee
             elif np.size(Ee) == self.numberCells:
@@ -314,7 +318,7 @@ class PVmodule(object):
                     else:
                         new_pvcells[cell_id] = old_pvcells[pvcell]
                 self.pvcells = new_pvcells
-                pvcell_set = old_pvcells.itervalues()
+                pvcell_set = itervalues(old_pvcells)
                 for pvc in pvcell_set:
                     pvc.Tcell = Tc
             elif np.size(Tc) == self.numberCells:
