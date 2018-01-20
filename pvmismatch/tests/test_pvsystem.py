@@ -3,8 +3,9 @@ from pvmismatch import *
 
 def check_same_pvconst_and_lengths(pvsys):
     assert len(pvsys.pvstrs) == pvsystem.NUMBERSTRS
-    for p in pvsys.pvstrs:
+    for n, p in enumerate(pvsys.pvstrs):
         assert p.pvconst is pvsys.pvconst
+        assert len(p.pvmods) == pvsys.numberMods[n]
 
 
 def test_pvsystem_with_pvstrs_list():
