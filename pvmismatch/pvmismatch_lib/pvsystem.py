@@ -45,20 +45,20 @@ class PVsystem(object):
                                   pvconst=pvconst)
             # expand pvstrs to list
             pvstrs = [pvstrs] * numberStrs
+            numberMods = [numberMods] * numberStrs
         else:
             pvconst = pvstr0.pvconst
             numberStrs = len(pvstrs)
-            numberMods = len(pvstr0.pvmods)
+            numberMods = []
             for p in pvstrs:
                 if p.pvconst is not pvconst:
                     raise Exception('pvconst must be the same for all strings')
-                if len(p.pvmods) != numberMods:
-                    raise Exception('pvmods must be the same for all strings')
-        self.pvconst = pvconst
-        self.numberStrs = numberStrs
-        self.numberMods = numberMods
-        self.pvstrs = pvstrs
-        # calculate pv system
+                numberMods.append(len(p.pvmods))
+        self.pvconst = pvconst  #: ``PVconstants`` used in ``PVsystem``
+        self.numberStrs = numberStrs  #: number strings in the system
+        self.numberMods = numberMods  #: list of number of modules per string
+        self.pvstrs = pvstrs  #: list of ``PVstring`` in system
+        # calculate pvsystem
         self.Isys, self.Vsys, self.Psys = self.calcSystem()
         (self.Imp, self.Vmp, self.Pmp,
          self.Isc, self.Voc, self.FF, self.eff) = self.calcMPP_IscVocFFeff()

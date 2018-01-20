@@ -5,7 +5,6 @@ def check_same_pvconst_and_lengths(pvsys):
     assert len(pvsys.pvstrs) == pvsystem.NUMBERSTRS
     for p in pvsys.pvstrs:
         assert p.pvconst is pvsys.pvconst
-        assert len(p.pvmods) == pvsystem.NUMBERMODS
 
 
 def test_pvsystem_with_pvstrs_list():
