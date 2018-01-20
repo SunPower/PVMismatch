@@ -47,7 +47,7 @@ class PVstring(object):
             numberMods = len(pvmods)
             for p in pvmods:
                 if p.pvconst is not pvconst:
-                    raise Exception('PVconstant must be the same for all cells')
+                    raise Exception('pvconst must be the same for all modules')
         self.pvconst = pvconst  #: ``PVconstants`` used in  ``PVstring``
         self.numberMods = numberMods  #: number of module in string
         self.pvmods = pvmods  #: list of ``PVModule`` in ``PVstring``

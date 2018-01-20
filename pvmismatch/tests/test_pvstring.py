@@ -1,7 +1,6 @@
 from pvmismatch import *
 
 
-
 def check_same_pvconst_and_lengths(pvstr):
     assert len(pvstr.pvmods) == pvstring.NUMBERMODS
     for p in pvstr.pvmods:
