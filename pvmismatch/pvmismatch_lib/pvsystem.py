@@ -27,21 +27,38 @@ class PVsystem(object):
     :param numberMods: number of modules per string
     :param pvmods: list of modules, a ``PVmodule`` object or None
     """
-    def __init__(self, pvconst=PVconstants(), numberStrs=NUMBERSTRS,
+    def __init__(self, pvconst=None, numberStrs=NUMBERSTRS,
                  pvstrs=None, numberMods=NUMBERMODS, pvmods=None):
+        # is pvstrs a list?
+        try:
+            pvstr0 = pvstrs[0]
+        except TypeError:
+            # is pvstrs a PVstring object?
+            try:
+                pvconst = pvstrs.pvconst
+            except AttributeError:
+                # try to use the pvconst arg or create one if none
+                if not pvconst:
+                    pvconst = PVconstants()
+                # create a pvstring
+                pvstrs = PVstring(numberMods=numberMods, pvmods=pvmods,
+                                  pvconst=pvconst)
+            # expand pvstrs to list
+            pvstrs = [pvstrs] * numberStrs
+        else:
+            pvconst = pvstr0.pvconst
+            numberStrs = len(pvstrs)
+            numberMods = len(pvstr0.pvmods)
+            for p in pvstrs:
+                if p.pvconst is not pvconst:
+                    raise Exception('pvconst must be the same for all strings')
+                if len(p.pvmods) != numberMods:
+                    raise Exception('pvmods must be the same for all strings')
         self.pvconst = pvconst
         self.numberStrs = numberStrs
         self.numberMods = numberMods
-        if pvstrs is None:
-            pvstrs = PVstring(numberMods=self.numberMods, pvmods=pvmods,
-                              pvconst=self.pvconst)
-        # expand pvstrs to list
-        if isinstance(pvstrs, PVstring):
-            pvstrs = [pvstrs] * self.numberStrs
-        if len(pvstrs) != self.numberStrs:
-            # TODO: use pvmismatch excecptions
-            raise Exception("Number of strings don't match.")
         self.pvstrs = pvstrs
+        # calculate pv system
         self.Isys, self.Vsys, self.Psys = self.calcSystem()
         (self.Imp, self.Vmp, self.Pmp,
          self.Isc, self.Voc, self.FF, self.eff) = self.calcMPP_IscVocFFeff()
