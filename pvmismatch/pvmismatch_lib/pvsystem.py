@@ -59,6 +59,10 @@ class PVsystem(object):
         self.numberMods = numberMods  #: list of number of modules per string
         self.pvstrs = pvstrs  #: list of ``PVstring`` in system
         # calculate pvsystem
+        self.update()
+
+    def update(self):
+        """Update system calculations."""
         self.Isys, self.Vsys, self.Psys = self.calcSystem()
         (self.Imp, self.Vmp, self.Pmp,
          self.Isc, self.Voc, self.FF, self.eff) = self.calcMPP_IscVocFFeff()
@@ -141,9 +145,8 @@ class PVsystem(object):
                 pvstr = int(pvstr)
                 self.pvstrs[pvstr] = copy(self.pvstrs[pvstr])
                 self.pvstrs[pvstr].setSuns(pvmod_Ee)
-        self.Isys, self.Vsys, self.Psys = self.calcSystem()
-        (self.Imp, self.Vmp, self.Pmp,
-         self.Isc, self.Voc, self.FF, self.eff) = self.calcMPP_IscVocFFeff()
+        # calculate pvsystem
+        self.update()
 
     def setTemps(self, Tc):
         """
@@ -179,9 +182,8 @@ class PVsystem(object):
                 pvstr = int(pvstr)
                 self.pvstrs[pvstr] = copy(self.pvstrs[pvstr])
                 self.pvstrs[pvstr].setTemps(pvmod_Tc)
-        self.Isys, self.Vsys, self.Psys = self.calcSystem()
-        (self.Imp, self.Vmp, self.Pmp,
-         self.Isc, self.Voc, self.FF, self.eff) = self.calcMPP_IscVocFFeff()
+        # calculate pvsystem
+        self.update()
 
     def plotSys(self, sysPlot=None):
         """
