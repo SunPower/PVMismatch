@@ -74,23 +74,39 @@ class PVconstants(object):
     T0 = 298.15  #: [K] reference temperature
 
     def __init__(self, npts=NPTS):
-        # set number of points in IV curve(s)
-        self.npts = npts  #: number of points in IV curves
-        # point spacing from 0 to 1, used for Vcell, Vmod, Vsys and Istring
-        # decrease point spacing as voltage approaches Voc by using logspace
-        pts = (11. - np.logspace(np.log10(11.), 0., self.npts)) / 10.
-        pts[0] = 0.  # first point must be exactly zero
-        self.pts = pts.reshape((self.npts, 1))
+        self._npts = None
+        self.pts = None
         """array of points with decreasing spacing from 0 to 1"""
-        negpts = (11. - np.logspace(np.log10(11. - 1. / float(self.npts)),
-                                    0., self.npts)) / 10.
-        negpts = negpts.reshape((self.npts, 1))
-        self.Imod_negpts = 1 + 1. / float(self.npts) / 10. - negpts
+        self.Imod_negpts = None
         """array of points with decreasing spacing from 1 to just less than but
         not including zero"""
-        self.negpts = np.flipud(negpts)  # reverse the order
+        self.negpts = None
         """array of points with increasing spacing from 1 to just less than but
         not including zero"""
+        self.Imod_pts = None
+        """array of points with increasing spacing from 0 to 1"""
+        # call property setter
+        self.npts = npts  #: number of points in IV curves
+
+    @property
+    def npts(self):
+        """number of points in IV curves"""
+        return self._npts
+
+    @npts.setter
+    def npts(self, npts):
+        # set number of points in IV curve(s)
+        self._npts = npts  # number of points in IV curves
+        # point spacing from 0 to 1, used for Vcell, Vmod, Vsys and Istring
+        # decrease point spacing as voltage approaches Voc by using logspace
+        pts = (11. - np.logspace(np.log10(11.), 0., self._npts)) / 10.
+        pts[0] = 0.  # first point must be exactly zero
+        self.pts = pts.reshape((self._npts, 1))
+        negpts = (11. - np.logspace(np.log10(11. - 1. / float(self._npts)),
+                                    0., self._npts)) / 10.
+        negpts = negpts.reshape((self._npts, 1))
+        self.Imod_negpts = 1 + 1. / float(self._npts) / 10. - negpts
+        self.negpts = np.flipud(negpts)  # reverse the order
         # shift and concatenate pvconst.negpts and pvconst.pts
         # so that tight spacing is around MPP and RBD
         self.Imod_pts = 1 - np.flipud(self.pts)
