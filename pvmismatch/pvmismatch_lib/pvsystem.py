@@ -35,7 +35,7 @@ class PVsystem(object):
         if pvstrs is None:
             pvstrs = PVstring(numberMods=self.numberMods, pvmods=pvmods,
                               pvconst=self.pvconst)
-        # use deep copy instead of making each object in a for-loop
+        # expand pvstrs to list
         if isinstance(pvstrs, PVstring):
             pvstrs = [pvstrs] * self.numberStrs
         if len(pvstrs) != self.numberStrs:

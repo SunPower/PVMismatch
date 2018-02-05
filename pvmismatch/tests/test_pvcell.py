@@ -69,6 +69,21 @@ def test_pvcell_calc_rbd():
     pvc2 = PVcell(bRBD=-0.056)
     ok_(isinstance(pvc2, PVcell))
 
-        
+
+def test_pvcell_calc_now_flag():
+    pvc = PVcell()
+    itest, vtest, ptest = pvc.Icell, pvc.Vcell, pvc.Pcell
+    pvc._calc_now = False
+    pvc.Rs = 0.001
+    assert np.allclose(itest, pvc.Icell)
+    assert np.allclose(vtest, pvc.Vcell)
+    assert np.allclose(ptest, pvc.Pcell)
+    icell, vcell, pcell = pvc.calcCell()
+    pvc._calc_now = True
+    assert np.allclose(icell, pvc.Icell)
+    assert np.allclose(vcell, pvc.Vcell)
+    assert np.allclose(pcell, pvc.Pcell)
+
+
 if __name__ == "__main__":
     test_calc_series()

@@ -47,6 +47,9 @@ class PVcell(object):
     :param pvconst: configuration constants object
     :type pvconst: :class:`~pvmismatch.pvmismatch_lib.pvconstants.PVconstants`
     """
+
+    _calc_now = False  #: if True ``calcCells()`` is called in ``__setattr__``
+
     def __init__(self, Rs=RS, Rsh=RSH, Isat1_T0=ISAT1_T0, Isat2=ISAT2,
                  Isc0_T0=ISC0_T0, aRBD=ARBD, bRBD=BRBD, VRBD=VRBD_,
                  nRBD=NRBD, Eg=EG, alpha_Isc=ALPHA_ISC,
@@ -69,6 +72,8 @@ class PVcell(object):
         self.Icell = None  #: cell currents on IV curve [A]
         self.Vcell = None  #: cell voltages on IV curve [V]
         self.Pcell = None  #: cell power on IV curve [W]
+        # set calculation flag
+        self._calc_now = True  # overwrites the class attribute
 
     def __str__(self):
         fmt = '<PVcell(Ee=%g[suns], Tcell=%g[K], Isc=%g[A], Voc=%g[V])>'
@@ -78,27 +83,28 @@ class PVcell(object):
         return str(self)
 
     def __setattr__(self, key, value):
+        # check for floats
         try:
             value = np.float64(value)
         except (TypeError, ValueError):
-            pass
+            pass  # fail silently if not float, eg: pvconst or _calc_now
         super(PVcell, self).__setattr__(key, value)
-        # after all attributes have been initialized, recalculate IV curve
-        # every time __setattr__() is called
-        if hasattr(self, 'pvconst'):
+        # recalculate IV curve
+        if self._calc_now:
             Icell, Vcell, Pcell = self.calcCell()
-            super(PVcell, self).__setattr__('Icell', Icell)
-            super(PVcell, self).__setattr__('Vcell', Vcell)
-            super(PVcell, self).__setattr__('Pcell', Pcell)
+            self.__dict__.update(Icell=Icell, Vcell=Vcell, Pcell=Pcell)
 
     def update(self, **kwargs):
         """
         Update user-defined constants.
         """
-        # TODO: use __dict__.update(), check for floats and update IV curve
-        # self.__dict__.update(kwargs)
+        # turn off calculation flag until all attributes are updated
+        self._calc_now = False
+        # don't use __dict__.update() instead use setattr() to go through
+        # custom __setattr__() so that numbers are cast to floats
         for k, v in iteritems(kwargs):
             setattr(self, k, v)
+        self._calc_now = True  # recalculate
 
     @property
     def Vt(self):
