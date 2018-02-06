@@ -27,21 +27,42 @@ class PVsystem(object):
     :param numberMods: number of modules per string
     :param pvmods: list of modules, a ``PVmodule`` object or None
     """
-    def __init__(self, pvconst=PVconstants(), numberStrs=NUMBERSTRS,
+    def __init__(self, pvconst=None, numberStrs=NUMBERSTRS,
                  pvstrs=None, numberMods=NUMBERMODS, pvmods=None):
-        self.pvconst = pvconst
-        self.numberStrs = numberStrs
-        self.numberMods = numberMods
-        if pvstrs is None:
-            pvstrs = PVstring(numberMods=self.numberMods, pvmods=pvmods,
-                              pvconst=self.pvconst)
-        # expand pvstrs to list
-        if isinstance(pvstrs, PVstring):
-            pvstrs = [pvstrs] * self.numberStrs
-        if len(pvstrs) != self.numberStrs:
-            # TODO: use pvmismatch excecptions
-            raise Exception("Number of strings don't match.")
-        self.pvstrs = pvstrs
+        # is pvstrs a list?
+        try:
+            pvstr0 = pvstrs[0]
+        except TypeError:
+            # is pvstrs a PVstring object?
+            try:
+                pvconst = pvstrs.pvconst
+            except AttributeError:
+                # try to use the pvconst arg or create one if none
+                if not pvconst:
+                    pvconst = PVconstants()
+                # create a pvstring
+                pvstrs = PVstring(numberMods=numberMods, pvmods=pvmods,
+                                  pvconst=pvconst)
+            # expand pvstrs to list
+            pvstrs = [pvstrs] * numberStrs
+            numberMods = [numberMods] * numberStrs
+        else:
+            pvconst = pvstr0.pvconst
+            numberStrs = len(pvstrs)
+            numberMods = []
+            for p in pvstrs:
+                if p.pvconst is not pvconst:
+                    raise Exception('pvconst must be the same for all strings')
+                numberMods.append(len(p.pvmods))
+        self.pvconst = pvconst  #: ``PVconstants`` used in ``PVsystem``
+        self.numberStrs = numberStrs  #: number strings in the system
+        self.numberMods = numberMods  #: list of number of modules per string
+        self.pvstrs = pvstrs  #: list of ``PVstring`` in system
+        # calculate pvsystem
+        self.update()
+
+    def update(self):
+        """Update system calculations."""
         self.Isys, self.Vsys, self.Psys = self.calcSystem()
         (self.Imp, self.Vmp, self.Pmp,
          self.Isc, self.Voc, self.FF, self.eff) = self.calcMPP_IscVocFFeff()
@@ -124,9 +145,8 @@ class PVsystem(object):
                 pvstr = int(pvstr)
                 self.pvstrs[pvstr] = copy(self.pvstrs[pvstr])
                 self.pvstrs[pvstr].setSuns(pvmod_Ee)
-        self.Isys, self.Vsys, self.Psys = self.calcSystem()
-        (self.Imp, self.Vmp, self.Pmp,
-         self.Isc, self.Voc, self.FF, self.eff) = self.calcMPP_IscVocFFeff()
+        # calculate pvsystem
+        self.update()
 
     def setTemps(self, Tc):
         """
@@ -162,9 +182,8 @@ class PVsystem(object):
                 pvstr = int(pvstr)
                 self.pvstrs[pvstr] = copy(self.pvstrs[pvstr])
                 self.pvstrs[pvstr].setTemps(pvmod_Tc)
-        self.Isys, self.Vsys, self.Psys = self.calcSystem()
-        (self.Imp, self.Vmp, self.Pmp,
-         self.Isc, self.Voc, self.FF, self.eff) = self.calcMPP_IscVocFFeff()
+        # calculate pvsystem
+        self.update()
 
     def plotSys(self, sysPlot=None):
         """

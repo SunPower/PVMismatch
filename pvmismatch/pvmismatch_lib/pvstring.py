@@ -26,26 +26,32 @@ class PVstring(object):
     :param pvconst: a configuration constants object
     """
     def __init__(self, numberMods=NUMBERMODS, pvmods=None,
-                 pvconst=PVconstants()):
-        self.pvconst = pvconst
-        self.numberMods = numberMods
-        if pvmods is None:
-            pvmods = PVmodule(pvconst=self.pvconst)
-        # expand pvmods to list
-        if isinstance(pvmods, PVmodule):
-            pvmods = [pvmods] * self.numberMods
-        if len(pvmods) != self.numberMods:
-            # TODO: use pvmismatch exceptions
-            raise Exception("Number of modules doesn't match.")
-        # check that pvconst if given, is the same for all cells
-        # don't assign pvcell.pvconst here since it triggers a recalc
-        for p in pvmods:
-            for c in p.pvcells:
-                if c.pvconst is not self.pvconst:
-                    raise Exception('PVconstant must be the same for all cells')
-            if p.pvconst is not self.pvconst:
-                raise Exception('PVconstant must be the same for all cells')
-        self.pvmods = pvmods
+                 pvconst=None):
+        # is pvmods a list?
+        try:
+            pvmod0 = pvmods[0]
+        except TypeError:
+            # is pvmods an object?
+            try:
+                pvconst = pvmods.pvcons
+            except AttributeError:
+                #  try to use the pvconst arg or create one if none
+                if not pvconst:
+                    pvconst = PVconstants()
+                # create pvmod
+                pvmods = PVmodule(pvconst=pvconst)
+            # expand pvmods to list
+            pvmods = [pvmods] * numberMods
+        else:
+            pvconst = pvmod0.pvconst
+            numberMods = len(pvmods)
+            for p in pvmods:
+                if p.pvconst is not pvconst:
+                    raise Exception('pvconst must be the same for all modules')
+        self.pvconst = pvconst  #: ``PVconstants`` used in  ``PVstring``
+        self.numberMods = numberMods  #: number of module in string
+        self.pvmods = pvmods  #: list of ``PVModule`` in ``PVstring``
+        # calculate string
         self.Istring, self.Vstring, self.Pstring = self.calcString()
 
     # TODO: use __getattr__ to check for updates to pvcells
