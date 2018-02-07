@@ -32,7 +32,7 @@ x, sol = gen_coeffs.gen_two_diode(ISC0, VOC0, IMP0, VMP0, NS, NP, T0)
 isat1, isat2, rs, rsh = x
 
 pvc = pvcell.PVcell(
-    Rs=rs, Rsh=rsh, Isat1_T0=isat1, Isat2=isat2,
+    Rs=rs, Rsh=rsh, Isat1_T0=isat1, Isat2_T0=isat2,
     Isc0_T0=ISC0/NP, alpha_Isc=AISC
 )
 f1 = plt.figure()
