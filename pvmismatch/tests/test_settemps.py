@@ -7,6 +7,7 @@ Bennet Meyers 2/2/17
 import numpy as np
 from nose.tools import ok_
 from pvmismatch.pvmismatch_lib.pvsystem import PVsystem
+from pvmismatch.pvmismatch_lib.pvcell import PVcell
 import logging
 
 logging.basicConfig(level=logging.DEBUG)
@@ -150,3 +151,27 @@ def test_settemp():
     assert pvsys.pvstrs[2].pvmods[4].pvcells[5].Tcell == 310
     assert pvsys.pvstrs[2].pvmods[4].pvcells[3] == pvsys.pvstrs[2].pvmods[4].pvcells[5]
     assert pvsys.pvstrs[1].pvmods[0] == pvsys.pvstrs[1].pvmods[2]
+
+def test_settemp_cell():
+    """
+    Test setTemp method for a wide range of temperatures. 
+    Test added after implementing Isat2 as Isat2(Tcell)
+    """
+    pvc = PVcell()
+    Pmp_arr = []
+    Vmp_arr = []
+    Voc_arr = []
+    Isc_arr = []
+    
+    temps = [-85, -60, -40, -25, 0, 25, 40, 60, 85]
+    for t in temps:
+        pvc.Tcell = float(t) + 273.15
+        Pmp_arr.append(pvc.Pcell.max())
+        Vmp_arr.append(pvc.Vcell[pvc.Pcell.argmax()])
+        Voc_arr.append(pvc.calcVcell(0))
+        Isc_arr.append(pvc.Isc)
+        
+    assert(np.all(np.gradient(np.squeeze(Vmp_arr)) < 0))
+    assert(np.all(np.gradient(np.squeeze(Voc_arr)) < 0))
+    assert(np.all(np.gradient(Isc_arr) > 0))
+        
