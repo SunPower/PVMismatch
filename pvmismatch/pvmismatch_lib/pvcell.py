@@ -16,7 +16,7 @@ from scipy.optimize import fsolve
 RS = 0.004267236774264931  # [ohm] series resistance
 RSH = 10.01226369025448  # [ohm] shunt resistance
 ISAT1_T0 = 2.286188161253440E-11  # [A] diode one saturation current
-ISAT2 = 1.117455042372326E-6  # [A] diode two saturation current
+ISAT2_T0 = 1.117455042372326E-6  # [A] diode two saturation current
 ISC0_T0 = 6.3056  # [A] reference short circuit current
 TCELL = 298.15  # [K] cell temperature
 ARBD = 1.036748445065697E-4  # reverse breakdown coefficient 1
@@ -50,7 +50,7 @@ class PVcell(object):
 
     _calc_now = False  #: if True ``calcCells()`` is called in ``__setattr__``
 
-    def __init__(self, Rs=RS, Rsh=RSH, Isat1_T0=ISAT1_T0, Isat2=ISAT2,
+    def __init__(self, Rs=RS, Rsh=RSH, Isat1_T0=ISAT1_T0, Isat2_T0=ISAT2_T0,
                  Isc0_T0=ISC0_T0, aRBD=ARBD, bRBD=BRBD, VRBD=VRBD_,
                  nRBD=NRBD, Eg=EG, alpha_Isc=ALPHA_ISC,
                  Tcell=TCELL, Ee=1., pvconst=PVconstants()):
@@ -58,7 +58,7 @@ class PVcell(object):
         self.Rs = Rs  #: [ohm] series resistance
         self.Rsh = Rsh  #: [ohm] shunt resistance
         self.Isat1_T0 = Isat1_T0  #: [A] diode one sat. current at T0
-        self.Isat2 = Isat2  #: [A] diode two saturation current
+        self.Isat2_T0 = Isat2_T0  #: [A] diode two saturation current
         self.Isc0_T0 = Isc0_T0  #: [A] short circuit current at T0
         self.aRBD = aRBD  #: reverse breakdown coefficient 1
         self.bRBD = bRBD  #: reverse breakdown coefficient 2
@@ -142,6 +142,18 @@ class PVcell(object):
         )
         return self.Isat1_T0 * _Tstar * _expTstar  # [A] Isat1(Tcell)
 
+    @property
+    def Isat2(self):
+        """
+        Diode two saturation current at Tcell in amps.
+        """
+        _Tstar = self.Tcell ** 3. / self.pvconst.T0 ** 3.  # scaled temperature
+        _inv_delta_T = 1. / self.pvconst.T0 - 1. / self.Tcell  # [1/K]
+        _expTstar = np.exp(
+            self.Eg * self.pvconst.q / (2.0 * self.pvconst.k) * _inv_delta_T
+        )
+        return self.Isat2_T0 * _Tstar * _expTstar  # [A] Isat2(Tcell)
+    
     @property
     def Isc0(self):
         """
