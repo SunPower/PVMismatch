@@ -6,7 +6,7 @@ from pvlib.pvsystem import sapm
 import numpy as np
 from scipy import optimize
 from pvmismatch.contrib.gen_coeffs import diode, two_diode
-from pvmismatch.pvmismatch_lib.pvcell import ISAT1_T0, ISAT2, RS, RSH
+from pvmismatch.pvmismatch_lib.pvcell import ISAT1_T0, ISAT2_T0, RS, RSH
 
 # IEC 61853 test matrix
 TC_C = [15.0, 25.0, 50.0, 75.0]
