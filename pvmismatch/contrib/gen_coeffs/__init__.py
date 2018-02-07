@@ -37,7 +37,7 @@ def gen_two_diode(isc, voc, imp, vmp, nseries, nparallel,
     vmp_cell = vmp / nseries
     if x0 is None:
         isat1 = ISAT1_T0  # [A]
-        isat2 = ISAT2
+        isat2 = ISAT2_T0
         rs = RS  # [ohms]
         rsh = RSH  # [ohms]
     else:
