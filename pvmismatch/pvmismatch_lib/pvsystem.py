@@ -95,9 +95,9 @@ class PVsystem(object):
     def calcMPP_IscVocFFeff(self):
         mpp = np.argmax(self.Psys)
 
-        P = self.Psys[mpp - 1:mpp + 2, 0]
-        V = self.Vsys[mpp - 1:mpp + 2, 0]
-        I = self.Isys[mpp - 1:mpp + 2, 0]
+        P = self.Psys[mpp - 1:mpp + 2]
+        V = self.Vsys[mpp - 1:mpp + 2]
+        I = self.Isys[mpp - 1:mpp + 2]
 
         # calculate derivative dP/dV using central difference
         dP = np.diff(P, axis=0)  # size is (2, 1)
