@@ -69,6 +69,37 @@ def test_pvcell_calc_rbd():
     pvc2 = PVcell(bRBD=-0.056)
     ok_(isinstance(pvc2, PVcell))
 
-        
+
+def test_pvcell_calc_now_flag():
+    """
+    Test ``_calc_now`` turns off recalc in ``__setattr__``.
+    """
+    pvc = PVcell()
+    itest, vtest, ptest = pvc.Icell, pvc.Vcell, pvc.Pcell
+    pvc._calc_now = False
+    pvc.Rs = 0.001
+    assert np.allclose(itest, pvc.Icell)
+    assert np.allclose(vtest, pvc.Vcell)
+    assert np.allclose(ptest, pvc.Pcell)
+    icell, vcell, pcell = pvc.calcCell()
+    pvc._calc_now = True
+    assert np.allclose(icell, pvc.Icell)
+    assert np.allclose(vcell, pvc.Vcell)
+    assert np.allclose(pcell, pvc.Pcell)
+
+
+def test_update():
+    pvc = PVcell()
+    Rs = pvc.Rs
+    itest = pvc.Icell[170]
+    pvc.update(Rs=0.001)
+    assert np.isclose(pvc.Icell[170], 5.79691674)
+    pvc._calc_now = False
+    pvc.Rs = Rs
+    pvc.update()  # resets _calc_now to True
+    assert np.isclose(pvc.Icell[170], itest)
+    assert pvc._calc_now
+
+
 if __name__ == "__main__":
     test_calc_series()

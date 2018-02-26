@@ -4,6 +4,9 @@ This module contains the :class:`~pvmismatch.pvmismatch_lib.pvstring.PVstring`
 class.
 """
 
+from __future__ import absolute_import
+from past.builtins import range
+from future.utils import iteritems
 import numpy as np
 from copy import copy
 from matplotlib import pyplot as plt
@@ -23,23 +26,32 @@ class PVstring(object):
     :param pvconst: a configuration constants object
     """
     def __init__(self, numberMods=NUMBERMODS, pvmods=None,
-                 pvconst=PVconstants()):
-        self.pvconst = pvconst
-        self.numberMods = numberMods
-        if pvmods is None:
-            # use deepcopy instead of making each object in for-loop, 2x faster
-            pvmods = PVmodule(pvconst=self.pvconst)
-        if isinstance(pvmods, PVmodule):
-            pvmods = [pvmods] * self.numberMods
-            # reset pvconsts in all pvcells and pvmodules
+                 pvconst=None):
+        # is pvmods a list?
+        try:
+            pvmod0 = pvmods[0]
+        except TypeError:
+            # is pvmods an object?
+            try:
+                pvconst = pvmods.pvcons
+            except AttributeError:
+                #  try to use the pvconst arg or create one if none
+                if not pvconst:
+                    pvconst = PVconstants()
+                # create pvmod
+                pvmods = PVmodule(pvconst=pvconst)
+            # expand pvmods to list
+            pvmods = [pvmods] * numberMods
+        else:
+            pvconst = pvmod0.pvconst
+            numberMods = len(pvmods)
             for p in pvmods:
-                for c in p.pvcells:
-                    c.pvconst = self.pvconst
-                p.pvconst = self.pvconst
-        if len(pvmods) != self.numberMods:
-            # TODO: use pvmismatch exceptions
-            raise Exception("Number of modules doesn't match.")
-        self.pvmods = pvmods
+                if p.pvconst is not pvconst:
+                    raise Exception('pvconst must be the same for all modules')
+        self.pvconst = pvconst  #: ``PVconstants`` used in  ``PVstring``
+        self.numberMods = numberMods  #: number of module in string
+        self.pvmods = pvmods  #: list of ``PVModule`` in ``PVstring``
+        # calculate string
         self.Istring, self.Vstring, self.Pstring = self.calcString()
 
     # TODO: use __getattr__ to check for updates to pvcells
@@ -101,7 +113,7 @@ class PVstring(object):
         else:
             self.pvmods = copy(self.pvmods)  # copy list first
             try:
-                for pvmod, cell_Ee in Ee.iteritems():
+                for pvmod, cell_Ee in iteritems(Ee):
                     pvmod = int(pvmod)
                     self.pvmods[pvmod] = copy(self.pvmods[pvmod])
                     if hasattr(cell_Ee, 'keys'):
@@ -164,7 +176,7 @@ class PVstring(object):
         else:
             self.pvmods = copy(self.pvmods)  # copy list first
             try:
-                for pvmod, cell_Tc in Tc.iteritems():
+                for pvmod, cell_Tc in iteritems(Tc):
                     pvmod = int(pvmod)
                     self.pvmods[pvmod] = copy(self.pvmods[pvmod])
                     if hasattr(cell_Tc, 'keys'):

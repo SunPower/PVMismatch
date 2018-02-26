@@ -6,7 +6,7 @@ from pvlib.pvsystem import sapm
 import numpy as np
 from scipy import optimize
 from pvmismatch.contrib.gen_coeffs import diode, two_diode
-from pvmismatch.pvmismatch_lib.pvcell import ISAT1_T0, ISAT2, RS, RSH
+from pvmismatch.pvmismatch_lib.pvcell import ISAT1_T0, ISAT2_T0, RS, RSH
 
 # IEC 61853 test matrix
 TC_C = [15.0, 25.0, 50.0, 75.0]
@@ -37,7 +37,7 @@ def gen_two_diode(isc, voc, imp, vmp, nseries, nparallel,
     vmp_cell = vmp / nseries
     if x0 is None:
         isat1 = ISAT1_T0  # [A]
-        isat2 = ISAT2
+        isat2 = ISAT2_T0
         rs = RS  # [ohms]
         rsh = RSH  # [ohms]
     else:

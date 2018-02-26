@@ -4,6 +4,7 @@ Tests for pvmodules.
 
 from nose.tools import ok_
 from pvmismatch.pvmismatch_lib.pvmodule import PVmodule, TCT492, PCT492
+from pvmismatch.pvmismatch_lib.pvcell import PVcell
 import numpy as np
 from copy import copy
 
@@ -39,6 +40,30 @@ def test_calc_pct_bridges():
     pct492_bridges[0][4][2]['crosstie'] = True
     pvmod = PVmodule(cell_pos=pct492_bridges)
     return pvmod
+
+
+def check_same_pvconst_and_lengths(pvmod):
+    assert len(pvmod.pvcells) == 96
+    for p in pvmod.pvcells:
+        assert p.pvconst is pvmod.pvconst
+
+
+def test_pvmodule_with_pvcells_list():
+    pvcells = [PVcell()] * 96
+    pvmod = PVmodule(pvcells=pvcells)
+    check_same_pvconst_and_lengths(pvmod)
+
+
+def test_pvmodule_with_pvcells_obj():
+    pvcells = PVcell()
+    pvmod = PVmodule(pvcells=pvcells)
+    check_same_pvconst_and_lengths(pvmod)
+
+
+def test_pvmodule_with_no_pvcells():
+    pvmod = PVmodule()
+    check_same_pvconst_and_lengths(pvmod)
+
 
 if __name__ == "__main__":
     test_calc_mod()

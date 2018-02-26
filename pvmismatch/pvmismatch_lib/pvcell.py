@@ -5,6 +5,8 @@ This module contains the :class:`~pvmismatch.pvmismatch_lib.pvcell.PVcell`
 object which is used by modules, strings and systems.
 """
 
+from __future__ import absolute_import
+from future.utils import iteritems
 from pvmismatch.pvmismatch_lib.pvconstants import PVconstants
 import numpy as np
 from matplotlib import pyplot as plt
@@ -14,7 +16,7 @@ from scipy.optimize import fsolve
 RS = 0.004267236774264931  # [ohm] series resistance
 RSH = 10.01226369025448  # [ohm] shunt resistance
 ISAT1_T0 = 2.286188161253440E-11  # [A] diode one saturation current
-ISAT2 = 1.117455042372326E-6  # [A] diode two saturation current
+ISAT2_T0 = 1.117455042372326E-6  # [A] diode two saturation current
 ISC0_T0 = 6.3056  # [A] reference short circuit current
 TCELL = 298.15  # [K] cell temperature
 ARBD = 1.036748445065697E-4  # reverse breakdown coefficient 1
@@ -45,7 +47,10 @@ class PVcell(object):
     :param pvconst: configuration constants object
     :type pvconst: :class:`~pvmismatch.pvmismatch_lib.pvconstants.PVconstants`
     """
-    def __init__(self, Rs=RS, Rsh=RSH, Isat1_T0=ISAT1_T0, Isat2=ISAT2,
+
+    _calc_now = False  #: if True ``calcCells()`` is called in ``__setattr__``
+
+    def __init__(self, Rs=RS, Rsh=RSH, Isat1_T0=ISAT1_T0, Isat2_T0=ISAT2_T0,
                  Isc0_T0=ISC0_T0, aRBD=ARBD, bRBD=BRBD, VRBD=VRBD_,
                  nRBD=NRBD, Eg=EG, alpha_Isc=ALPHA_ISC,
                  Tcell=TCELL, Ee=1., pvconst=PVconstants()):
@@ -53,7 +58,7 @@ class PVcell(object):
         self.Rs = Rs  #: [ohm] series resistance
         self.Rsh = Rsh  #: [ohm] shunt resistance
         self.Isat1_T0 = Isat1_T0  #: [A] diode one sat. current at T0
-        self.Isat2 = Isat2  #: [A] diode two saturation current
+        self.Isat2_T0 = Isat2_T0  #: [A] diode two saturation current
         self.Isc0_T0 = Isc0_T0  #: [A] short circuit current at T0
         self.aRBD = aRBD  #: reverse breakdown coefficient 1
         self.bRBD = bRBD  #: reverse breakdown coefficient 2
@@ -67,6 +72,8 @@ class PVcell(object):
         self.Icell = None  #: cell currents on IV curve [A]
         self.Vcell = None  #: cell voltages on IV curve [V]
         self.Pcell = None  #: cell power on IV curve [W]
+        # set calculation flag
+        self._calc_now = True  # overwrites the class attribute
 
     def __str__(self):
         fmt = '<PVcell(Ee=%g[suns], Tcell=%g[K], Isc=%g[A], Voc=%g[V])>'
@@ -76,27 +83,28 @@ class PVcell(object):
         return str(self)
 
     def __setattr__(self, key, value):
+        # check for floats
         try:
             value = np.float64(value)
         except (TypeError, ValueError):
-            pass
+            pass  # fail silently if not float, eg: pvconst or _calc_now
         super(PVcell, self).__setattr__(key, value)
-        # after all attributes have been initialized, recalculate IV curve
-        # every time __setattr__() is called
-        if hasattr(self, 'pvconst'):
+        # recalculate IV curve
+        if self._calc_now:
             Icell, Vcell, Pcell = self.calcCell()
-            super(PVcell, self).__setattr__('Icell', Icell)
-            super(PVcell, self).__setattr__('Vcell', Vcell)
-            super(PVcell, self).__setattr__('Pcell', Pcell)
+            self.__dict__.update(Icell=Icell, Vcell=Vcell, Pcell=Pcell)
 
     def update(self, **kwargs):
         """
         Update user-defined constants.
         """
-        # TODO: use __dict__.update(), check for floats and update IV curve
-        # self.__dict__.update(kwargs)
-        for k, v in kwargs.iteritems():
+        # turn off calculation flag until all attributes are updated
+        self._calc_now = False
+        # don't use __dict__.update() instead use setattr() to go through
+        # custom __setattr__() so that numbers are cast to floats
+        for k, v in iteritems(kwargs):
             setattr(self, k, v)
+        self._calc_now = True  # recalculate
 
     @property
     def Vt(self):
@@ -134,6 +142,18 @@ class PVcell(object):
         )
         return self.Isat1_T0 * _Tstar * _expTstar  # [A] Isat1(Tcell)
 
+    @property
+    def Isat2(self):
+        """
+        Diode two saturation current at Tcell in amps.
+        """
+        _Tstar = self.Tcell ** 3. / self.pvconst.T0 ** 3.  # scaled temperature
+        _inv_delta_T = 1. / self.pvconst.T0 - 1. / self.Tcell  # [1/K]
+        _expTstar = np.exp(
+            self.Eg * self.pvconst.q / (2.0 * self.pvconst.k) * _inv_delta_T
+        )
+        return self.Isat2_T0 * _Tstar * _expTstar  # [A] Isat2(Tcell)
+    
     @property
     def Isc0(self):
         """

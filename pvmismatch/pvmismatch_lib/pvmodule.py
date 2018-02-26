@@ -3,6 +3,10 @@
 This module defines the :class:`~pvmismatch.pvmismatch_lib.pvmodule.PVmodule`.
 """
 
+from __future__ import absolute_import
+from past.builtins import xrange, range
+from builtins import zip
+from six import itervalues
 import numpy as np
 from copy import copy
 from matplotlib import pyplot as plt
@@ -52,6 +56,7 @@ def standard_cellpos_pat(nrows, ncols_per_substr):
             newsubstr.append(newrow)
         cellpos.append(newsubstr)
     return cellpos
+
 
 # standard cell positions presets
 STD24 = standard_cellpos_pat(1, [1] * 24)
@@ -118,6 +123,7 @@ Standard Tiled module with partial cross-ties: 82x6 cells
 Substrings have 27, 28 and 27 rows of cells per diode
 """
 
+
 def combine_parallel_circuits(IVprev_cols, pvconst):
     """
     Combine crosstied circuits in a substring
@@ -147,6 +153,7 @@ def combine_parallel_circuits(IVprev_cols, pvconst):
         Irows, Vrows, Isc_rows.mean(), Imax_rows.max()
     )
 
+
 class PVmodule(object):
     """
     A Class for PV modules.
@@ -154,28 +161,42 @@ class PVmodule(object):
     :param cell_pos: cell position pattern
     :type cell_pos: dict
     :param pvcells: list of :class:`~pvmismatch.pvmismatch_lib.pvcell.PVcell`
-    :type pvcells: list
+    :type pvcells: list, :class:`~pvmismatch.pvmismatch_lib.pvcell.PVcell`
     :param pvconst: An object with common parameters and constants.
     :type pvconst: :class:`~pvmismatch.pvmismatch_lib.pvconstants.PVconstants`
     :param Vbypass: bypass diode trigger voltage [V]
     :param cellArea: cell area [cm^2]
     """
-    def __init__(self, cell_pos=STD96, pvcells=None, pvconst=PVconstants(),
+    def __init__(self, cell_pos=STD96, pvcells=None, pvconst=None,
                  Vbypass=VBYPASS, cellArea=CELLAREA):
         # TODO: check cell position pattern
         self.cell_pos = cell_pos  #: cell position pattern dictionary
         self.numberCells = sum([len(c) for s in self.cell_pos for c in s])
         """number of cells in the module"""
+        # is pvcells a list?
+        try:
+            pvc0 = pvcells[0]
+        except TypeError:
+            # is pvcells an object?
+            try:
+                pvconst = pvcells.pvconst
+            except AttributeError:
+                #  try to use the pvconst arg or create one if none
+                if not pvconst:
+                    pvconst = PVconstants()
+                # create pvcell
+                pvcells = PVcell(pvconst=pvconst)
+            # expand pvcells to list
+            pvcells = [pvcells] * self.numberCells
+        else:
+            pvconst = pvc0.pvconst
+            for p in pvcells:
+                if p.pvconst is not pvconst:
+                    raise Exception('PVconstant must be the same for all cells')
         self.pvconst = pvconst  #: configuration constants
         self.Vbypass = Vbypass  #: [V] trigger voltage of bypass diode
         self.cellArea = cellArea  #: [cm^2] cell area
-        if pvcells is None:
-            # faster to use copy instead of making each object in a for-loop
-            # use copy instead of deepcopy to keep same pvconst for all objects
-            # PVcell.calcCell() creates new np.ndarray if attributes change
-            pvcells = PVcell(pvconst=self.pvconst)
-        if isinstance(pvcells, PVcell):
-            pvcells = [pvcells] * self.numberCells
+        # check cell position pattern matches list of cells
         if len(pvcells) != self.numberCells:
             # TODO: use pvexception
             raise Exception(
@@ -244,7 +265,7 @@ class PVmodule(object):
                     else:
                         new_pvcells[cell_id] = old_pvcells[pvcell]
                 self.pvcells = new_pvcells
-                pvcell_set = old_pvcells.itervalues()
+                pvcell_set = itervalues(old_pvcells)
                 for pvc in pvcell_set:
                     pvc.Ee = Ee
             elif np.size(Ee) == self.numberCells:
@@ -289,8 +310,10 @@ class PVmodule(object):
                 raise Exception("Input irradiance value (Ee) for each cell!")
         self.Imod, self.Vmod, self.Pmod, self.Isubstr, self.Vsubstr = self.calcMod()
 
-# TODO setTemps is a nearly identical copy of setSuns. The DRY principle says that we should not be copying code.
-# TODO Replace both setSuns() and setTemps() with a single method for updating cell parameters that works for all params
+    # TODO setTemps is a nearly identical copy of setSuns. The DRY principle
+    # says that we should not be copying code.
+    # TODO Replace both setSuns() and setTemps() with a single method for
+    # updating cell parameters that works for all params
 
     def setTemps(self, Tc, cells=None):
         """
@@ -314,7 +337,7 @@ class PVmodule(object):
                     else:
                         new_pvcells[cell_id] = old_pvcells[pvcell]
                 self.pvcells = new_pvcells
-                pvcell_set = old_pvcells.itervalues()
+                pvcell_set = itervalues(old_pvcells)
                 for pvc in pvcell_set:
                     pvc.Tcell = Tc
             elif np.size(Tc) == self.numberCells:

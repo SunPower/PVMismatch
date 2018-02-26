@@ -1,5 +1,6 @@
 # ide
 .spyderproject
+.spyproject
 .project
 .pydevproject
 .settings/

@@ -1,4 +1,7 @@
 language: python
+python:
+    - "2.7"
+    - "3.6"
 cache: pip
 sudo: required
 before_install:
@@ -18,7 +21,7 @@ deploy:
     on:
       tags: true
   - provider: pypi
-    user: bwanamarko
+    user: perfspwr
     password: $PYPI_PASSWORD
     distributions: "sdist bdist_wheel" # Your distributions here
     skip_upload_docs: true

@@ -23,16 +23,16 @@ T0, E0 = 25.0, 1000.0
 iec61853 = gen_coeffs.gen_iec_61853_from_sapm(gen_coeffs.PVMODULES[PROD_NAME])
 iec61853['i_mp'] = iec61853['p_mp'] / iec61853['v_mp']
 #isc0, alpha_isc = gen_coeffs.gen_sapm(iec61853)
-x, sol = gen_coeffs.gen_two_diode(ISC0, VOC0, IMP0, VMP0, NS, NP, T0)
-#x, sol = gen_coeffs.gen_two_diode(
-#    iec61853['i_sc'], iec61853['v_oc'], iec61853['i_mp'],
-#    iec61853['v_mp'], NS, NP, tc=TC, method='lm',
-#    x0=(2.25e-11, 1.5e-6, 0.004, 10.0)
-#)
+#x, sol = gen_coeffs.gen_two_diode(ISC0, VOC0, IMP0, VMP0, NS, NP, T0)
+x, sol = gen_coeffs.gen_two_diode(
+    iec61853['i_sc'], iec61853['v_oc'], iec61853['i_mp'],
+    iec61853['v_mp'], NS, NP, tc=TC, method='lm',
+    x0=(2.25e-11, 1.5e-6, 0.004, 10.0)
+)
 isat1, isat2, rs, rsh = x
 
 pvc = pvcell.PVcell(
-    Rs=rs, Rsh=rsh, Isat1_T0=isat1, Isat2=isat2,
+    Rs=rs, Rsh=rsh, Isat1_T0=isat1, Isat2_T0=isat2,
     Isc0_T0=ISC0/NP, alpha_Isc=AISC
 )
 f1 = plt.figure()
