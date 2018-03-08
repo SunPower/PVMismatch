@@ -168,7 +168,7 @@ class PVmodule(object):
     :param cellArea: cell area [cm^2]
     """
     def __init__(self, cell_pos=STD96, pvcells=None, pvconst=None,
-                 Vbypass=VBYPASS, cellArea=CELLAREA):
+                 Vbypass=None, cellArea=CELLAREA):
         # TODO: check cell position pattern
         self.cell_pos = cell_pos  #: cell position pattern dictionary
         self.numberCells = sum([len(c) for s in self.cell_pos for c in s])
@@ -194,7 +194,13 @@ class PVmodule(object):
                 if p.pvconst is not pvconst:
                     raise Exception('PVconstant must be the same for all cells')
         self.pvconst = pvconst  #: configuration constants
-        self.Vbypass = Vbypass  #: [V] trigger voltage of bypass diode
+        
+        # set default value of Vbypass if None
+        if not Vbypass:
+            self.Vbypass = VBYPASS  #: [V] trigger voltage of bypass diode
+        else:
+            self.Vbypass = Vbypass
+
         self.cellArea = cellArea  #: [cm^2] cell area
         # check cell position pattern matches list of cells
         if len(pvcells) != self.numberCells:
@@ -391,7 +397,7 @@ class PVmodule(object):
         # iterate over substrings
         # TODO: benchmark speed difference append() vs preallocate space
         Isubstr, Vsubstr, Isc_substr, Imax_substr = [], [], [], []
-        for substr in self.cell_pos:
+        for substr_idx, substr in enumerate(self.cell_pos):
             # check if cells are in series or any crosstied circuits
             if all(r['crosstie'] == False for c in substr for r in c):
                 idxs = [r['idx'] for c in substr for r in c]
@@ -484,8 +490,18 @@ class PVmodule(object):
                     Isub, Vsub = self.pvconst.calcParallel(
                         Iparallel, Vparallel, Vparallel.max(), Vparallel.min()
                     )
-            bypassed = Vsub < self.Vbypass
-            Vsub[bypassed] = self.Vbypass
+            # apply bypass diodes depending on the configuration passed        
+            if type(self.Vbypass) == list:
+                if len(self.cell_pos) == len(self.Vbypass):                    
+                    bypassed = Vsub < self.Vbypass[substr_idx]
+                    Vsub[bypassed] = self.Vbypass[substr_idx]
+                else:
+                    print("wrong number of bypass diodes passed : %d"%(len(self.Vbypass)))
+                    return None
+            else:
+                bypassed = Vsub < self.Vbypass
+                Vsub[bypassed] = self.Vbypass
+                
             Isubstr.append(Isub)
             Vsubstr.append(Vsub)
             Isc_substr.append(np.interp(np.float64(0), Vsub, Isub))
