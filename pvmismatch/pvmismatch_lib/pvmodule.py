@@ -508,8 +508,11 @@ class PVmodule(object):
                     Vbypass_mod = self.Vbypass[0]
                 # if more than 1 values are passed, apply them across  
                 # the cell strings in ascending order
-                elif len(self.cell_pos) == len(self.Vbypass):                    
-                    bypassed = Vsub < self.Vbypass[substr_idx]
+                elif len(self.cell_pos) == len(self.Vbypass):    
+                    if self.Vbypass[substr_idx] is None:
+                        bypassed = None
+                    else:
+                        bypassed = Vsub < self.Vbypass[substr_idx]
                     Vsub[bypassed] = self.Vbypass[substr_idx]
                 else:
                     raise Exception("wrong number of bypass diode values passed : %d"%(len(self.Vbypass)))
