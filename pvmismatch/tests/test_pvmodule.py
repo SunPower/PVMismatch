@@ -64,6 +64,30 @@ def test_pvmodule_with_no_pvcells():
     pvmod = PVmodule()
     check_same_pvconst_and_lengths(pvmod)
 
+def test_bypass_diode_configurations():
+    # No bypass diodes
+    pvm = PVmodule(Vbypass = [None, None, None])
+    ok_(np.isclose(pvm.Vmod.min(), -530.6169665707829))
+        
+    # only one cell string has a bypass diode
+    pvm = PVmodule(Vbypass = [None, None,-0.5])
+    ok_(np.isclose(pvm.Vmod.min(), -398.46272492808714))
+    
+    # two bypass diodes (middle removed)
+    pvm = PVmodule(Vbypass = [-0.5, None,-0.5])
+    ok_(np.isclose(pvm.Vmod.min(), -266.30848328539145))
+
+    # all bypass diodes - same values
+    pvm = PVmodule(Vbypass = -0.2)
+    ok_(np.isclose(pvm.Vmod.min(), -0.6))
+
+    # one bypass diode across the module
+    pvm = PVmodule(Vbypass = [-0.7])
+    ok_(np.isclose(pvm.Vmod.min(), -0.7))
+
+    # default case    
+    pvm = PVmodule()
+    ok_(np.isclose(pvm.Vmod.min(), pvm.Vbypass * 3))
 
 if __name__ == "__main__":
     test_calc_mod()
