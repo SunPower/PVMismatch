@@ -513,7 +513,7 @@ class PVmodule(object):
                         bypassed = None
                     else:
                         bypassed = Vsub < self.Vbypass[substr_idx]
-                    Vsub[bypassed] = self.Vbypass[substr_idx]
+                        Vsub[bypassed] = self.Vbypass[substr_idx]
                 else:
                     raise Exception("wrong number of bypass diode values passed : %d"%(len(self.Vbypass)))
             else:
