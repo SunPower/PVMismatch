@@ -105,8 +105,8 @@ class PVsystem(object):
         Vmid = (V[1:] + V[:-1]) / 2.0  # size is (2, 1)
         Imid = (I[1:] + I[:-1]) / 2.0  # size is (2, 1)
         # interpolate to find Vmp
-        Vmp = -Pv[0] * np.diff(Vmid, axis=0) / np.diff(Pv, axis=0) + Vmid[0]
-        Imp = -Pv[0] * np.diff(Imid, axis=0) / np.diff(Pv, axis=0) + Imid[0]
+        Vmp = (-Pv[0] * np.diff(Vmid, axis=0) / np.diff(Pv, axis=0) + Vmid[0]).item()
+        Imp = (-Pv[0] * np.diff(Imid, axis=0) / np.diff(Pv, axis=0) + Imid[0]).item()
         # calculate max power at Pv = 0
         Pmp = Imp * Vmp
         # calculate Voc, current must be increasing so flipup()
