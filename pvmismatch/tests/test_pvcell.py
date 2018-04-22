@@ -38,7 +38,7 @@ def test_pvcell_calc_icell():
 def test_pvcell_calc_vcell():
     pvc = PVcell()
     ok_(np.isclose(pvc.Vcell[123], pvc.calcVcell(pvc.Icell[123]), 1e-4))
-    ok_(np.isclose(pvc.Vcell[153], pvc.calcVcell(pvc.Icell[153])))
+    ok_(np.isclose(pvc.Vcell[153], pvc.calcVcell(pvc.Icell[153]), 1e-4))
     ok_(np.isclose(pvc.Vcell[183], pvc.calcVcell(pvc.Icell[183])))
 
 
