@@ -1,16 +1,13 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
     <title>pvcell &#8212; PVMismatch Kenya Ketchup documentation</title>
-    
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
@@ -24,7 +21,7 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -37,7 +34,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
   </head>
-  <body role="document">
+  <body>
   
 
     <div class="document">
@@ -53,27 +50,27 @@ object which is used by modules, strings and systems.</p>
 <h2>PVcell<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="pvmismatch.pvmismatch_lib.pvcell.PVcell">
-<em class="property">class </em><code class="descclassname">pvmismatch.pvmismatch_lib.pvcell.</code><code class="descname">PVcell</code><span class="sig-paren">(</span><em>Rs=0.004267236774264931</em>, <em>Rsh=10.01226369025448</em>, <em>Isat1_T0=2.28618816125344e-11</em>, <em>Isat2=1.117455042372326e-06</em>, <em>Isc0_T0=6.3056</em>, <em>aRBD=0.0001036748445065697</em>, <em>bRBD=0.0</em>, <em>VRBD=-5.527260068445654</em>, <em>nRBD=3.284628553041425</em>, <em>Eg=1.1</em>, <em>alpha_Isc=0.0003551</em>, <em>Tcell=298.15</em>, <em>Ee=1.0</em>, <em>pvconst=&lt;PVconstants(npts=101)&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#pvmismatch.pvmismatch_lib.pvcell.PVcell" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">pvmismatch.pvmismatch_lib.pvcell.</code><code class="descname">PVcell</code><span class="sig-paren">(</span><em>Rs=0.004267236774264931</em>, <em>Rsh=10.01226369025448</em>, <em>Isat1_T0=2.28618816125344e-11</em>, <em>Isat2_T0=1.117455042372326e-06</em>, <em>Isc0_T0=6.3056</em>, <em>aRBD=0.0001036748445065697</em>, <em>bRBD=0.0</em>, <em>VRBD=-5.527260068445654</em>, <em>nRBD=3.284628553041425</em>, <em>Eg=1.1</em>, <em>alpha_Isc=0.0003551</em>, <em>Tcell=298.15</em>, <em>Ee=1.0</em>, <em>pvconst=&lt;PVconstants(npts=101)&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#pvmismatch.pvmismatch_lib.pvcell.PVcell" title="Permalink to this definition">¶</a></dt>
 <dd><p>Class for PV cells.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>Rs</strong> &#8211; series resistance [ohms]</li>
-<li><strong>Rsh</strong> &#8211; shunt resistance [ohms]</li>
-<li><strong>Isat1_T0</strong> &#8211; first saturation diode current at ref temp [A]</li>
-<li><strong>Isat2</strong> &#8211; second saturation diode current [A]</li>
-<li><strong>Isc0_T0</strong> &#8211; short circuit current at ref temp [A]</li>
-<li><strong>aRBD</strong> &#8211; reverse breakdown coefficient 1</li>
-<li><strong>bRBD</strong> &#8211; reverse breakdown coefficient 2</li>
-<li><strong>VRBD</strong> &#8211; reverse breakdown voltage [V]</li>
-<li><strong>nRBD</strong> &#8211; reverse breakdown exponent</li>
-<li><strong>Eg</strong> &#8211; band gap [eV]</li>
-<li><strong>alpha_Isc</strong> &#8211; short circuit current temp coeff [1/K]</li>
-<li><strong>Tcell</strong> &#8211; cell temperature [K]</li>
-<li><strong>Ee</strong> &#8211; incident effective irradiance [suns]</li>
-<li><strong>pvconst</strong> (<a class="reference internal" href="pvconstants.html#pvmismatch.pvmismatch_lib.pvconstants.PVconstants" title="pvmismatch.pvmismatch_lib.pvconstants.PVconstants"><code class="xref py py-class docutils literal"><span class="pre">PVconstants</span></code></a>) &#8211; configuration constants object</li>
+<li><strong>Rs</strong> – series resistance [ohms]</li>
+<li><strong>Rsh</strong> – shunt resistance [ohms]</li>
+<li><strong>Isat1_T0</strong> – first saturation diode current at ref temp [A]</li>
+<li><strong>Isat2</strong> – second saturation diode current [A]</li>
+<li><strong>Isc0_T0</strong> – short circuit current at ref temp [A]</li>
+<li><strong>aRBD</strong> – reverse breakdown coefficient 1</li>
+<li><strong>bRBD</strong> – reverse breakdown coefficient 2</li>
+<li><strong>VRBD</strong> – reverse breakdown voltage [V]</li>
+<li><strong>nRBD</strong> – reverse breakdown exponent</li>
+<li><strong>Eg</strong> – band gap [eV]</li>
+<li><strong>alpha_Isc</strong> – short circuit current temp coeff [1/K]</li>
+<li><strong>Tcell</strong> – cell temperature [K]</li>
+<li><strong>Ee</strong> – incident effective irradiance [suns]</li>
+<li><strong>pvconst</strong> (<a class="reference internal" href="pvconstants.html#pvmismatch.pvmismatch_lib.pvconstants.PVconstants" title="pvmismatch.pvmismatch_lib.pvconstants.PVconstants"><code class="xref py py-class docutils literal"><span class="pre">PVconstants</span></code></a>) – configuration constants object</li>
 </ul>
 </td>
 </tr>
@@ -104,6 +101,14 @@ object which is used by modules, strings and systems.</p>
 </dd></dl>
 
 <dl class="attribute">
+<dt id="pvmismatch.pvmismatch_lib.pvcell.PVcell.Igen">
+<code class="descname">Igen</code><a class="headerlink" href="#pvmismatch.pvmismatch_lib.pvcell.PVcell.Igen" title="Permalink to this definition">¶</a></dt>
+<dd><p>Photovoltaic generated light current (AKA IL or Iph)
+Returns Igen : numpy.ndarray of float, PV generated light current [A]</p>
+<p>Photovoltaic generated light current is zero if irradiance is zero.</p>
+</dd></dl>
+
+<dl class="attribute">
 <dt id="pvmismatch.pvmismatch_lib.pvcell.PVcell.Isat1">
 <code class="descname">Isat1</code><a class="headerlink" href="#pvmismatch.pvmismatch_lib.pvcell.PVcell.Isat1" title="Permalink to this definition">¶</a></dt>
 <dd><p>Diode one saturation current at Tcell in amps.</p>
@@ -117,7 +122,13 @@ object which is used by modules, strings and systems.</p>
 
 <dl class="attribute">
 <dt id="pvmismatch.pvmismatch_lib.pvcell.PVcell.Isat2">
-<code class="descname">Isat2</code><em class="property"> = None</em><a class="headerlink" href="#pvmismatch.pvmismatch_lib.pvcell.PVcell.Isat2" title="Permalink to this definition">¶</a></dt>
+<code class="descname">Isat2</code><a class="headerlink" href="#pvmismatch.pvmismatch_lib.pvcell.PVcell.Isat2" title="Permalink to this definition">¶</a></dt>
+<dd><p>Diode two saturation current at Tcell in amps.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pvmismatch.pvmismatch_lib.pvcell.PVcell.Isat2_T0">
+<code class="descname">Isat2_T0</code><em class="property"> = None</em><a class="headerlink" href="#pvmismatch.pvmismatch_lib.pvcell.PVcell.Isat2_T0" title="Permalink to this definition">¶</a></dt>
 <dd><p>[A] diode two saturation current</p>
 </dd></dl>
 
@@ -177,6 +188,12 @@ Returns Voc : numpy.ndarray of float, estimated open circuit voltage</p>
 </dd></dl>
 
 <dl class="attribute">
+<dt id="pvmismatch.pvmismatch_lib.pvcell.PVcell.VocSTC">
+<code class="descname">VocSTC</code><em class="property"> = None</em><a class="headerlink" href="#pvmismatch.pvmismatch_lib.pvcell.PVcell.VocSTC" title="Permalink to this definition">¶</a></dt>
+<dd><p>estimated Voc at STC [V]</p>
+</dd></dl>
+
+<dl class="attribute">
 <dt id="pvmismatch.pvmismatch_lib.pvcell.PVcell.Vt">
 <code class="descname">Vt</code><a class="headerlink" href="#pvmismatch.pvmismatch_lib.pvcell.PVcell.Vt" title="Permalink to this definition">¶</a></dt>
 <dd><p>Thermal voltage in volts.</p>
@@ -225,12 +242,11 @@ Returns (Icell, Vcell, Pcell) : tuple of numpy.ndarray of float</p>
 
 <dl class="staticmethod">
 <dt id="pvmismatch.pvmismatch_lib.pvcell.PVcell.f_Icell">
-<em class="property">static </em><code class="descname">f_Icell</code><span class="sig-paren">(</span><em>Icell</em>, <em>Vcell</em>, <em>Isc</em>, <em>Aph</em>, <em>Rs</em>, <em>Vt</em>, <em>Isat1</em>, <em>Isat2</em>, <em>Rsh</em><span class="sig-paren">)</span><a class="headerlink" href="#pvmismatch.pvmismatch_lib.pvcell.PVcell.f_Icell" title="Permalink to this definition">¶</a></dt>
+<em class="property">static </em><code class="descname">f_Icell</code><span class="sig-paren">(</span><em>Icell</em>, <em>Vcell</em>, <em>Igen</em>, <em>Rs</em>, <em>Vt</em>, <em>Isat1</em>, <em>Isat2</em>, <em>Rsh</em><span class="sig-paren">)</span><a class="headerlink" href="#pvmismatch.pvmismatch_lib.pvcell.PVcell.f_Icell" title="Permalink to this definition">¶</a></dt>
 <dd><p>Objective function for Icell.
 :param Icell: cell current [A]
 :param Vcell: cell voltage [V]
-:param Isc: short circuit current at Tcell and Ee [A]
-:param Aph: photogenerated current coefficient
+:param Igen: photogenerated current at Tcell and Ee [A]
 :param Rs: series resistance [ohms]
 :param Vt: thermal voltage [V]
 :param Isat1: first diode saturation current at Tcell [A]
@@ -355,8 +371,8 @@ Returns cellPlot : matplotlib.pyplot figure</p>
       &copy;2017, SunPower.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.1</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
       
       |
       <a href="../_sources/api/pvcell.rst.txt"

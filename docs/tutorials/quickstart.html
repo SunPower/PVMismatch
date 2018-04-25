@@ -1,16 +1,13 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
     <title>Quickstart &#8212; PVMismatch Kenya Ketchup documentation</title>
-    
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
@@ -24,7 +21,7 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -37,7 +34,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
   </head>
-  <body role="document">
+  <body>
   
 
     <div class="document">
@@ -78,7 +75,7 @@ history is also on <a class="reference external" href="https://github.com/SunPow
 </div>
 <div class="section" id="example">
 <h1>Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h1>
-<p>In this example let&#8217;s make a PV system of 2 strings with 8 modules each using
+<p>In this example let’s make a PV system of 2 strings with 8 modules each using
 standard 96 cell modules. You can enter these commands in the Python
 interpreter, run them from a script or simply paste them in
 <a class="reference external" href="http://ipython.org/">IPython</a> with <code class="docutils literal"><span class="pre">%paste</span></code>.</p>
@@ -140,7 +137,7 @@ interpreter, run them from a script or simply paste them in
 <span class="go">12.63933841066166</span>
 </pre></div>
 </div>
-<p>That did a little damage - the system lost 400[W] about 8%. Let&#8217;s see what&#8217;s
+<p>That did a little damage - the system lost 400[W] about 8%. Let’s see what’s
 actually going on with those cells in the last row of the 1st module in the
 1st string.</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">pvsys</span><span class="o">.</span><span class="n">pvmods</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">pvcells</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># let&#39;s see if they&#39;re actually shaded</span>
@@ -168,8 +165,8 @@ actually going on with those cells in the last row of the 1st module in the
 <img alt="../_images/pvmod00cells_plot_2x8-std96_last_row.png" src="../_images/pvmod00cells_plot_2x8-std96_last_row.png" />
 <p>Interpolation of string current from the system voltage yields 5.6[A]. Those
 shaded cells can only carry that current in reverse bias, so they must be hot!
-Let&#8217;s change their temperatures. In fact since the temperatures are still at
-25[C], let&#8217;s update the normal cells too:</p>
+Let’s change their temperatures. In fact since the temperatures are still at
+25[C], let’s update the normal cells too:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">pvsys</span><span class="o">.</span><span class="n">setTemps</span><span class="p">(</span><span class="mf">50.</span> <span class="o">+</span> <span class="mf">273.15</span><span class="p">)</span>  <span class="c1"># [K] normal cells</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">pvsys</span><span class="o">.</span><span class="n">setTemps</span><span class="p">({</span><span class="mi">0</span><span class="p">:</span> <span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="p">[(</span><span class="mf">100.</span> <span class="o">+</span> <span class="mf">273.15</span><span class="p">,</span> <span class="p">)</span> <span class="o">*</span> <span class="mi">8</span><span class="p">,</span> <span class="p">(</span><span class="mi">11</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">35</span><span class="p">,</span> <span class="mi">36</span><span class="p">,</span> <span class="mi">59</span><span class="p">,</span> <span class="mi">60</span><span class="p">,</span> <span class="mi">83</span><span class="p">,</span> <span class="mi">84</span><span class="p">)]}})</span>  <span class="c1"># [K] hot cells in RBD</span>
 
@@ -294,7 +291,7 @@ The equivalent <span class="math">\(\beta V_oc = 0.15 \left[ V / C \right ]\)</s
 <h3>Related Topics</h3>
 <ul>
   <li><a href="../index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="../index.html" title="previous chapter">Welcome to PVMismatch&#8217;s documentation!</a></li>
+      <li>Previous: <a href="../index.html" title="previous chapter">Welcome to PVMismatch’s documentation!</a></li>
       <li>Next: <a href="../api/api.html" title="next chapter">API</a></li>
   </ul></li>
 </ul>
@@ -307,8 +304,8 @@ The equivalent <span class="math">\(\beta V_oc = 0.15 \left[ V / C \right ]\)</s
       &copy;2017, SunPower.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.1</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
       
       |
       <a href="../_sources/tutorials/quickstart.rst.txt"

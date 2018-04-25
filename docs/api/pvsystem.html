@@ -1,16 +1,13 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
     <title>pvsystem &#8212; PVMismatch Kenya Ketchup documentation</title>
-    
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
@@ -24,7 +21,7 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -36,7 +33,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
   </head>
-  <body role="document">
+  <body>
   
 
     <div class="document">
@@ -52,18 +49,18 @@ class.</p>
 <h2>PVsystem<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="pvmismatch.pvmismatch_lib.pvsystem.PVsystem">
-<em class="property">class </em><code class="descclassname">pvmismatch.pvmismatch_lib.pvsystem.</code><code class="descname">PVsystem</code><span class="sig-paren">(</span><em>pvconst=&lt;PVconstants(npts=101)&gt;</em>, <em>numberStrs=10</em>, <em>pvstrs=None</em>, <em>numberMods=10</em>, <em>pvmods=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pvmismatch.pvmismatch_lib.pvsystem.PVsystem" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">pvmismatch.pvmismatch_lib.pvsystem.</code><code class="descname">PVsystem</code><span class="sig-paren">(</span><em>pvconst=None</em>, <em>numberStrs=10</em>, <em>pvstrs=None</em>, <em>numberMods=10</em>, <em>pvmods=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pvmismatch.pvmismatch_lib.pvsystem.PVsystem" title="Permalink to this definition">¶</a></dt>
 <dd><p>A class for PV systems.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>pvconst</strong> (<a class="reference internal" href="pvconstants.html#pvmismatch.pvmismatch_lib.pvconstants.PVconstants" title="pvmismatch.pvmismatch_lib.pvconstants.PVconstants"><code class="xref py py-class docutils literal"><span class="pre">PVconstants</span></code></a>) &#8211; configuration constants object</li>
-<li><strong>numberStrs</strong> &#8211; number of strings</li>
-<li><strong>pvstrs</strong> &#8211; list of parallel strings, a <code class="docutils literal"><span class="pre">PVstring</span></code> object or None</li>
-<li><strong>numberMods</strong> &#8211; number of modules per string</li>
-<li><strong>pvmods</strong> &#8211; list of modules, a <code class="docutils literal"><span class="pre">PVmodule</span></code> object or None</li>
+<li><strong>pvconst</strong> (<a class="reference internal" href="pvconstants.html#pvmismatch.pvmismatch_lib.pvconstants.PVconstants" title="pvmismatch.pvmismatch_lib.pvconstants.PVconstants"><code class="xref py py-class docutils literal"><span class="pre">PVconstants</span></code></a>) – configuration constants object</li>
+<li><strong>numberStrs</strong> – number of strings</li>
+<li><strong>pvstrs</strong> – list of parallel strings, a <code class="docutils literal"><span class="pre">PVstring</span></code> object or None</li>
+<li><strong>numberMods</strong> – number of modules per string</li>
+<li><strong>pvmods</strong> – list of modules, a <code class="docutils literal"><span class="pre">PVmodule</span></code> object or None</li>
 </ul>
 </td>
 </tr>
@@ -76,23 +73,55 @@ class.</p>
 Returns (Isys, Vsys, Psys) : tuple of numpy.ndarray of float</p>
 </dd></dl>
 
+<dl class="attribute">
+<dt id="pvmismatch.pvmismatch_lib.pvsystem.PVsystem.numberMods">
+<code class="descname">numberMods</code><em class="property"> = None</em><a class="headerlink" href="#pvmismatch.pvmismatch_lib.pvsystem.PVsystem.numberMods" title="Permalink to this definition">¶</a></dt>
+<dd><p>list of number of modules per string</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pvmismatch.pvmismatch_lib.pvsystem.PVsystem.numberStrs">
+<code class="descname">numberStrs</code><em class="property"> = None</em><a class="headerlink" href="#pvmismatch.pvmismatch_lib.pvsystem.PVsystem.numberStrs" title="Permalink to this definition">¶</a></dt>
+<dd><p>number strings in the system</p>
+</dd></dl>
+
 <dl class="method">
 <dt id="pvmismatch.pvmismatch_lib.pvsystem.PVsystem.plotSys">
 <code class="descname">plotSys</code><span class="sig-paren">(</span><em>sysPlot=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pvmismatch.pvmismatch_lib.pvsystem.PVsystem.plotSys" title="Permalink to this definition">¶</a></dt>
-<dd><p>Plot system I-V curves.
-Arguments sysPlot : matplotlib.figure.Figure
-Returns sysPlot : matplotlib.figure.Figure</p>
+<dd><p>Plot system I-V curves.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>sysPlot</strong> – integer, string, or existing figure</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">new figure</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pvmismatch.pvmismatch_lib.pvsystem.PVsystem.pvconst">
+<code class="descname">pvconst</code><em class="property"> = None</em><a class="headerlink" href="#pvmismatch.pvmismatch_lib.pvsystem.PVsystem.pvconst" title="Permalink to this definition">¶</a></dt>
+<dd><p><code class="docutils literal"><span class="pre">PVconstants</span></code> used in <code class="docutils literal"><span class="pre">PVsystem</span></code></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pvmismatch.pvmismatch_lib.pvsystem.PVsystem.pvstrs">
+<code class="descname">pvstrs</code><em class="property"> = None</em><a class="headerlink" href="#pvmismatch.pvmismatch_lib.pvsystem.PVsystem.pvstrs" title="Permalink to this definition">¶</a></dt>
+<dd><p>list of <code class="docutils literal"><span class="pre">PVstring</span></code> in system</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="pvmismatch.pvmismatch_lib.pvsystem.PVsystem.setSuns">
 <code class="descname">setSuns</code><span class="sig-paren">(</span><em>Ee</em><span class="sig-paren">)</span><a class="headerlink" href="#pvmismatch.pvmismatch_lib.pvsystem.PVsystem.setSuns" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set irradiance on cells in modules of string in system.
-If Ee is ...
-... scalar, then sets the entire system to that irradiance.
-... a dictionary, then each key refers to a pv-string in the system,
+If Ee is …
+… scalar, then sets the entire system to that irradiance.
+… a dictionary, then each key refers to a pv-string in the system,
 and the corresponding value is either a dictionary or a scalar.
-If the dictionary&#8217;s value is another dictionary, then its keys are pv-
+If the dictionary’s value is another dictionary, then its keys are pv-
 modules and its values are either cells and corresponding Ee, cells and
 a scalar Ee, a scalar Ee value for all cells or an array of Ee values
 for all cells in the module. The values of pv-modules are passed to
@@ -101,7 +130,7 @@ for all cells in the module. The values of pv-modules are passed to
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>Ee</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a><em>, </em><a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; irradiance [suns]</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>Ee</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.6)"><em>dict</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.6)"><em>float</em></a>) – irradiance [suns]</td>
 </tr>
 </tbody>
 </table>
@@ -120,11 +149,11 @@ for all cells in the module. The values of pv-modules are passed to
 <dt id="pvmismatch.pvmismatch_lib.pvsystem.PVsystem.setTemps">
 <code class="descname">setTemps</code><span class="sig-paren">(</span><em>Tc</em><span class="sig-paren">)</span><a class="headerlink" href="#pvmismatch.pvmismatch_lib.pvsystem.PVsystem.setTemps" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set temperature on cells in modules of string in system.
-If Tc is ...
-... scalar, then sets the entire system to that cell temperature.
-... a dictionary, then each key refers to a pv-string in the system,
+If Tc is …
+… scalar, then sets the entire system to that cell temperature.
+… a dictionary, then each key refers to a pv-string in the system,
 and the corresponding value is either a dictionary or a scalar.
-If the dictionary&#8217;s value is another dictionary, then its keys are pv-
+If the dictionary’s value is another dictionary, then its keys are pv-
 modules and its values are either cells and corresponding Tc, cells and
 a scalar Tc, a scalar Tc value for all cells or an array of Tc values
 for all cells in the module. The values of pv-modules are passed to
@@ -133,7 +162,7 @@ for all cells in the module. The values of pv-modules are passed to
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>Tc</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a><em>, </em><a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; temperature [K]</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>Tc</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.6)"><em>dict</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.6)"><em>float</em></a>) – temperature [K]</td>
 </tr>
 </tbody>
 </table>
@@ -146,6 +175,12 @@ for all cells in the module. The values of pv-modules are passed to
 <span class="c1"># 373.15K (100°C) in string with index 3</span>
 </pre></div>
 </div>
+</dd></dl>
+
+<dl class="method">
+<dt id="pvmismatch.pvmismatch_lib.pvsystem.PVsystem.update">
+<code class="descname">update</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pvmismatch.pvmismatch_lib.pvsystem.PVsystem.update" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update system calculations.</p>
 </dd></dl>
 
 </dd></dl>
@@ -238,8 +273,8 @@ for all cells in the module. The values of pv-modules are passed to
       &copy;2017, SunPower.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.1</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
       
       |
       <a href="../_sources/api/pvsystem.rst.txt"
