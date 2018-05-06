@@ -247,3 +247,53 @@ def get_series_cells(cell_pos_column, prev_col=None):
             cell_idx = cell['idx']
         series_cells.append(cell_idx)
     yield series_cells
+
+def calc_MPP(Volt_arr, Curr_arr, Pow_arr):
+    """
+    Generic method to find MPP (Maximum power point) for a given set of
+    Voltage, Current, Power arrays
+    :param V: Array of Voltages
+    :type V: array_like
+    :param I: Array of Currents
+    :type I: array_like
+    :param P: Array of Powers
+    :type P: array_like
+    :return: (Vmp, Imp, Pmp)
+    :rtype: tuple
+    """
+    mpp = np.argmax(Pow_arr)
+    P = Pow_arr[mpp - 1:mpp + 2]
+    V = Volt_arr[mpp - 1:mpp + 2]
+    I = Curr_arr[mpp - 1:mpp + 2]
+    # calculate derivative dP/dV using central difference
+    dP = np.diff(P, axis=0)  # size is (2, 1)
+    dV = np.diff(V, axis=0)  # size is (2, 1)
+    Pv = dP / dV  # size is (2, 1)
+    # dP/dV is central difference at midpoints,
+    Vmid = (V[1:] + V[:-1]) / 2.0  # size is (2, 1)
+    Imid = (I[1:] + I[:-1]) / 2.0  # size is (2, 1)
+    # interpolate to find Vmp
+    Vmp = (-Pv[0] * np.diff(Vmid, axis=0) / np.diff(Pv, axis=0) + Vmid[0]).item()
+    Imp = (-Pv[0] * np.diff(Imid, axis=0) / np.diff(Pv, axis=0) + Imid[0]).item()
+    # calculate max power at Pv = 0
+    Pmp = Imp * Vmp
+    return Vmp, Imp, Pmp
+
+def calc_IscVoc(Volt_arr, Curr_arr, Pow_arr=None):
+    """
+    Generic method to find Isc and Voc for a given set of
+    Voltage, Current, Power arrays (Power is optional)
+    :param V: Array of Voltages
+    :type V: array_like
+    :param I: Array of Currents
+    :type I: array_like
+    :param P: Array of Powers (optional)
+    :type P: array_like
+    :return: (Voc, Isc)
+    :rtype: tuple
+    """
+    # calculate Voc, current must be increasing so flipup()
+    Voc = np.interp(np.float64(0), np.flipud(Curr_arr),
+                    np.flipud(Volt_arr))
+    Isc = np.interp(np.float64(0), Volt_arr, Curr_arr)  # calculate Isc
+    return Voc, Isc
