@@ -214,12 +214,17 @@ class PVcell(object):
         Vreverse = self.VRBD * self.pvconst.negpts
         Vff = self.Voc
         delta_Voc = self.VocSTC - self.Voc
-        # use Voc @ STC to make sure that Vmax is always in quadrant four unless
-        # Voc == Voc @ STC, then use an arbitrary voltage at 80% of Voc as an
-        # estimate of Vmp assuming a fill factor of 80% and Isc close to Imp
+        # to make sure that the max voltage is always in the 4th quadrant, add
+        # a third set of points log spaced with decreasing density, from Voc to
+        # Voc @ STC unless Voc *is* Voc @ STC, then use an arbitrary voltage at
+        # 80% of Voc as an estimate of Vmp assuming a fill factor of 80% and
+        # Isc close to Imp, or if Voc > Voc @ STC, then use Voc as the max
         if delta_Voc == 0:
             Vff = 0.8 * self.Voc
             delta_Voc = 0.2 * self.Voc
+        elif delta_Voc < 0:
+            Vff = self.VocSTC
+            delta_Voc = -delta_Voc
         Vquad4 = Vff + delta_Voc * np.flipud(self.pvconst.negpts)
         Vforward = Vff * self.pvconst.pts
         Vdiode = np.concatenate((Vreverse, Vforward, Vquad4), axis=0)
