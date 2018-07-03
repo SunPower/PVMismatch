@@ -33,7 +33,7 @@ class PVstring(object):
         except TypeError:
             # is pvmods an object?
             try:
-                pvconst = pvmods.pvcons
+                pvconst = pvmods.pvconst
             except AttributeError:
                 #  try to use the pvconst arg or create one if none
                 if not pvconst:
