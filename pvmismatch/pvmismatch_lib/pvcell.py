@@ -34,7 +34,7 @@ class PVcell(object):
     :param Rs: series resistance [ohms]
     :param Rsh: shunt resistance [ohms]
     :param Isat1_T0: first saturation diode current at ref temp [A]
-    :param Isat2: second saturation diode current [A]
+    :param Isat2_T0: second saturation diode current [A]
     :param Isc0_T0: short circuit current at ref temp [A]
     :param aRBD: reverse breakdown coefficient 1
     :param bRBD: reverse breakdown coefficient 2
