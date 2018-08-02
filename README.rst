@@ -33,3 +33,8 @@ history is also on `GitHub <https://github.com/SunPower/releases/>`__.
 
 .. |Build Status| image:: https://travis-ci.org/SunPower/PVMismatch.svg?branch=master
    :target: https://travis-ci.org/SunPower/PVMismatch
+
+Projects using PVMismatch
+-----
+System level mismatch loss calculator using PVMismatch tool (STC and Annual energy loss)
+https://github.com/SunPower/MismatchLossStudy 
