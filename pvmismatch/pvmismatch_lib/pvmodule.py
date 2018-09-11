@@ -516,6 +516,8 @@ class PVmodule(object):
                         Vsub[bypassed] = self.Vbypass[substr_idx]
                 else:
                     raise Exception("wrong number of bypass diode values passed : %d"%(len(self.Vbypass)))
+            elif self.Vbypass == 'None':
+                pass
             else:
                 # base case - Vbypass across every cell string
                 bypassed = Vsub < self.Vbypass
