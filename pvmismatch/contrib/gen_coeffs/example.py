@@ -71,17 +71,17 @@ if __name__ == '__main__':
             res_norm += (
                 pvc.calcIcell(iec61853['v_mp'][n][m]/NS)
                 - iec61853['i_mp'][n][m]/NP
-            )**2 / IMP0**2
+            )**2 / (IMP0/NP)**2
             res_norm += (
                 pvc.calcVcell(iec61853['i_mp'][n][m]/NP)
                 - iec61853['v_mp'][n][m]/NS
-            )**2 / VMP0**2
+            )**2 / (VMP0/NS)**2
             res_norm += (
                 pvc.calcVcell(0.0) - iec61853['v_oc'][n][m]/NS
-            )**2 / VOC0**2
+            )**2 / (VOC0/NS)**2
             res_norm += (
                 pvc.calcIcell(0.0) - iec61853['i_sc'][n][m]/NP
-            )**2 / ISC0**2
+            )**2 / (ISC0/NP)**2
             rel_diff = (pvc.Pcell.max()*NS*NP - iec61853['p_mp'][n][m]) / PMP0
             plt.annotate('$\Delta_{STC}$ = %.2g%%' % (rel_diff*100),
                          (0.65, iec61853['p_mp'][n][m]/NS/NP))
