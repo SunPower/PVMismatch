@@ -56,7 +56,7 @@ class PVcell(object):
                  Tcell=TCELL, Ee=1., pvconst=PVconstants()):
         # user inputs
         self.Rs = Rs  #: [ohm] series resistance
-        self.Rsh = Rsh  #: [ohm] shunt resistance
+        self.Rsh_E0 = Rsh  #: [ohm] shunt resistance
         self.Isat1_T0 = Isat1_T0  #: [A] diode one sat. current at T0
         self.Isat2_T0 = Isat2_T0  #: [A] diode two saturation current
         self.Isc0_T0 = Isc0_T0  #: [A] short circuit current at T0
@@ -134,6 +134,10 @@ class PVcell(object):
         return 1. + (Idiode1_sc + Idiode2_sc + Ishunt_sc) / self.Isc
 
     @property
+    def Rsh(self):
+        return self.Rsh_E0 / self.Ee
+
+    @property
     def Isat1(self):
         """
         Diode one saturation current at Tcell in amps.
@@ -185,7 +189,7 @@ class PVcell(object):
         Vdiode_sc = self.Isc0_T0 * self.Rs  # diode voltage at SC
         Idiode1_sc = self.Isat1_T0 * (np.exp(Vdiode_sc / self.Vt) - 1.)
         Idiode2_sc = self.Isat2_T0 * (np.exp(Vdiode_sc / 2. / self.Vt) - 1.)
-        Ishunt_sc = Vdiode_sc / self.Rsh  # diode voltage at SC
+        Ishunt_sc = Vdiode_sc / self.Rsh_E0  # diode voltage at SC
         # photogenerated current coefficient
         Aph = 1. + (Idiode1_sc + Idiode2_sc + Ishunt_sc) / self.Isc0_T0
         # estimated Voc at STC

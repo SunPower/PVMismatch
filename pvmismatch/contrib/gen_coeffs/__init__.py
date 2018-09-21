@@ -28,7 +28,7 @@ def gen_iec_61853_from_sapm(pvmodule):
 
 
 def gen_two_diode(isc, voc, imp, vmp, nseries, nparallel,
-                  tc, x0=None, *args, **kwargs):
+                  tc, ee, x0=None, *args, **kwargs):
     """
     Generate two-diode model parameters for ``pvcell`` given.
 
@@ -60,7 +60,7 @@ def gen_two_diode(isc, voc, imp, vmp, nseries, nparallel,
     x = np.array([np.log(isat1), np.log(isat2), np.sqrt(rs), np.sqrt(rsh)])
     sol = optimize.root(
         fun=residual_two_diode, x0=x,
-        args=(isc_cell, voc_cell, imp_cell, vmp_cell, tc),
+        args=(isc_cell, voc_cell, imp_cell, vmp_cell, tc, ee),
         jac=True,
         *args, **kwargs
     )
@@ -90,7 +90,7 @@ def gen_sapm(iec_61853):
     return isc0, alpha_isc
 
 
-def residual_two_diode(x, isc, voc, imp, vmp, tc):
+def residual_two_diode(x, isc, voc, imp, vmp, tc, ee):
     """
     Objective function to solve 2-diode model.
 
@@ -113,7 +113,8 @@ def residual_two_diode(x, isc, voc, imp, vmp, tc):
     isat1_t0 = np.exp(x[0])
     isat2_t0 = np.exp(x[1])
     rs = x[2] ** 2.0
-    rsh = x[3] ** 2.0
+    rsh_e0 = x[3] ** 2.0
+    rsh = rsh_e0 / ee
     # first diode saturation current
     isat1 = diode.isat_t(tc, isat1_t0)
     isat2 = diode.isat_t(tc, isat2_t0)

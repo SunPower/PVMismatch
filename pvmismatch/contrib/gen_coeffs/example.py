@@ -38,11 +38,11 @@ if __name__ == '__main__':
     if len(sys.argv) > 1:
         test_cond = sys.argv[1]
     if test_cond.upper() == 'STC':
-        x, sol = gen_coeffs.gen_two_diode(ISC0, VOC0, IMP0, VMP0, NS, NP, T0)
+        x, sol = gen_coeffs.gen_two_diode(ISC0, VOC0, IMP0, VMP0, NS, NP, T0, E0)
     else:
         x, sol = gen_coeffs.gen_two_diode(
             iec61853['i_sc'], iec61853['v_oc'], iec61853['i_mp'],
-            iec61853['v_mp'], NS, NP, tc=TC, method='lm',
+            iec61853['v_mp'], NS, NP, tc=TC, ee=IRR/1000., method='lm',
             x0=(2.25e-11, 1.5e-6, 0.004, 10.0)
         )
     isat1, isat2, rs, rsh = x
