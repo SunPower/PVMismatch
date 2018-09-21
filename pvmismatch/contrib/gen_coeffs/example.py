@@ -34,7 +34,7 @@ assert np.isclose(isc0, ISC0)
 assert np.isclose(alpha_isc, AISC)
 
 if __name__ == '__main__':
-    test_cond = None
+    test_cond = 'STC'
     if len(sys.argv) > 1:
         test_cond = sys.argv[1]
     if test_cond.upper() == 'STC':
