@@ -6,7 +6,7 @@ from pvlib.pvsystem import sapm
 import numpy as np
 from scipy import optimize
 from pvmismatch.contrib.gen_coeffs import diode, two_diode
-from pvmismatch.pvmismatch_lib.pvcell import ISAT1_T0, ISAT2_T0, RS, RSH
+from pvmismatch.pvmismatch_lib.pvcell import ISAT1_T0, ISAT2_T0, RS, RSH_E0
 
 # IEC 61853 test matrix
 TC_C = [15.0, 25.0, 50.0, 75.0]
@@ -39,6 +39,7 @@ def gen_two_diode(isc, voc, imp, vmp, nseries, nparallel,
     :param int nseries: number of cells in series
     :param int nparallel: number of parallel substrings in PV module
     :param numeric tc: cell temperature [C]
+    :param numeric ee: effective irradiance [suns]
     :param x0: optional list of initial guesses, default is ``None``
     :returns: tuple ``(isat1, isat2, rs, rsh)`` of generated coefficients and
         the solver output
@@ -51,7 +52,7 @@ def gen_two_diode(isc, voc, imp, vmp, nseries, nparallel,
         isat1 = ISAT1_T0  # [A]
         isat2 = ISAT2_T0
         rs = RS  # [ohms]
-        rsh = RSH  # [ohms]
+        rsh = RSH_E0  # [ohms]
     else:
         isat1 = x0[0]
         isat2 = x0[1]
@@ -100,6 +101,7 @@ def residual_two_diode(x, isc, voc, imp, vmp, tc, ee):
     :param imp: max power current [A] at ``tc`` [C]
     :param vmp: max power voltage [V] at ``tc`` [C]
     :param tc: cell temperature [C]
+    :param ee: effective irradiance [suns]
     :returns: norm of the residuals and the Jacobian matrix
     """
     # Constants

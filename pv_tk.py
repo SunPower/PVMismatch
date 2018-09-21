@@ -7,7 +7,7 @@ Created on Jul 29, 2012
 @author: marko
 """
 from pvmismatch.pvmismatch_tk.pvapplication_tk import PVapplicaton
-from Tkinter import Tk
+from tkinter import Tk
 import sys
 import re
 
@@ -18,6 +18,7 @@ def showHelpError(argvs_):
     errMsg = errMsg + '"{}"\n'.format(argvs_)
     errMsg = errMsg + 'is not valid. See "wm_geometry help" above.'
     raise Exception(errMsg)
+
 
 if __name__ == "__main__":
     nargv = len(sys.argv)  # number of user arguments
@@ -59,7 +60,7 @@ if __name__ == "__main__":
         dims = None
     if dims is not None:
         dim_reset_or_dims = lambda dims: (not dims) * 'reset' + dims
-        print "dimensions: {}".format(dim_reset_or_dims(dims))
+        print("dimensions: {}".format(dim_reset_or_dims(dims)))
     root = Tk()
     app = PVapplicaton(root)
     root.geometry(dims)

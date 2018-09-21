@@ -5,9 +5,9 @@ Created on Jul 30, 2012
 @author: mmikofski
 """
 
-from Tkinter import Frame, Label, Button, Toplevel
-#from Tkinter import IntVar
-#import tkFont
+from tkinter import Frame, Label, Button, Toplevel
+# from tkinter import IntVar
+# import tk.font as tkFont
 # use absolute imports instead of relative, so modules are portable
 from pvmismatch.pvmismatch_tk.pvmodule_tk import PVmodule_tk
 

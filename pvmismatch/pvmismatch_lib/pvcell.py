@@ -14,7 +14,7 @@ from scipy.optimize import newton
 
 # Defaults
 RS = 0.004267236774264931  # [ohm] series resistance
-RSH = 10.01226369025448  # [ohm] shunt resistance
+RSH_E0 = 10.01226369025448  # [ohm] shunt resistance
 ISAT1_T0 = 2.286188161253440E-11  # [A] diode one saturation current
 ISAT2_T0 = 1.117455042372326E-6  # [A] diode two saturation current
 ISC0_T0 = 6.3056  # [A] reference short circuit current
@@ -27,14 +27,15 @@ EG = 1.1  # [eV] band gap of cSi
 ALPHA_ISC = 0.0003551  # [1/K] short circuit current temperature coefficient
 EPS = np.finfo(np.float64).eps
 
+
 class PVcell(object):
     """
     Class for PV cells.
 
     :param Rs: series resistance [ohms]
-    :param Rsh: shunt resistance [ohms]
-    :param Isat1_T0: first saturation diode current at ref temp [A]
-    :param Isat2_T0: second saturation diode current [A]
+    :param Rsh_E0: shunt resistance at ref irradiance[ohms]
+    :param Isat1_T0: first saturation diode current at ref temperature [A]
+    :param Isat2_T0: second saturation diode current at ref temperature [A]
     :param Isc0_T0: short circuit current at ref temp [A]
     :param aRBD: reverse breakdown coefficient 1
     :param bRBD: reverse breakdown coefficient 2
@@ -50,13 +51,13 @@ class PVcell(object):
 
     _calc_now = False  #: if True ``calcCells()`` is called in ``__setattr__``
 
-    def __init__(self, Rs=RS, Rsh=RSH, Isat1_T0=ISAT1_T0, Isat2_T0=ISAT2_T0,
+    def __init__(self, Rs=RS, Rsh_E0=RSH_E0, Isat1_T0=ISAT1_T0, Isat2_T0=ISAT2_T0,
                  Isc0_T0=ISC0_T0, aRBD=ARBD, bRBD=BRBD, VRBD=VRBD_,
                  nRBD=NRBD, Eg=EG, alpha_Isc=ALPHA_ISC,
                  Tcell=TCELL, Ee=1., pvconst=PVconstants()):
         # user inputs
         self.Rs = Rs  #: [ohm] series resistance
-        self.Rsh_E0 = Rsh  #: [ohm] shunt resistance
+        self.Rsh_E0 = Rsh_E0  #: [ohm] shunt resistance at E0
         self.Isat1_T0 = Isat1_T0  #: [A] diode one sat. current at T0
         self.Isat2_T0 = Isat2_T0  #: [A] diode two saturation current
         self.Isc0_T0 = Isc0_T0  #: [A] short circuit current at T0
@@ -238,7 +239,7 @@ class PVcell(object):
         fRBD = 1. - Vdiode / self.VRBD
         # use epsilon = 2.2204460492503131e-16 to avoid "divide by zero"
         fRBD[fRBD == 0] = EPS
-        Vdiode_norm = Vdiode / self.Rsh / self.Isc0_T0
+        Vdiode_norm = Vdiode / self.Rsh_E0 / self.Isc0_T0
         fRBD = self.Isc0_T0 * fRBD ** (-self.nRBD)
         IRBD = (self.aRBD * Vdiode_norm + self.bRBD * Vdiode_norm ** 2) * fRBD 
         Icell = self.Igen - Idiode1 - Idiode2 - Ishunt - IRBD

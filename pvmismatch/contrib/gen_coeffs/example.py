@@ -48,7 +48,7 @@ if __name__ == '__main__':
     isat1, isat2, rs, rsh = x
 
     pvc = pvcell.PVcell(
-        Rs=rs, Rsh=rsh, Isat1_T0=isat1, Isat2_T0=isat2,
+        Rs=rs, Rsh_E0=rsh, Isat1_T0=isat1, Isat2_T0=isat2,
         Isc0_T0=ISC0/NP, alpha_Isc=AISC
     )
     f1 = plt.figure(figsize=(16, 10))
@@ -56,8 +56,8 @@ if __name__ == '__main__':
     for m, _tc in enumerate(gen_coeffs.TC_C):
         pvc.Tcell = _tc + 273.15
         plt.subplot(2, 2, m+1)
-        plt.xlim([0, 0.8])
-        plt.ylim([0, 8])
+        plt.xlim([0, round(VOC0/NS*1.25, 2)])
+        plt.ylim([0, round(ISC0/NP*1.25, 1)])
         res_norm = 0
         for n, _irr in enumerate(gen_coeffs.IRR_W_M2):
             pvc.Ee = _irr / 1000.0
