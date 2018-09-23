@@ -5,8 +5,8 @@ Created on Jul 29, 2012
 @author: marko
 """
 
-from Tkinter import Frame, Label, Button, OptionMenu, IntVar
-#from Tkinter import Menu, Entry
+from tkinter import Frame, Label, Button, OptionMenu, IntVar
+# from tkinter import Menu, Entry
 MODULE_SIZES = [72, 96, 128]
 
 

@@ -31,6 +31,7 @@ Contents:
    api/pvmodule
    api/pvstring
    api/pvsystem
+   api/contrib
 
 
 Indices and tables

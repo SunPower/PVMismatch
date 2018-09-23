@@ -5,14 +5,14 @@ Created on Jul 29, 2012
 @author: marko
 """
 from PIL import Image, ImageTk
-from Tkconstants import RIGHT, LEFT, BOTH, E, W, HORIZONTAL
-from Tkinter import Frame, Label, Button, Toplevel, OptionMenu, Scale, Entry, \
+from tkinter.constants import RIGHT, LEFT, BOTH, E, W, HORIZONTAL
+from tkinter import Frame, Label, Button, Toplevel, OptionMenu, Scale, Entry, \
     Message, Spinbox, IntVar, StringVar, DoubleVar
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, \
     NavigationToolbar2TkAgg
 from threading import Thread
-from tkFont import nametofont
-import Queue
+from tkinter.font import nametofont
+from queue import Queue
 import json
 import logging
 import numpy as np
@@ -118,7 +118,7 @@ def waitbox(original_function):
         results are fed to the queue. Destroy master and return the
         original_function's results.
         """
-        queue = Queue.Queue()
+        queue = Queue()
         queuefun = setqueue(original_function, queue)
         thread = Thread(target=queuefun, args=args, kwargs=kwargs)
         thread.start()

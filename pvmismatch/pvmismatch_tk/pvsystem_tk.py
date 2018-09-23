@@ -5,7 +5,7 @@ Created on Jul 28, 2012
 @author: marko
 """
 
-from Tkinter import Frame, Label, Button
+from tkinter import Frame, Label, Button
 
 
 class PVsystem_tk(Frame):

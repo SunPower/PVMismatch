@@ -4,10 +4,12 @@ Created on Aug 18, 2012
 
 @author: mmikofski
 """
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
+from tkinter.constants import W, E, RIGHT
+from tkinter import Frame, Label, Button, DoubleVar, Entry, IntVar
+import tkinter.font as tkFont
 
-from Tkconstants import W, E, RIGHT
-from Tkinter import Frame, Label, Button, DoubleVar, Entry, IntVar
-import tkFont
 
 PVAPP_TXT = 'PVmismatch'
 INTEGERS = '0123456789'
@@ -36,29 +38,45 @@ class AdvCnf_tk(Frame):
         # variables
         cellnum = self.cellnum = IntVar(self, name='cellnum')
         Rs = self.Rs = DoubleVar(self, name='Rs')
-        Rsh = self.Rsh = DoubleVar(self, name='Rsh')
+        Rsh_E0 = self.Rsh_E0 = DoubleVar(self, name='Rsh_E0')
         Isat1_T0 = self.Isat1_T0 = DoubleVar(self, name='Isat1_T0')
-        Isat2 = self.Isat2 = DoubleVar(self, name='Isat2')
-        Rs.set("{:10.4e}".format(pvapp.pvSys.pvmods[cellnum.get() / (pvapp.numCells.get() * pvapp.numMods.get())][(cellnum.get() / pvapp.numCells.get()) % pvapp.numMods.get()].pvcells[cellnum.get() % pvapp.numCells.get()].Rs))
-        Rsh.set("{:10.4f}".format(pvapp.pvSys.pvmods[cellnum.get() / (pvapp.numCells.get() * pvapp.numMods.get())][(cellnum.get() / pvapp.numCells.get()) % pvapp.numMods.get()].pvcells[cellnum.get() % pvapp.numCells.get()].Rsh))
-        Isat1_T0.set("{:10.4e}".format(pvapp.pvSys.pvmods[cellnum.get() / (pvapp.numCells.get() * pvapp.numMods.get())][(cellnum.get() / pvapp.numCells.get()) % pvapp.numMods.get()].pvcells[cellnum.get() % pvapp.numCells.get()].Isat1_T0))
-        Isat2.set("{:10.4e}".format(pvapp.pvSys.pvmods[cellnum.get() / (pvapp.numCells.get() * pvapp.numMods.get())][(cellnum.get() / pvapp.numCells.get()) % pvapp.numMods.get()].pvcells[cellnum.get() % pvapp.numCells.get()].Isat2))
+        Isat2_T0 = self.Isat2_T0 = DoubleVar(self, name='Isat2_T0')
+        Rs.set("{:10.4e}".format(pvapp.pvSys.pvmods[
+            cellnum.get() // (pvapp.numCells.get() * pvapp.numMods.get())
+        ][
+            (cellnum.get() // pvapp.numCells.get()) % pvapp.numMods.get()
+        ].pvcells[cellnum.get() % pvapp.numCells.get()].Rs))
+        Rsh_E0.set("{:10.4f}".format(pvapp.pvSys.pvmods[
+            cellnum.get() // (pvapp.numCells.get() * pvapp.numMods.get())
+        ][
+            (cellnum.get() // pvapp.numCells.get()) % pvapp.numMods.get()
+        ].pvcells[cellnum.get() % pvapp.numCells.get()].Rsh_E0))
+        Isat1_T0.set("{:10.4e}".format(pvapp.pvSys.pvmods[
+            cellnum.get() // (pvapp.numCells.get() * pvapp.numMods.get())
+        ][
+            (cellnum.get() // pvapp.numCells.get()) % pvapp.numMods.get()
+        ].pvcells[cellnum.get() % pvapp.numCells.get()].Isat1_T0))
+        Isat2_T0.set("{:10.4e}".format(pvapp.pvSys.pvmods[
+            cellnum.get() // (pvapp.numCells.get() * pvapp.numMods.get())
+        ][
+            (cellnum.get() // pvapp.numCells.get()) % pvapp.numMods.get()
+        ].pvcells[cellnum.get() % pvapp.numCells.get()].Isat2_T0))
         Aph = self.Aph = DoubleVar(self, name='Aph')
         Isc0_T0 = self.Isc0_T0 = DoubleVar(self, name='Isc0_T0')
         Tcell = self.Tcell = DoubleVar(self, name='Tcell')
         Vbypass = self.Vbypass = DoubleVar(self, name='Vbypasss')
-        Aph.set("{:10.4f}".format(pvapp.pvSys.pvmods[cellnum.get() / (pvapp.numCells.get() * pvapp.numMods.get())][(cellnum.get() / pvapp.numCells.get()) % pvapp.numMods.get()].pvcells[cellnum.get() % pvapp.numCells.get()].Aph))
-        Isc0_T0.set("{:10.4f}".format(pvapp.pvSys.pvmods[cellnum.get() / (pvapp.numCells.get() * pvapp.numMods.get())][(cellnum.get() / pvapp.numCells.get()) % pvapp.numMods.get()].pvcells[cellnum.get() % pvapp.numCells.get()].Isc0_T0))
-        Tcell.set("{:10.4f}".format(pvapp.pvSys.pvmods[cellnum.get() / (pvapp.numCells.get() * pvapp.numMods.get())][(cellnum.get() / pvapp.numCells.get()) % pvapp.numMods.get()].pvcells[cellnum.get() % pvapp.numCells.get()].Tcell))
-        Vbypass.set("{:10.4f}".format(pvapp.pvSys.pvmods[cellnum.get() / (pvapp.numCells.get() * pvapp.numMods.get())][(cellnum.get() / pvapp.numCells.get()) % pvapp.numMods.get()].Vbypass))
+        Aph.set("{:10.4f}".format(pvapp.pvSys.pvmods[cellnum.get() // (pvapp.numCells.get() * pvapp.numMods.get())][(cellnum.get() // pvapp.numCells.get()) % pvapp.numMods.get()].pvcells[cellnum.get() % pvapp.numCells.get()].Aph))
+        Isc0_T0.set("{:10.4f}".format(pvapp.pvSys.pvmods[cellnum.get()// (pvapp.numCells.get() * pvapp.numMods.get())][(cellnum.get() // pvapp.numCells.get()) % pvapp.numMods.get()].pvcells[cellnum.get() % pvapp.numCells.get()].Isc0_T0))
+        Tcell.set("{:10.4f}".format(pvapp.pvSys.pvmods[cellnum.get() // (pvapp.numCells.get() * pvapp.numMods.get())][(cellnum.get() // pvapp.numCells.get()) % pvapp.numMods.get()].pvcells[cellnum.get() % pvapp.numCells.get()].Tcell))
+        Vbypass.set("{:10.4f}".format(pvapp.pvSys.pvmods[cellnum.get() // (pvapp.numCells.get() * pvapp.numMods.get())][(cellnum.get() // pvapp.numCells.get()) % pvapp.numMods.get()].Vbypass))
         aRBD = self.aRBD = DoubleVar(self, name='aRBD')
         VRBD = self.VRBD = DoubleVar(self, name='VRBD')
         nRBD = self.nRBD = DoubleVar(self, name='nRBD')
         cellArea = self.cellArea = DoubleVar(self, name='cellArea')
-        aRBD.set("{:10.4e}".format(pvapp.pvSys.pvmods[cellnum.get() / (pvapp.numCells.get() * pvapp.numMods.get())][(cellnum.get() / pvapp.numCells.get()) % pvapp.numMods.get()].pvcells[cellnum.get() % pvapp.numCells.get()].aRBD))
-        VRBD.set("{:10.4f}".format(pvapp.pvSys.pvmods[cellnum.get() / (pvapp.numCells.get() * pvapp.numMods.get())][(cellnum.get() / pvapp.numCells.get()) % pvapp.numMods.get()].pvcells[cellnum.get() % pvapp.numCells.get()].VRBD))
-        nRBD.set("{:10.4f}".format(pvapp.pvSys.pvmods[cellnum.get() / (pvapp.numCells.get() * pvapp.numMods.get())][(cellnum.get() / pvapp.numCells.get()) % pvapp.numMods.get()].pvcells[cellnum.get() % pvapp.numCells.get()].nRBD))
-        cellArea.set("{:10.4f}".format(pvapp.pvSys.pvmods[cellnum.get() / (pvapp.numCells.get() * pvapp.numMods.get())][(cellnum.get() / pvapp.numCells.get()) % pvapp.numMods.get()].cellArea))
+        aRBD.set("{:10.4e}".format(pvapp.pvSys.pvmods[cellnum.get() // (pvapp.numCells.get() * pvapp.numMods.get())][(cellnum.get() // pvapp.numCells.get()) % pvapp.numMods.get()].pvcells[cellnum.get() % pvapp.numCells.get()].aRBD))
+        VRBD.set("{:10.4f}".format(pvapp.pvSys.pvmods[cellnum.get() // (pvapp.numCells.get() * pvapp.numMods.get())][(cellnum.get() // pvapp.numCells.get()) % pvapp.numMods.get()].pvcells[cellnum.get() % pvapp.numCells.get()].VRBD))
+        nRBD.set("{:10.4f}".format(pvapp.pvSys.pvmods[cellnum.get() // (pvapp.numCells.get() * pvapp.numMods.get())][(cellnum.get() // pvapp.numCells.get()) % pvapp.numMods.get()].pvcells[cellnum.get() % pvapp.numCells.get()].nRBD))
+        cellArea.set("{:10.4f}".format(pvapp.pvSys.pvmods[cellnum.get() // (pvapp.numCells.get() * pvapp.numMods.get())][(cellnum.get() // pvapp.numCells.get()) % pvapp.numMods.get()].cellArea))
 
         # must register vcmd and invcmd as Tcl functions
         vcmd = (self.register(self.validateWidget),
@@ -72,10 +90,10 @@ class AdvCnf_tk(Frame):
               text='Advanced Configuration',
               font=CAPTION_FONT).grid(row=_row, columnspan=3, sticky=W)
         _row += 1
-        # cellnum, Rs, Rsh, Isat1_T0
+        # cellnum, Rs, Rsh_E0, Isat1_T0
         Label(self, text='cell #').grid(row=_row, sticky=W)
         Label(self, text='Rs [Ohms]').grid(row=_row + 1, sticky=W)
-        Label(self, text='Rsh [Ohms]').grid(row=(_row + 2), sticky=W)
+        Label(self, text='Rsh_E0 [Ohms]').grid(row=(_row + 2), sticky=W)
         Label(self, text='Isat1_T0 [A]').grid(row=(_row + 3), sticky=W)
         cellnumEntry = Entry(self, textvariable=cellnum, width=12, justify=RIGHT,
                              name='cellnumEntry', validatecommand=vcmd,
@@ -85,7 +103,7 @@ class AdvCnf_tk(Frame):
                         name='rsEntry', validatecommand=vcmd,
                         invalidcommand=invcmd, validate='all')
         RsEntry.grid(row=_row + 1, column=1)
-        RshEntry = Entry(self, textvariable=Rsh, width=12, justify=RIGHT,
+        RshEntry = Entry(self, textvariable=Rsh_E0, width=12, justify=RIGHT,
                          name='rshEntry', validatecommand=vcmd,
                          invalidcommand=invcmd, validate='all')
         RshEntry.grid(row=(_row + 2), column=1)
@@ -95,15 +113,15 @@ class AdvCnf_tk(Frame):
                               validate='all')
         Isat1_T0Entry.grid(row=(_row + 3), column=1)
         _row += 4  # row 2, 3, 4, 5
-        # Isat2, Isc0_T0, Tcell, Vbypasss
-        Label(self, text='Isat2 [A]').grid(row=(_row), sticky=W)
+        # Isat2_T0, Isc0_T0, Tcell, Vbypasss
+        Label(self, text='Isat2_T0 [A]').grid(row=(_row), sticky=W)
         Label(self, text='Isc0_T0 [A]').grid(row=(_row + 1), sticky=W)
         Label(self, text='Tcell [K]').grid(row=(_row + 2), sticky=W)
         Label(self, text='Vbypass [V]').grid(row=(_row + 3), sticky=W)
-        Isat2Entry = Entry(self, textvariable=Isat2, width=12, justify=RIGHT,
+        Isat2_T0Entry = Entry(self, textvariable=Isat2_T0, width=12, justify=RIGHT,
                            name='isat2Entry', validatecommand=vcmd,
                            invalidcommand=invcmd, validate='all')
-        Isat2Entry.grid(row=(_row), column=1)
+        Isat2_T0Entry.grid(row=(_row), column=1)
         Isc01_T0Entry = Entry(self, textvariable=Isc0_T0, width=12,
                              justify=RIGHT, name='isc01_T0Entry',
                              validatecommand=vcmd, invalidcommand=invcmd,
@@ -156,8 +174,8 @@ class AdvCnf_tk(Frame):
             self.pvapp.msgtext.set('Invalid series resistance!')
             self.bell()
             return
-        Rsh = self.Rsh.get()
-        if not (0 < Rsh <= validationConstants["advCnf"]["Rsh"]):
+        Rsh_E0 = self.Rsh_E0.get()
+        if not (0 < Rsh_E0 <= validationConstants["advCnf"]["Rsh_E0"]):
             self.pvapp.msgtext.set('Invalid shunt resistance!')
             self.bell()
             return
@@ -166,8 +184,8 @@ class AdvCnf_tk(Frame):
             self.pvapp.msgtext.set('Invalid diode-1 saturation current!')
             self.bell()
             return
-        Isat2 = self.Isat2.get()
-        if not 0 < Isat2 <= validationConstants["advCnf"]["Isat2"]:
+        Isat2_T0 = self.Isat2_T0.get()
+        if not 0 < Isat2_T0 <= validationConstants["advCnf"]["Isat2_T0"]:
             self.pvapp.msgtext.set('Invalid diode-2 saturation current!')
             self.bell()
             return
@@ -219,8 +237,8 @@ class AdvCnf_tk(Frame):
         # update PVconstants
         self.pvapp.msgtext.set(messagetext["pvapplication"]["Ready"])
         pvapp = self.pvapp
-        kwargs = {'Rs': Rs, 'Rsh': Rsh, 'Isat1_T0': Isat1_T0, 'Isat2': Isat2, 'Isc0_T0': Isc0_T0, 'Tcell': Tcell, 'aRBD': aRBD, 'VRBD': VRBD, 'nRBD': nRBD}
-        pvapp.pvSys.pvmods[self.cellnum.get() / (pvapp.numCells.get() * pvapp.numMods.get())][(self.cellnum.get() / pvapp.numCells.get()) % pvapp.numMods.get()].pvcells[self.cellnum.get() % pvapp.numCells.get()].update(
+        kwargs = {'Rs': Rs, 'Rsh_E0': Rsh_E0, 'Isat1_T0': Isat1_T0, 'Isat2_T0': Isat2_T0, 'Isc0_T0': Isc0_T0, 'Tcell': Tcell, 'aRBD': aRBD, 'VRBD': VRBD, 'nRBD': nRBD}
+        pvapp.pvSys.pvmods[self.cellnum.get() // (pvapp.numCells.get() * pvapp.numMods.get())][(self.cellnum.get() // pvapp.numCells.get()) % pvapp.numMods.get()].pvcells[self.cellnum.get() % pvapp.numCells.get()].update(
             **kwargs
         )  # cellArea, Vbypass updated by module
         # update PVapplication_tk
@@ -248,8 +266,8 @@ class AdvCnf_tk(Frame):
     def validateWidget(self, *args):
         # W = Tkinter.W = 'w' is already used, so use W_ instead
         (d, i, P, s, S, v, V, W_) = args  # @UnusedVariable # IGNORE:W0612
-        print "OnValidate:",
-        print("d={}, i={}, P={}, s={}, S={}, v={}, V={}, W={}".format(*args))
+        print("OnValidate:",
+              "d={}, i={}, P={}, s={}, S={}, v={}, V={}, W={}".format(*args))
         if W_ == '.advCnfTop.advCnf.rsEntry':
             valType = FLOATS
             valTest = lambda val: float(val)  # IGNORE:W0108
@@ -304,8 +322,8 @@ class AdvCnf_tk(Frame):
 
     def invalidWidget(self, *args):
         (d, i, P, s, S, v, V, W_) = args  # @UnusedVariable # IGNORE:W0612
-        print "OnInvalid: ",
-        print("d={}, i={}, P={}, s={}, S={}, v={}, V={}, W={}".format(*args))
+        print("OnInvalid: ",
+              "d={}, i={}, P={}, s={}, S={}, v={}, V={}, W={}".format(*args))
         if W_ == ".advCnfTop.advCnf.rsEntry":
             errText = 'Invalid series resistance!'
         elif W_ == ".advCnfTop.advCnf.rshEntry":
