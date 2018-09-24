@@ -49,7 +49,8 @@ if __name__ == '__main__':
 
     pvc = pvcell.PVcell(
         Rs=rs, Rsh=rsh, Isat1_T0=isat1, Isat2_T0=isat2,
-        Isc0_T0=ISC0/NP, alpha_Isc=AISC
+        Isc0_T0=ISC0/NP, alpha_Isc=AISC,
+        pvconst=pvconstants.PVconstants(npts=1001)
     )
     f1 = plt.figure(figsize=(16, 10))
 
@@ -68,25 +69,27 @@ if __name__ == '__main__':
                 0.0, iec61853['i_sc'][n][m]/NP, 'x',
                 iec61853['v_mp'][n][m]/NS, iec61853['p_mp'][n][m]/NS/NP, 'o',
             )
+            mpp = np.argmax(pvc.Pcell)
             res_norm += (
-                pvc.calcIcell(iec61853['v_mp'][n][m]/NS)
-                - iec61853['i_mp'][n][m]/NP
+                pvc.Icell[mpp] - iec61853['i_mp'][n][m]/NP
             )**2 / (IMP0/NP)**2
             res_norm += (
-                pvc.calcVcell(iec61853['i_mp'][n][m]/NP)
-                - iec61853['v_mp'][n][m]/NS
+                pvc.Vcell[mpp] - iec61853['v_mp'][n][m]/NS
             )**2 / (VMP0/NS)**2
+            voc = pvc.calcVcell(0.0)
             res_norm += (
-                pvc.calcVcell(0.0) - iec61853['v_oc'][n][m]/NS
+                voc - iec61853['v_oc'][n][m]/NS
             )**2 / (VOC0/NS)**2
+            isc = pvc.calcIcell(0.0)
             res_norm += (
-                pvc.calcIcell(0.0) - iec61853['i_sc'][n][m]/NP
+                isc - iec61853['i_sc'][n][m]/NP
             )**2 / (ISC0/NP)**2
-            rel_diff = (pvc.Pcell.max()*NS*NP - iec61853['p_mp'][n][m]) / PMP0
+            rel_diff = (pvc.Pcell[mpp]*NS*NP - iec61853['p_mp'][n][m]) / PMP0
             plt.annotate('$\Delta_{STC}$ = %.2g%%' % (rel_diff*100),
                          (0.65, iec61853['p_mp'][n][m]/NS/NP))
-            plt.annotate('$E_e$ = %.2g[suns]' % (_irr/1000),
-                         (0.05, 0.05+iec61853['i_sc'][n][m]/NP))
+            plt.annotate(
+                '$E_e$ = %.2g[suns], $V_{oc}$ = %.2g[V}, $I_{sc}$ = %.g[A]' % (_irr/1000, voc, isc),
+                (0.05, 0.05+iec61853['i_sc'][n][m]/NP))
         plt.annotate('STC RMSE = %.2g%%' % (np.sqrt(res_norm / (7*4))*100),
                      (0.65, 7.5))
         plt.annotate('$I_{sat,1}$ = %.4g' % isat1,
