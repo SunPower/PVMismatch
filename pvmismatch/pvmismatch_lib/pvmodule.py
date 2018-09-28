@@ -537,35 +537,9 @@ class PVmodule(object):
                     bypassed = Vsub < self.Vbypass[substr_idx]
                     Vsub[bypassed] = self.Vbypass[substr_idx]
             elif self.Vbypass_config == 'module_bypass':
-                # bypass value will be assigned after the for loop for substrings is over
+                # module bypass value will be assigned after the for loop for substrings is over
                 pass
 
-            """
-            # apply bypass diodes depending on the configuration passed
-            try:
-                num_bypass = len(self.Vbypass)
-            except TypeError:
-                # base case - Vbypass across every cell string
-
-            else:
-                # if only one value is passed in the list- assume only one
-                # bypass diode  across the PV module
-                if len(self.Vbypass) == 1:
-                    bypass_entire_module = True
-                    Vbypass_mod = self.Vbypass[0]
-                # if more than 1 values are passed, apply them across
-                # the cell strings in ascending order
-                elif len(self.cell_pos) == num_bypass:
-                    if self.Vbypass[substr_idx] is None:
-                        # no bypass for this substring
-                        pass
-                    else:
-                        # bypass the substring
-                        bypassed = Vsub < self.Vbypass[substr_idx]
-                        Vsub[bypassed] = self.Vbypass[substr_idx]
-                else:
-                    raise PVexception("wrong number of bypass diode values passed : %d"%(len(self.Vbypass)))
-            """
             Isubstr.append(Isub)
             Vsubstr.append(Vsub)
             Isc_substr.append(np.interp(np.float64(0), Vsub, Isub))
