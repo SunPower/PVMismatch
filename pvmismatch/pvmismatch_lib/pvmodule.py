@@ -13,10 +13,10 @@ from matplotlib import pyplot as plt
 # use absolute imports instead of relative, so modules are portable
 from pvmismatch.pvmismatch_lib.pvconstants import PVconstants, get_series_cells
 from pvmismatch.pvmismatch_lib.pvcell import PVcell
+from pvmismatch.pvmismatch_lib.pvexceptions import PVexception
 
 VBYPASS = np.float64(-0.5)  # [V] trigger voltage of bypass diode
 CELLAREA = np.float64(153.33)  # [cm^2] cell area
-
 
 def standard_cellpos_pat(nrows, ncols_per_substr):
     """
@@ -56,7 +56,6 @@ def standard_cellpos_pat(nrows, ncols_per_substr):
             newsubstr.append(newrow)
         cellpos.append(newsubstr)
     return cellpos
-
 
 # standard cell positions presets
 STD24 = standard_cellpos_pat(1, [1] * 24)
@@ -153,6 +152,33 @@ def combine_parallel_circuits(IVprev_cols, pvconst):
         Irows, Vrows, Isc_rows.mean(), Imax_rows.max()
     )
 
+def parse_diode_config(Vbypass, cell_pos):
+    """
+    Parse diode configuration from the Vbypass argument
+    :param Vbypass: Vbypass config
+    :type Vbypass: float|list|tuple
+    :param cell_pos:
+    :type cell_pos:
+    :return: bypass config
+    :rtype: str
+    """
+    try:
+        # check if float or list/tuple
+        num_bypass = len(Vbypass)
+    except TypeError:
+        # float passed - default case - Vbypass across every cell string
+        return 'default'
+    else:
+        # if only one value is passed in the list- assume only one
+        # bypass diode  across the PV module
+        if len(Vbypass) == 1:
+            return 'module_bypass'
+        # if more than 1 values are passed, apply them across
+        # the cell strings in ascending order
+        elif len(cell_pos) == num_bypass:
+            return 'custom_substr_bypass'
+        else:
+            raise PVexception("wrong number of bypass diode values passed : %d"%(len(Vbypass)))
 
 class PVmodule(object):
     """
@@ -202,17 +228,17 @@ class PVmodule(object):
         self.pvconst = pvconst  #: configuration constants
         
         # set default value of Vbypass if None
-        if not Vbypass:
+        if Vbypass is None:
             self.Vbypass = VBYPASS  #: [V] trigger voltage of bypass diode
         else:
-        # if an object is passed, use that to determine the config of bypass diodes
+            # if an object is passed, use that to determine the config of bypass diodes
             self.Vbypass = Vbypass
+        self.Vbypass_config = parse_diode_config(self.Vbypass, self.cell_pos)
 
         self.cellArea = cellArea  #: [cm^2] cell area
         # check cell position pattern matches list of cells
         if len(pvcells) != self.numberCells:
-            # TODO: use pvexception
-            raise Exception(
+            raise PVexception(
                 "Number of cells doesn't match cell position pattern."
             )
         self.pvcells = pvcells  #: list of `PVcell` objects in this `PVmodule`
@@ -498,31 +524,48 @@ class PVmodule(object):
                     Isub, Vsub = self.pvconst.calcParallel(
                         Iparallel, Vparallel, Vparallel.max(), Vparallel.min()
                     )
-                    
+
+            if self.Vbypass_config == 'default':
+                bypassed = Vsub < self.Vbypass
+                Vsub[bypassed] = self.Vbypass
+            elif self.Vbypass_config == 'custom_substr_bypass':
+                if self.Vbypass[substr_idx] is None:
+                    # no bypass for this substring
+                    pass
+                else:
+                    # bypass the substring
+                    bypassed = Vsub < self.Vbypass[substr_idx]
+                    Vsub[bypassed] = self.Vbypass[substr_idx]
+            elif self.Vbypass_config == 'module_bypass':
+                # bypass value will be assigned after the for loop for substrings is over
+                pass
+
+            """
             # apply bypass diodes depending on the configuration passed
-            if type(self.Vbypass) == list:
-                # if only one value is passed in the list- assume only one 
+            try:
+                num_bypass = len(self.Vbypass)
+            except TypeError:
+                # base case - Vbypass across every cell string
+
+            else:
+                # if only one value is passed in the list- assume only one
                 # bypass diode  across the PV module
-                if len(self.Vbypass) == 1: 
+                if len(self.Vbypass) == 1:
                     bypass_entire_module = True
                     Vbypass_mod = self.Vbypass[0]
-                # if more than 1 values are passed, apply them across  
+                # if more than 1 values are passed, apply them across
                 # the cell strings in ascending order
-                elif len(self.cell_pos) == len(self.Vbypass):    
+                elif len(self.cell_pos) == num_bypass:
                     if self.Vbypass[substr_idx] is None:
-                        bypassed = None
+                        # no bypass for this substring
+                        pass
                     else:
+                        # bypass the substring
                         bypassed = Vsub < self.Vbypass[substr_idx]
                         Vsub[bypassed] = self.Vbypass[substr_idx]
                 else:
-                    raise Exception("wrong number of bypass diode values passed : %d"%(len(self.Vbypass)))
-            elif self.Vbypass == 'None':
-                pass
-            else:
-                # base case - Vbypass across every cell string
-                bypassed = Vsub < self.Vbypass
-                Vsub[bypassed] = self.Vbypass
-                
+                    raise PVexception("wrong number of bypass diode values passed : %d"%(len(self.Vbypass)))
+            """
             Isubstr.append(Isub)
             Vsubstr.append(Vsub)
             Isc_substr.append(np.interp(np.float64(0), Vsub, Isub))
@@ -536,9 +579,9 @@ class PVmodule(object):
         )
         
         # if entire module has only one bypass diode
-        if bypass_entire_module:
-            bypassed = Vmod < Vbypass_mod
-            Vmod[bypassed] = Vbypass_mod
+        if self.Vbypass_config == 'module_bypass':
+            bypassed = Vmod < self.Vbypass[0]
+            Vmod[bypassed] = self.Vbypass[0]
         else:
             pass
 
