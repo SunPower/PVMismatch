@@ -429,7 +429,6 @@ class PVmodule(object):
         """
         # iterate over substrings
         # TODO: benchmark speed difference append() vs preallocate space
-        bypass_entire_module = False
         Isubstr, Vsubstr, Isc_substr, Imax_substr = [], [], [], []
         for substr_idx, substr in enumerate(self.cell_pos):
             # check if cells are in series or any crosstied circuits
