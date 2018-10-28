@@ -42,4 +42,5 @@ https://github.com/SunPower/MismatchLossStudy
 Citing PVMismatch
 ----------------------------------
 We appreciate your use of PVMismatch, and ask that you appropriately cite the software in exchange for its open-source publication. 
+
 Mark Mikofski, Bennet Meyers, Chetan Chaudhari (2018). “PVMismatch Project: https://github.com/SunPower/MismatchLossStudy". SunPower Corporation, Richmond, CA.
