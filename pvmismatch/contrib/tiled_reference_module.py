@@ -45,12 +45,12 @@ if __name__ == "__main__":
     tiledSystem = pvsystem.PVsystem(pvconst=pvconstants.PVconstants(npts=NPTS),
                     pvmods=tiledModule, numberStrs=NUMBERSTRS, numberMods=NUMBERMODS)
     
-    print 'Imp = ' + str(tiledSystem.Imp) + ' A'
-    print 'Vmp = ' + str(tiledSystem.Vmp) + ' V'
-    print 'Pmp = ' + str(tiledSystem.Pmp) + ' W'
-    print 'Isc = ' + str(tiledSystem.Isc) + ' A'
-    print 'Voc = ' + str(tiledSystem.Voc) + ' V'
-    print 'FF = ' + str(100*tiledSystem.FF) + ' %'
-    print 'Efficiency = ' + str(100*tiledSystem.eff) + ' %'
+    print('Imp = ' + str(tiledSystem.Imp) + ' A')
+    print('Vmp = ' + str(tiledSystem.Vmp) + ' V')
+    print('Pmp = ' + str(tiledSystem.Pmp) + ' W')
+    print('Isc = ' + str(tiledSystem.Isc) + ' A')
+    print('Voc = ' + str(tiledSystem.Voc) + ' V')
+    print('FF = ' + str(100*tiledSystem.FF) + ' %')
+    print('Efficiency = ' + str(100*tiledSystem.eff) + ' %')
     figure = tiledSystem.plotSys()
     plt.show()
