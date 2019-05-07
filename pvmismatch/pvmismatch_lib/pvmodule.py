@@ -536,9 +536,6 @@ class PVmodule(object):
                 bypassed = Vsub < self.Vbypass
                 Vsub[bypassed] = self.Vbypass
             elif self.Vbypass_config == CUSTOM_SUBSTR_BYPASS:
-                bypassed = Vsub < self.Vbypass
-                Vsub[bypassed] = self.Vbypass
-            elif self.Vbypass_config == 'custom_substr_bypass':
                 if self.Vbypass[substr_idx] is None:
                     # no bypass for this substring
                     pass
