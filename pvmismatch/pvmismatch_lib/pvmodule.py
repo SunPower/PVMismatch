@@ -195,11 +195,10 @@ class PVmodule(object):
     :type pvconst: :class:`~pvmismatch.pvmismatch_lib.pvconstants.PVconstants`
     :param Vbypass: float|list of :float
         bypass diode trigger voltage [V]
-        default case - one bypass diode per cell string (VBYPASS = -0.5V(V))
-        float - one bypass diode per cell string with Vf = Vbypass (V)
-        len(list) == 1 - one bypass diode per module (bypasses entire module )
-        len(list) == len(cell_pos) - bypass diode value across cell string as 
-                                     defined in the list
+        default case - one bypass diode per cell string (VBYPASS = -0.5V(V)) \n
+        float - one bypass diode per cell string with Vf = Vbypass (V) \n
+        len(list) == 1 - one bypass diode per module (bypasses entire module ) \n
+        len(list) == len(cell_pos) - bypass diode value across cell string as defined in the list \n
     :param cellArea: cell area [cm^2]
     """
     def __init__(self, cell_pos=STD96, pvcells=None, pvconst=None,
