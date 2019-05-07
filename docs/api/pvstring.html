@@ -1,20 +1,17 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>pvstring &#8212; PVMismatch Kenya Ketchup documentation</title>
-    
+    <title>pvstring &#8212; PVMismatch Mint Mojito documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     'Kenya Ketchup',
+        VERSION:     'Mint Mojito',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -24,7 +21,7 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -37,7 +34,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
   </head>
-  <body role="document">
+  <body>
   
 
     <div class="document">
@@ -53,17 +50,17 @@ class.</p>
 <h2>PVstring<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="pvmismatch.pvmismatch_lib.pvstring.PVstring">
-<em class="property">class </em><code class="descclassname">pvmismatch.pvmismatch_lib.pvstring.</code><code class="descname">PVstring</code><span class="sig-paren">(</span><em>numberMods=10</em>, <em>pvmods=None</em>, <em>pvconst=&lt;PVconstants(npts=101)&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#pvmismatch.pvmismatch_lib.pvstring.PVstring" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">pvmismatch.pvmismatch_lib.pvstring.</code><code class="descname">PVstring</code><span class="sig-paren">(</span><em>numberMods=10</em>, <em>pvmods=None</em>, <em>pvconst=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pvmismatch.pvmismatch_lib.pvstring.PVstring" title="Permalink to this definition">¶</a></dt>
 <dd><p>A class for PV strings.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>numberMods</strong> &#8211; number of modules in string</li>
-<li><strong>pvmods</strong> (list, <a class="reference internal" href="pvmodule.html#pvmismatch.pvmismatch_lib.pvmodule.PVmodule" title="pvmismatch.pvmismatch_lib.pvmodule.PVmodule"><code class="xref py py-class docutils literal"><span class="pre">PVmodule</span></code></a>) &#8211; either a list of modules, an instance of
+<li><strong>numberMods</strong> – number of modules in string</li>
+<li><strong>pvmods</strong> (list, <a class="reference internal" href="pvmodule.html#pvmismatch.pvmismatch_lib.pvmodule.PVmodule" title="pvmismatch.pvmismatch_lib.pvmodule.PVmodule"><code class="xref py py-class docutils literal"><span class="pre">PVmodule</span></code></a>) – either a list of modules, an instance of
 <a class="reference internal" href="pvmodule.html#pvmismatch.pvmismatch_lib.pvmodule.PVmodule" title="pvmismatch.pvmismatch_lib.pvmodule.PVmodule"><code class="xref py py-class docutils literal"><span class="pre">PVmodule</span></code></a> [Optional]</li>
-<li><strong>pvconst</strong> &#8211; a configuration constants object</li>
+<li><strong>pvconst</strong> – a configuration constants object</li>
 </ul>
 </td>
 </tr>
@@ -76,6 +73,12 @@ class.</p>
 Returns (Istring, Vstring, Pstring) : tuple of numpy.ndarray of float</p>
 </dd></dl>
 
+<dl class="attribute">
+<dt id="pvmismatch.pvmismatch_lib.pvstring.PVstring.numberMods">
+<code class="descname">numberMods</code><em class="property"> = None</em><a class="headerlink" href="#pvmismatch.pvmismatch_lib.pvstring.PVstring.numberMods" title="Permalink to this definition">¶</a></dt>
+<dd><p>number of module in string</p>
+</dd></dl>
+
 <dl class="method">
 <dt id="pvmismatch.pvmismatch_lib.pvstring.PVstring.plotStr">
 <code class="descname">plotStr</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pvmismatch.pvmismatch_lib.pvstring.PVstring.plotStr" title="Permalink to this definition">¶</a></dt>
@@ -83,20 +86,32 @@ Returns (Istring, Vstring, Pstring) : tuple of numpy.ndarray of float</p>
 Returns strPlot : matplotlib.pyplot figure</p>
 </dd></dl>
 
+<dl class="attribute">
+<dt id="pvmismatch.pvmismatch_lib.pvstring.PVstring.pvconst">
+<code class="descname">pvconst</code><em class="property"> = None</em><a class="headerlink" href="#pvmismatch.pvmismatch_lib.pvstring.PVstring.pvconst" title="Permalink to this definition">¶</a></dt>
+<dd><p><code class="docutils literal"><span class="pre">PVconstants</span></code> used in  <code class="docutils literal"><span class="pre">PVstring</span></code></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pvmismatch.pvmismatch_lib.pvstring.PVstring.pvmods">
+<code class="descname">pvmods</code><em class="property"> = None</em><a class="headerlink" href="#pvmismatch.pvmismatch_lib.pvstring.PVstring.pvmods" title="Permalink to this definition">¶</a></dt>
+<dd><p>list of <code class="docutils literal"><span class="pre">PVModule</span></code> in <code class="docutils literal"><span class="pre">PVstring</span></code></p>
+</dd></dl>
+
 <dl class="method">
 <dt id="pvmismatch.pvmismatch_lib.pvstring.PVstring.setSuns">
 <code class="descname">setSuns</code><span class="sig-paren">(</span><em>Ee</em><span class="sig-paren">)</span><a class="headerlink" href="#pvmismatch.pvmismatch_lib.pvstring.PVstring.setSuns" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set irradiance on cells in modules of string in system.
-If Ee is ...
-... scalar, then sets the entire string to that irradiance.
-... a dictionary, then each key refers to a module in the string,
+If Ee is …
+… scalar, then sets the entire string to that irradiance.
+… a dictionary, then each key refers to a module in the string,
 and the corresponding value are passed to
 <a class="reference internal" href="pvmodule.html#pvmismatch.pvmismatch_lib.pvmodule.PVmodule.setSuns" title="pvmismatch.pvmismatch_lib.pvmodule.PVmodule.setSuns"><code class="xref py py-meth docutils literal"><span class="pre">setSuns()</span></code></a></p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>Ee</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a><em> or </em><a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; irradiance [suns]</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>Ee</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – irradiance [suns]</td>
 </tr>
 </tbody>
 </table>
@@ -115,16 +130,16 @@ and the corresponding value are passed to
 <dt id="pvmismatch.pvmismatch_lib.pvstring.PVstring.setTemps">
 <code class="descname">setTemps</code><span class="sig-paren">(</span><em>Tc</em><span class="sig-paren">)</span><a class="headerlink" href="#pvmismatch.pvmismatch_lib.pvstring.PVstring.setTemps" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set temperature on cells in modules of string in system.
-If Tc is ...
-... scalar, then sets the entire string to that temperature.
-... a dictionary, then each key refers to a module in the string,
+If Tc is …
+… scalar, then sets the entire string to that temperature.
+… a dictionary, then each key refers to a module in the string,
 and the corresponding value are passed to
 <a class="reference internal" href="pvmodule.html#pvmismatch.pvmismatch_lib.pvmodule.PVmodule.setTemps" title="pvmismatch.pvmismatch_lib.pvmodule.PVmodule.setTemps"><code class="xref py py-meth docutils literal"><span class="pre">setTemps()</span></code></a></p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>Tc</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a><em> or </em><a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; temperature [K]</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>Tc</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – temperature [K]</td>
 </tr>
 </tbody>
 </table>
@@ -198,6 +213,7 @@ and the corresponding value are passed to
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="pvsystem.html">pvsystem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contrib.html">Contributions</a></li>
 </ul>
 
 
@@ -227,8 +243,8 @@ and the corresponding value are passed to
       &copy;2017, SunPower.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.1</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
       
       |
       <a href="../_sources/api/pvstring.rst.txt"

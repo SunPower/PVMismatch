@@ -11,25 +11,37 @@ from pvmismatch.pvmismatch_lib.pvcell import ISAT1_T0, ISAT2_T0, RS, RSH
 # IEC 61853 test matrix
 TC_C = [15.0, 25.0, 50.0, 75.0]
 IRR_W_M2 = [100.0, 200.0, 400.0, 600.0, 800.0, 1000.0, 1100.0]
-TEST_MAT = np.meshgrid(TC_C, IRR_W_M2)
+TEST_MAT = np.meshgrid(TC_C, IRR_W_M2)  #: IEC61853 test matrix
 
 def gen_iec_61853_from_sapm(pvmodule):
     """
     Generate an IEC 61853 test from Sandia Array Performance Model (sapm).
 
-    :param pvmodule: PV module to be tested
-    :type pvmodule: dict
+    :param dict pvmodule: PV module to be tested
+    :returns: a pandas dataframe with columns ``i_mp``, ``v_mp``, ``i_sc``, and
+        ``v_oc`` and rows corresponding to the IEC61853 test conditions
 
-    Module is a dictionary according to :def:`pvlib.pvsystem.sapm`.
+    Module is a dictionary according to ``pvlib.pvsystem.sapm``.
     """
     tc, irr = TEST_MAT
     return sapm(irr / 1000.0, tc, pvmodule)
 
 
 def gen_two_diode(isc, voc, imp, vmp, nseries, nparallel,
-                  tc, x0 = None, *args, **kwargs):
+                  tc, x0=None, *args, **kwargs):
     """
-    Generate two-diode model parameters for ``pvcell`` given 
+    Generate two-diode model parameters for ``pvcell`` given.
+
+    :param numeric isc: short circuit current [A]
+    :param numeric voc: open circuit voltage [V]
+    :param numeric imp: max power current [A]
+    :param numeric vmp: max power voltage [V]
+    :param int nseries: number of cells in series
+    :param int nparallel: number of parallel substrings in PV module
+    :param numeric tc: cell temperature [C]
+    :param x0: optional list of initial guesses, default is ``None``
+    :returns: tuple ``(isat1, isat2, rs, rsh)`` of generated coefficients and
+        the solver output
     """
     isc_cell = isc / nparallel
     voc_cell = voc / nseries
@@ -78,17 +90,17 @@ def gen_sapm(iec_61853):
     return isc0, alpha_isc
 
 
-
 def residual_two_diode(x, isc, voc, imp, vmp, tc):
     """
     Objective function to solve 2-diode model.
-    :param x: parameters isat1, isat2, rs and rsh
-    :param isc: short circuit current [A] at tc [C]
-    :param voc: open circuit voltage [V] at tc [C]
-    :param imp: max power current [A] at tc [C]
-    :param vmp: max power voltage [V] at tc [C]
+
+    :param x: parameters ``isat1``, ``isat2``, ``rs``, and ``rsh``
+    :param isc: short circuit current [A] at ``tc`` [C]
+    :param voc: open circuit voltage [V] at ``tc`` [C]
+    :param imp: max power current [A] at ``tc`` [C]
+    :param vmp: max power voltage [V] at ``tc`` [C]
     :param tc: cell temperature [C]
-    :return: norm of the residuals its sensitivity
+    :returns: norm of the residuals and the Jacobian matrix
     """
     # Constants
     q = diode.QE  # [C/electron] elementary electric charge
@@ -99,11 +111,12 @@ def residual_two_diode(x, isc, voc, imp, vmp, tc):
     vt = kb * tck / q  # [V] thermal voltage
     # Rescale Variables
     isat1_t0 = np.exp(x[0])
-    isat2 = np.exp(x[1])
+    isat2_t0 = np.exp(x[1])
     rs = x[2] ** 2.0
     rsh = x[3] ** 2.0
     # first diode saturation current
     isat1 = diode.isat_t(tc, isat1_t0)
+    isat2 = diode.isat_t(tc, isat2_t0)
     # Short Circuit
     vd_isc, _ = diode.fvd(vc=0.0, ic=isc, rs=rs)
     id1_isc, _ = diode.fid(isat=isat1, vd=vd_isc, m=1.0, vt=vt)
