@@ -2,27 +2,33 @@
 
 '''
 Created on Mar 29, 2013
+
 This script allows the user to dynamically investigate the IV and PV
 characteristics of a single module. The user chooses the modules size--72 or 96
-cells. A UI is then generated that allows the user to change the size, location,
+cells. A GUI is then generated that allows the user to change the size, location,
 and irradiance level of a single "shade rectangle". Outputs include cell,
 substring, and module level IV and PV curves as well as a module diagram showing
 the shade location, any reverse biased cells, and any active diodes.
+
 @author: bmeyers
 '''
 # ==============================================================================
 # Importing standard libraries
 # ==============================================================================
 
-import matplotlib.pyplot as plt
-import matplotlib.gridspec as gridspec
-import numpy as np
-from scipy.interpolate import interp1d
-from matplotlib.widgets import Slider
-from matplotlib.widgets import Button
+from __future__ import (
+    absolute_import, division, unicode_literals, print_function)
 import json
 from functools import partial
 from copy import deepcopy
+import os
+import numpy as np
+from scipy.interpolate import interp1d
+import matplotlib.pyplot as plt
+import matplotlib.gridspec as gridspec
+from matplotlib.widgets import Slider
+from matplotlib.widgets import Button
+from past.builtins import raw_input, xrange
 
 # ==============================================================================
 # Import PVmismatch items
@@ -32,8 +38,8 @@ try:
     from pvmismatch import PVsystem, PVmodule, PVcell, PVconstants
     from pvmismatch.pvmismatch_lib.pvmodule import STD72, STD96, STD128
 except ImportError:
-    print "PVMismatch not found on path! Please use 'pip install -e path/to/pvmismatch'"
-    print "or 'export PYTHONPATH=path/to/pvmismatch:$PYTHONPATH' first."
+    print("PVMismatch not found on path! Please use 'pip install -e path/to/pvmismatch'")
+    print("or 'export PYTHONPATH=path/to/pvmismatch:$PYTHONPATH' first.")
     import sys
     sys.exit(-1)
 
@@ -74,8 +80,8 @@ class ShadeObj(object):
     def __init__(self, pershade=90, shd_width=1, shd_height=1, shd_x=4,
                  shd_y=6, numberCells=96):
         modHeight = modheight(numberCells)
-        module = np.empty([numberCells / modHeight, modHeight], dtype=int)
-        for n in range(numberCells / modHeight):
+        module = np.empty([numberCells // modHeight, modHeight], dtype=int)
+        for n in range(numberCells // modHeight):
             if n % 2 == 0:
                 module[n] = np.arange(n * modHeight, (n + 1) * modHeight, 1)
             else:
@@ -155,8 +161,8 @@ def plotting_calcs(pvmod, ivp=None):
     reversebias = [n for n in range(len(ivp.Icell.T))
                    if -np.interp(-ivp.Imp, -ivp.Icell.T[n], -ivp.Vcell.T[n]) < 0]
     boolindx = np.array(reversebias)
-    module = np.empty([pvmod.numberCells / ivp.modHeight, ivp.modHeight], dtype=int)
-    for n in range(pvmod.numberCells / ivp.modHeight):
+    module = np.empty([pvmod.numberCells // ivp.modHeight, ivp.modHeight], dtype=int)
+    for n in range(pvmod.numberCells // ivp.modHeight):
         if n % 2 == 0:
             module[n] = np.arange(n * ivp.modHeight, (n + 1) * ivp.modHeight, 1)
         else:
@@ -427,7 +433,7 @@ def full_update(val, output=None, ivp0=None, plotobjs=None):
                 output['ax12'], output['ax03'], output['ax_4'], output['x'], output['y'])
     plt.draw()
     t1 = (sw * sh, s_ps.val, ivp0.Pmp, 100 * ivp0.Pmp / Pmp0)
-    print '{0:^6} {1:^6,.2f} {2:^6,.2f} {3:^7,.2f}'.format(*t1)
+    print('{0:^6} {1:^6,.2f} {2:^6,.2f} {3:^7,.2f}'.format(*t1))
 
 
 def set_the_shade(val):
@@ -435,16 +441,18 @@ def set_the_shade(val):
 
 
 def save_the_shade(val):
+    this_dir = os.getcwd()
+    save_dir = os.path.join(this_dir, 'JSONshade')
+    os.makedirs(save_dir, exist_ok=True)
     dicts = []
     for shd in ivp0.shade:
         dicts.append({'ps': shd.pershade, 'sw': shd.sw, 'sh': shd.sh,
                       'sy': shd.sy, 'sx': shd.sx,
                       'numberCells': pvmod1.numberCells})
     filename = raw_input("File name? ")
-    filename = 'JSONshade/' + filename + '.json'
-    fo = open(filename, 'w')
-    shades_json = json.dump(dicts, fo, sort_keys=True, indent=2)
-    fo.close()
+    filename = os.path.join(save_dir, filename + '.json')
+    with open(filename, 'w') as fo:
+        json.dump(dicts, fo, sort_keys=True, indent=2)
 
 
 def clear_last_full(val, update=None):
@@ -465,10 +473,10 @@ if __name__ == "__main__":
     plotobjs = PlotObjs()
     update = partial(full_update, output=output, ivp0=ivp0, plotobjs=plotobjs)
     ClearLast = partial(clear_last_full, update=update)
-    print "Pmp0: {}".format(Pmp0)
-    print ""
-    print '{0:6} {1:^6} {2:^6} {3:^7}'.format('#Cells', '%Shade', 'Pmp', '%ofPmp0')
-    print '----------------------------'
+    print("Pmp0: {}".format(Pmp0))
+    print("")
+    print('{0:6} {1:^6} {2:^6} {3:^7}'.format('#Cells', '%Shade', 'Pmp', '%ofPmp0'))
+    print('----------------------------')
     ps0 = 90
     sw0 = 1
     sh0 = 1

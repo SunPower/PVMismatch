@@ -180,6 +180,11 @@ def parse_diode_config(Vbypass, cell_pos):
         # the cell strings in ascending order
         elif len(cell_pos) == num_bypass:
             return CUSTOM_SUBSTR_BYPASS
+
+        # if more than 1 values are passed, apply them across
+        # the cell strings in ascending order
+        elif len(cell_pos) == num_bypass:
+            return 'custom_substr_bypass'
         else:
             raise PVexception("wrong number of bypass diode values passed : %d"%(len(Vbypass)))
 
@@ -526,10 +531,14 @@ class PVmodule(object):
                         Iparallel, Vparallel, Vparallel.max(), Vparallel.min()
                     )
 
+
             if self.Vbypass_config == DEFAULT_BYPASS:
                 bypassed = Vsub < self.Vbypass
                 Vsub[bypassed] = self.Vbypass
             elif self.Vbypass_config == CUSTOM_SUBSTR_BYPASS:
+                bypassed = Vsub < self.Vbypass
+                Vsub[bypassed] = self.Vbypass
+            elif self.Vbypass_config == 'custom_substr_bypass':
                 if self.Vbypass[substr_idx] is None:
                     # no bypass for this substring
                     pass

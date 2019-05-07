@@ -1,20 +1,17 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>pvconstants &#8212; PVMismatch Kenya Ketchup documentation</title>
-    
+    <title>pvconstants &#8212; PVMismatch Mint Mojito documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     'Kenya Ketchup',
+        VERSION:     'Mint Mojito',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -24,7 +21,7 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -37,7 +34,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
   </head>
-  <body role="document">
+  <body>
   
 
     <div class="document">
@@ -63,7 +60,7 @@ here too.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>npts</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; number of points in IV curve</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>npts</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – number of points in IV curve</td>
 </tr>
 </tbody>
 </table>
@@ -101,17 +98,17 @@ not including zero</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>I</strong> &#8211; currents [A]</li>
-<li><strong>V</strong> &#8211; voltages [V]</li>
-<li><strong>Vmax</strong> &#8211; max voltage limit, should be max Voc [V]</li>
-<li><strong>Vmin</strong> &#8211; min voltage limit, could be zero or Vrbd [V]</li>
+<li><strong>I</strong> – currents [A]</li>
+<li><strong>V</strong> – voltages [V]</li>
+<li><strong>Vmax</strong> – max voltage limit, should be max Voc [V]</li>
+<li><strong>Vmin</strong> – min voltage limit, could be zero or Vrbd [V]</li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Type:</th><td class="field-body"><p class="first">I: list, <a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.12)"><code class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></code></a></p>
+<tr class="field-even field"><th class="field-name">Type:</th><td class="field-body"><p class="first">I: list, <a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.15)"><code class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></code></a></p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><p class="first last">V: list, <a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.12)"><code class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></code></a></p>
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><p class="first last">V: list, <a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.15)"><code class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></code></a></p>
 </td>
 </tr>
 </tbody>
@@ -129,10 +126,10 @@ current and the max current at the breakdown voltage.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>I</strong> &#8211; cell or substring currents [A]</li>
-<li><strong>V</strong> &#8211; cell or substring voltages [V]</li>
-<li><strong>meanIsc</strong> &#8211; average short circuit current [A]</li>
-<li><strong>Imax</strong> &#8211; maximum current [A]</li>
+<li><strong>I</strong> – cell or substring currents [A]</li>
+<li><strong>V</strong> – cell or substring voltages [V]</li>
+<li><strong>meanIsc</strong> – average short circuit current [A]</li>
+<li><strong>Imax</strong> – maximum current [A]</li>
 </ul>
 </td>
 </tr>
@@ -158,7 +155,7 @@ not including zero</p>
 
 <dl class="attribute">
 <dt id="pvmismatch.pvmismatch_lib.pvconstants.PVconstants.npts">
-<code class="descname">npts</code><em class="property"> = None</em><a class="headerlink" href="#pvmismatch.pvmismatch_lib.pvconstants.PVconstants.npts" title="Permalink to this definition">¶</a></dt>
+<code class="descname">npts</code><a class="headerlink" href="#pvmismatch.pvmismatch_lib.pvconstants.PVconstants.npts" title="Permalink to this definition">¶</a></dt>
 <dd><p>number of points in IV curves</p>
 </dd></dl>
 
@@ -188,19 +185,19 @@ not including zero</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>x</strong> (<em>array_like</em>) &#8211; The x-coordinates of the interpolated values.</li>
-<li><strong>xp</strong> (<em>1-D sequence of floats</em>) &#8211; The x-coordinates of the data points, must be increasing.</li>
-<li><strong>fp</strong> (<em>1-D sequence of floats</em>) &#8211; The y-coordinates of the data points, same length as <cite>xp</cite>.</li>
+<li><strong>x</strong> (<em>array_like</em>) – The x-coordinates of the interpolated values.</li>
+<li><strong>xp</strong> (<em>1-D sequence of floats</em>) – The x-coordinates of the data points, must be increasing.</li>
+<li><strong>fp</strong> (<em>1-D sequence of floats</em>) – The y-coordinates of the data points, same length as <cite>xp</cite>.</li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>y</strong> &#8211; The interpolated values, same shape as <cite>x</cite>.</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>y</strong> – The interpolated values, same shape as <cite>x</cite>.</p>
 </td>
 </tr>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">{float, ndarray}</p>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><code class="xref py py-exc docutils literal"><span class="pre">ValueError</span></code> &#8211; If <cite>xp</cite> and <cite>fp</cite> have different length</p>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.7)"><code class="xref py py-exc docutils literal"><span class="pre">ValueError</span></code></a> – If <cite>xp</cite> and <cite>fp</cite> have different length</p>
 </td>
 </tr>
 </tbody>
@@ -219,8 +216,8 @@ not including zero</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>cell_pos_column</strong> &#8211; column in cell position pattern</li>
-<li><strong>prev_col</strong> &#8211; previous column in cell position pattern</li>
+<li><strong>cell_pos_column</strong> – column in cell position pattern</li>
+<li><strong>prev_col</strong> – previous column in cell position pattern</li>
 </ul>
 </td>
 </tr>
@@ -245,9 +242,9 @@ not including zero</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>Icell</strong> &#8211; cell current [A]</li>
-<li><strong>Vcell</strong> &#8211; cell voltage [V]</li>
-<li><strong>Rs</strong> &#8211; cell series resistance [<span class="math">\(\Omega\)</span>]</li>
+<li><strong>Icell</strong> – cell current [A]</li>
+<li><strong>Vcell</strong> – cell voltage [V]</li>
+<li><strong>Rs</strong> – cell series resistance [<span class="math">\(\Omega\)</span>]</li>
 </ul>
 </td>
 </tr>
@@ -270,10 +267,10 @@ not including zero</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>Isat</strong> &#8211; diode saturation current [A]</li>
-<li><strong>Vdiode</strong> &#8211; diode voltage [V]</li>
-<li><strong>Vt</strong> &#8211; thermal voltage [V]</li>
-<li><strong>n</strong> &#8211; diode ideality factor</li>
+<li><strong>Isat</strong> – diode saturation current [A]</li>
+<li><strong>Vdiode</strong> – diode voltage [V]</li>
+<li><strong>Vt</strong> – thermal voltage [V]</li>
+<li><strong>n</strong> – diode ideality factor</li>
 </ul>
 </td>
 </tr>
@@ -284,7 +281,7 @@ not including zero</p>
 </table>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p>Thermal voltage is defined as ...</p>
+<p>Thermal voltage is defined as …</p>
 <div class="last math">
 \[V_t = \frac {k_B * T} {q_e}\]</div>
 </div>
@@ -370,6 +367,7 @@ not including zero</p>
 <li class="toctree-l1"><a class="reference internal" href="pvmodule.html">pvmodule</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pvstring.html">pvstring</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pvsystem.html">pvsystem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contrib.html">Contributions</a></li>
 </ul>
 
 
@@ -399,8 +397,8 @@ not including zero</p>
       &copy;2017, SunPower.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.1</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
       
       |
       <a href="../_sources/api/pvconstants.rst.txt"

@@ -29,7 +29,9 @@ from pvmismatch import __version__, __author__, __name__, __release__
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
 extensions = ['sphinx.ext.autodoc', 'sphinx.ext.intersphinx',
               'sphinx.ext.mathjax', 'sphinx.ext.napoleon',
-              'sphinx.ext.graphviz']
+              'sphinx.ext.graphviz', 'sphinx.ext.imgconverter']
+
+image_converter = 'c://Program Files//ImageMagick-7.0.7-Q16//convert.exe'
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -264,7 +266,7 @@ texinfo_documents = [
 
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {
-    'numpy': ('http://docs.scipy.org/doc/numpy/', None),
-    'scipy': ('http://docs.scipy.org/doc/scipy/reference/', None),
-    'python': ('http://docs.python.org/', None)}
+    'numpy': ('https://docs.scipy.org/doc/numpy', None),
+    'scipy': ('https://docs.scipy.org/doc/scipy/reference', None),
+    'python': ('https://docs.python.org/3', None)}
 

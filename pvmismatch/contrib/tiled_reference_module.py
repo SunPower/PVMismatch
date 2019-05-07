@@ -16,7 +16,7 @@ if __name__ == "__main__":
     RS = 0.0181123  # [ohm] series resistance
     RSH = 58.082  # [ohm] shunt resistance
     ISAT1_T0 = 2.9885E-11  # [A] diode one saturation current
-    ISAT2 = 1.6622E-07  # [A] diode two saturation current
+    ISAT2_T0 = 1.6622E-07  # [A] diode two saturation current
     ISC0_T0 = 1.437  # [A] reference short circuit current
     ARBD = 9.0E-4  # reverse breakdown coefficient 1
     BRBD = -0.056  # reverse breakdown coefficient 2
@@ -36,7 +36,7 @@ if __name__ == "__main__":
     NUMBERSTRS = 1  # number of strings in parallel
     
     # System definition
-    tiledCell = pvcell.PVcell(Rs=RS, Rsh=RSH, Isat1_T0=ISAT1_T0, Isat2=ISAT2,
+    tiledCell = pvcell.PVcell(Rs=RS, Rsh=RSH, Isat1_T0=ISAT1_T0, Isat2_T0=ISAT2_T0,
                     Isc0_T0=ISC0_T0, aRBD=ARBD, VRBD=VRBD_, bRBD=BRBD, 
                     nRBD=NRBD, Eg=EG, alpha_Isc=ALPHA_ISC,
                     Tcell=TCELL)
@@ -45,12 +45,12 @@ if __name__ == "__main__":
     tiledSystem = pvsystem.PVsystem(pvconst=pvconstants.PVconstants(npts=NPTS),
                     pvmods=tiledModule, numberStrs=NUMBERSTRS, numberMods=NUMBERMODS)
     
-    print 'Imp = ' + str(tiledSystem.Imp) + ' A'
-    print 'Vmp = ' + str(tiledSystem.Vmp) + ' V'
-    print 'Pmp = ' + str(tiledSystem.Pmp) + ' W'
-    print 'Isc = ' + str(tiledSystem.Isc) + ' A'
-    print 'Voc = ' + str(tiledSystem.Voc) + ' V'
-    print 'FF = ' + str(100*tiledSystem.FF) + ' %'
-    print 'Efficiency = ' + str(100*tiledSystem.eff) + ' %'
+    print('Imp = ' + str(tiledSystem.Imp) + ' A')
+    print('Vmp = ' + str(tiledSystem.Vmp) + ' V')
+    print('Pmp = ' + str(tiledSystem.Pmp) + ' W')
+    print('Isc = ' + str(tiledSystem.Isc) + ' A')
+    print('Voc = ' + str(tiledSystem.Voc) + ' V')
+    print('FF = ' + str(100*tiledSystem.FF) + ' %')
+    print('Efficiency = ' + str(100*tiledSystem.eff) + ' %')
     figure = tiledSystem.plotSys()
     plt.show()
