@@ -180,11 +180,6 @@ def parse_diode_config(Vbypass, cell_pos):
         # the cell strings in ascending order
         elif len(cell_pos) == num_bypass:
             return CUSTOM_SUBSTR_BYPASS
-
-        # if more than 1 values are passed, apply them across
-        # the cell strings in ascending order
-        elif len(cell_pos) == num_bypass:
-            return 'custom_substr_bypass'
         else:
             raise PVexception("wrong number of bypass diode values passed : %d"%(len(Vbypass)))
 
