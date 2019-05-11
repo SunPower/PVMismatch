@@ -1,27 +1,19 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Quickstart &#8212; PVMismatch Mint Mojito documentation</title>
+    <meta charset="utf-8" />
+    <title>Quickstart &#8212; PVMismatch Nepal Negroni documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '../',
-        VERSION:     'Mint Mojito',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -33,13 +25,14 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
-  </head>
-  <body>
+  </head><body>
   
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
+          
+
           <div class="body" role="main">
             
   <div class="section" id="quickstart">
@@ -48,14 +41,23 @@
 </div>
 <div class="section" id="pvmismatch">
 <h1>PVMismatch<a class="headerlink" href="#pvmismatch" title="Permalink to this headline">¶</a></h1>
-<p>An explicit Python PV system IV &amp; PV curve trace calculator which can
-also calculate mismatch.</p>
+<p>An explicit IV &amp; PV curve trace calculator for PV system circuits</p>
+<dl>
+<dt>Model chain</dt><dd><p>Cell &gt; Cell string &gt; Module &gt; String &gt; System</p>
+</dd>
+<dt>Key Model inputs</dt><dd><p>Cell technology characteristics</p>
+<p>Effective Irradiance (suns)</p>
+<p>Temperature (cell temperature)</p>
+<p>Bypass device configuration</p>
+<p>Cell string layout</p>
+</dd>
+</dl>
 <p><a class="reference external" href="https://travis-ci.org/SunPower/PVMismatch"><img alt="Build Status" src="https://travis-ci.org/SunPower/PVMismatch.svg?branch=master" /></a></p>
 <div class="section" id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
 <p>PVMismatch is on <a class="reference external" href="https://pypi.python.org/pypi/pvmismatch">PyPI</a>. Install it
 with <a class="reference external" href="https://pip.pypa.io/en/stable/">pip</a>:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>$ pip install pvmismatch
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pip install pvmismatch
 </pre></div>
 </div>
 </div>
@@ -77,14 +79,19 @@ history is also on <a class="reference external" href="https://github.com/SunPow
 <p>System level mismatch loss calculator using PVMismatch tool (STC and Annual energy loss)
 <a class="reference external" href="https://github.com/SunPower/MismatchLossStudy">https://github.com/SunPower/MismatchLossStudy</a></p>
 </div>
+<div class="section" id="citing-pvmismatch">
+<h2>Citing PVMismatch<a class="headerlink" href="#citing-pvmismatch" title="Permalink to this headline">¶</a></h2>
+<p>We appreciate your use of PVMismatch, and ask that you appropriately cite the software in exchange for its open-source publication.</p>
+<p>Mark Mikofski, Bennet Meyers, Chetan Chaudhari (2018). “PVMismatch Project: <a class="reference external" href="https://github.com/SunPower/PVMismatch">https://github.com/SunPower/PVMismatch</a>”. SunPower Corporation, Richmond, CA.</p>
+</div>
 </div>
 <div class="section" id="example">
 <h1>Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h1>
 <p>In this example let’s make a PV system of 2 strings with 8 modules each using
 standard 96 cell modules. You can enter these commands in the Python
 interpreter, run them from a script or simply paste them in
-<a class="reference external" href="http://ipython.org/">IPython</a> with <code class="docutils literal"><span class="pre">%paste</span></code>.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pvmismatch</span> <span class="k">import</span> <span class="o">*</span>  <span class="c1"># this imports everything we need</span>
+<a class="reference external" href="http://ipython.org/">IPython</a> with <code class="docutils literal notranslate"><span class="pre">%paste</span></code>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pvmismatch</span> <span class="k">import</span> <span class="o">*</span>  <span class="c1"># this imports everything we need</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">pvsys</span> <span class="o">=</span> <span class="n">pvsystem</span><span class="o">.</span><span class="n">PVsystem</span><span class="p">(</span><span class="n">numberStrs</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">numberMods</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>  <span class="c1"># makes the system</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">matplotlib</span> <span class="k">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>  <span class="c1"># now lets make some plots</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">plt</span><span class="o">.</span><span class="n">ion</span><span class="p">()</span>  <span class="c1"># this turns on interactive plotting</span>
@@ -114,13 +121,13 @@ interpreter, run them from a script or simply paste them in
 </div>
 <img alt="../_images/pvsys_plot_2x8-std96.png" src="../_images/pvsys_plot_2x8-std96.png" />
 <p>Now lets shade the last row of the 1st module in the 1st string:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">pvsys</span><span class="o">.</span><span class="n">setSuns</span><span class="p">({</span><span class="mi">0</span><span class="p">:</span> <span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="p">[(</span><span class="mf">0.2</span><span class="p">,</span> <span class="p">)</span> <span class="o">*</span> <span class="mi">8</span><span class="p">,</span> <span class="p">(</span><span class="mi">11</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">35</span><span class="p">,</span> <span class="mi">36</span><span class="p">,</span> <span class="mi">59</span><span class="p">,</span> <span class="mi">60</span><span class="p">,</span> <span class="mi">83</span><span class="p">,</span> <span class="mi">84</span><span class="p">)]}})</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">pvsys</span><span class="o">.</span><span class="n">setSuns</span><span class="p">({</span><span class="mi">0</span><span class="p">:</span> <span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="p">[(</span><span class="mf">0.2</span><span class="p">,</span> <span class="p">)</span> <span class="o">*</span> <span class="mi">8</span><span class="p">,</span> <span class="p">(</span><span class="mi">11</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">35</span><span class="p">,</span> <span class="mi">36</span><span class="p">,</span> <span class="mi">59</span><span class="p">,</span> <span class="mi">60</span><span class="p">,</span> <span class="mi">83</span><span class="p">,</span> <span class="mi">84</span><span class="p">)]}})</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">f_shade</span> <span class="o">=</span> <span class="n">pvsys</span><span class="o">.</span><span class="n">plotSys</span><span class="p">()</span>
 </pre></div>
 </div>
 <img alt="../_images/pvsys_plot_2x8-std96_last_row.png" src="../_images/pvsys_plot_2x8-std96_last_row.png" />
 <p>How is this system doing now?</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">pvsys</span><span class="o">.</span><span class="n">Vmp</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">pvsys</span><span class="o">.</span><span class="n">Vmp</span>
 <span class="go">402.2176762133148</span>
 
 <span class="gp">&gt;&gt;&gt; </span><span class="n">pvsys</span><span class="o">.</span><span class="n">Imp</span>
@@ -145,7 +152,7 @@ interpreter, run them from a script or simply paste them in
 <p>That did a little damage - the system lost 400[W] about 8%. Let’s see what’s
 actually going on with those cells in the last row of the 1st module in the
 1st string.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">pvsys</span><span class="o">.</span><span class="n">pvmods</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">pvcells</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># let&#39;s see if they&#39;re actually shaded</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">pvsys</span><span class="o">.</span><span class="n">pvmods</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">pvcells</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># let&#39;s see if they&#39;re actually shaded</span>
 <span class="go">&lt;PVcell(Ee=1[suns], Tcell=298.15[K], Isc=6.3056[A], Voc=0.67444[V])&gt;</span>
 
 <span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="n">pvsys</span><span class="o">.</span><span class="n">pvmods</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">pvcells</span><span class="p">[</span><span class="n">_</span><span class="p">]</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">11</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">35</span><span class="p">,</span> <span class="mi">36</span><span class="p">,</span> <span class="mi">59</span><span class="p">,</span> <span class="mi">60</span><span class="p">,</span> <span class="mi">83</span><span class="p">,</span> <span class="mi">84</span><span class="p">)]</span>
@@ -172,7 +179,7 @@ actually going on with those cells in the last row of the 1st module in the
 shaded cells can only carry that current in reverse bias, so they must be hot!
 Let’s change their temperatures. In fact since the temperatures are still at
 25[C], let’s update the normal cells too:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">pvsys</span><span class="o">.</span><span class="n">setTemps</span><span class="p">(</span><span class="mf">50.</span> <span class="o">+</span> <span class="mf">273.15</span><span class="p">)</span>  <span class="c1"># [K] normal cells</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">pvsys</span><span class="o">.</span><span class="n">setTemps</span><span class="p">(</span><span class="mf">50.</span> <span class="o">+</span> <span class="mf">273.15</span><span class="p">)</span>  <span class="c1"># [K] normal cells</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">pvsys</span><span class="o">.</span><span class="n">setTemps</span><span class="p">({</span><span class="mi">0</span><span class="p">:</span> <span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="p">[(</span><span class="mf">100.</span> <span class="o">+</span> <span class="mf">273.15</span><span class="p">,</span> <span class="p">)</span> <span class="o">*</span> <span class="mi">8</span><span class="p">,</span> <span class="p">(</span><span class="mi">11</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">35</span><span class="p">,</span> <span class="mi">36</span><span class="p">,</span> <span class="mi">59</span><span class="p">,</span> <span class="mi">60</span><span class="p">,</span> <span class="mi">83</span><span class="p">,</span> <span class="mi">84</span><span class="p">)]}})</span>  <span class="c1"># [K] hot cells in RBD</span>
 
 <span class="gp">&gt;&gt;&gt; </span><span class="n">pvsys</span><span class="o">.</span><span class="n">pvmods</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">pvcells</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># let&#39;s see if they&#39;re actually hot</span>
@@ -215,14 +222,15 @@ Let’s change their temperatures. In fact since the temperatures are still at
 <img alt="../_images/pvsys_plot_2x8-std96_last_row_hot.png" src="../_images/pvsys_plot_2x8-std96_last_row_hot.png" />
 <p>Take note:</p>
 <ul class="simple">
-<li>For normal cells Voc decreases as expected when temperature is increased from
+<li><p>For normal cells Voc decreases as expected when temperature is increased from
 25[C] to 50[C] under the same 1[sun] conditions from 0.67444[V] to 0.63443[V].
-The equivalent <span class="math">\(\beta V_oc = 0.15 \left[ V / C \right ]\)</span> for 96-cells.</li>
+The equivalent <span class="math notranslate nohighlight">\(\beta V_oc = 0.15 \left[ V / C \right ]\)</span> for 96-cells.</p></li>
 </ul>
 </div>
 
 
           </div>
+          
         </div>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
@@ -255,7 +263,7 @@ The equivalent <span class="math">\(\beta V_oc = 0.15 \left[ V / C \right ]\)</s
     
 
 <p>
-<a href="https://travis-ci.org/SunPower/PVMismatch">
+<a class="badge" href="https://travis-ci.org/SunPower/PVMismatch">
     <img
         alt="https://secure.travis-ci.org/SunPower/PVMismatch.svg?branch=master"
         src="https://secure.travis-ci.org/SunPower/PVMismatch.svg?branch=master"
@@ -272,6 +280,7 @@ The equivalent <span class="math">\(\beta V_oc = 0.15 \left[ V / C \right ]\)</s
 <li class="toctree-l2"><a class="reference internal" href="#requirements">Requirements</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#usage">Usage</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#other-projects-that-use-pvmismatch">Other Projects that use PVMismatch</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#citing-pvmismatch">Citing PVMismatch</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="#example">Example</a></li>
@@ -287,12 +296,12 @@ The equivalent <span class="math">\(\beta V_oc = 0.15 \left[ V / C \right ]\)</s
 
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
     </form>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script><div class="relations">
 <h3>Related Topics</h3>
@@ -311,8 +320,8 @@ The equivalent <span class="math">\(\beta V_oc = 0.15 \left[ V / C \right ]\)</s
       &copy;2017, SunPower.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.6</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.0.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
       <a href="../_sources/tutorials/quickstart.rst.txt"

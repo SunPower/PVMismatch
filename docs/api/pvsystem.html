@@ -1,27 +1,19 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>pvsystem &#8212; PVMismatch Mint Mojito documentation</title>
+    <meta charset="utf-8" />
+    <title>pvsystem &#8212; PVMismatch Nepal Negroni documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '../',
-        VERSION:     'Mint Mojito',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -33,18 +25,19 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
-  </head>
-  <body>
+  </head><body>
   
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
+          
+
           <div class="body" role="main">
             
   <div class="section" id="pvsystem">
 <span id="id1"></span><h1>pvsystem<a class="headerlink" href="#pvsystem" title="Permalink to this headline">¶</a></h1>
-<span class="target" id="module-pvmismatch.pvmismatch_lib.pvsystem"></span><p>This module contains the <a class="reference internal" href="#pvmismatch.pvmismatch_lib.pvsystem.PVsystem" title="pvmismatch.pvmismatch_lib.pvsystem.PVsystem"><code class="xref py py-class docutils literal"><span class="pre">PVsystem</span></code></a>
+<span class="target" id="module-pvmismatch.pvmismatch_lib.pvsystem"></span><p>This module contains the <a class="reference internal" href="#pvmismatch.pvmismatch_lib.pvsystem.PVsystem" title="pvmismatch.pvmismatch_lib.pvsystem.PVsystem"><code class="xref py py-class docutils literal notranslate"><span class="pre">PVsystem</span></code></a>
 class.</p>
 <div class="section" id="id2">
 <h2>PVsystem<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
@@ -52,21 +45,17 @@ class.</p>
 <dt id="pvmismatch.pvmismatch_lib.pvsystem.PVsystem">
 <em class="property">class </em><code class="descclassname">pvmismatch.pvmismatch_lib.pvsystem.</code><code class="descname">PVsystem</code><span class="sig-paren">(</span><em>pvconst=None</em>, <em>numberStrs=10</em>, <em>pvstrs=None</em>, <em>numberMods=10</em>, <em>pvmods=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pvmismatch.pvmismatch_lib.pvsystem.PVsystem" title="Permalink to this definition">¶</a></dt>
 <dd><p>A class for PV systems.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>pvconst</strong> (<a class="reference internal" href="pvconstants.html#pvmismatch.pvmismatch_lib.pvconstants.PVconstants" title="pvmismatch.pvmismatch_lib.pvconstants.PVconstants"><code class="xref py py-class docutils literal"><span class="pre">PVconstants</span></code></a>) – configuration constants object</li>
-<li><strong>numberStrs</strong> – number of strings</li>
-<li><strong>pvstrs</strong> – list of parallel strings, a <code class="docutils literal"><span class="pre">PVstring</span></code> object or None</li>
-<li><strong>numberMods</strong> – number of modules per string</li>
-<li><strong>pvmods</strong> – list of modules, a <code class="docutils literal"><span class="pre">PVmodule</span></code> object or None</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pvconst</strong> (<a class="reference internal" href="pvconstants.html#pvmismatch.pvmismatch_lib.pvconstants.PVconstants" title="pvmismatch.pvmismatch_lib.pvconstants.PVconstants"><code class="xref py py-class docutils literal notranslate"><span class="pre">PVconstants</span></code></a>) – configuration constants object</p></li>
+<li><p><strong>numberStrs</strong> – number of strings</p></li>
+<li><p><strong>pvstrs</strong> – list of parallel strings, a <code class="docutils literal notranslate"><span class="pre">PVstring</span></code> object or None</p></li>
+<li><p><strong>numberMods</strong> – number of modules per string</p></li>
+<li><p><strong>pvmods</strong> – list of modules, a <code class="docutils literal notranslate"><span class="pre">PVmodule</span></code> object or None</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 <dl class="method">
 <dt id="pvmismatch.pvmismatch_lib.pvsystem.PVsystem.calcSystem">
 <code class="descname">calcSystem</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pvmismatch.pvmismatch_lib.pvsystem.PVsystem.calcSystem" title="Permalink to this definition">¶</a></dt>
@@ -90,28 +79,26 @@ Returns (Isys, Vsys, Psys) : tuple of numpy.ndarray of float</p>
 <dt id="pvmismatch.pvmismatch_lib.pvsystem.PVsystem.plotSys">
 <code class="descname">plotSys</code><span class="sig-paren">(</span><em>sysPlot=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pvmismatch.pvmismatch_lib.pvsystem.PVsystem.plotSys" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plot system I-V curves.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>sysPlot</strong> – integer, string, or existing figure</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">new figure</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>sysPlot</strong> – integer, string, or existing figure</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>new figure</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="pvmismatch.pvmismatch_lib.pvsystem.PVsystem.pvconst">
 <code class="descname">pvconst</code><em class="property"> = None</em><a class="headerlink" href="#pvmismatch.pvmismatch_lib.pvsystem.PVsystem.pvconst" title="Permalink to this definition">¶</a></dt>
-<dd><p><code class="docutils literal"><span class="pre">PVconstants</span></code> used in <code class="docutils literal"><span class="pre">PVsystem</span></code></p>
+<dd><p><code class="docutils literal notranslate"><span class="pre">PVconstants</span></code> used in <code class="docutils literal notranslate"><span class="pre">PVsystem</span></code></p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="pvmismatch.pvmismatch_lib.pvsystem.PVsystem.pvstrs">
 <code class="descname">pvstrs</code><em class="property"> = None</em><a class="headerlink" href="#pvmismatch.pvmismatch_lib.pvsystem.PVsystem.pvstrs" title="Permalink to this definition">¶</a></dt>
-<dd><p>list of <code class="docutils literal"><span class="pre">PVstring</span></code> in system</p>
+<dd><p>list of <code class="docutils literal notranslate"><span class="pre">PVstring</span></code> in system</p>
 </dd></dl>
 
 <dl class="method">
@@ -126,17 +113,14 @@ If the dictionary’s value is another dictionary, then its keys are pv-
 modules and its values are either cells and corresponding Ee, cells and
 a scalar Ee, a scalar Ee value for all cells or an array of Ee values
 for all cells in the module. The values of pv-modules are passed to
-<a class="reference internal" href="pvmodule.html#pvmismatch.pvmismatch_lib.pvmodule.PVmodule.setSuns" title="pvmismatch.pvmismatch_lib.pvmodule.PVmodule.setSuns"><code class="xref py py-meth docutils literal"><span class="pre">setSuns()</span></code></a></p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>Ee</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – irradiance [suns]</td>
-</tr>
-</tbody>
-</table>
+<a class="reference internal" href="pvmodule.html#pvmismatch.pvmismatch_lib.pvmodule.PVmodule.setSuns" title="pvmismatch.pvmismatch_lib.pvmodule.PVmodule.setSuns"><code class="xref py py-meth docutils literal notranslate"><span class="pre">setSuns()</span></code></a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>Ee</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – irradiance [suns]</p>
+</dd>
+</dl>
 <p>For Example:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Ee</span><span class="o">=</span><span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;cells&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="s1">&#39;Ee&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.9</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)}}}</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Ee</span><span class="o">=</span><span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;cells&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="s1">&#39;Ee&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.9</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)}}}</span>
 <span class="n">Ee</span><span class="o">=</span><span class="mf">0.91</span>  <span class="c1"># set all modules in all strings to 0.91 suns</span>
 <span class="n">Ee</span><span class="o">=</span><span class="p">{</span><span class="mi">12</span><span class="p">:</span> <span class="mf">0.77</span><span class="p">}</span>  <span class="c1"># set all modules in string with index 12 to 0.77 suns</span>
 <span class="n">Ee</span><span class="o">=</span><span class="p">{</span><span class="mi">3</span><span class="p">:</span> <span class="p">{</span><span class="mi">8</span><span class="p">:</span> <span class="mf">0.23</span><span class="p">,</span> <span class="mi">7</span><span class="p">:</span> <span class="mf">0.45</span><span class="p">}}</span>
@@ -158,17 +142,14 @@ If the dictionary’s value is another dictionary, then its keys are pv-
 modules and its values are either cells and corresponding Tc, cells and
 a scalar Tc, a scalar Tc value for all cells or an array of Tc values
 for all cells in the module. The values of pv-modules are passed to
-<a class="reference internal" href="pvmodule.html#pvmismatch.pvmismatch_lib.pvmodule.PVmodule.setTemps" title="pvmismatch.pvmismatch_lib.pvmodule.PVmodule.setTemps"><code class="xref py py-meth docutils literal"><span class="pre">setTemps()</span></code></a></p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>Tc</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – temperature [K]</td>
-</tr>
-</tbody>
-</table>
+<a class="reference internal" href="pvmodule.html#pvmismatch.pvmismatch_lib.pvmodule.PVmodule.setTemps" title="pvmismatch.pvmismatch_lib.pvmodule.PVmodule.setTemps"><code class="xref py py-meth docutils literal notranslate"><span class="pre">setTemps()</span></code></a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>Tc</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – temperature [K]</p>
+</dd>
+</dl>
 <p>For Example:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Tc</span><span class="o">=</span><span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;cells&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span> <span class="s1">&#39;Tc&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">323.15</span><span class="p">,</span> <span class="mf">348.15</span><span class="p">,</span> <span class="mf">373.15</span><span class="p">)}}}</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Tc</span><span class="o">=</span><span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;cells&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span> <span class="s1">&#39;Tc&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">323.15</span><span class="p">,</span> <span class="mf">348.15</span><span class="p">,</span> <span class="mf">373.15</span><span class="p">)}}}</span>
 <span class="n">Tc</span><span class="o">=</span><span class="mf">323.15</span>  <span class="c1"># set all modules in all strings to 323.15K (50°C)</span>
 <span class="n">Tc</span><span class="o">=</span><span class="p">{</span><span class="mi">12</span><span class="p">:</span> <span class="mf">348.15</span><span class="p">}</span>  <span class="c1"># set all modules in string with index 12 to 348.15K (75°C)</span>
 <span class="n">Tc</span><span class="o">=</span><span class="p">{</span><span class="mi">3</span><span class="p">:</span> <span class="p">{</span><span class="mi">8</span><span class="p">:</span> <span class="mf">333.15</span><span class="p">,</span> <span class="mi">7</span><span class="p">:</span> <span class="mf">373.15</span><span class="p">}}</span>
@@ -191,6 +172,7 @@ for all cells in the module. The values of pv-modules are passed to
 
 
           </div>
+          
         </div>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
@@ -223,7 +205,7 @@ for all cells in the module. The values of pv-modules are passed to
     
 
 <p>
-<a href="https://travis-ci.org/SunPower/PVMismatch">
+<a class="badge" href="https://travis-ci.org/SunPower/PVMismatch">
     <img
         alt="https://secure.travis-ci.org/SunPower/PVMismatch.svg?branch=master"
         src="https://secure.travis-ci.org/SunPower/PVMismatch.svg?branch=master"
@@ -252,12 +234,12 @@ for all cells in the module. The values of pv-modules are passed to
 
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
     </form>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script><div class="relations">
 <h3>Related Topics</h3>
@@ -276,8 +258,8 @@ for all cells in the module. The values of pv-modules are passed to
       &copy;2017, SunPower.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.6</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.0.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
       <a href="../_sources/api/pvsystem.rst.txt"
