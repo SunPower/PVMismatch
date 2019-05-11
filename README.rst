@@ -1,8 +1,23 @@
 PVMismatch
 ==========
 
-An explicit Python PV system IV & PV curve trace calculator which can
-also calculate mismatch.
+An explicit IV & PV curve trace calculator for PV system circuits
+Model chain 
+    Cell > Cell string > Module > String > System
+    
+    Module layout
+    
+    Bypass diodes
+    
+Key Model inputs 
+    Cell technology characteristics 
+    
+    Effective Irradiance (suns) 
+    
+    Temperature (cell temperature)
+    
+    Bypass device configuration
+
 
 |Build Status|
 
