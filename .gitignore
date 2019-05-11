@@ -7,6 +7,7 @@
 .idea/
 pvmismatch.sublime-project
 pvmismatch.sublime-workspace
+.vscode
 
 # files
 *.pyc
@@ -32,3 +33,5 @@ benchmark_*/
 
 # virtualenv
 venv/
+venv2/
+venv3/
