@@ -2,12 +2,9 @@ PVMismatch
 ==========
 
 An explicit IV & PV curve trace calculator for PV system circuits
+
 Model chain 
     Cell > Cell string > Module > String > System
-    
-    Module layout
-    
-    Bypass diodes
     
 Key Model inputs 
     Cell technology characteristics 
@@ -17,6 +14,9 @@ Key Model inputs
     Temperature (cell temperature)
     
     Bypass device configuration
+    
+    Cell string layout
+
 
 
 |Build Status|
