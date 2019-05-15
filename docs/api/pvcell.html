@@ -1,19 +1,27 @@
 
-<!DOCTYPE html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta charset="utf-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>pvcell &#8212; PVMismatch Nepal Negroni documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     'Nepal Negroni',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="../_static/language_data.js"></script>
-    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -25,7 +33,8 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
-  </head><body>
+  </head>
+  <body>
   
 
     <div class="document">
@@ -37,7 +46,7 @@
             
   <div class="section" id="pvcell">
 <span id="id1"></span><h1>pvcell<a class="headerlink" href="#pvcell" title="Permalink to this headline">¶</a></h1>
-<span class="target" id="module-pvmismatch.pvmismatch_lib.pvcell"></span><p>This module contains the <a class="reference internal" href="#pvmismatch.pvmismatch_lib.pvcell.PVcell" title="pvmismatch.pvmismatch_lib.pvcell.PVcell"><code class="xref py py-class docutils literal notranslate"><span class="pre">PVcell</span></code></a>
+<span class="target" id="module-pvmismatch.pvmismatch_lib.pvcell"></span><p>This module contains the <a class="reference internal" href="#pvmismatch.pvmismatch_lib.pvcell.PVcell" title="pvmismatch.pvmismatch_lib.pvcell.PVcell"><code class="xref py py-class docutils literal"><span class="pre">PVcell</span></code></a>
 object which is used by modules, strings and systems.</p>
 <div class="section" id="id2">
 <h2>PVcell<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
@@ -45,26 +54,30 @@ object which is used by modules, strings and systems.</p>
 <dt id="pvmismatch.pvmismatch_lib.pvcell.PVcell">
 <em class="property">class </em><code class="descclassname">pvmismatch.pvmismatch_lib.pvcell.</code><code class="descname">PVcell</code><span class="sig-paren">(</span><em>Rs=0.004267236774264931</em>, <em>Rsh=10.01226369025448</em>, <em>Isat1_T0=2.28618816125344e-11</em>, <em>Isat2_T0=1.117455042372326e-06</em>, <em>Isc0_T0=6.3056</em>, <em>aRBD=0.0001036748445065697</em>, <em>bRBD=0.0</em>, <em>VRBD=-5.527260068445654</em>, <em>nRBD=3.284628553041425</em>, <em>Eg=1.1</em>, <em>alpha_Isc=0.0003551</em>, <em>Tcell=298.15</em>, <em>Ee=1.0</em>, <em>pvconst=&lt;PVconstants(npts=101)&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#pvmismatch.pvmismatch_lib.pvcell.PVcell" title="Permalink to this definition">¶</a></dt>
 <dd><p>Class for PV cells.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>Rs</strong> – series resistance [ohms]</p></li>
-<li><p><strong>Rsh</strong> – shunt resistance [ohms]</p></li>
-<li><p><strong>Isat1_T0</strong> – first saturation diode current at ref temp [A]</p></li>
-<li><p><strong>Isat2_T0</strong> – second saturation diode current [A]</p></li>
-<li><p><strong>Isc0_T0</strong> – short circuit current at ref temp [A]</p></li>
-<li><p><strong>aRBD</strong> – reverse breakdown coefficient 1</p></li>
-<li><p><strong>bRBD</strong> – reverse breakdown coefficient 2</p></li>
-<li><p><strong>VRBD</strong> – reverse breakdown voltage [V]</p></li>
-<li><p><strong>nRBD</strong> – reverse breakdown exponent</p></li>
-<li><p><strong>Eg</strong> – band gap [eV]</p></li>
-<li><p><strong>alpha_Isc</strong> – short circuit current temp coeff [1/K]</p></li>
-<li><p><strong>Tcell</strong> – cell temperature [K]</p></li>
-<li><p><strong>Ee</strong> – incident effective irradiance [suns]</p></li>
-<li><p><strong>pvconst</strong> (<a class="reference internal" href="pvconstants.html#pvmismatch.pvmismatch_lib.pvconstants.PVconstants" title="pvmismatch.pvmismatch_lib.pvconstants.PVconstants"><code class="xref py py-class docutils literal notranslate"><span class="pre">PVconstants</span></code></a>) – configuration constants object</p></li>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>Rs</strong> – series resistance [ohms]</li>
+<li><strong>Rsh</strong> – shunt resistance [ohms]</li>
+<li><strong>Isat1_T0</strong> – first saturation diode current at ref temp [A]</li>
+<li><strong>Isat2_T0</strong> – second saturation diode current [A]</li>
+<li><strong>Isc0_T0</strong> – short circuit current at ref temp [A]</li>
+<li><strong>aRBD</strong> – reverse breakdown coefficient 1</li>
+<li><strong>bRBD</strong> – reverse breakdown coefficient 2</li>
+<li><strong>VRBD</strong> – reverse breakdown voltage [V]</li>
+<li><strong>nRBD</strong> – reverse breakdown exponent</li>
+<li><strong>Eg</strong> – band gap [eV]</li>
+<li><strong>alpha_Isc</strong> – short circuit current temp coeff [1/K]</li>
+<li><strong>Tcell</strong> – cell temperature [K]</li>
+<li><strong>Ee</strong> – incident effective irradiance [suns]</li>
+<li><strong>pvconst</strong> (<a class="reference internal" href="pvconstants.html#pvmismatch.pvmismatch_lib.pvconstants.PVconstants" title="pvmismatch.pvmismatch_lib.pvconstants.PVconstants"><code class="xref py py-class docutils literal"><span class="pre">PVconstants</span></code></a>) – configuration constants object</li>
 </ul>
-</dd>
-</dl>
+</td>
+</tr>
+</tbody>
+</table>
 <dl class="attribute">
 <dt id="pvmismatch.pvmismatch_lib.pvcell.PVcell.Aph">
 <code class="descname">Aph</code><a class="headerlink" href="#pvmismatch.pvmismatch_lib.pvcell.PVcell.Aph" title="Permalink to this definition">¶</a></dt>
@@ -338,12 +351,12 @@ Returns cellPlot : matplotlib.pyplot figure</p>
 
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
-    <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
     </form>
-    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script><div class="relations">
 <h3>Related Topics</h3>
@@ -362,7 +375,7 @@ Returns cellPlot : matplotlib.pyplot figure</p>
       &copy;2017, SunPower.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.0.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

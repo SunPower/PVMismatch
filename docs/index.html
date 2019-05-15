@@ -1,46 +1,58 @@
 
-<!DOCTYPE html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta charset="utf-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>Welcome to PVMismatch’s documentation! &#8212; PVMismatch Nepal Negroni documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="_static/graphviz.css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     'Nepal Negroni',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="_static/language_data.js"></script>
-    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="shortcut icon" href="_static/favicon.ico"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Quickstart" href="tutorials/quickstart.html" />
-
+   
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
-
-
+  
+  
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
-  </head><body>
-
+  </head>
+  <body>
+  
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
-
+          
 
           <div class="body" role="main">
-
+            
   <div class="section" id="welcome-to-pvmismatch-s-documentation">
 <h1>Welcome to PVMismatch’s documentation!<a class="headerlink" href="#welcome-to-pvmismatch-s-documentation" title="Permalink to this headline">¶</a></h1>
-<p>Version: 4.1 (Nepal Negroni)</p>
+<p>Version: 4.0 (Nepal Negroni)</p>
 <div class="section" id="announcements">
 <h2>Announcements<a class="headerlink" href="#announcements" title="Permalink to this headline">¶</a></h2>
-<p>Starting at Nepal Negroni, users will be able to configure number of bypass diodes in a module.
-  This includes being able to model a PV module with just one bypass diode across all the cells and the effect of losing one or more bypass diodes on a PV Module. </p>
+<p>Thanks to Bennet Meyers you should see huge memory and speed improvements since
+new cell, module and string objects are only created when they are needed to
+differentiate cells by irradiance or temperature. However this can lead to
+unexpected behavior when changing other cell properties without first making a
+copy of the original cell.</p>
 </div>
 <div class="section" id="contents">
 <h2>Contents:<a class="headerlink" href="#contents" title="Permalink to this headline">¶</a></h2>
@@ -90,7 +102,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="api/contrib.html">Contributions</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="api/contrib.html#generate-coefficients">Generate Coefficients</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/contrib.html#module-pvmismatch.contrib.gen_coeffs">Generate Coefficients</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api/contrib.html#module-pvmismatch.contrib.module_mismatch_simulator">Module Mismatch Simulator</a></li>
 </ul>
 </li>
@@ -101,15 +113,15 @@
 <div class="section" id="indices-and-tables">
 <h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
 <ul class="simple">
-<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
-<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
-<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
+<li><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></li>
+<li><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></li>
+<li><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></li>
 </ul>
 </div>
 
 
           </div>
-
+          
         </div>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
@@ -117,9 +129,9 @@
 <p class="logo">
   <a href="#">
     <img class="logo" src="_static/sp_2014_logo_black_orange_rgb.png" alt="Logo"/>
-
+    
     <h1 class="logo logo-name">PVMismatch</h1>
-
+    
   </a>
 </p>
 
@@ -139,7 +151,7 @@
 
 
 
-
+    
 
 <p>
 <a class="badge" href="https://travis-ci.org/SunPower/PVMismatch">
@@ -168,12 +180,12 @@
 
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
-    <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
     </form>
-    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script><div class="relations">
 <h3>Related Topics</h3>
@@ -189,22 +201,22 @@
     </div>
     <div class="footer">
       &copy;2017, SunPower.
-
+      
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.0.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
-
+      
       |
       <a href="_sources/index.rst.txt"
           rel="nofollow">Page source</a>
     </div>
 
-
+    
     <a href="https://github.com/SunPower/PVMismatch" class="github">
         <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
     </a>
+    
 
-
-
+    
   </body>
 </html>
