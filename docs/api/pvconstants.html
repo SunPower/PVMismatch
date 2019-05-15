@@ -1,19 +1,27 @@
 
-<!DOCTYPE html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta charset="utf-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>pvconstants &#8212; PVMismatch Nepal Negroni documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     'Nepal Negroni',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="../_static/language_data.js"></script>
-    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -25,7 +33,8 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
-  </head><body>
+  </head>
+  <body>
   
 
     <div class="document">
@@ -40,8 +49,8 @@
 <span class="target" id="module-pvmismatch.pvmismatch_lib.pvconstants"></span><p>This module contains configuration constants for PVMismatch, such as number of
 points in IV curve to calculate, flag to use parallel processing and parallel
 processing parameters. This module also contains some utility functions like
-<a class="reference internal" href="#pvmismatch.pvmismatch_lib.pvconstants.npinterpx" title="pvmismatch.pvmismatch_lib.pvconstants.npinterpx"><code class="xref py py-func docutils literal notranslate"><span class="pre">npinterpx()</span></code></a> and
-<a class="reference internal" href="#pvmismatch.pvmismatch_lib.pvconstants.get_series_cells" title="pvmismatch.pvmismatch_lib.pvconstants.get_series_cells"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_series_cells()</span></code></a> are defined
+<a class="reference internal" href="#pvmismatch.pvmismatch_lib.pvconstants.npinterpx" title="pvmismatch.pvmismatch_lib.pvconstants.npinterpx"><code class="xref py py-func docutils literal"><span class="pre">npinterpx()</span></code></a> and
+<a class="reference internal" href="#pvmismatch.pvmismatch_lib.pvconstants.get_series_cells" title="pvmismatch.pvmismatch_lib.pvconstants.get_series_cells"><code class="xref py py-func docutils literal"><span class="pre">get_series_cells()</span></code></a> are defined
 here too.</p>
 <div class="section" id="id2">
 <h2>PVconstants<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
@@ -49,11 +58,14 @@ here too.</p>
 <dt id="pvmismatch.pvmismatch_lib.pvconstants.PVconstants">
 <em class="property">class </em><code class="descclassname">pvmismatch.pvmismatch_lib.pvconstants.</code><code class="descname">PVconstants</code><span class="sig-paren">(</span><em>npts=101</em><span class="sig-paren">)</span><a class="headerlink" href="#pvmismatch.pvmismatch_lib.pvconstants.PVconstants" title="Permalink to this definition">¶</a></dt>
 <dd><p>Class for configuration constants</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>npts</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – number of points in IV curve</p>
-</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>npts</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – number of points in IV curve</td>
+</tr>
+</tbody>
+</table>
 <dl class="attribute">
 <dt id="pvmismatch.pvmismatch_lib.pvconstants.PVconstants.E0">
 <code class="descname">E0</code><em class="property"> = 1000.0</em><a class="headerlink" href="#pvmismatch.pvmismatch_lib.pvconstants.PVconstants.E0" title="Permalink to this definition">¶</a></dt>
@@ -83,22 +95,26 @@ not including zero</p>
 <dt id="pvmismatch.pvmismatch_lib.pvconstants.PVconstants.calcParallel">
 <code class="descname">calcParallel</code><span class="sig-paren">(</span><em>I</em>, <em>V</em>, <em>Vmax</em>, <em>Vmin</em><span class="sig-paren">)</span><a class="headerlink" href="#pvmismatch.pvmismatch_lib.pvconstants.PVconstants.calcParallel" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate IV curve for cells and substrings in parallel.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>I</strong> – currents [A]</p></li>
-<li><p><strong>V</strong> – voltages [V]</p></li>
-<li><p><strong>Vmax</strong> – max voltage limit, should be max Voc [V]</p></li>
-<li><p><strong>Vmin</strong> – min voltage limit, could be zero or Vrbd [V]</p></li>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>I</strong> – currents [A]</li>
+<li><strong>V</strong> – voltages [V]</li>
+<li><strong>Vmax</strong> – max voltage limit, should be max Voc [V]</li>
+<li><strong>Vmin</strong> – min voltage limit, could be zero or Vrbd [V]</li>
 </ul>
-</dd>
-<dt class="field-even">Type</dt>
-<dd class="field-even"><p>I: list, <a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.16)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a></p>
-</dd>
-<dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>V: list, <a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.16)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a></p>
-</dd>
-</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Type:</th><td class="field-body"><p class="first">I: list, <a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.16)"><code class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></code></a></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><p class="first last">V: list, <a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.16)"><code class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></code></a></p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -107,19 +123,23 @@ not including zero</p>
 <dd><p>Calculate IV curve for cells and substrings in series given current and
 voltage in increasing order by voltage, the average short circuit
 current and the max current at the breakdown voltage.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>I</strong> – cell or substring currents [A]</p></li>
-<li><p><strong>V</strong> – cell or substring voltages [V]</p></li>
-<li><p><strong>meanIsc</strong> – average short circuit current [A]</p></li>
-<li><p><strong>Imax</strong> – maximum current [A]</p></li>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>I</strong> – cell or substring currents [A]</li>
+<li><strong>V</strong> – cell or substring voltages [V]</li>
+<li><strong>meanIsc</strong> – average short circuit current [A]</li>
+<li><strong>Imax</strong> – maximum current [A]</li>
 </ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>current [A] and voltage [V] of series</p>
-</dd>
-</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">current [A] and voltage [V] of series</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="attribute">
@@ -162,24 +182,28 @@ not including zero</p>
 <dt id="pvmismatch.pvmismatch_lib.pvconstants.npinterpx">
 <code class="descclassname">pvmismatch.pvmismatch_lib.pvconstants.</code><code class="descname">npinterpx</code><span class="sig-paren">(</span><em>x</em>, <em>xp</em>, <em>fp</em><span class="sig-paren">)</span><a class="headerlink" href="#pvmismatch.pvmismatch_lib.pvconstants.npinterpx" title="Permalink to this definition">¶</a></dt>
 <dd><p>Numpy interpolation function with linear extrapolation.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>x</strong> (<em>array_like</em>) – The x-coordinates of the interpolated values.</p></li>
-<li><p><strong>xp</strong> (<em>1-D sequence of floats</em>) – The x-coordinates of the data points, must be increasing.</p></li>
-<li><p><strong>fp</strong> (<em>1-D sequence of floats</em>) – The y-coordinates of the data points, same length as <cite>xp</cite>.</p></li>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>x</strong> (<em>array_like</em>) – The x-coordinates of the interpolated values.</li>
+<li><strong>xp</strong> (<em>1-D sequence of floats</em>) – The x-coordinates of the data points, must be increasing.</li>
+<li><strong>fp</strong> (<em>1-D sequence of floats</em>) – The y-coordinates of the data points, same length as <cite>xp</cite>.</li>
 </ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>y</strong> – The interpolated values, same shape as <cite>x</cite>.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>{float, ndarray}</p>
-</dd>
-<dt class="field-even">Raises</dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.7)"><strong>ValueError</strong></a> – If <cite>xp</cite> and <cite>fp</cite> have different length</p>
-</dd>
-</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>y</strong> – The interpolated values, same shape as <cite>x</cite>.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">{float, ndarray}</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.7)"><code class="xref py py-exc docutils literal"><span class="pre">ValueError</span></code></a> – If <cite>xp</cite> and <cite>fp</cite> have different length</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </div>
@@ -189,17 +213,21 @@ not including zero</p>
 <dt id="pvmismatch.pvmismatch_lib.pvconstants.get_series_cells">
 <code class="descclassname">pvmismatch.pvmismatch_lib.pvconstants.</code><code class="descname">get_series_cells</code><span class="sig-paren">(</span><em>cell_pos_column</em>, <em>prev_col=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pvmismatch.pvmismatch_lib.pvconstants.get_series_cells" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the sequence of series cells between parallel crossties.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>cell_pos_column</strong> – column in cell position pattern</p></li>
-<li><p><strong>prev_col</strong> – previous column in cell position pattern</p></li>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>cell_pos_column</strong> – column in cell position pattern</li>
+<li><strong>prev_col</strong> – previous column in cell position pattern</li>
 </ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>indices of series cells</p>
-</dd>
-</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">indices of series cells</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </div>
@@ -211,18 +239,22 @@ not including zero</p>
 <dt id="pvmismatch.pvmismatch_lib.pvconstants.Vdiode">
 <code class="descclassname">pvmismatch.pvmismatch_lib.pvconstants.</code><code class="descname">Vdiode</code><span class="sig-paren">(</span><em>Icell</em>, <em>Vcell</em>, <em>Rs</em><span class="sig-paren">)</span><a class="headerlink" href="#pvmismatch.pvmismatch_lib.pvconstants.Vdiode" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate Vdiode from current, voltage and series resistance.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>Icell</strong> – cell current [A]</p></li>
-<li><p><strong>Vcell</strong> – cell voltage [V]</p></li>
-<li><p><strong>Rs</strong> – cell series resistance [<span class="math notranslate nohighlight">\(\Omega\)</span>]</p></li>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>Icell</strong> – cell current [A]</li>
+<li><strong>Vcell</strong> – cell voltage [V]</li>
+<li><strong>Rs</strong> – cell series resistance [<span class="math">\(\Omega\)</span>]</li>
 </ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>diode voltage [V]</p>
-</dd>
-</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">diode voltage [V]</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </div>
@@ -232,23 +264,27 @@ not including zero</p>
 <dt id="pvmismatch.pvmismatch_lib.pvconstants.Idiode">
 <code class="descclassname">pvmismatch.pvmismatch_lib.pvconstants.</code><code class="descname">Idiode</code><span class="sig-paren">(</span><em>Isat</em>, <em>Vdiode</em>, <em>Vt</em>, <em>n</em><span class="sig-paren">)</span><a class="headerlink" href="#pvmismatch.pvmismatch_lib.pvconstants.Idiode" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate diode current using <a class="reference external" href="https://en.wikipedia.org/wiki/Diode_modelling#Shockley_diode_model">Shockley diode model</a>.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>Isat</strong> – diode saturation current [A]</p></li>
-<li><p><strong>Vdiode</strong> – diode voltage [V]</p></li>
-<li><p><strong>Vt</strong> – thermal voltage [V]</p></li>
-<li><p><strong>n</strong> – diode ideality factor</p></li>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>Isat</strong> – diode saturation current [A]</li>
+<li><strong>Vdiode</strong> – diode voltage [V]</li>
+<li><strong>Vt</strong> – thermal voltage [V]</li>
+<li><strong>n</strong> – diode ideality factor</li>
 </ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>diode current</p>
-</dd>
-</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">diode current</p>
+</td>
+</tr>
+</tbody>
+</table>
 <div class="admonition note">
-<p class="admonition-title">Note</p>
+<p class="first admonition-title">Note</p>
 <p>Thermal voltage is defined as …</p>
-<div class="math notranslate nohighlight">
+<div class="last math">
 \[V_t = \frac {k_B * T} {q_e}\]</div>
 </div>
 </dd></dl>
@@ -340,12 +376,12 @@ not including zero</p>
 
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
-    <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
     </form>
-    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script><div class="relations">
 <h3>Related Topics</h3>
@@ -364,7 +400,7 @@ not including zero</p>
       &copy;2017, SunPower.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.0.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

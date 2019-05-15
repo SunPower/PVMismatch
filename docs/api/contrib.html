@@ -1,0 +1,271 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Contributions &#8212; PVMismatch Nepal Negroni documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     'Nepal Negroni',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="pvsystem" href="pvsystem.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="module-pvmismatch.contrib">
+<span id="contributions"></span><span id="contrib"></span><h1>Contributions<a class="headerlink" href="#module-pvmismatch.contrib" title="Permalink to this headline">¶</a></h1>
+<p>Contributions to pvmismatch that are considered useful enough to be distributed
+but are not necessarily considered part of pvmismatch core.</p>
+<div class="section" id="module-pvmismatch.contrib.gen_coeffs">
+<span id="generate-coefficients"></span><h2>Generate Coefficients<a class="headerlink" href="#module-pvmismatch.contrib.gen_coeffs" title="Permalink to this headline">¶</a></h2>
+<p>Methods to generate diode coefficients.</p>
+<dl class="data">
+<dt id="pvmismatch.contrib.gen_coeffs.TEST_MAT">
+<code class="descclassname">pvmismatch.contrib.gen_coeffs.</code><code class="descname">TEST_MAT</code><em class="property"> = [array([[15., 25., 50., 75.],        [15., 25., 50., 75.],        [15., 25., 50., 75.],        [15., 25., 50., 75.],        [15., 25., 50., 75.],        [15., 25., 50., 75.],        [15., 25., 50., 75.]]), array([[ 100.,  100.,  100.,  100.],        [ 200.,  200.,  200.,  200.],        [ 400.,  400.,  400.,  400.],        [ 600.,  600.,  600.,  600.],        [ 800.,  800.,  800.,  800.],        [1000., 1000., 1000., 1000.],        [1100., 1100., 1100., 1100.]])]</em><a class="headerlink" href="#pvmismatch.contrib.gen_coeffs.TEST_MAT" title="Permalink to this definition">¶</a></dt>
+<dd><p>IEC61853 test matrix</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pvmismatch.contrib.gen_coeffs.gen_iec_61853_from_sapm">
+<code class="descclassname">pvmismatch.contrib.gen_coeffs.</code><code class="descname">gen_iec_61853_from_sapm</code><span class="sig-paren">(</span><em>pvmodule</em><span class="sig-paren">)</span><a class="headerlink" href="#pvmismatch.contrib.gen_coeffs.gen_iec_61853_from_sapm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate an IEC 61853 test from Sandia Array Performance Model (sapm).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>pvmodule</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – PV module to be tested</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">a pandas dataframe with columns <code class="docutils literal"><span class="pre">i_mp</span></code>, <code class="docutils literal"><span class="pre">v_mp</span></code>, <code class="docutils literal"><span class="pre">i_sc</span></code>, and
+<code class="docutils literal"><span class="pre">v_oc</span></code> and rows corresponding to the IEC61853 test conditions</td>
+</tr>
+</tbody>
+</table>
+<p>Module is a dictionary according to <code class="docutils literal"><span class="pre">pvlib.pvsystem.sapm</span></code>.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pvmismatch.contrib.gen_coeffs.gen_two_diode">
+<code class="descclassname">pvmismatch.contrib.gen_coeffs.</code><code class="descname">gen_two_diode</code><span class="sig-paren">(</span><em>isc</em>, <em>voc</em>, <em>imp</em>, <em>vmp</em>, <em>nseries</em>, <em>nparallel</em>, <em>tc</em>, <em>x0=None</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#pvmismatch.contrib.gen_coeffs.gen_two_diode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate two-diode model parameters for <code class="docutils literal"><span class="pre">pvcell</span></code> given.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>isc</strong> (<em>numeric</em>) – short circuit current [A]</li>
+<li><strong>voc</strong> (<em>numeric</em>) – open circuit voltage [V]</li>
+<li><strong>imp</strong> (<em>numeric</em>) – max power current [A]</li>
+<li><strong>vmp</strong> (<em>numeric</em>) – max power voltage [V]</li>
+<li><strong>nseries</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – number of cells in series</li>
+<li><strong>nparallel</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – number of parallel substrings in PV module</li>
+<li><strong>tc</strong> (<em>numeric</em>) – cell temperature [C]</li>
+<li><strong>x0</strong> – optional list of initial guesses, default is <code class="docutils literal"><span class="pre">None</span></code></li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">tuple <code class="docutils literal"><span class="pre">(isat1,</span> <span class="pre">isat2,</span> <span class="pre">rs,</span> <span class="pre">rsh)</span></code> of generated coefficients and
+the solver output</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pvmismatch.contrib.gen_coeffs.residual_two_diode">
+<code class="descclassname">pvmismatch.contrib.gen_coeffs.</code><code class="descname">residual_two_diode</code><span class="sig-paren">(</span><em>x</em>, <em>isc</em>, <em>voc</em>, <em>imp</em>, <em>vmp</em>, <em>tc</em><span class="sig-paren">)</span><a class="headerlink" href="#pvmismatch.contrib.gen_coeffs.residual_two_diode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Objective function to solve 2-diode model.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>x</strong> – parameters <code class="docutils literal"><span class="pre">isat1</span></code>, <code class="docutils literal"><span class="pre">isat2</span></code>, <code class="docutils literal"><span class="pre">rs</span></code>, and <code class="docutils literal"><span class="pre">rsh</span></code></li>
+<li><strong>isc</strong> – short circuit current [A] at <code class="docutils literal"><span class="pre">tc</span></code> [C]</li>
+<li><strong>voc</strong> – open circuit voltage [V] at <code class="docutils literal"><span class="pre">tc</span></code> [C]</li>
+<li><strong>imp</strong> – max power current [A] at <code class="docutils literal"><span class="pre">tc</span></code> [C]</li>
+<li><strong>vmp</strong> – max power voltage [V] at <code class="docutils literal"><span class="pre">tc</span></code> [C]</li>
+<li><strong>tc</strong> – cell temperature [C]</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">norm of the residuals and the Jacobian matrix</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<div class="section" id="example">
+<h3>Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h3>
+<p>Run the example in <a class="reference internal" href="#module-pvmismatch.contrib.gen_coeffs" title="pvmismatch.contrib.gen_coeffs"><code class="xref py py-mod docutils literal"><span class="pre">gen_coeffs</span></code></a>:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">pvmismatch</span><span class="o">/</span><span class="n">contrib</span><span class="o">/</span><span class="n">gen_coeffs</span><span class="o">/</span><span class="n">example</span><span class="o">.</span><span class="n">py</span> <span class="n">STC</span> <span class="o">./</span><span class="n">examples</span>
+</pre></div>
+</div>
+<p>This creates a figure <code class="docutils literal"><span class="pre">examples/STC.png</span></code> which calculates the coefficients
+using only STC conditions, and displays the power error relative to STC, and
+the RMSE of the IV curve relative to <code class="docutils literal"><span class="pre">IMP0</span></code>, <code class="docutils literal"><span class="pre">VMP0</span></code>, <code class="docutils literal"><span class="pre">ISC0</span></code>, and
+<code class="docutils literal"><span class="pre">VOC0</span></code>.</p>
+<img alt="../_images/STC.png" src="../_images/STC.png" />
+<p>Run the example again with <code class="docutils literal"><span class="pre">IEC61853</span></code> as the first argument:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">pvmismatch</span><span class="o">/</span><span class="n">contrib</span><span class="o">/</span><span class="n">gen_coeffs</span><span class="o">/</span><span class="n">example</span><span class="o">.</span><span class="n">py</span> <span class="n">IEC61853</span> <span class="o">./</span><span class="n">examples</span>
+</pre></div>
+</div>
+<p>This creates a figure <code class="docutils literal"><span class="pre">examples/IEC61853.png</span></code> which calculates the
+coefficients using the IEC61853 test conditions, and displays the power error
+relative to STC, and the RMSE of the IV curve relative to <code class="docutils literal"><span class="pre">IMP0</span></code>, <code class="docutils literal"><span class="pre">VMP0</span></code>,
+<code class="docutils literal"><span class="pre">ISC0</span></code>, and <code class="docutils literal"><span class="pre">VOC0</span></code>.</p>
+<img alt="../_images/IEC61853.png" src="../_images/IEC61853.png" />
+<p>Note: You can see that the lack of irradiance correction on shunt resistance
+in PVMismatch causes a larger error when the IEC61853 test results are used.</p>
+</div>
+</div>
+<div class="section" id="module-pvmismatch.contrib.module_mismatch_simulator">
+<span id="module-mismatch-simulator"></span><h2>Module Mismatch Simulator<a class="headerlink" href="#module-pvmismatch.contrib.module_mismatch_simulator" title="Permalink to this headline">¶</a></h2>
+<p>Created on Mar 29, 2013</p>
+<p>This script allows the user to dynamically investigate the IV and PV
+characteristics of a single module. The user chooses the modules size–72 or 96
+cells. A GUI is then generated that allows the user to change the size, location,
+and irradiance level of a single “shade rectangle”. Outputs include cell,
+substring, and module level IV and PV curves as well as a module diagram showing
+the shade location, any reverse biased cells, and any active diodes.</p>
+<p>&#64;author: bmeyers</p>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../index.html">
+    <img class="logo" src="../_static/sp_2014_logo_black_orange_rgb.png" alt="Logo"/>
+    
+    <h1 class="logo logo-name">PVMismatch</h1>
+    
+  </a>
+</p>
+
+
+
+<p class="blurb">PV Mismatch Estimation Tool</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=SunPower&repo=PVMismatch&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+    
+
+<p>
+<a class="badge" href="https://travis-ci.org/SunPower/PVMismatch">
+    <img
+        alt="https://secure.travis-ci.org/SunPower/PVMismatch.svg?branch=master"
+        src="https://secure.travis-ci.org/SunPower/PVMismatch.svg?branch=master"
+    />
+</a>
+</p>
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/quickstart.html#pvmismatch">PVMismatch</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/quickstart.html#example">Example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pvconstants.html">pvconstants</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pvcell.html">pvcell</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pvmodule.html">pvmodule</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pvstring.html">pvstring</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pvsystem.html">pvsystem</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Contributions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-pvmismatch.contrib.gen_coeffs">Generate Coefficients</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-pvmismatch.contrib.module_mismatch_simulator">Module Mismatch Simulator</a></li>
+</ul>
+</li>
+</ul>
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="pvsystem.html" title="previous chapter">pvsystem</a></li>
+  </ul></li>
+</ul>
+</div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, SunPower.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/api/contrib.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+    <a href="https://github.com/SunPower/PVMismatch" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+    
+
+    
+  </body>
+</html>

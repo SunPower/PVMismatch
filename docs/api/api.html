@@ -1,19 +1,27 @@
 
-<!DOCTYPE html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta charset="utf-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>API &#8212; PVMismatch Nepal Negroni documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     'Nepal Negroni',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="../_static/language_data.js"></script>
-    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -25,7 +33,8 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
-  </head><body>
+  </head>
+  <body>
   
 
     <div class="document">
@@ -40,18 +49,18 @@
 <p>Modules, methods, classes and attributes are explained here.</p>
 <div class="section" id="module-pvmismatch">
 <span id="pvmismatch-package"></span><h2>PVMismatch Package<a class="headerlink" href="#module-pvmismatch" title="Permalink to this headline">¶</a></h2>
-<p>This is the PVMismatch Package. It contains <a class="reference internal" href="#module-pvmismatch.pvmismatch_lib" title="pvmismatch.pvmismatch_lib"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pvmismatch_lib</span></code></a>
-and <code class="xref py py-mod docutils literal notranslate"><span class="pre">pvmismatch_tk</span></code>.</p>
+<p>This is the PVMismatch Package. It contains <a class="reference internal" href="#module-pvmismatch.pvmismatch_lib" title="pvmismatch.pvmismatch_lib"><code class="xref py py-mod docutils literal"><span class="pre">pvmismatch_lib</span></code></a>
+and <code class="xref py py-mod docutils literal"><span class="pre">pvmismatch_tk</span></code>.</p>
 <div class="section" id="pvmismatch-lib">
-<h3><a class="reference internal" href="#module-pvmismatch.pvmismatch_lib" title="pvmismatch.pvmismatch_lib"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pvmismatch_lib</span></code></a><a class="headerlink" href="#pvmismatch-lib" title="Permalink to this headline">¶</a></h3>
+<h3><a class="reference internal" href="#module-pvmismatch.pvmismatch_lib" title="pvmismatch.pvmismatch_lib"><code class="xref py py-mod docutils literal"><span class="pre">pvmismatch_lib</span></code></a><a class="headerlink" href="#pvmismatch-lib" title="Permalink to this headline">¶</a></h3>
 <p>This package contains the basic library modules, methods, classes and
 attributes to model PV system mismatch.</p>
 <div class="admonition note">
-<p class="admonition-title">Note</p>
+<p class="first admonition-title">Note</p>
 <p>The main library classes and modules are exposed through this package for
 convenience.</p>
 <p>For example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pvmismatch</span> <span class="k">import</span> <span class="n">PVcell</span>  <span class="c1"># imports the PVcell class</span>
+<div class="last highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pvmismatch</span> <span class="k">import</span> <span class="n">PVcell</span>  <span class="c1"># imports the PVcell class</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># import pvconstants, pvcell, pvmodule, pvstring and pvsystem</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pvmismatch</span> <span class="k">import</span> <span class="o">*</span>
 </pre></div>
@@ -59,19 +68,19 @@ convenience.</p>
 </div>
 </div>
 <div class="section" id="pvmismatch-tk">
-<h3><code class="xref py py-mod docutils literal notranslate"><span class="pre">pvmismatch_tk</span></code><a class="headerlink" href="#pvmismatch-tk" title="Permalink to this headline">¶</a></h3>
+<h3><code class="xref py py-mod docutils literal"><span class="pre">pvmismatch_tk</span></code><a class="headerlink" href="#pvmismatch-tk" title="Permalink to this headline">¶</a></h3>
 <p>This package contains an application that can be run using
-<code class="xref py py-mod docutils literal notranslate"><span class="pre">pvmismatch.pv_tk</span></code>.</p>
+<code class="xref py py-mod docutils literal"><span class="pre">pvmismatch.pv_tk</span></code>.</p>
 </div>
 </div>
 <div class="section" id="module-pvmismatch.pvmismatch_lib">
 <span id="pvmismatch-library"></span><h2>PVMismatch Library<a class="headerlink" href="#module-pvmismatch.pvmismatch_lib" title="Permalink to this headline">¶</a></h2>
 <p>This is the PVMismatch Library. Configuration constants and classes like
-<a class="reference internal" href="pvconstants.html#pvmismatch.pvmismatch_lib.pvconstants.PVconstants" title="pvmismatch.pvmismatch_lib.pvconstants.PVconstants"><code class="xref py py-class docutils literal notranslate"><span class="pre">PVconstants</span></code></a>,
-<a class="reference internal" href="pvcell.html#pvmismatch.pvmismatch_lib.pvcell.PVcell" title="pvmismatch.pvmismatch_lib.pvcell.PVcell"><code class="xref py py-class docutils literal notranslate"><span class="pre">PVcell</span></code></a>,
-<a class="reference internal" href="pvmodule.html#pvmismatch.pvmismatch_lib.pvmodule.PVmodule" title="pvmismatch.pvmismatch_lib.pvmodule.PVmodule"><code class="xref py py-class docutils literal notranslate"><span class="pre">PVmodule</span></code></a>,
-<a class="reference internal" href="pvstring.html#pvmismatch.pvmismatch_lib.pvstring.PVstring" title="pvmismatch.pvmismatch_lib.pvstring.PVstring"><code class="xref py py-class docutils literal notranslate"><span class="pre">PVstring</span></code></a> and
-<a class="reference internal" href="pvsystem.html#pvmismatch.pvmismatch_lib.pvsystem.PVsystem" title="pvmismatch.pvmismatch_lib.pvsystem.PVsystem"><code class="xref py py-class docutils literal notranslate"><span class="pre">PVsystem</span></code></a>, objects are all defined
+<a class="reference internal" href="pvconstants.html#pvmismatch.pvmismatch_lib.pvconstants.PVconstants" title="pvmismatch.pvmismatch_lib.pvconstants.PVconstants"><code class="xref py py-class docutils literal"><span class="pre">PVconstants</span></code></a>,
+<a class="reference internal" href="pvcell.html#pvmismatch.pvmismatch_lib.pvcell.PVcell" title="pvmismatch.pvmismatch_lib.pvcell.PVcell"><code class="xref py py-class docutils literal"><span class="pre">PVcell</span></code></a>,
+<a class="reference internal" href="pvmodule.html#pvmismatch.pvmismatch_lib.pvmodule.PVmodule" title="pvmismatch.pvmismatch_lib.pvmodule.PVmodule"><code class="xref py py-class docutils literal"><span class="pre">PVmodule</span></code></a>,
+<a class="reference internal" href="pvstring.html#pvmismatch.pvmismatch_lib.pvstring.PVstring" title="pvmismatch.pvmismatch_lib.pvstring.PVstring"><code class="xref py py-class docutils literal"><span class="pre">PVstring</span></code></a> and
+<a class="reference internal" href="pvsystem.html#pvmismatch.pvmismatch_lib.pvsystem.PVsystem" title="pvmismatch.pvmismatch_lib.pvsystem.PVsystem"><code class="xref py py-class docutils literal"><span class="pre">PVsystem</span></code></a>, objects are all defined
 here.</p>
 </div>
 </div>
@@ -141,12 +150,12 @@ here.</p>
 
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
-    <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
     </form>
-    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script><div class="relations">
 <h3>Related Topics</h3>
@@ -165,7 +174,7 @@ here.</p>
       &copy;2017, SunPower.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.0.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
