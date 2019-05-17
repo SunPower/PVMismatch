@@ -11,11 +11,7 @@ Version: |version| (|release|)
 
 Announcements
 -------------
-Thanks to Bennet Meyers you should see huge memory and speed improvements since
-new cell, module and string objects are only created when they are needed to
-differentiate cells by irradiance or temperature. However this can lead to
-unexpected behavior when changing other cell properties without first making a
-copy of the original cell.
+Starting at Nepal Negroni, users will be able to configure number of bypass diodes in a module. This includes being able to model a PV module with just one bypass diode across all the cells and the effect of losing one or more bypass diodes on a PV Module. 
 
 
 Contents:
