@@ -23,6 +23,7 @@ pv_mod = pvmodule.PVmodule(cell_pos=pv_mod_pattern, pvcells=None, pvconst=None, 
 pv_cells = pv_mod.pvcells
 for c in pv_cells:
     c.update(Isc0_T0 = Isc0_T0) # updating short circuit currents
+pv_mod.setSuns(cells=list(range(0, len(pv_cells))), Ee=[1]*len(pv_cells))
 pv_str = pvstring.PVstring(numberMods=str_len, pvmods=[pv_mod]*str_len)
 pv_sys = pvsystem.PVsystem(numberStrs=str_num, pvstrs=[pv_str]*str_num, numberMods=[str_len]*str_num, pvmods=[pv_mod]*str_len)
 
