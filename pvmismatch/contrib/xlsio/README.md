@@ -1,5 +1,5 @@
 # PVMismatchXLSIO
-Excel-Python Irradiance I/O tool for [PVMismatch](https://github.com/mikofski/PVMismatch).
+Excel-Python Irradiance I/O tool for [PVMismatch](https://github.com/SunPower/PVMismatch).
 
 # Features
 * Creating a human-readable xls of the PV system layout from a PVMismatch PVsystem object with the PV cell indexes, irradiances and temperatures.
