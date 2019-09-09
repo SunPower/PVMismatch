@@ -40,7 +40,7 @@ plt.show(block=False)
 # read the new irradiance back to python anc calculate PV power again. Then we update the xls files with the bypass
 # diode activation patterns, as this can only be done after the system is calculated.
 
-for i in list(range(1,6)):
+for i in list(range(1,7)):
     input_xls_name='ExcelLayoutFromPVMM_input{}.xlsx'.format(i) # this is the xls where we have set the new irradiances
     set_input_from_xls(input_xls_name, pv_sys, str_num, str_len)
     print('PV power with irradiances read in from {}: '.format(input_xls_name),
