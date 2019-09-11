@@ -81,13 +81,17 @@ class PVsystem(object):
     def Vstring(self):
         return np.asarray([pvstr.Vstring.flatten() for pvstr in self.pvstrs])
 
+    @property
+    def Voc_str(self):
+        return np.asarray([pvstr.Voc_mod.sum() for pvstr in self.pvstrs])
+
     def calcSystem(self):
         """
         Calculate system I-V curves.
         Returns (Isys, Vsys, Psys) : tuple of numpy.ndarray of float
         """
         Isys, Vsys = self.pvconst.calcParallel(
-            self.Istring, self.Vstring, self.Vstring.max(), self.Vstring.min()
+            self.Istring, self.Vstring, self.Voc_str.max(), self.Vstring.min()
         )
         Psys = Isys * Vsys
         return Isys, Vsys, Psys

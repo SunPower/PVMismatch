@@ -64,6 +64,10 @@ class PVstring(object):
     def Vmod(self):
         return np.array([mod.Vmod.flatten() for mod in self.pvmods])
 
+    @property
+    def Voc_mod(self):
+        return np.array([mod.Voc.sum() for mod in self.pvmods])
+
     def calcString(self):
         """
         Calculate string I-V curves.

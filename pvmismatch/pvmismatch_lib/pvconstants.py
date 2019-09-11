@@ -111,6 +111,8 @@ class PVconstants(object):
         # so that tight spacing is around MPP and RBD
         self.Imod_pts = 1 - np.flipud(self.pts)
         """array of points with increasing spacing from 0 to 1"""
+        self.Imod_pts_sq = self.Imod_pts**2
+        """array of points from 0 to 1 with very close spacing near 0"""
 
     def __str__(self):
         return '<PVconstants(npts=%d)>' % self.npts
@@ -136,13 +138,15 @@ class PVconstants(object):
         meanIsc = np.asarray(meanIsc)  # mean Isc [A]
         Imax = np.asarray(Imax)  # max current [A]
         # create array of currents optimally spaced from mean Isc to  max VRBD
-        Ireverse = (Imax - meanIsc) * self.Imod_pts + meanIsc
+        Ireverse = (Imax - meanIsc) * self.Imod_pts_sq + meanIsc
+        # range of currents in forward bias from 0 to mean Isc
+        Iforward = meanIsc * self.Imod_pts
         Imin = np.minimum(I.min(), 0.)  # minimum cell current, at most zero
-        # range of currents in forward bias from min current to mean Isc
-        Iforward = (Imin - meanIsc) * self.Imod_negpts + meanIsc
+        # range of negative currents in the 4th quadrant from min current to 0
+        Iquad4 = Imin * self.Imod_negpts
         # create range for interpolation from forward to reverse bias
-        Itot = np.concatenate((Iforward, Ireverse), axis=0).flatten()
-        Vtot = np.zeros((2 * self.npts,))
+        Itot = np.concatenate((Iquad4, Iforward, Ireverse), axis=0).flatten()
+        Vtot = np.zeros((3 * self.npts,))
         # add up all series cell voltages
         for i, v in zip(I, V):
             # interp requires x, y to be sorted by x in increasing order

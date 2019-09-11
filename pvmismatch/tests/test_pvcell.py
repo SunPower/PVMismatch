@@ -56,10 +56,15 @@ def test_calc_series():
     isc = np.asarray([pvc.Isc for pvc in pvcells])
     i, v = pvconst.calcSeries(icells, vcells, isc.mean(), i_at_vrbd.max())
     iv = np.loadtxt(os.path.join(BASE_DIR, 'calc_series_test_iv.dat'))
+    iv_gh110 = np.loadtxt(
+        os.path.join(BASE_DIR, 'calc_series_test_iv_gh110.dat'))
     # noinspection PyTypeChecker
-    ok_(np.allclose(i, iv[0]))
+    iv_calc = np.concatenate([[i], [v]], axis=0).T
     # noinspection PyTypeChecker
-    ok_(np.allclose(v, iv[1], rtol=1e-4))
+    ok_(np.allclose(iv_calc, iv_gh110))
+    assert np.allclose(iv[0,:], np.interp(iv[1,:], v, i), 0.01, 0.01)
+    assert np.allclose(
+        iv[1,:], np.interp(iv[0,:], np.flipud(i), np.flipud(v)), 0.1, 0.1)
     return i, v
 
 
