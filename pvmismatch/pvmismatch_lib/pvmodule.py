@@ -131,7 +131,8 @@ def combine_parallel_circuits(IVprev_cols, pvconst):
     Combine crosstied circuits in a substring
 
     :param IVprev_cols: lists of IV curves of crosstied and series circuits
-    :return:
+    :param pvconst: an instance of :class:`~pvmismatch.pvconstants.PVconstants`
+    :return: current [A] and voltage [V] of the combined parallel circuites
     """
     # combine crosstied circuits
     Irows, Vrows = [], []
@@ -452,7 +453,8 @@ class PVmodule(object):
                     idxs = [c['idx'] for c in row]
                     Irow, Vrow = self.pvconst.calcParallel(
                         self.Icell[idxs], self.Vcell[idxs],
-                        self.Voc[idxs].max(), self.VRBD.min()
+                        self.Voc[idxs].max(), self.VRBD.min(),
+                        Voc=self.Voc[idxs].mean()
                     )
                     Irows.append(Irow)
                     Vrows.append(Vrow)
@@ -523,8 +525,12 @@ class PVmodule(object):
                     Iparallel, Vparallel = zip(*IVall_cols)
                     Iparallel = np.asarray(Iparallel)
                     Vparallel = np.asarray(Vparallel)
+                    Voc_parallel = np.asarray([
+                        np.interp(np.float64(0), np.flipud(i_par), np.flipud(v_par))
+                        for i_par, v_par in zip(Iparallel, Vparallel)])
                     Isub, Vsub = self.pvconst.calcParallel(
-                        Iparallel, Vparallel, Vparallel.max(), Vparallel.min()
+                        Iparallel, Vparallel, Vparallel.max(), Vparallel.min(),
+                        Voc=Voc_parallel.mean()
                     )
 
 
