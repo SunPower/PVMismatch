@@ -19,6 +19,7 @@ MODSIZES = [24, 72, 96, 128]  # list of possible number of cells per module
 NUMBERCELLS = MODSIZES[2]  # default is 96-cell module
 NUMBERMODS = 10  # default number of modules
 NUMBERSTRS = 10  # default number of strings
+EPS = np.finfo(np.float64).eps
 
 
 def npinterpx(x, xp, fp):
@@ -76,15 +77,15 @@ class PVconstants(object):
     def __init__(self, npts=NPTS):
         self._npts = None
         self.pts = None
-        """array of points with decreasing spacing from 0 to 1"""
-        self.Imod_negpts = None
-        """array of points with decreasing spacing from 1 to just less than but
-        not including zero"""
+        """array of points with decreasing spacing from exactly zero to one"""
         self.negpts = None
-        """array of points with increasing spacing from 1 to just less than but
-        not including zero"""
+        """array of points with increasing spacing from one to ``0.1/npts``"""
         self.Imod_pts = None
-        """array of points with increasing spacing from 0 to 1"""
+        """array of points with increasing spacing from exactly zero to one"""
+        self.Imod_pts_sq = None
+        """array of points from EPS to 1 with very close spacing near EPS"""
+        self.Imod_negpts = None
+        """array of points with decreasing spacing from one to  ``0.1/npts``"""
         # call property setter
         self.npts = npts  #: number of points in IV curves
 
@@ -110,8 +111,8 @@ class PVconstants(object):
         # shift and concatenate pvconst.negpts and pvconst.pts
         # so that tight spacing is around MPP and RBD
         self.Imod_pts = 1 - np.flipud(self.pts)
-        """array of points with increasing spacing from 0 to 1"""
-        self.Imod_pts_sq = self.Imod_pts**2
+        
+        self.Imod_pts_sq = self.Imod_pts**2 + EPS
         """array of points from 0 to 1 with very close spacing near 0"""
 
     def __str__(self):
@@ -140,7 +141,7 @@ class PVconstants(object):
         # create array of currents optimally spaced from mean Isc to  max VRBD
         Ireverse = (Imax - meanIsc) * self.Imod_pts_sq + meanIsc
         # range of currents in forward bias from 0 to mean Isc
-        Iforward = meanIsc * self.Imod_pts
+        Iforward = meanIsc * self.pts
         Imin = np.minimum(I.min(), 0.)  # minimum cell current, at most zero
         # range of negative currents in the 4th quadrant from min current to 0
         Iquad4 = Imin * self.Imod_negpts
@@ -153,7 +154,7 @@ class PVconstants(object):
             Vtot += npinterpx(Itot, np.flipud(i), np.flipud(v))
         return np.flipud(Itot), np.flipud(Vtot)
 
-    def calcParallel(self, I, V, Vmax, Vmin):
+    def calcParallel(self, I, V, Vmax, Vmin, Voc=None):
         """
         Calculate IV curve for cells and substrings in parallel.
 
@@ -163,14 +164,27 @@ class PVconstants(object):
         :type: V: list, :class:`numpy.ndarray`
         :param Vmax: max voltage limit, should be max Voc [V]
         :param Vmin: min voltage limit, could be zero or Vrbd [V]
+        :param Voc: (``None``) open circuit voltage [V]
         """
+        if Voc is None:
+            Voc = Vmax
         I, V = np.asarray(I), np.asarray(V)
         Vmax = np.asarray(Vmax)
         Vmin = np.asarray(Vmin)
+        Voc = np.asarray(Voc)
+        Vff = Voc
+        delta_Voc = Vmax - Voc
+        if np.isclose(delta_Voc, 0):
+            Vff = 0.8 * Voc
+            delta_Voc = 0.2 * Voc
+        elif delta_Voc < 0:
+            Vff = Vmax
+            delta_Voc = -delta_Voc
+        Vquad4 = Vff + delta_Voc * np.flipud(self.negpts)
         Vreverse = Vmin * self.negpts
-        Vforward = Vmax * self.pts
-        Vtot = np.concatenate((Vreverse, Vforward), axis=0).flatten()
-        Itot = np.zeros((2 * self.npts,))
+        Vforward = Vff * self.pts
+        Vtot = np.concatenate((Vreverse, Vforward, Vquad4), axis=0).flatten()
+        Itot = np.zeros((3 * self.npts,))
         for i, v in zip(I, V):
             Itot += npinterpx(Vtot, v, i)
         return Itot, Vtot

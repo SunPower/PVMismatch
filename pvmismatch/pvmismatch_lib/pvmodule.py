@@ -137,12 +137,13 @@ def combine_parallel_circuits(IVprev_cols, pvconst):
     Irows, Vrows = [], []
     Isc_rows, Imax_rows = [], []
     for IVcols in zip(*IVprev_cols):
-        Iparallel, Vparallel = zip(*IVcols)
+        Iparallel, Vparallel, Voc_parallel = zip(*IVcols)
         Iparallel = np.asarray(Iparallel)
         Vparallel = np.asarray(Vparallel)
+        Voc_parallel = np.mean(Voc_parallel)
         Irow, Vrow = pvconst.calcParallel(
             Iparallel, Vparallel, Vparallel.max(),
-            Vparallel.min()
+            Vparallel.min(), Voc=Voc_parallel
         )
         Irows.append(Irow)
         Vrows.append(Vrow)
@@ -494,7 +495,7 @@ class PVmodule(object):
                             )
                         else:
                             Icol, Vcol = self.Icell[idxs], self.Vcell[idxs]
-                        IVcols.append([Icol, Vcol])
+                        IVcols.append([Icol, Vcol, self.Voc[idxs].sum()])
                     # append IVcols and continue
                     IVprev_cols.append(IVcols)
                     if prev_col:

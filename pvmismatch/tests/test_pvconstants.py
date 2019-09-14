@@ -39,3 +39,9 @@ def test_minimum_current_close_to_max_voc_gh110():
     calculated = np.concatenate(
         [[pvsys.Isys], [pvsys.Vsys], [pvsys.Psys]], axis=0).T
     assert np.allclose(expected, calculated)
+    return calculated
+
+
+if __name__ == '__main__':
+    calculated = test_minimum_current_close_to_max_voc_gh110()
+    np.savetxt(os.path.join(BASEDIR, 'gh110.dat'), calculated)
