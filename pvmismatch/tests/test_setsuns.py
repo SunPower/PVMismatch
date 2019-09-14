@@ -16,28 +16,28 @@ LOGGER = logging.getLogger(__name__)
 def test_basic():
     pvsys = PVsystem()
     pvsys.setSuns(.75)
-    ok_(np.isclose(pvsys.Pmp, 23901.66450809984))
+    ok_(np.isclose(pvsys.Pmp, 23906.929813407343))
 
 
 def test_dictionary():
     pvsys = PVsystem()
     Ee = {1: {3: {'cells': np.arange(30), 'Ee': [.25] * 30}}}
     pvsys.setSuns(Ee)
-    ok_(np.isclose(pvsys.Pmp, 31610.641289630337))
+    ok_(np.isclose(pvsys.Pmp, 31614.872508745437))
 
 
 def test_set_mod_1():
     pvsys = PVsystem()
     Ee = {1: {3: [.2], 0: [.1]}}
     pvsys.setSuns(Ee)
-    ok_(np.isclose(pvsys.Pmp, 29555.687509091586))
+    ok_(np.isclose(pvsys.Pmp, 29567.354757496352))
 
 
 def test_set_mod_2():
     pvsys = PVsystem()
     Ee = {1: {3: .2, 0: .1}}
     pvsys.setSuns(Ee)
-    ok_(np.isclose(pvsys.Pmp, 29555.687509091586))
+    ok_(np.isclose(pvsys.Pmp, 29567.354757496352))
     # 1001 points linear: [ 29579.12191565]
 
 
@@ -45,7 +45,7 @@ def test_set_str_1():
     pvsys = PVsystem()
     Ee = {1: [.1]}
     pvsys.setSuns(Ee)
-    ok_(np.isclose(pvsys.Pmp, 29131.92967897601))
+    ok_(np.isclose(pvsys.Pmp, 29137.429860738754))
     # 1001 points linear: [ 29141.73034719]
 
 
@@ -53,7 +53,7 @@ def test_set_str_2():
     pvsys = PVsystem()
     Ee = {1: .1}
     pvsys.setSuns(Ee)
-    ok_(np.isclose(pvsys.Pmp, 29131.92967897601))
+    ok_(np.isclose(pvsys.Pmp, 29137.429860738754))
     # 1001 points linear: [ 29141.73034719]
 
 
