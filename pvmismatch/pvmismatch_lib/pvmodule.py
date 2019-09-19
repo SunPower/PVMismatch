@@ -607,6 +607,7 @@ class PVmodule(object):
         plt.xlim(0, self.Voc.max())
         plt.ylim(0, (self.Isc.mean() + 1) * self.Voc.max())
         plt.grid()
+        plt.tight_layout()
         return cellPlot
 
     def plotMod(self):
@@ -615,14 +616,14 @@ class PVmodule(object):
         Returns modPlot : matplotlib.pyplot figure
         """
         modPlot = plt.figure()
-        plt.subplot(2, 1, 1)
+        ax = plt.subplot(2, 1, 1)
         plt.plot(self.Vmod, self.Imod)
         plt.title('Module I-V Characteristics')
         plt.ylabel('Module Current, I [A]')
         plt.ylim(ymin=0)
         plt.xlim(self.Vmod.min() - 1, self.Vmod.max() + 1)
         plt.grid()
-        plt.subplot(2, 1, 2)
+        plt.subplot(2, 1, 2, sharex=ax)
         plt.plot(self.Vmod, self.Pmod)
         plt.title('Module P-V Characteristics')
         plt.xlabel('Module Voltage, V [V]')
@@ -630,4 +631,5 @@ class PVmodule(object):
         plt.ylim(ymin=0)
         plt.xlim(self.Vmod.min() - 1, self.Vmod.max() + 1)
         plt.grid()
+        plt.tight_layout()
         return modPlot

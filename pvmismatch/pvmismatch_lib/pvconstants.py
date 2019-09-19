@@ -86,6 +86,8 @@ class PVconstants(object):
         """array of points from EPS to 1 with very close spacing near EPS"""
         self.Imod_negpts = None
         """array of points with decreasing spacing from one to  ``0.1/npts``"""
+        self.Vmod_q4pts = None
+        """array of points with decreasing spacing from ``0.1/npts`` to one"""
         # call property setter
         self.npts = npts  #: number of points in IV curves
 
@@ -111,9 +113,8 @@ class PVconstants(object):
         # shift and concatenate pvconst.negpts and pvconst.pts
         # so that tight spacing is around MPP and RBD
         self.Imod_pts = 1 - np.flipud(self.pts)
-        
         self.Imod_pts_sq = self.Imod_pts**2 + EPS
-        """array of points from 0 to 1 with very close spacing near 0"""
+        self.Vmod_q4pts = np.flipud(self.Imod_negpts)
 
     def __str__(self):
         return '<PVconstants(npts=%d)>' % self.npts
@@ -180,7 +181,7 @@ class PVconstants(object):
         elif delta_Voc < 0:
             Vff = Vmax
             delta_Voc = -delta_Voc
-        Vquad4 = Vff + delta_Voc * np.flipud(self.negpts)
+        Vquad4 = Vff + delta_Voc * self.Vmod_q4pts
         Vreverse = Vmin * self.negpts
         Vforward = Vff * self.pts
         Vtot = np.concatenate((Vreverse, Vforward, Vquad4), axis=0).flatten()

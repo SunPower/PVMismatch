@@ -215,16 +215,17 @@ class PVstring(object):
         Returns strPlot : matplotlib.pyplot figure
         """
         strPlot = plt.figure()
-        plt.subplot(2, 1, 1)
+        ax = plt.subplot(2, 1, 1)
         plt.plot(self.Vstring, self.Istring)
         plt.title('String I-V Characteristics')
         plt.ylabel('String Current, I [A]')
         plt.ylim(ymin=0)
         plt.grid()
-        plt.subplot(2, 1, 2)
+        plt.subplot(2, 1, 2, sharex=ax)
         plt.plot(self.Vstring, self.Pstring)
         plt.title('String P-V Characteristics')
         plt.xlabel('String Voltage, V [V]')
         plt.ylabel('String Power, P [W]')
         plt.grid()
+        plt.tight_layout()
         return strPlot
