@@ -23,6 +23,7 @@ __pycache__/
 # docs
 !docs/_templates/
 _*/
+.ipynb_checkpoints
 
 # test
 testPV/
@@ -30,8 +31,11 @@ benchmark_*/
 .coverage
 .cache/
 .pytest_cache/
+xlsio_one_mod_test/
 
 # virtualenv
 venv/
 venv2/
 venv3/
+pipfile
+pipfile.lock
