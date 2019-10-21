@@ -6,7 +6,7 @@ Excel-Python Irradiance I/O tool for [PVMismatch](https://github.com/SunPower/PV
 * Reading human-readable irradiance and temperature input from an xls file to PVMismatch.
 ![](example_workflow/IrradTemperatureInput.PNG "irradiance and temperature input in excel")
 * Writing human-readable indication of bypass-diode activation and reverse-biased cells (assuming the system operates at MPP).
-![](BypassDiodeAndReverseBiasedCellsOutput.PNG "output in excel")
+![](example_workflow/BypassDiodeAndReverseBiasedCellsOutput.PNG "output in excel")
 Reverse biased cells are indicated with 1 (red), bypassed cells are indicated with 2 (blue).
 
 # Tutorial
