@@ -131,18 +131,20 @@ def combine_parallel_circuits(IVprev_cols, pvconst):
     Combine crosstied circuits in a substring
 
     :param IVprev_cols: lists of IV curves of crosstied and series circuits
-    :return:
+    :param pvconst: an instance of :class:`~pvmismatch.pvconstants.PVconstants`
+    :return: current [A] and voltage [V] of the combined parallel circuites
     """
     # combine crosstied circuits
     Irows, Vrows = [], []
     Isc_rows, Imax_rows = [], []
     for IVcols in zip(*IVprev_cols):
-        Iparallel, Vparallel = zip(*IVcols)
+        Iparallel, Vparallel, Voc_parallel = zip(*IVcols)
         Iparallel = np.asarray(Iparallel)
         Vparallel = np.asarray(Vparallel)
+        Voc_parallel = np.mean(Voc_parallel)
         Irow, Vrow = pvconst.calcParallel(
             Iparallel, Vparallel, Vparallel.max(),
-            Vparallel.min()
+            Vparallel.min(), Voc=Voc_parallel
         )
         Irows.append(Irow)
         Vrows.append(Vrow)
@@ -451,7 +453,8 @@ class PVmodule(object):
                     idxs = [c['idx'] for c in row]
                     Irow, Vrow = self.pvconst.calcParallel(
                         self.Icell[idxs], self.Vcell[idxs],
-                        self.Voc[idxs].max(), self.VRBD.min()
+                        self.Voc[idxs].max(), self.VRBD.min(),
+                        Voc=self.Voc[idxs].mean()
                     )
                     Irows.append(Irow)
                     Vrows.append(Vrow)
@@ -494,7 +497,7 @@ class PVmodule(object):
                             )
                         else:
                             Icol, Vcol = self.Icell[idxs], self.Vcell[idxs]
-                        IVcols.append([Icol, Vcol])
+                        IVcols.append([Icol, Vcol, self.Voc[idxs].sum()])
                     # append IVcols and continue
                     IVprev_cols.append(IVcols)
                     if prev_col:
@@ -522,8 +525,12 @@ class PVmodule(object):
                     Iparallel, Vparallel = zip(*IVall_cols)
                     Iparallel = np.asarray(Iparallel)
                     Vparallel = np.asarray(Vparallel)
+                    Voc_parallel = np.asarray([
+                        np.interp(np.float64(0), np.flipud(i_par), np.flipud(v_par))
+                        for i_par, v_par in zip(Iparallel, Vparallel)])
                     Isub, Vsub = self.pvconst.calcParallel(
-                        Iparallel, Vparallel, Vparallel.max(), Vparallel.min()
+                        Iparallel, Vparallel, Vparallel.max(), Vparallel.min(),
+                        Voc=Voc_parallel.mean()
                     )
 
 
@@ -600,6 +607,7 @@ class PVmodule(object):
         plt.xlim(0, self.Voc.max())
         plt.ylim(0, (self.Isc.mean() + 1) * self.Voc.max())
         plt.grid()
+        plt.tight_layout()
         return cellPlot
 
     def plotMod(self):
@@ -608,14 +616,14 @@ class PVmodule(object):
         Returns modPlot : matplotlib.pyplot figure
         """
         modPlot = plt.figure()
-        plt.subplot(2, 1, 1)
+        ax = plt.subplot(2, 1, 1)
         plt.plot(self.Vmod, self.Imod)
         plt.title('Module I-V Characteristics')
         plt.ylabel('Module Current, I [A]')
         plt.ylim(ymin=0)
         plt.xlim(self.Vmod.min() - 1, self.Vmod.max() + 1)
         plt.grid()
-        plt.subplot(2, 1, 2)
+        plt.subplot(2, 1, 2, sharex=ax)
         plt.plot(self.Vmod, self.Pmod)
         plt.title('Module P-V Characteristics')
         plt.xlabel('Module Voltage, V [V]')
@@ -623,4 +631,5 @@ class PVmodule(object):
         plt.ylim(ymin=0)
         plt.xlim(self.Vmod.min() - 1, self.Vmod.max() + 1)
         plt.grid()
+        plt.tight_layout()
         return modPlot

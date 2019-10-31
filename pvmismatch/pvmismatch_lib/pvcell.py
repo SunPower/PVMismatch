@@ -225,7 +225,7 @@ class PVcell(object):
         elif delta_Voc < 0:
             Vff = self.VocSTC
             delta_Voc = -delta_Voc
-        Vquad4 = Vff + delta_Voc * np.flipud(self.pvconst.negpts)
+        Vquad4 = Vff + delta_Voc * self.pvconst.Vmod_q4pts
         Vforward = Vff * self.pvconst.pts
         Vdiode = np.concatenate((Vreverse, Vforward, Vquad4), axis=0)
         Idiode1 = self.Isat1 * (np.exp(Vdiode / self.Vt) - 1.)
@@ -335,4 +335,5 @@ class PVcell(object):
         plt.xlim(0, self.Voc)
         plt.ylim(0, (self.Isc + 1) * self.Voc)
         plt.grid()
+        plt.tight_layout()
         return cell_plot

@@ -55,11 +55,17 @@ def test_calc_series():
     vcells = np.asarray([pvc.Vcell.flatten() for pvc in pvcells])
     isc = np.asarray([pvc.Isc for pvc in pvcells])
     i, v = pvconst.calcSeries(icells, vcells, isc.mean(), i_at_vrbd.max())
-    iv = np.loadtxt(os.path.join(BASE_DIR, 'calc_series_test_iv.dat'))
+    iv_old = np.loadtxt(os.path.join(BASE_DIR, 'calc_series_test_iv_old.dat'))
+    iv_expected = np.loadtxt(
+        os.path.join(BASE_DIR, 'calc_series_test_iv.dat'))
     # noinspection PyTypeChecker
-    ok_(np.allclose(i, iv[0]))
+    iv_calc = np.concatenate([[i], [v]], axis=0).T
     # noinspection PyTypeChecker
-    ok_(np.allclose(v, iv[1], rtol=1e-4))
+    ok_(np.allclose(iv_calc, iv_expected))
+    assert np.allclose(iv_old[0,:], np.interp(iv_old[1,:], v, i), 0.01, 0.01)
+    assert np.allclose(
+        iv_old[1,:],
+        np.interp(iv_old[0,:], np.flipud(i), np.flipud(v)), 0.1, 0.1)
     return i, v
 
 
@@ -102,4 +108,6 @@ def test_update():
 
 
 if __name__ == "__main__":
-    test_calc_series()
+    i, v = test_calc_series()
+    iv_calc = np.concatenate([[i], [v]], axis=0).T
+    np.savetxt(os.path.join(BASE_DIR, 'calc_series_test_iv.dat'), iv_calc)
