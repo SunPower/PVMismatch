@@ -1,6 +1,13 @@
-import pandas as pd
 import numpy as np
 from scipy.interpolate import interp1d
+# Pandas is an optional dependency only used by xlsio, therefore
+# not installed with PVMismatch:
+try:
+    import pandas as pd
+except ImportError:
+    print("Pandas module not found. You need to install it before proceeding:")
+    print("https://pandas.pydata.org/pandas-docs/stable/install.html")
+    raise
 
 def _create_cell_pos_df(pv_mod, nr_string, nr_mod):
     """Create cell position dataframe of a module in the PV system"""
