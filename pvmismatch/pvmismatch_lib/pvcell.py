@@ -13,10 +13,14 @@ from matplotlib import pyplot as plt
 from scipy.optimize import newton
 
 # Defaults
+MODEL = '2diode'
 RS = 0.004267236774264931  # [ohm] series resistance
 RSH = 10.01226369025448  # [ohm] shunt resistance
 ISAT1_T0 = 2.286188161253440E-11  # [A] diode one saturation current
 ISAT2_T0 = 1.117455042372326E-6  # [A] diode two saturation current
+N1 = 1.0  # [unitless] diode one ideality factor
+N2 = 2.0  # [unitless] diode two ideality factor
+MU_GAMMA = 0.0003 # [1/K] temperature coefficient of N1 (pvsyst model)
 ISC0_T0 = 6.3056  # [A] reference short circuit current
 TCELL = 298.15  # [K] cell temperature
 ARBD = 1.036748445065697E-4  # reverse breakdown coefficient 1
@@ -24,6 +28,7 @@ BRBD = 0.  # reverse breakdown coefficient 2
 VRBD_ = -5.527260068445654  # [V] reverse breakdown voltage
 NRBD = 3.284628553041425  # reverse breakdown exponent
 EG = 1.1  # [eV] band gap of cSi
+DEG_DT = -0.0002677  # [eV/K] temperature coefficient of EG (desoto model)
 ALPHA_ISC = 0.0003551  # [1/K] short circuit current temperature coefficient
 EPS = np.finfo(np.float64).eps
 
@@ -31,6 +36,7 @@ class PVcell(object):
     """
     Class for PV cells.
 
+    :param diode_model: name of diode model (str) '2diode', 'desoto', 'pvsyst'
     :param Rs: series resistance [ohms]
     :param Rsh: shunt resistance [ohms]
     :param Isat1_T0: first saturation diode current at ref temp [A]
@@ -50,15 +56,22 @@ class PVcell(object):
 
     _calc_now = False  #: if True ``calcCells()`` is called in ``__setattr__``
 
-    def __init__(self, Rs=RS, Rsh=RSH, Isat1_T0=ISAT1_T0, Isat2_T0=ISAT2_T0,
-                 Isc0_T0=ISC0_T0, aRBD=ARBD, bRBD=BRBD, VRBD=VRBD_,
-                 nRBD=NRBD, Eg=EG, alpha_Isc=ALPHA_ISC,
+    def __init__(self, model=MODEL, Rs=RS, Rsh=RSH, Isat1_T0=ISAT1_T0,
+                 Isat2_T0=ISAT2_T0, N1=N1, N2=N2, Isc0_T0=ISC0_T0, aRBD=ARBD,
+                 bRBD=BRBD, VRBD=VRBD_, nRBD=NRBD, Eg=EG, alpha_Isc=ALPHA_ISC,
                  Tcell=TCELL, Ee=1., pvconst=PVconstants()):
         # user inputs
+        if MODEL in ['2diode', 'desoto', 'pvsyst']:
+            self.diode_model = model
+        else:
+            raise ValueError('model must be one of ''2diode'', ''desoto'' or '
+                             ' ''pvsyst''; % provided'.format(model))
         self.Rs = Rs  #: [ohm] series resistance
         self.Rsh = Rsh  #: [ohm] shunt resistance
         self.Isat1_T0 = Isat1_T0  #: [A] diode one sat. current at T0
         self.Isat2_T0 = Isat2_T0  #: [A] diode two saturation current
+        self.N1 = N1  #: [unitless] diode one ideality factor
+        self.N2 = N2  #: [unitless] diode two ideality factor
         self.Isc0_T0 = Isc0_T0  #: [A] short circuit current at T0
         self.aRBD = aRBD  #: reverse breakdown coefficient 1
         self.bRBD = bRBD  #: reverse breakdown coefficient 2
@@ -126,9 +139,14 @@ class PVcell(object):
         # Aph is undefined (0/0) if there is no irradiance
         if self.Isc == 0: return np.nan
         # short current (SC) conditions (Vcell = 0)
+        if self.model=='pvsyst':
+            # temperature adjustment to diode factor
+            N1 = self.N1 * self.MU_GAMMA * (self.Tcell - self.pvconst.T0)
+        elif self.model in ['desoto', '2diode']:
+            N1 = self.N1
         Vdiode_sc = self.Isc * self.Rs  # diode voltage at SC
-        Idiode1_sc = self.Isat1 * (np.exp(Vdiode_sc / self.Vt) - 1.)
-        Idiode2_sc = self.Isat2 * (np.exp(Vdiode_sc / 2. / self.Vt) - 1.)
+        Idiode1_sc = self.Isat1 * (np.exp(Vdiode_sc / N1 / self.Vt) - 1.)
+        Idiode2_sc = self.Isat2 * (np.exp(Vdiode_sc / self.N2 / self.Vt) - 1.)
         Ishunt_sc = Vdiode_sc / self.Rsh  # diode voltage at SC
         # photogenerated current coefficient
         return 1. + (Idiode1_sc + Idiode2_sc + Ishunt_sc) / self.Isc
@@ -140,8 +158,18 @@ class PVcell(object):
         """
         _Tstar = self.Tcell ** 3. / self.pvconst.T0 ** 3.  # scaled temperature
         _inv_delta_T = 1. / self.pvconst.T0 - 1. / self.Tcell  # [1/K]
+        if self.model == 'pvsyst':
+            # temperature adjustment to diode factor
+            N1 = self.N1 * self.MU_GAMMA * (self.Tcell - self.pvconst.T0)
+            Eg = self.Eg
+        elif self.model == 'desoto':
+            N1 = 1.0  # desoto doesn't use diode factor in band gap term
+            Eg = self.Eg * (1 - 0.0002677) * (self.Tcell - self.pvconst.T0)
+        elif self.model == '2diode':
+            N1 = self.N1
+            Eg = self.Eg
         _expTstar = np.exp(
-            self.Eg * self.pvconst.q / self.pvconst.k * _inv_delta_T
+            Eg * self.pvconst.q / N1 / self.pvconst.k * _inv_delta_T
         )
         return self.Isat1_T0 * _Tstar * _expTstar  # [A] Isat1(Tcell)
 
@@ -150,13 +178,16 @@ class PVcell(object):
         """
         Diode two saturation current at Tcell in amps.
         """
-        _Tstar = self.Tcell ** 3. / self.pvconst.T0 ** 3.  # scaled temperature
-        _inv_delta_T = 1. / self.pvconst.T0 - 1. / self.Tcell  # [1/K]
-        _expTstar = np.exp(
-            self.Eg * self.pvconst.q / (2.0 * self.pvconst.k) * _inv_delta_T
-        )
-        return self.Isat2_T0 * _Tstar * _expTstar  # [A] Isat2(Tcell)
-    
+        if self.model=='2diode':
+            _Tstar = self.Tcell ** 3. / self.pvconst.T0 ** 3.  # scaled temperature
+            _inv_delta_T = 1. / self.pvconst.T0 - 1. / self.Tcell  # [1/K]
+            _expTstar = np.exp(
+                self.Eg * self.pvconst.q / self.N2 / self.pvconst.k * _inv_delta_T
+            )
+            return self.Isat2_T0 * _Tstar * _expTstar  # [A] Isat2(Tcell)
+        else:
+            return 0.0
+
     @property
     def Isc0(self):
         """
