@@ -58,9 +58,6 @@ def _create_temp_df(pv_mod, cell_pos_df):
             temp_df.loc[row, column] = temp[cell_index]
     return temp_df
 
-def testfunc():
-    print('hey')
-
 def system_layout_to_xls(output_xls_name, pv_sys, write_bpd_act):
     """Write an xls with worksheets of irradiance, cell temperature
     and cell index. If "write_bpd_act" is True, bypass diode activation is
