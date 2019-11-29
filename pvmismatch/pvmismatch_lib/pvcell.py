@@ -15,7 +15,9 @@ from scipy.optimize import newton
 # Defaults
 MODEL = '2diode'
 RS = 0.004267236774264931  # [ohm] series resistance
-RSH = 10.01226369025448  # [ohm] shunt resistance
+RSH = 10.01226369025448  # [ohm] shunt resistance at STC
+RSH0 = RSH / 10  # [ohm] shunt resistance at 0 irradiance (pvsyst model)
+RSH_EXP = -5.5  # [unitless] exponent relating Rsh to irradiance (pvsyst model)
 ISAT1_T0 = 2.286188161253440E-11  # [A] diode one saturation current
 ISAT2_T0 = 1.117455042372326E-6  # [A] diode two saturation current
 N1 = 1.0  # [unitless] diode one ideality factor
@@ -38,7 +40,9 @@ class PVcell(object):
 
     :param diode_model: name of diode model (str) '2diode', 'desoto', 'pvsyst'
     :param Rs: series resistance [ohms]
-    :param Rsh: shunt resistance [ohms]
+    :param Rsh: shunt resistance  at STC condition [ohms]
+    :param Rsh0: shunt resistance at 0 irradiance (pvsyst) [ohms]
+    :param Rshexp: exponent relating Rsh to irradiance (pvsyst) [unitless]
     :param Isat1_T0: first saturation diode current at ref temp [A]
     :param Isat2_T0: second saturation diode current [A]
     :param Isc0_T0: short circuit current at ref temp [A]
@@ -56,7 +60,8 @@ class PVcell(object):
 
     _calc_now = False  #: if True ``calcCells()`` is called in ``__setattr__``
 
-    def __init__(self, model=MODEL, Rs=RS, Rsh=RSH, Isat1_T0=ISAT1_T0,
+    def __init__(self, model=MODEL, Rs=RS, Rsh=RSH, Rsh0=RSH0, Rshexp=RSH_EXP,
+                 Isat1_T0=ISAT1_T0,
                  Isat2_T0=ISAT2_T0, N1=N1, N2=N2, Isc0_T0=ISC0_T0, aRBD=ARBD,
                  bRBD=BRBD, VRBD=VRBD_, nRBD=NRBD, Eg=EG, alpha_Isc=ALPHA_ISC,
                  Tcell=TCELL, Ee=1., pvconst=PVconstants()):
@@ -67,11 +72,13 @@ class PVcell(object):
             raise ValueError('model must be one of ''2diode'', ''desoto'' or '
                              ' ''pvsyst''; % provided'.format(model))
         self.Rs = Rs  #: [ohm] series resistance
-        self.Rsh = Rsh  #: [ohm] shunt resistance
+        self.Rsh_E0 = RSH  #: [ohm] shunt resistance at STC
+        self.Rsh_0 = RSH0  #: [ohm] shunt resistance at 0 irradiance (pvsyst)
+        self.Rshexp = RSH_EXP  #: [unitless] exponent for _Rsh (pvsyst)
         self.Isat1_T0 = Isat1_T0  #: [A] diode one sat. current at T0
         self.Isat2_T0 = Isat2_T0  #: [A] diode two saturation current
-        self.N1 = N1  #: [unitless] diode one ideality factor
-        self.N2 = N2  #: [unitless] diode two ideality factor
+        self.N1_T0 = N1  #: [unitless] diode one ideality factor at T0
+        self.N2_T0 = N2  #: [unitless] diode two ideality factor
         self.Isc0_T0 = Isc0_T0  #: [A] short circuit current at T0
         self.aRBD = aRBD  #: reverse breakdown coefficient 1
         self.bRBD = bRBD  #: reverse breakdown coefficient 2
