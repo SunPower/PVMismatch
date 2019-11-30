@@ -195,9 +195,20 @@ class PVcell(object):
         """
         _Tstar = self.Tcell ** 3. / self.pvconst.T0 ** 3.  # scaled temperature
         _inv_delta_T = 1. / self.pvconst.T0 - 1. / self.Tcell  # [1/K]
-        _expTstar = np.exp(
-            self.Eg * self.pvconst.q / self.N1 / self.pvconst.k * _inv_delta_T
-        )
+        k_b = self.pvconst.k / self.pvconst.q
+        if self.model == 'pvsyst': # include diode factor
+            _expTstar = np.exp(
+                self.Eg / k_b / self.N1 * _inv_delta_T
+            )
+        elif self.model == 'desoto':
+
+            _expTstar = np.exp(
+                self.Eg_0 / k_b / self.pvconst.T0 - self.Eg / k_b / self.Tcell
+            )
+        else:
+            _expTstar = np.exp(
+                self.Eg / k_b * _inv_delta_T
+            )
         return self.Isat1_T0 * _Tstar * _expTstar  # [A] Isat1(Tcell)
 
     @property
