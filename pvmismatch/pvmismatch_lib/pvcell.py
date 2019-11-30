@@ -15,13 +15,13 @@ from scipy.optimize import newton
 # Defaults
 MODEL = '2diode'
 RS = 0.004267236774264931  # [ohm] series resistance
-RSH = 10.01226369025448  # [ohm] shunt resistance at STC
-RSH0 = RSH / 10  # [ohm] shunt resistance at 0 irradiance (pvsyst model)
+RSH_STC = 10.01226369025448  # [ohm] shunt resistance at STC
+RSH_0 = RSH_STC / 10  # [ohm] shunt resistance at 0 irradiance (pvsyst model)
 RSH_EXP = -5.5  # [unitless] exponent relating Rsh to irradiance (pvsyst model)
 ISAT1_T0 = 2.286188161253440E-11  # [A] diode one saturation current
 ISAT2_T0 = 1.117455042372326E-6  # [A] diode two saturation current
-N1 = 1.0  # [unitless] diode one ideality factor
-N2 = 2.0  # [unitless] diode two ideality factor
+N1_0 = 1.0  # [unitless] diode one ideality factor
+N2_0 = 2.0  # [unitless] diode two ideality factor
 MU_GAMMA = 0.0003 # [1/K] temperature coefficient of N1 (pvsyst model)
 ISC0_T0 = 6.3056  # [A] reference short circuit current
 TCELL = 298.15  # [K] cell temperature
@@ -29,7 +29,7 @@ ARBD = 1.036748445065697E-4  # reverse breakdown coefficient 1
 BRBD = 0.  # reverse breakdown coefficient 2
 VRBD_ = -5.527260068445654  # [V] reverse breakdown voltage
 NRBD = 3.284628553041425  # reverse breakdown exponent
-EG = 1.1  # [eV] band gap of cSi
+EG_0 = 1.1  # [eV] band gap of cSi
 DEG_DT = -0.0002677  # [eV/K] temperature coefficient of EG (desoto model)
 ALPHA_ISC = 0.0003551  # [1/K] short circuit current temperature coefficient
 EPS = np.finfo(np.float64).eps
@@ -40,9 +40,9 @@ class PVcell(object):
 
     :param diode_model: name of diode model (str) '2diode', 'desoto', 'pvsyst'
     :param Rs: series resistance [ohms]
-    :param Rsh: shunt resistance  at STC condition [ohms]
-    :param Rsh0: shunt resistance at 0 irradiance (pvsyst) [ohms]
-    :param Rshexp: exponent relating Rsh to irradiance (pvsyst) [unitless]
+    :param Rsh_STC: shunt resistance  at STC condition [ohms]
+    :param Rsh_0: shunt resistance at 0 irradiance (pvsyst) [ohms]
+    :param Rsh_exp: exponent relating Rsh to irradiance (pvsyst) [unitless]
     :param Isat1_T0: first saturation diode current at ref temp [A]
     :param Isat2_T0: second saturation diode current [A]
     :param Isc0_T0: short circuit current at ref temp [A]
@@ -50,7 +50,11 @@ class PVcell(object):
     :param bRBD: reverse breakdown coefficient 2
     :param VRBD: reverse breakdown voltage [V]
     :param nRBD: reverse breakdown exponent
-    :param Eg: band gap [eV]
+    :param Eg_0: band gap at STC [eV]
+    :param dEg_dT: temperature dependence of band gap [eV/K]
+    :param N1_0: diode one ideality factor [unitless]
+    :param N2_0: diode two ideality factor [unitless]
+    :param mu_gamma: temperature coeff for diode one ideality factor [1/K]
     :param alpha_Isc: short circuit current temp coeff [1/K]
     :param Tcell: cell temperature [K]
     :param Ee: incident effective irradiance [suns]
@@ -60,10 +64,11 @@ class PVcell(object):
 
     _calc_now = False  #: if True ``calcCells()`` is called in ``__setattr__``
 
-    def __init__(self, model=MODEL, Rs=RS, Rsh=RSH, Rsh0=RSH0, Rshexp=RSH_EXP,
-                 Isat1_T0=ISAT1_T0,
-                 Isat2_T0=ISAT2_T0, N1=N1, N2=N2, Isc0_T0=ISC0_T0, aRBD=ARBD,
-                 bRBD=BRBD, VRBD=VRBD_, nRBD=NRBD, Eg=EG, alpha_Isc=ALPHA_ISC,
+    def __init__(self, model=MODEL, Rs=RS, Rsh_STC=RSH_STC, Rsh_0=RSH_0,
+                 Rsh_exp=RSH_EXP, Isat1_T0=ISAT1_T0, Isat2_T0=ISAT2_T0,
+                 Isc0_T0=ISC0_T0, aRBD=ARBD, bRBD=BRBD, VRBD=VRBD_, nRBD=NRBD,
+                 Eg_0=EG_0, dEg_dT=DEG_DT, N1_0=N1_0, N2_0=N2_0,
+                 mu_gamma=MU_GAMMA, alpha_Isc=ALPHA_ISC,
                  Tcell=TCELL, Ee=1., pvconst=PVconstants()):
         # user inputs
         if MODEL in ['2diode', 'desoto', 'pvsyst']:
@@ -72,19 +77,21 @@ class PVcell(object):
             raise ValueError('model must be one of ''2diode'', ''desoto'' or '
                              ' ''pvsyst''; % provided'.format(model))
         self.Rs = Rs  #: [ohm] series resistance
-        self.Rsh_E0 = RSH  #: [ohm] shunt resistance at STC
-        self.Rsh_0 = RSH0  #: [ohm] shunt resistance at 0 irradiance (pvsyst)
-        self.Rshexp = RSH_EXP  #: [unitless] exponent for _Rsh (pvsyst)
+        self.Rsh_STC = Rsh_STC  #: [ohm] shunt resistance at STC
+        self.Rsh_0 = Rsh_0  #: [ohm] shunt resistance at 0 irradiance (pvsyst)
+        self.Rsh_exp = Rsh_exp  #: [unitless] exponent for _Rsh (pvsyst)
         self.Isat1_T0 = Isat1_T0  #: [A] diode one sat. current at T0
         self.Isat2_T0 = Isat2_T0  #: [A] diode two saturation current
-        self.N1_T0 = N1  #: [unitless] diode one ideality factor at T0
-        self.N2_T0 = N2  #: [unitless] diode two ideality factor
         self.Isc0_T0 = Isc0_T0  #: [A] short circuit current at T0
         self.aRBD = aRBD  #: reverse breakdown coefficient 1
         self.bRBD = bRBD  #: reverse breakdown coefficient 2
         self.VRBD = VRBD  #: [V] reverse breakdown voltage
         self.nRBD = nRBD  #: reverse breakdown exponent
-        self.Eg = Eg  #: [eV] band gap of cSi
+        self.Eg_0 = Eg_0  #: [eV] band gap at STC
+        self.dEg_dT = dEg_dT  #: [eV/K] temperature coeff of band gap
+        self.N1_0 = N1_0  #: [unitless] diode one ideality factor at T0
+        self.N2_0 = N2_0  #: [unitless] diode two ideality factor
+        self.mu_gamma = mu_gamma  #: [1/K] temp. coeff for diode one ideality
         self.alpha_Isc = alpha_Isc  #: [1/K] short circuit temp. coeff.
         self.Tcell = Tcell  #: [K] cell temperature
         self.Ee = Ee  #: [suns] incident effective irradiance on cell
@@ -139,6 +146,34 @@ class PVcell(object):
         return self.Ee * self.Isc0
 
     @property
+    def N1(self):
+        if self.model == 'pvsyst':
+            return self.N1_0 + self.mu_gamma * (self.Tcell - self.pvconst.T0)
+        return self.N1_0
+
+    @property
+    def N2(self):
+        return self.N2
+
+    @property
+    def Eg(self):
+        if self.model == 'desoto':
+            return self.Eg_0 + self.dEg_dT * (self.Tcell - self.pvconst.T0)
+        return self.Eg_0
+
+    @property
+    def Rsh(self):
+        if self.model == 'desoto':
+            return self.Rsh_STC / self.Ee
+        elif self.model == 'desoto':
+            rsh_tmp = self.Rsh_STC - self.Rsh_0 * np.exp(self.Rsh_exp) / \
+                (1. - np.exp(self.Rsh_exp))
+            rsh_base = np.maximum(0.0, rsh_tmp)
+            return rsh_base + (self.Rsh_0 - rsh_base) * \
+                np.exp(self.Rsh_exp * self.Ee)
+        return self.Rsh_STC
+
+    @property
     def Aph(self):
         """
         Photogenerated current coefficient, non-dimensional.
@@ -146,13 +181,8 @@ class PVcell(object):
         # Aph is undefined (0/0) if there is no irradiance
         if self.Isc == 0: return np.nan
         # short current (SC) conditions (Vcell = 0)
-        if self.model=='pvsyst':
-            # temperature adjustment to diode factor
-            N1 = self.N1 * self.MU_GAMMA * (self.Tcell - self.pvconst.T0)
-        elif self.model in ['desoto', '2diode']:
-            N1 = self.N1
         Vdiode_sc = self.Isc * self.Rs  # diode voltage at SC
-        Idiode1_sc = self.Isat1 * (np.exp(Vdiode_sc / N1 / self.Vt) - 1.)
+        Idiode1_sc = self.Isat1 * (np.exp(Vdiode_sc / self.N1 / self.Vt) - 1.)
         Idiode2_sc = self.Isat2 * (np.exp(Vdiode_sc / self.N2 / self.Vt) - 1.)
         Ishunt_sc = Vdiode_sc / self.Rsh  # diode voltage at SC
         # photogenerated current coefficient
@@ -165,18 +195,8 @@ class PVcell(object):
         """
         _Tstar = self.Tcell ** 3. / self.pvconst.T0 ** 3.  # scaled temperature
         _inv_delta_T = 1. / self.pvconst.T0 - 1. / self.Tcell  # [1/K]
-        if self.model == 'pvsyst':
-            # temperature adjustment to diode factor
-            N1 = self.N1 * self.MU_GAMMA * (self.Tcell - self.pvconst.T0)
-            Eg = self.Eg
-        elif self.model == 'desoto':
-            N1 = 1.0  # desoto doesn't use diode factor in band gap term
-            Eg = self.Eg * (1 - 0.0002677) * (self.Tcell - self.pvconst.T0)
-        elif self.model == '2diode':
-            N1 = self.N1
-            Eg = self.Eg
         _expTstar = np.exp(
-            Eg * self.pvconst.q / N1 / self.pvconst.k * _inv_delta_T
+            self.Eg * self.pvconst.q / self.N1 / self.pvconst.k * _inv_delta_T
         )
         return self.Isat1_T0 * _Tstar * _expTstar  # [A] Isat1(Tcell)
 
@@ -209,11 +229,15 @@ class PVcell(object):
         Estimate open circuit voltage of cells.
         Returns Voc : numpy.ndarray of float, estimated open circuit voltage
         """
-        C = self.Aph * self.Isc + self.Isat1 + self.Isat2
-        delta = self.Isat2 ** 2. + 4. * self.Isat1 * C
-        return self.Vt * np.log(
-            ((-self.Isat2 + np.sqrt(delta)) / 2. / self.Isat1) ** 2.
-        )
+        if self.model == '2diode': # does not use ideality factors
+            C = self.Aph * self.Isc + self.Isat1 + self.Isat2
+            delta = self.Isat2 ** 2. + 4. * self.Isat1 * C
+            return self.Vt * np.log(
+                ((-self.Isat2 + np.sqrt(delta)) / 2. / self.Isat1) ** 2.
+            )
+        else:
+            C = self.Aph * self.Isc / self.Isat1
+            return self.N1 * self.Vt * np.log(1. + C)
 
     def _VocSTC(self):
         """
@@ -221,17 +245,23 @@ class PVcell(object):
         Returns Voc : numpy.ndarray of float, estimated open circuit voltage
         """
         Vdiode_sc = self.Isc0_T0 * self.Rs  # diode voltage at SC
-        Idiode1_sc = self.Isat1_T0 * (np.exp(Vdiode_sc / self.Vt) - 1.)
-        Idiode2_sc = self.Isat2_T0 * (np.exp(Vdiode_sc / 2. / self.Vt) - 1.)
-        Ishunt_sc = Vdiode_sc / self.Rsh  # diode voltage at SC
-        # photogenerated current coefficient
-        Aph = 1. + (Idiode1_sc + Idiode2_sc + Ishunt_sc) / self.Isc0_T0
-        # estimated Voc at STC
-        C = Aph * self.Isc0_T0 + self.Isat1_T0 + self.Isat2_T0
-        delta = self.Isat2_T0 ** 2. + 4. * self.Isat1_T0 * C
-        return self.Vt * np.log(
-            ((-self.Isat2_T0 + np.sqrt(delta)) / 2. / self.Isat1_T0) ** 2.
-        )
+        Vt_sc = self.pvconst.k * self.pvconst.T0 / self.pvconst.q
+        if self.model == '2diode':
+            Idiode1_sc = self.Isat1_T0 * (np.exp(Vdiode_sc / Vt_sc) - 1.)
+            Idiode2_sc = self.Isat2_T0 * (np.exp(Vdiode_sc / 2. / Vt_sc) - 1.)
+            Ishunt_sc = Vdiode_sc / self.Rsh  # diode voltage at SC
+            # photogenerated current coefficient
+            Aph = 1. + (Idiode1_sc + Idiode2_sc + Ishunt_sc) / self.Isc0_T0
+            # estimated Voc at STC
+            C = Aph * self.Isc0_T0 + self.Isat1_T0 + self.Isat2_T0
+            delta = self.Isat2_T0 ** 2. + 4. * self.Isat1_T0 * C
+            return Vt_sc * np.log(
+                ((-self.Isat2_T0 + np.sqrt(delta)) / 2. / self.Isat1_T0) ** 2.
+            )
+        else:
+            Isat = self.Isat1_T0 * (
+                np.exp(Vdiode_sc / Vt_sc / self.N1_0) - 1.)
+            return self.N1_0 * Vt_sc * np.log(1. + self.Isc0_T0 / Isat)
 
     @property
     def Igen(self):
@@ -266,15 +296,15 @@ class PVcell(object):
         Vquad4 = Vff + delta_Voc * np.flipud(self.pvconst.negpts)
         Vforward = Vff * self.pvconst.pts
         Vdiode = np.concatenate((Vreverse, Vforward, Vquad4), axis=0)
-        Idiode1 = self.Isat1 * (np.exp(Vdiode / self.Vt) - 1.)
-        Idiode2 = self.Isat2 * (np.exp(Vdiode / 2. / self.Vt) - 1.)
+        Idiode1 = self.Isat1 * (np.exp(Vdiode / self.N1 / self.Vt) - 1.)
+        Idiode2 = self.Isat2 * (np.exp(Vdiode / self.N2 / self.Vt) - 1.)
         Ishunt = Vdiode / self.Rsh
         fRBD = 1. - Vdiode / self.VRBD
         # use epsilon = 2.2204460492503131e-16 to avoid "divide by zero"
         fRBD[fRBD == 0] = EPS
         Vdiode_norm = Vdiode / self.Rsh / self.Isc0_T0
         fRBD = self.Isc0_T0 * fRBD ** (-self.nRBD)
-        IRBD = (self.aRBD * Vdiode_norm + self.bRBD * Vdiode_norm ** 2) * fRBD 
+        IRBD = (self.aRBD * Vdiode_norm + self.bRBD * Vdiode_norm ** 2) * fRBD
         Icell = self.Igen - Idiode1 - Idiode2 - Ishunt - IRBD
         Vcell = Vdiode - Icell * self.Rs
         Pcell = Icell * Vcell
@@ -293,7 +323,7 @@ class PVcell(object):
     # http://en.wikipedia.org/wiki/William_Shockley
 
     @staticmethod
-    def f_Icell(Icell, Vcell, Igen, Rs, Vt, Isat1, Isat2, Rsh):
+    def f_Icell(Icell, Vcell, Igen, Rs, Vt, Isat1, Isat2, Rsh, N1, N2):
         """
         Objective function for Icell.
         :param Icell: cell current [A]
@@ -308,8 +338,8 @@ class PVcell(object):
         """
         # arbitrary current condition
         Vdiode = Vcell + Icell * Rs  # diode voltage
-        Idiode1 = Isat1 * (np.exp(Vdiode / Vt) - 1.)  # diode current
-        Idiode2 = Isat2 * (np.exp(Vdiode / 2. / Vt) - 1.)  # diode current
+        Idiode1 = Isat1 * (np.exp(Vdiode / N1 / Vt) - 1.)  # diode current
+        Idiode2 = Isat2 * (np.exp(Vdiode / N2 / Vt) - 1.)  # diode current
         Ishunt = Vdiode / Rsh  # shunt current
         return Igen - Idiode1 - Idiode2 - Ishunt - Icell
 
@@ -320,12 +350,13 @@ class PVcell(object):
         :return: Icell
         """
         args = (np.float64(Vcell), self.Igen, self.Rs, self.Vt,
-                self.Isat1, self.Isat2, self.Rsh)
+                self.Isat1, self.Isat2, self.Rsh, self.N1, self.N2)
         return newton(self.f_Icell, x0=self.Isc, args=args)
 
     @staticmethod
-    def f_Vcell(Vcell, Icell, Igen, Rs, Vt, Isat1, Isat2, Rsh):
-        return PVcell.f_Icell(Icell, Vcell, Igen, Rs, Vt, Isat1, Isat2, Rsh)
+    def f_Vcell(Vcell, Icell, Igen, Rs, Vt, Isat1, Isat2, Rsh, N1, N2):
+        return PVcell.f_Icell(Icell, Vcell, Igen, Rs, Vt, Isat1, Isat2, Rsh,
+                              N1, N2)
 
     def calcVcell(self, Icell):
         """
@@ -334,7 +365,7 @@ class PVcell(object):
         :return: Vcell
         """
         args = (np.float64(Icell), self.Igen, self.Rs, self.Vt,
-                self.Isat1, self.Isat2, self.Rsh)
+                self.Isat1, self.Isat2, self.Rsh, self.N1, self.N2)
         return newton(self.f_Vcell, x0=self.Voc, args=args)
 
     def plot(self):
