@@ -71,7 +71,7 @@ class PVcell(object):
                  mu_gamma=MU_GAMMA, alpha_Isc=ALPHA_ISC,
                  Tcell=TCELL, Ee=1., pvconst=PVconstants()):
         # user inputs
-        if MODEL in ['2diode', 'desoto', 'pvsyst']:
+        if model in ['2diode', 'desoto', 'pvsyst']:
             self.diode_model = model
         else:
             raise ValueError('model must be one of ''2diode'', ''desoto'' or '
@@ -153,7 +153,7 @@ class PVcell(object):
 
     @property
     def N2(self):
-        return self.N2
+        return self.N2_0
 
     @property
     def Eg(self):
@@ -207,7 +207,7 @@ class PVcell(object):
             )
         else:
             _expTstar = np.exp(
-                self.Eg / k_b * _inv_delta_T
+                self.Eg / k_b /self.N1 * _inv_delta_T
             )
         return self.Isat1_T0 * _Tstar * _expTstar  # [A] Isat1(Tcell)
 
@@ -219,12 +219,10 @@ class PVcell(object):
         if self.model=='2diode':
             _Tstar = self.Tcell ** 3. / self.pvconst.T0 ** 3.  # scaled temperature
             _inv_delta_T = 1. / self.pvconst.T0 - 1. / self.Tcell  # [1/K]
-            _expTstar = np.exp(
-                self.Eg * self.pvconst.q / self.N2 / self.pvconst.k * _inv_delta_T
-            )
+            _expTstar = np.exp(self.Eg * self.pvconst.q / self.pvconst.k /
+                               self.N2 * _inv_delta_T)
             return self.Isat2_T0 * _Tstar * _expTstar  # [A] Isat2(Tcell)
-        else:
-            return 0.0
+        return 0.0
 
     @property
     def Isc0(self):
