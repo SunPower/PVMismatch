@@ -147,7 +147,7 @@ class PVcell(object):
 
     @property
     def N1(self):
-        if self.model == 'pvsyst':
+        if self.diode_model == 'pvsyst':
             return self.N1_0 + self.mu_gamma * (self.Tcell - self.pvconst.T0)
         return self.N1_0
 
@@ -157,15 +157,15 @@ class PVcell(object):
 
     @property
     def Eg(self):
-        if self.model == 'desoto':
+        if self.diode_model == 'desoto':
             return self.Eg_0 + self.dEg_dT * (self.Tcell - self.pvconst.T0)
         return self.Eg_0
 
     @property
     def Rsh(self):
-        if self.model == 'desoto':
+        if self.diode_model == 'desoto':
             return self.Rsh_STC / self.Ee
-        elif self.model == 'desoto':
+        elif self.diode_model == 'desoto':
             rsh_tmp = self.Rsh_STC - self.Rsh_0 * np.exp(self.Rsh_exp) / \
                 (1. - np.exp(self.Rsh_exp))
             rsh_base = np.maximum(0.0, rsh_tmp)
@@ -196,11 +196,11 @@ class PVcell(object):
         _Tstar = self.Tcell ** 3. / self.pvconst.T0 ** 3.  # scaled temperature
         _inv_delta_T = 1. / self.pvconst.T0 - 1. / self.Tcell  # [1/K]
         k_b = self.pvconst.k / self.pvconst.q
-        if self.model == 'pvsyst': # include diode factor
+        if self.diode_model == 'pvsyst': # include diode factor
             _expTstar = np.exp(
                 self.Eg / k_b / self.N1 * _inv_delta_T
             )
-        elif self.model == 'desoto':
+        elif self.diode_model == 'desoto':
 
             _expTstar = np.exp(
                 self.Eg_0 / k_b / self.pvconst.T0 - self.Eg / k_b / self.Tcell
@@ -216,7 +216,7 @@ class PVcell(object):
         """
         Diode two saturation current at Tcell in amps.
         """
-        if self.model=='2diode':
+        if self.diode_model=='2diode':
             _Tstar = self.Tcell ** 3. / self.pvconst.T0 ** 3.  # scaled temperature
             _inv_delta_T = 1. / self.pvconst.T0 - 1. / self.Tcell  # [1/K]
             _expTstar = np.exp(self.Eg * self.pvconst.q / self.pvconst.k /
@@ -238,7 +238,7 @@ class PVcell(object):
         Estimate open circuit voltage of cells.
         Returns Voc : numpy.ndarray of float, estimated open circuit voltage
         """
-        if self.model == '2diode': # does not use ideality factors
+        if self.diode_model == '2diode': # does not use ideality factors
             C = self.Aph * self.Isc + self.Isat1 + self.Isat2
             delta = self.Isat2 ** 2. + 4. * self.Isat1 * C
             return self.Vt * np.log(
@@ -255,7 +255,7 @@ class PVcell(object):
         """
         Vdiode_sc = self.Isc0_T0 * self.Rs  # diode voltage at SC
         Vt_sc = self.pvconst.k * self.pvconst.T0 / self.pvconst.q
-        if self.model == '2diode':
+        if self.diode_model == '2diode':
             Idiode1_sc = self.Isat1_T0 * (np.exp(Vdiode_sc / Vt_sc) - 1.)
             Idiode2_sc = self.Isat2_T0 * (np.exp(Vdiode_sc / 2. / Vt_sc) - 1.)
             Ishunt_sc = Vdiode_sc / self.Rsh  # diode voltage at SC
