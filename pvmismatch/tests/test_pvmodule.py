@@ -16,16 +16,16 @@ def test_calc_tct_mod():
     pvmod = PVmodule(cell_pos=TCT492)
     isc = np.interp(np.float64(0), pvmod.Vmod, pvmod.Imod)
     voc = np.interp(np.float64(0), np.flipud(pvmod.Imod), np.flipud(pvmod.Vmod))
-    assert (np.isclose(isc, 37.8335982026))
-    assert (np.isclose(voc, 55.2798357318))
+    assert (np.isclose(isc, 37.833598333277074))
+    assert (np.isclose(voc, 55.278957845604886))
     return pvmod
 
 def test_calc_pct_mod():
     pvmod = PVmodule(cell_pos=PCT492)
     isc = np.interp(np.float64(0), pvmod.Vmod, pvmod.Imod)
     voc = np.interp(np.float64(0), np.flipud(pvmod.Imod), np.flipud(pvmod.Vmod))
-    assert (np.isclose(isc, 37.8335982026))
-    assert (np.isclose(voc, 55.2798357318))
+    assert (np.isclose(isc, 37.83359833000976))
+    assert (np.isclose(voc, 55.278957845604886))
     return pvmod
 
 def test_calc_pct_bridges():

@@ -81,13 +81,17 @@ class PVsystem(object):
     def Vstring(self):
         return np.asarray([pvstr.Vstring.flatten() for pvstr in self.pvstrs])
 
+    @property
+    def Voc_str(self):
+        return np.asarray([pvstr.Voc_mod.sum() for pvstr in self.pvstrs])
+
     def calcSystem(self):
         """
         Calculate system I-V curves.
         Returns (Isys, Vsys, Psys) : tuple of numpy.ndarray of float
         """
         Isys, Vsys = self.pvconst.calcParallel(
-            self.Istring, self.Vstring, self.Vstring.max(), self.Vstring.min()
+            self.Istring, self.Vstring, self.Voc_str.max(), self.Vstring.min()
         )
         Psys = Isys * Vsys
         return Isys, Vsys, Psys
@@ -197,7 +201,7 @@ class PVsystem(object):
         # calculate pvsystem
         self.update()
 
-    def plotSys(self, sysPlot=None):
+    def plotSys(self, sysPlot=None, fmt=''):
         """
         Plot system I-V curves.
 
@@ -210,8 +214,8 @@ class PVsystem(object):
             sysPlot.clear()
         except (AttributeError, SyntaxError):
             sysPlot = plt.figure(sysPlot)
-        plt.subplot(2, 1, 1)
-        plt.plot(self.Vsys, self.Isys)
+        ax = plt.subplot(2, 1, 1)
+        plt.plot(self.Vsys, self.Isys, fmt)
         plt.xlim(0, self.Voc * 1.1)
         plt.ylim(0, self.Isc * 1.1)
         plt.axvline(self.Vmp, color='r', linestyle=':')
@@ -219,8 +223,8 @@ class PVsystem(object):
         plt.title('System I-V Characteristics')
         plt.ylabel('System Current, I [A]')
         plt.grid()
-        plt.subplot(2, 1, 2)
-        plt.plot(self.Vsys, self.Psys / 1000)
+        plt.subplot(2, 1, 2, sharex=ax)
+        plt.plot(self.Vsys, self.Psys / 1000, fmt)
         plt.xlim(0, self.Voc * 1.1)
         plt.ylim(0, self.Pmp * 1.1 / 1000)
         plt.axvline(self.Vmp, color='r', linestyle=':')
@@ -229,4 +233,5 @@ class PVsystem(object):
         plt.xlabel('System Voltage, V [V]')
         plt.ylabel('System Power, P [kW]')
         plt.grid()
+        plt.tight_layout()
         return sysPlot
