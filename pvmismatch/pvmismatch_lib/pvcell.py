@@ -64,18 +64,19 @@ class PVcell(object):
 
     _calc_now = False  #: if True ``calcCells()`` is called in ``__setattr__``
 
-    def __init__(self, model=MODEL, Rs=RS, Rsh_STC=RSH_STC, Rsh_0=RSH_0,
+    def __init__(self, diode_model=MODEL, Rs=RS, Rsh_STC=RSH_STC, Rsh_0=RSH_0,
                  Rsh_exp=RSH_EXP, Isat1_T0=ISAT1_T0, Isat2_T0=ISAT2_T0,
                  Isc0_T0=ISC0_T0, aRBD=ARBD, bRBD=BRBD, VRBD=VRBD_, nRBD=NRBD,
                  Eg_0=EG_0, dEg_dT=DEG_DT, N1_0=N1_0, N2_0=N2_0,
                  mu_gamma=MU_GAMMA, alpha_Isc=ALPHA_ISC,
                  Tcell=TCELL, Ee=1., pvconst=PVconstants()):
         # user inputs
-        if model in ['2diode', 'desoto', 'pvsyst']:
-            self.diode_model = model
+        if diode_model in ['2diode', 'desoto', 'pvsyst']:
+            self.diode_model = diode_model
         else:
-            raise ValueError('model must be one of ''2diode'', ''desoto'' or '
-                             ' ''pvsyst''; % provided'.format(model))
+            raise ValueError('diode_model must be one of ''2diode'','
+                             ' ''desoto'' or ''pvsyst'';'
+                             '% provided'.format(diode_model))
         self.Rs = Rs  #: [ohm] series resistance
         self.Rsh_STC = Rsh_STC  #: [ohm] shunt resistance at STC
         self.Rsh_0 = Rsh_0  #: [ohm] shunt resistance at 0 irradiance (pvsyst)
