@@ -183,11 +183,14 @@ class PVcell(object):
         if self.Isc == 0: return np.nan
         # short current (SC) conditions (Vcell = 0)
         Vdiode_sc = self.Isc * self.Rs  # diode voltage at SC
-        Idiode1_sc = self.Isat1 * (np.exp(Vdiode_sc / self.N1 / self.Vt) - 1.)
-        Idiode2_sc = self.Isat2 * (np.exp(Vdiode_sc / self.N2 / self.Vt) - 1.)
+        Idiode1_sc = self.Isat1 * (np.expm1(Vdiode_sc / self.N1 / self.Vt))
+        Idiode2_sc = self.Isat2 * (np.expm1(Vdiode_sc / self.N2 / self.Vt))
         Ishunt_sc = Vdiode_sc / self.Rsh  # diode voltage at SC
         # photogenerated current coefficient
-        return 1. + (Idiode1_sc + Idiode2_sc + Ishunt_sc) / self.Isc
+        if self.diode_model=='2diode':
+            return 1. + (Idiode1_sc + Idiode2_sc + Ishunt_sc) / self.Isc
+        else:
+            return 1. + (Idiode1_sc + Ishunt_sc) / self.Isc
 
     @property
     def Isat1(self):
