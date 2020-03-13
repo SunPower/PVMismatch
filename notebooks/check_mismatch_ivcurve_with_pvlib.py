@@ -14,13 +14,23 @@ import numpy as np
 import pvlib
 import matplotlib.pyplot as plt
 
+from scipy.interpolate import interp1d
 
 # Setting PV system layout cell and module parameters
 v_bypass = np.float64(-0.5)  # [V] trigger voltage of bypass diode
 cell_area = np.float64(246.49)  # [cm^2] cell area
 Isc0_T0 = 9.68 # [A] reference short circuit current
-ncols_per_substr=[2]*3 # 3 bypass diodes each in parallel with 2 series connected cell-columns
+# set columns per substring, ncol, and number of substrings, nsub, as [ncol]*nsub
+ncols_per_substr=[2]*3
 nrows=10 # number of cell rows in the module
+# total number of series-connected cells in a substring is nrows * 
+# [ncol]*nsub is nsub bypass diodes each in parallel with ncol*nrow series-connected cells
+VBYPASS = np.float64(-0.5)
+MODULE_BYPASS = None
+
+num_substrings = len(ncols_per_substr)
+cells_per_substring = [[k + p*nrows*s for k in range(nrows * s)] for p, s in
+                        enumerate(ncols_per_substr)]
 
 pvconst = pvm.pvconstants.PVconstants(npts=1000)
 
@@ -35,51 +45,17 @@ for c in pv_mod.pvcells:
 
 
 # Set mismatch by different irradiance conditions
-# bottom 2 rows of cells are shaded
-low_irrad = 0.5
+# one cell at bottom row of each substring is shaded
+low_irrad_cells = [9, 29, 49]
+low_irrad = [0.7, 0.5, 0.3]
 
-low_irrad_cells = [8, 9, 19, 18]
 hi_irrad_cells = list(range(0, len(pv_mod.pvcells)))
 for c in low_irrad_cells:
     hi_irrad_cells.remove(c)
 
 pv_mod.setSuns(cells=hi_irrad_cells, Ee=[1]*len(hi_irrad_cells))
-pv_mod.setSuns(cells=low_irrad_cells, Ee=[low_irrad]*len(low_irrad_cells))
+pv_mod.setSuns(cells=low_irrad_cells, Ee=low_irrad)
 
-
-# remove negative voltage and current
-# =============================================================================
-# u = (pv_mod.Vmod>=0.) & (pv_mod.Imod>=0.)
-# 
-# plt.figure()
-# plt.plot(pv_mod.Vmod[u], pv_mod.Imod[u], 'r.')
-# plt.title('Module IV curve')
-# plt.show()
-# 
-# uu = (pv_mod.Vmod > 30) & (pv_mod.Imod>=0.)  # focus on segment towards Voc
-# 
-# plt.figure()
-# plt.plot(pv_mod.Vmod[uu], pv_mod.Imod[uu], 'b.')
-# plt.title('Module IV curve - Voc end')
-# plt.show()
-# =============================================================================
-
-# =============================================================================
-# # plot IV curve for string with shaded cells
-# plt.figure()
-# plt.plot(pv_mod.Vsubstr[0], pv_mod.Isubstr[0], 'k.')
-# plt.title('IV curve for substring with mismatched cells')
-# plt.show()
-# 
-# 
-# plt.figure()
-# for idx in range(0, 59):
-# #    v = (pv_mod.pvcells[idx].Vcell>=0.) & (pv_mod.pvcells[idx].Icell>=0.)
-# #    plt.plot(pv_mod.pvcells[idx].Vcell[v], pv_mod.pvcells[idx].Icell[v])
-#     plt.plot(pv_mod.pvcells[idx].Vcell, pv_mod.pvcells[idx].Icell)
-# plt.title('IV curves for each cell')
-# plt.show()
-# =============================================================================
 
 idxs = [r['idx'] for c in pv_mod.cell_pos[0] for r in c]
 
@@ -98,7 +74,9 @@ tol = 5e-14
 
 result = {}
 
-for i in [0, 9]:
+cells_to_check = low_irrad_cells.copy()
+cells_to_check.append(hi_irrad_cells[0])
+for i in cells_to_check:
     icell = pvlib.pvsystem.i_from_v(resistance_shunt=pv_mod.pvcells[i].Rsh,
                                     resistance_series=pv_mod.pvcells[i].Rs,
                                     nNsVth=pv_mod.pvcells[i].N1*pv_mod.pvcells[i].Vt,
@@ -107,33 +85,72 @@ for i in [0, 9]:
                                     photocurrent=pv_mod.pvcells[i].Igen)
     # save that for later
     result[i] = (pv_mod.pvcells[i].Vcell.flatten(), icell)
-    if np.max(np.abs(icell - Icells[i, :].flatten())) < tol:
+    if np.max(np.abs(icell - pv_mod.pvcells[i].Icell.flatten())) < tol:
         print('Cell {} current matches'.format(i))
     else:
         print('Cell {} current does not match'.format(i))
 
-# now create the substring IV curve
+for i in cells_to_check:
+    plt.figure()
+    plt.plot(result[i][0], result[i][1], 'k.')
+    plt.title('IV curve for cell {}'.format(c))
+    plt.show()
+
+# now create the substring IV curves
+
 full_sun_v = result[0][0]
 full_sun_i = result[0][1]
 
-low_sun_v = result[9][0]
-low_sun_i = result[9][1]
+substring_result = {}
+for s, cell_list in enumerate(cells_per_substring):
+    all_i = np.array(full_sun_i)
+    for idx in cell_list:
+        if idx in low_irrad_cells:
+            all_i = np.append(all_i, result[idx][1])
+    all_i = np.flipud(np.sort(all_i))
+    all_v = np.zeros_like(all_i)
+    for idx in cell_list:
+        if idx in low_irrad_cells:
+            i = result[idx][1]
+            v = result[idx][0]
+        else:
+            i = full_sun_i
+            v = full_sun_v
+        f_interp = interp1d(np.flipud(i), np.flipud(v), kind='linear',
+                            fill_value='extrapolate')
+        all_v += f_interp(all_i)
+    if VBYPASS:
+        all_v = all_v.clip(min=VBYPASS)
+    substring_result[s] = (all_v, all_i)
 
-all_i = np.flipud(np.sort(np.append(full_sun_i, low_sun_i)))
-full_sun_v_ext = np.interp(all_i, np.flipud(full_sun_i), np.flipud(full_sun_v))
-low_sun_v_ext = np.interp(all_i, np.flipud(low_sun_i), np.flipud(low_sun_v))
-all_v = full_sun_v_ext * 18 + low_sun_v_ext * 2
+for s in substring_result:
+    plt.figure()
+    plt.plot(substring_result[s][0], substring_result[s][1], 'r.')
+    plt.plot(pv_mod.Vsubstr[s], pv_mod.Isubstr[s], 'k.')
+    plt.title('IV curve for substring {}'.format(s))
+    plt.legend(['pvlib', 'PVMismatch'])
+    plt.show()
+
+# assemble module IV curve
+
+module_i = np.array([])
+for s in substring_result.keys():
+    module_i = np.append(module_i, substring_result[s][1])
+module_i = np.flipud(np.sort(module_i))
+
+module_v = np.zeros_like(module_i)
+for s in substring_result:
+    f_interp = interp1d(np.flipud(substring_result[s][1]),
+                        np.flipud(substring_result[s][0]), kind='linear',
+                        fill_value='extrapolate')
+    module_v += f_interp(module_i)
+
+if MODULE_BYPASS:
+    module_v = module_v.clip(min=VBYPASS)
 
 plt.figure()
-plt.plot(low_sun_v_ext, all_i)
-plt.plot(full_sun_v_ext, all_i)
-plt.title('Cell-level IV curves from pvlib')
-plt.legend(['low sun', 'full sun'])
-plt.show()
-
-plt.figure()
-plt.plot(all_v, all_i, 'r.')
-plt.plot(pv_mod.Vsubstr[0], pv_mod.Isubstr[0], 'k.')
-plt.title('Substring IV curves')
+plt.plot(module_v, module_i, 'r.')
+plt.plot(pv_mod.Vmod, pv_mod.Imod, 'k.')
+plt.title('IV curve for module')
 plt.legend(['pvlib', 'PVMismatch'])
 plt.show()
