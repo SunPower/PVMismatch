@@ -27,6 +27,18 @@ EG = 1.1  # [eV] band gap of cSi
 ALPHA_ISC = 0.0003551  # [1/K] short circuit current temperature coefficient
 EPS = np.finfo(np.float64).eps
 
+
+def cached(f):
+    def wrapper(self):
+        key = f.__name__
+        if key in self._cache:
+            return self._cache[key]
+        value = f(self)
+        self._cache[key] = value
+        return value
+    return wrapper
+
+
 class PVcell(object):
     """
     Class for PV cells.
@@ -49,6 +61,7 @@ class PVcell(object):
     """
 
     _calc_now = False  #: if True ``calcCells()`` is called in ``__setattr__``
+    _cache = {}
 
     def __init__(self, Rs=RS, Rsh=RSH, Isat1_T0=ISAT1_T0, Isat2_T0=ISAT2_T0,
                  Isc0_T0=ISC0_T0, aRBD=ARBD, bRBD=BRBD, VRBD=VRBD_,
@@ -91,6 +104,7 @@ class PVcell(object):
             pass  # fail silently if not float, eg: pvconst or _calc_now
         super(PVcell, self).__setattr__(key, value)
         # recalculate IV curve
+        self._cache.clear()
         if self._calc_now:
             Icell, Vcell, Pcell = self.calcCell()
             self.__dict__.update(Icell=Icell, Vcell=Vcell, Pcell=Pcell)
@@ -108,6 +122,7 @@ class PVcell(object):
         self._calc_now = True  # recalculate
 
     @property
+    @cached
     def Vt(self):
         """
         Thermal voltage in volts.
@@ -115,10 +130,12 @@ class PVcell(object):
         return self.pvconst.k * self.Tcell / self.pvconst.q
 
     @property
+    @cached
     def Isc(self):
         return self.Ee * self.Isc0
 
     @property
+    @cached
     def Aph(self):
         """
         Photogenerated current coefficient, non-dimensional.
@@ -134,6 +151,7 @@ class PVcell(object):
         return 1. + (Idiode1_sc + Idiode2_sc + Ishunt_sc) / self.Isc
 
     @property
+    @cached
     def Isat1(self):
         """
         Diode one saturation current at Tcell in amps.
@@ -146,6 +164,7 @@ class PVcell(object):
         return self.Isat1_T0 * _Tstar * _expTstar  # [A] Isat1(Tcell)
 
     @property
+    @cached
     def Isat2(self):
         """
         Diode two saturation current at Tcell in amps.
@@ -158,6 +177,7 @@ class PVcell(object):
         return self.Isat2_T0 * _Tstar * _expTstar  # [A] Isat2(Tcell)
     
     @property
+    @cached
     def Isc0(self):
         """
         Short circuit current at Tcell in amps.
@@ -166,6 +186,7 @@ class PVcell(object):
         return self.Isc0_T0 * (1. + self.alpha_Isc * _delta_T)  # [A] Isc0
 
     @property
+    @cached
     def Voc(self):
         """
         Estimate open circuit voltage of cells.
@@ -196,6 +217,7 @@ class PVcell(object):
         )
 
     @property
+    @cached
     def Igen(self):
         """
         Photovoltaic generated light current (AKA IL or Iph)
