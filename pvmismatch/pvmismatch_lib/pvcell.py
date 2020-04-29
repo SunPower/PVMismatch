@@ -11,6 +11,7 @@ from pvmismatch.pvmismatch_lib.pvconstants import PVconstants
 import numpy as np
 from matplotlib import pyplot as plt
 from scipy.optimize import newton
+import functools
 
 # Defaults
 RS = 0.004267236774264931  # [ohm] series resistance
@@ -29,13 +30,22 @@ EPS = np.finfo(np.float64).eps
 
 
 def cached(f):
+    """
+    Memoize an object's method using the _cache dictionary on the object.
+    """
+    @functools.wraps(f)
     def wrapper(self):
-        key = f.__name__
+        # note:  we use self.__wrapped__ instead of just using f directly
+        # so that we can spy on the original function in the test suite.
+        key = wrapper.__wrapped__.__name__
         if key in self._cache:
             return self._cache[key]
-        value = f(self)
+        value = wrapper.__wrapped__(self)
         self._cache[key] = value
         return value
+    # store the original function to be accessible by the test suite.
+    # functools.wraps already sets this in python 3.2+, but for older versions:
+    wrapper.__wrapped__ = f
     return wrapper
 
 
