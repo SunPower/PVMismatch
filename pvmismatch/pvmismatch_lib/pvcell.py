@@ -61,12 +61,13 @@ class PVcell(object):
     """
 
     _calc_now = False  #: if True ``calcCells()`` is called in ``__setattr__``
-    _cache = {}
 
     def __init__(self, Rs=RS, Rsh=RSH, Isat1_T0=ISAT1_T0, Isat2_T0=ISAT2_T0,
                  Isc0_T0=ISC0_T0, aRBD=ARBD, bRBD=BRBD, VRBD=VRBD_,
                  nRBD=NRBD, Eg=EG, alpha_Isc=ALPHA_ISC,
                  Tcell=TCELL, Ee=1., pvconst=PVconstants()):
+        # set up property cache
+        self._cache = {}
         # user inputs
         self.Rs = Rs  #: [ohm] series resistance
         self.Rsh = Rsh  #: [ohm] shunt resistance
