@@ -69,7 +69,7 @@ class PVconstants(object):
     :type npts: int
     """
     # hard constants
-    k = scipy.constants.k  #: [kJ/mole/K] Boltzmann constant
+    k = scipy.constants.k  #: [J/K] Boltzmann constant
     q = scipy.constants.e  #: [Coloumbs] elementary charge
     E0 = 1000.  #: [W/m^2] irradiance of 1 sun
     T0 = 298.15  #: [K] reference temperature
