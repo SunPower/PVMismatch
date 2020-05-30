@@ -128,6 +128,21 @@ def test_cache(mocker):
         spy.assert_called_once()
 
 
+def test_clone():
+    """
+    Test that the clone method returns an independent object.
+    """
+    # test independence
+    pvc1 = PVcell()
+    pvc2 = pvc1.clone()
+    pvc1.Ee = 0.5
+    assert pvc2.Ee == 1.0
+
+    # test returns identical
+    pvc3 = pvc1.clone()
+    assert np.allclose(pvc1.calcCell(), pvc3.calcCell())
+
+
 if __name__ == "__main__":
     i, v = test_calc_series()
     iv_calc = np.concatenate([[i], [v]], axis=0).T

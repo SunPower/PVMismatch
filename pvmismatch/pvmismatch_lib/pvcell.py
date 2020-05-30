@@ -12,6 +12,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 from scipy.optimize import newton
 import functools
+import copy
 
 # Defaults
 RS = 0.004267236774264931  # [ohm] series resistance
@@ -98,7 +99,8 @@ class PVcell(object):
         self.Pcell = None  #: cell power on IV curve [W]
         self.VocSTC = self._VocSTC()  #: estimated Voc at STC [V]
         # set calculation flag
-        self._calc_now = True  # overwrites the class attribute
+        super(PVcell, self).__setattr__('_calc_now', True)
+        #self._calc_now = True  # overwrites the class attribute
 
     def __str__(self):
         fmt = '<PVcell(Ee=%g[suns], Tcell=%g[K], Isc=%g[A], Voc=%g[V])>'
@@ -119,6 +121,11 @@ class PVcell(object):
         if self._calc_now:
             Icell, Vcell, Pcell = self.calcCell()
             self.__dict__.update(Icell=Icell, Vcell=Vcell, Pcell=Pcell)
+
+    def clone(self):
+        cloned = copy.copy(self)
+        super(PVcell, cloned).__setattr__('_cache', self._cache.copy())
+        return cloned
 
     def update(self, **kwargs):
         """
