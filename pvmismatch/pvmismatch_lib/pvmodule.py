@@ -8,7 +8,6 @@ from past.builtins import xrange, range
 from builtins import zip
 from six import itervalues
 import numpy as np
-from copy import copy
 from matplotlib import pyplot as plt
 # use absolute imports instead of relative, so modules are portable
 from pvmismatch.pvmismatch_lib.pvconstants import PVconstants, get_series_cells
@@ -312,7 +311,7 @@ class PVmodule(object):
                 for pvc in pvcell_set:
                     pvc.Ee = Ee
             elif np.size(Ee) == self.numberCells:
-                self.pvcells = copy(self.pvcells)  # copy list first
+                self.pvcells = [cell.clone() for cell in self.pvcells]  # copy list first
                 for cell_idx, Ee_idx in enumerate(Ee):
                     self.pvcells[cell_idx] = self.pvcells[cell_idx].clone()
                     self.pvcells[cell_idx].Ee = Ee_idx
@@ -320,7 +319,7 @@ class PVmodule(object):
                 raise Exception("Input irradiance value (Ee) for each cell!")
         else:
             Ncells = np.size(cells)
-            self.pvcells = copy(self.pvcells)  # copy list first
+            self.pvcells = [cell.clone() for cell in self.pvcells]  # copy list first
             if np.isscalar(Ee):
                 cells_to_update = [self.pvcells[i] for i in cells]
                 old_pvcells = dict.fromkeys(cells_to_update)
@@ -384,7 +383,7 @@ class PVmodule(object):
                 for pvc in pvcell_set:
                     pvc.Tcell = Tc
             elif np.size(Tc) == self.numberCells:
-                self.pvcells = copy(self.pvcells)  # copy list first
+                self.pvcells = [cell.clone() for cell in self.pvcells]  # copy list first
                 for cell_idx, Tc_idx in enumerate(Tc):
                     self.pvcells[cell_idx] = self.pvcells[cell_idx].clone()
                     self.pvcells[cell_idx].Tcell = Tc_idx
@@ -392,7 +391,7 @@ class PVmodule(object):
                 raise Exception("Input temperature value (Tc) for each cell!")
         else:
             Ncells = np.size(cells)
-            self.pvcells = copy(self.pvcells)  # copy list first
+            self.pvcells = [cell.clone() for cell in self.pvcells]  # copy list first
             if np.isscalar(Tc):
                 cells_to_update = [self.pvcells[i] for i in cells]
                 old_pvcells = dict.fromkeys(cells_to_update)
