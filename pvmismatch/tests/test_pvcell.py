@@ -141,6 +141,7 @@ def test_clone():
     # test returns identical
     pvc3 = pvc1.clone()
     assert np.allclose(pvc1.calcCell(), pvc3.calcCell())
+    assert pvc1.pvconst is pvc3.pvconst
 
 
 if __name__ == "__main__":
