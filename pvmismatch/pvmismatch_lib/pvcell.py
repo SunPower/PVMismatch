@@ -123,6 +123,9 @@ class PVcell(object):
             self.__dict__.update(Icell=Icell, Vcell=Vcell, Pcell=Pcell)
 
     def clone(self):
+        """
+        Return a copy of this object with the same pvconst.
+        """
         cloned = copy.copy(self)
         super(PVcell, cloned).__setattr__('_cache', self._cache.copy())
         return cloned
