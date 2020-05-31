@@ -100,7 +100,7 @@ class PVcell(object):
         self.VocSTC = self._VocSTC()  #: estimated Voc at STC [V]
         # set calculation flag
         super(PVcell, self).__setattr__('_calc_now', True)
-        #self._calc_now = True  # overwrites the class attribute
+        self._calc_now = True  # overwrites the class attribute
 
     def __str__(self):
         fmt = '<PVcell(Ee=%g[suns], Tcell=%g[K], Isc=%g[A], Voc=%g[V])>'
