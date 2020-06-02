@@ -95,21 +95,6 @@ elif cellsx*cellsy == 96:
 pvmod=pvmismatch.pvmismatch_lib.pvmodule.PVmodule(cell_pos=cell_pos)
 
 
-# #### Let's make the system be just 1 module
-
-# In[6]:
-
-
-#### Let's create the type of module we want
-
-if cellsx*cellsy == 72:
-    cell_pos = pvmismatch.pvmismatch_lib.pvmodule.STD72
-elif cellsx*cellsy == 96:
-    cell_pos = pvmismatch.pvmismatch_lib.pvmodule.STD96
-
-pvmod=pvmismatch.pvmismatch_lib.pvmodule.PVmodule(cell_pos=cell_pos)
-
-
 # #### Let's make the 1 row, with 20 modules
 
 # In[7]:
