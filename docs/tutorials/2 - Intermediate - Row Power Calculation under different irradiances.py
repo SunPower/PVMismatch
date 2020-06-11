@@ -33,8 +33,8 @@ numcells = 72
 # In[3]:
 
 
-testfile = r'irr_1axis_11_06_13.pkl'
-df = pd.read_pickle(testfile)
+testfile = r'irr_1axis_11_06_13.csv'
+df = pd.read_csv(testfile)
 sns.heatmap(df, square=True)
 
 
