@@ -141,7 +141,7 @@ class PVcell(object):
         _Tstar = self.Tcell ** 3. / self.pvconst.T0 ** 3.  # scaled temperature
         _inv_delta_T = 1. / self.pvconst.T0 - 1. / self.Tcell  # [1/K]
         _expTstar = np.exp(
-            self.Eg * self.pvconst.q / self.pvconst.k * _inv_delta_T
+            self.Eg / self.pvconst.k * _inv_delta_T
         )
         return self.Isat1_T0 * _Tstar * _expTstar  # [A] Isat1(Tcell)
 
@@ -153,7 +153,7 @@ class PVcell(object):
         _Tstar = self.Tcell ** 3. / self.pvconst.T0 ** 3.  # scaled temperature
         _inv_delta_T = 1. / self.pvconst.T0 - 1. / self.Tcell  # [1/K]
         _expTstar = np.exp(
-            self.Eg * self.pvconst.q / (2.0 * self.pvconst.k) * _inv_delta_T
+            self.Eg / (2.0 * self.pvconst.k) * _inv_delta_T
         )
         return self.Isat2_T0 * _Tstar * _expTstar  # [A] Isat2(Tcell)
     
