@@ -63,3 +63,7 @@ Mark Mikofski, Bennet Meyers, Chetan Chaudhari (2018). “PVMismatch Project: ht
 
 Please consider adding a # tag "pvmismatch" to a StackOverflow/Quora/LinkedIn/ResearchGate posts related to PVMismatch. 
 
+
+Current Maintainer at SunPower
+----------------------------------
+@ahoffmanSPWR
