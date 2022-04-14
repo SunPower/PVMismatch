@@ -24,7 +24,8 @@ def gen_iec_61853_from_sapm(pvmodule):
     Module is a dictionary according to ``pvlib.pvsystem.sapm``.
     """
     tc, irr = TEST_MAT
-    return sapm(irr / 1000.0, tc, pvmodule)
+    # sapm in pvlib.pvsystem expects effective_irradiance in W/m2, temp_cell in degrees Celsius
+    return sapm(irr, tc, pvmodule)
 
 
 def gen_two_diode(isc, voc, imp, vmp, nseries, nparallel,
