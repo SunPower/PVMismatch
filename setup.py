@@ -20,7 +20,8 @@ INSTALL_REQUIRES = [
 ]
 
 TESTS_REQUIRES = [
-    'nose>=1.3.7', 'pytest>=3.2.1', 'sympy>=1.1.1', 'pvlib>=0.5.1'
+    'nose>=1.3.7', 'pytest>=3.2.1', 'sympy>=1.1.1', 'pvlib>=0.5.1',
+    'pytest-mock'
 ]
 
 CLASSIFIERS = [

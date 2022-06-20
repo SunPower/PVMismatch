@@ -303,7 +303,7 @@ class PVmodule(object):
                 old_pvcells = dict.fromkeys(self.pvcells)  # same as set(pvcells)
                 for cell_id, pvcell in enumerate(self.pvcells):
                     if old_pvcells[pvcell] is None:
-                        new_pvcells[cell_id] = copy(pvcell)
+                        new_pvcells[cell_id] = pvcell.clone()
                         old_pvcells[pvcell] = new_pvcells[cell_id]
                     else:
                         new_pvcells[cell_id] = old_pvcells[pvcell]
@@ -314,7 +314,7 @@ class PVmodule(object):
             elif np.size(Ee) == self.numberCells:
                 self.pvcells = copy(self.pvcells)  # copy list first
                 for cell_idx, Ee_idx in enumerate(Ee):
-                    self.pvcells[cell_idx] = copy(self.pvcells[cell_idx])
+                    self.pvcells[cell_idx] = self.pvcells[cell_idx].clone()
                     self.pvcells[cell_idx].Ee = Ee_idx
             else:
                 raise Exception("Input irradiance value (Ee) for each cell!")
@@ -326,7 +326,7 @@ class PVmodule(object):
                 old_pvcells = dict.fromkeys(cells_to_update)
                 for cell_id, pvcell in zip(cells, cells_to_update):
                     if old_pvcells[pvcell] is None:
-                        self.pvcells[cell_id] = copy(pvcell)
+                        self.pvcells[cell_id] = pvcell.clone()
                         self.pvcells[cell_id].Ee = Ee
                         old_pvcells[pvcell] = self.pvcells[cell_id]
                     else:
@@ -344,7 +344,7 @@ class PVmodule(object):
                     old_pvcells = dict.fromkeys(cells_to_update)
                     for cell_id, pvcell in zip(cells_subset, cells_to_update):
                         if old_pvcells[pvcell] is None:
-                            self.pvcells[cell_id] = copy(pvcell)
+                            self.pvcells[cell_id] = pvcell.clone()
                             self.pvcells[cell_id].Ee = a_Ee
                             old_pvcells[pvcell] = self.pvcells[cell_id]
                         else:
@@ -375,7 +375,7 @@ class PVmodule(object):
                 old_pvcells = dict.fromkeys(self.pvcells)  # same as set(pvcells)
                 for cell_id, pvcell in enumerate(self.pvcells):
                     if old_pvcells[pvcell] is None:
-                        new_pvcells[cell_id] = copy(pvcell)
+                        new_pvcells[cell_id] = pvcell.clone()
                         old_pvcells[pvcell] = new_pvcells[cell_id]
                     else:
                         new_pvcells[cell_id] = old_pvcells[pvcell]
@@ -386,7 +386,7 @@ class PVmodule(object):
             elif np.size(Tc) == self.numberCells:
                 self.pvcells = copy(self.pvcells)  # copy list first
                 for cell_idx, Tc_idx in enumerate(Tc):
-                    self.pvcells[cell_idx] = copy(self.pvcells[cell_idx])
+                    self.pvcells[cell_idx] = self.pvcells[cell_idx].clone()
                     self.pvcells[cell_idx].Tcell = Tc_idx
             else:
                 raise Exception("Input temperature value (Tc) for each cell!")
@@ -398,7 +398,7 @@ class PVmodule(object):
                 old_pvcells = dict.fromkeys(cells_to_update)
                 for cell_id, pvcell in zip(cells, cells_to_update):
                     if old_pvcells[pvcell] is None:
-                        self.pvcells[cell_id] = copy(pvcell)
+                        self.pvcells[cell_id] = pvcell.clone()
                         self.pvcells[cell_id].Tcell = Tc
                         old_pvcells[pvcell] = self.pvcells[cell_id]
                     else:
@@ -416,7 +416,7 @@ class PVmodule(object):
                     old_pvcells = dict.fromkeys(cells_to_update)
                     for cell_id, pvcell in zip(cells_subset, cells_to_update):
                         if old_pvcells[pvcell] is None:
-                            self.pvcells[cell_id] = copy(pvcell)
+                            self.pvcells[cell_id] = pvcell.clone()
                             self.pvcells[cell_id].Tcell = a_Tc
                             old_pvcells[pvcell] = self.pvcells[cell_id]
                         else:

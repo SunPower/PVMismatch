@@ -107,6 +107,43 @@ def test_update():
     assert pvc._calc_now
 
 
+def test_cache(mocker):
+    """
+    Test that the cache mechanism actually works and doesn't calculate the same
+    thing more than once.
+    """
+    pvc = PVcell()
+    attrs = ['Vt', 'Isc', 'Aph', 'Isat1', 'Isat2', 'Isc0', 'Voc', 'Igen']
+    # it's a little tricky to get ahold of the underlying function for the
+    # properties -- by accessing the property through the class rather than
+    # the instance, we get access to the `fget` object, which is the wrapper
+    # function.  And the @cached decorator stores the underlying function
+    # in the __wrapped__ attribute on the wrapper.
+    spies = [
+        mocker.spy(getattr(PVcell, attr).fget, "__wrapped__")
+        for attr in attrs
+    ]
+    pvc.Ee = 0.5
+    for spy in spies:
+        spy.assert_called_once()
+
+
+def test_clone():
+    """
+    Test that the clone method returns an independent object.
+    """
+    # test independence
+    pvc1 = PVcell()
+    pvc2 = pvc1.clone()
+    pvc1.Ee = 0.5
+    assert pvc2.Ee == 1.0
+
+    # test returns identical
+    pvc3 = pvc1.clone()
+    assert np.allclose(pvc1.calcCell(), pvc3.calcCell())
+    assert pvc1.pvconst is pvc3.pvconst
+
+
 if __name__ == "__main__":
     i, v = test_calc_series()
     iv_calc = np.concatenate([[i], [v]], axis=0).T

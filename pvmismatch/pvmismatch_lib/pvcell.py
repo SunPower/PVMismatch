@@ -11,6 +11,8 @@ from pvmismatch.pvmismatch_lib.pvconstants import PVconstants
 import numpy as np
 from matplotlib import pyplot as plt
 from scipy.optimize import newton
+import functools
+import copy
 
 # Defaults
 RS = 0.004267236774264931  # [ohm] series resistance
@@ -26,6 +28,27 @@ NRBD = 3.284628553041425  # reverse breakdown exponent
 EG = 1.1  # [eV] band gap of cSi
 ALPHA_ISC = 0.0003551  # [1/K] short circuit current temperature coefficient
 EPS = np.finfo(np.float64).eps
+
+
+def cached(f):
+    """
+    Memoize an object's method using the _cache dictionary on the object.
+    """
+    @functools.wraps(f)
+    def wrapper(self):
+        # note:  we use self.__wrapped__ instead of just using f directly
+        # so that we can spy on the original function in the test suite.
+        key = wrapper.__wrapped__.__name__
+        if key in self._cache:
+            return self._cache[key]
+        value = wrapper.__wrapped__(self)
+        self._cache[key] = value
+        return value
+    # store the original function to be accessible by the test suite.
+    # functools.wraps already sets this in python 3.2+, but for older versions:
+    wrapper.__wrapped__ = f
+    return wrapper
+
 
 class PVcell(object):
     """
@@ -54,6 +77,8 @@ class PVcell(object):
                  Isc0_T0=ISC0_T0, aRBD=ARBD, bRBD=BRBD, VRBD=VRBD_,
                  nRBD=NRBD, Eg=EG, alpha_Isc=ALPHA_ISC,
                  Tcell=TCELL, Ee=1., pvconst=PVconstants()):
+        # set up property cache
+        self._cache = {}
         # user inputs
         self.Rs = Rs  #: [ohm] series resistance
         self.Rsh = Rsh  #: [ohm] shunt resistance
@@ -74,6 +99,7 @@ class PVcell(object):
         self.Pcell = None  #: cell power on IV curve [W]
         self.VocSTC = self._VocSTC()  #: estimated Voc at STC [V]
         # set calculation flag
+        super(PVcell, self).__setattr__('_calc_now', True)
         self._calc_now = True  # overwrites the class attribute
 
     def __str__(self):
@@ -91,9 +117,18 @@ class PVcell(object):
             pass  # fail silently if not float, eg: pvconst or _calc_now
         super(PVcell, self).__setattr__(key, value)
         # recalculate IV curve
+        self._cache.clear()
         if self._calc_now:
             Icell, Vcell, Pcell = self.calcCell()
             self.__dict__.update(Icell=Icell, Vcell=Vcell, Pcell=Pcell)
+
+    def clone(self):
+        """
+        Return a copy of this object with the same pvconst.
+        """
+        cloned = copy.copy(self)
+        super(PVcell, cloned).__setattr__('_cache', self._cache.copy())
+        return cloned
 
     def update(self, **kwargs):
         """
@@ -108,6 +143,7 @@ class PVcell(object):
         self._calc_now = True  # recalculate
 
     @property
+    @cached
     def Vt(self):
         """
         Thermal voltage in volts.
@@ -115,10 +151,12 @@ class PVcell(object):
         return self.pvconst.k * self.Tcell / self.pvconst.q
 
     @property
+    @cached
     def Isc(self):
         return self.Ee * self.Isc0
 
     @property
+    @cached
     def Aph(self):
         """
         Photogenerated current coefficient, non-dimensional.
@@ -134,6 +172,7 @@ class PVcell(object):
         return 1. + (Idiode1_sc + Idiode2_sc + Ishunt_sc) / self.Isc
 
     @property
+    @cached
     def Isat1(self):
         """
         Diode one saturation current at Tcell in amps.
@@ -146,6 +185,7 @@ class PVcell(object):
         return self.Isat1_T0 * _Tstar * _expTstar  # [A] Isat1(Tcell)
 
     @property
+    @cached
     def Isat2(self):
         """
         Diode two saturation current at Tcell in amps.
@@ -158,6 +198,7 @@ class PVcell(object):
         return self.Isat2_T0 * _Tstar * _expTstar  # [A] Isat2(Tcell)
     
     @property
+    @cached
     def Isc0(self):
         """
         Short circuit current at Tcell in amps.
@@ -166,6 +207,7 @@ class PVcell(object):
         return self.Isc0_T0 * (1. + self.alpha_Isc * _delta_T)  # [A] Isc0
 
     @property
+    @cached
     def Voc(self):
         """
         Estimate open circuit voltage of cells.
@@ -196,6 +238,7 @@ class PVcell(object):
         )
 
     @property
+    @cached
     def Igen(self):
         """
         Photovoltaic generated light current (AKA IL or Iph)
